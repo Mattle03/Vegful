@@ -396,6 +396,20 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .onb-nav .btn{min-width:120px}
 .segrow{display:flex;gap:10px}
 .dueline{display:flex;flex-direction:column;gap:8px;margin:-4px 0 0}
+.tkt{position:relative;display:flex;align-items:stretch;background:var(--surface2);border-radius:14px;min-height:64px;overflow:hidden;margin-top:8px}
+.dueline .tkt{background:var(--surface);border:1px solid var(--line);margin:0}
+.tkt::before,.tkt::after{content:'';position:absolute;right:92px;width:16px;height:16px;border-radius:50%;background:var(--surface);transform:translateX(50%)}.tkt::before{top:-8px}.tkt::after{bottom:-8px}
+.dueline .tkt::before,.dueline .tkt::after{background:var(--bg)}
+.tkt .tk-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1px;padding:10px 14px;font-size:15px}
+.tkt .tk-perf{width:0;border-left:2px dashed var(--line);margin:10px 0}
+.tkt .tk-btn{border:0;background:var(--coral);color:var(--coral-ink);font:inherit;font-weight:800;font-size:15px;width:92px;flex:none;cursor:pointer}
+.tkt .tk-btn:active{filter:brightness(.92)}
+.tk-stamp,.tk-next{width:92px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12.5px;color:var(--muted);text-align:center;line-height:1.25}
+.stampmark{width:38px;height:38px;border-radius:50%;border:2.5px solid var(--accent);color:var(--accent);display:grid;place-items:center;font-weight:900;font-size:19px;transform:rotate(-14deg)}
+.stampmark.hit{animation:rubber .5s cubic-bezier(.2,1.6,.4,1)}@keyframes rubber{0%{transform:scale(2.4) rotate(-40deg);opacity:0}100%{transform:rotate(-14deg);opacity:1}}
+.tkt.chomp{animation:chomp .35s ease}@keyframes chomp{0%{transform:none}30%{transform:translateX(-4px)}60%{transform:translateX(3px)}100%{transform:none}}
+.tk-ign{align-self:flex-start;border:0;background:none;padding:6px 0 0;min-height:32px;font:inherit;font-size:13px;font-weight:700;color:var(--accent);cursor:pointer}.tk-stamp .tk-ign{align-self:center;padding:2px 0 0;min-height:28px}
+@media (prefers-reduced-motion:reduce){.stampmark.hit,.tkt.chomp{animation:none}}
 .duerem{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 14px;min-height:54px;font-size:15px}
 .duerem .duedot{width:10px;height:10px;border-radius:50%;background:var(--coral);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--coral) 30%,transparent)}
 .supbtns{display:flex;gap:6px;flex:none;align-items:center}
@@ -1154,12 +1168,13 @@ function sStatus(s,d,T){
  return {ok:false,t:agoTxt(ago)[0].toUpperCase()+agoTxt(ago).slice(1)+' · next in '+(N-ago)+(N-ago===1?' day':' days'),act:d<=TODAY?['take','Taken']:null}}
 function supCard(isT){const T=targets(),d=S.date;const rows=(S.sups||[]).map(s=>({s,st:sStatus(s,d,T)})).filter(x=>x.st);
  if(!rows.length)return `<button class="suprow2" type="button" id="go-sup"><span class="micon" style="--c:var(--s5)">${ICON.x}</span><span style="flex:1;min-width:0"><span class="mslot" style="display:block">Supplements</span><span style="font-weight:700">None set</span></span>${CHEV}</button>`;
- return `<div class="card supcard"><div class="card-head" style="margin-bottom:6px"><div><h2>Supplemented</h2><p class="cap">${isT?'Today':'This day'}</p></div><button class="btn sm ghost" type="button" id="go-sup">Edit</button></div>
+ return `<div class="card supcard"><div class="card-head" style="margin-bottom:10px"><div><h2>Supplemented</h2><p class="cap">${isT?'Today':'This day'}</p></div><button class="btn sm ghost" type="button" id="go-sup">Edit</button></div>
  ${rows.map(({s,st})=>{const iv=sInterval(s),l=iv?sLast(s,d):null,pun=(s.takes||[]).includes(d),sk=(s.skip||[]).includes(d),fut=d>TODAY;
   const info=`${sDose(s)} · ${sSched(s).toLowerCase()}`;
-  const when=s.freq==='d'?(sk?'Skipped':pun?'Punched':'Punch it when you take it'):iv?(l?`Last taken ${dayDiff(l,d)===0?'today':fdS(l)} · next ${fdS(shift(l,sInt(s)))}`:'Not taken yet'):st.t;
-  const btn=fut?'':pun?`<button class="btn sm ghost" type="button" data-sact="${s.id}:unpunch">Undo</button>`:s.freq==='d'?(sk?`<button class="btn sm ghost" type="button" data-sact="${s.id}:undo">Undo</button>`:`<button class="btn sm ghost" type="button" data-sact="${s.id}:skip">Skip</button><button class="btn sm primary" type="button" data-sact="${s.id}:punch">Punch</button>`):(st.due||!st.ok)?`<button class="btn sm primary" type="button" data-sact="${s.id}:punch">Punch</button>`:'';
-  return `<div class="suprowt"><span style="flex:1;min-width:0"><span style="font-weight:700">${esc(sName(s))}</span><span class="cap" style="display:block">${info}</span><span class="cap" style="display:block">${when}</span>${sHoles(s,d,STAMP===s.id)}</span><span class="supbtns">${btn}</span></div>`}).join('')}
+  const when=s.freq==='d'?(sk?'Skipped today':pun?'Punched today':'Punch it when you take it'):iv?(l?`Last taken ${dayDiff(l,d)===0?'today':fdS(l)} · next ${fdS(shift(l,sInt(s)))}`:'Not taken yet'):st.t;
+  const canP=!fut&&!pun&&!(s.freq==='d'&&sk)&&(s.freq==='d'||st.due||!st.ok),chomp=STAMP===s.id;
+  const stub=fut?`<div class="tk-next">${iv&&l?'next<br>'+fdS(shift(l,sInt(s))):''}</div>`:pun?`<div class="tk-stamp"><span class="stampmark${chomp?' hit':''}">✓</span><button class="tk-ign" type="button" data-sact="${s.id}:unpunch">Undo</button></div>`:canP?`<button class="tk-btn" type="button" data-sact="${s.id}:punch">Punch</button>`:sk?`<div class="tk-stamp"><span class="cap">Skipped</span><button class="tk-ign" type="button" data-sact="${s.id}:undo">Undo</button></div>`:`<div class="tk-next">${iv&&l?'next<br>'+fdS(shift(l,sInt(s))):''}</div>`;
+  return `<div class="tkt${chomp?' chomp':''}"><div class="tk-main"><span style="font-weight:700">${esc(sName(s))}</span><span class="cap">${info}</span><span class="cap">${when}</span>${sHoles(s,d,chomp)}${s.freq==='d'&&!pun&&!sk&&!fut?`<button class="tk-ign" type="button" data-sact="${s.id}:skip">Skip today</button>`:''}</div><div class="tk-perf"></div>${stub}</div>`}).join('')}
  <p class="cap" style="margin:8px 0 0">${'<i class="hk on"></i> punched <i class="hk auto"></i> counted <i class="hk off"></i> missed'}</p></div>`}
 function bindSupCard(v){v.querySelectorAll('[data-sact]').forEach(b=>b.onclick=()=>{const [id,a]=b.dataset.sact.split(':'),s=(S.sups||[]).find(x=>x.id===id);if(!s)return;const d=S.date;
  s.takes=s.takes||[];s.skip=s.skip||[];
@@ -2609,8 +2624,8 @@ function sHoles(s,upto,fresh){let sl=[];
 function dueLine(){if(S.date!==TODAY)return '';const L=(S.sups||[]).filter(s=>sInterval(s)&&sActive(s,TODAY)&&sNextDue(s)<=TODAY&&!(s.takes||[]).includes(TODAY)&&s.ign!==TODAY);
  if(!L.length)return '';
  return `<div class="dueline">${L.map(s=>{const late=dayDiff(sNextDue(s),TODAY);
-  return `<div class="duerem"><span class="duedot"></span><span style="flex:1;min-width:0"><b>${esc(sName(s))}</b> ${late>0?`due since ${late===1?'yesterday':late+' days'}`:'due today'}</span><button class="btn sm ghost" type="button" data-dueign="${s.id}">Ignore</button><button class="btn sm primary" type="button" data-duetake="${s.id}">Punch</button></div>`}).join('')}</div>`}
-function punchSup(s){s.takes=s.takes||[];s.skip=(s.skip||[]).filter(x=>x!==S.date);if(!s.takes.includes(S.date))s.takes.push(S.date);STAMP=s.id;try{navigator.vibrate&&navigator.vibrate([20,40,20])}catch(e){}toast(`${sName(s)} punched`);render();setTimeout(()=>{STAMP=null},900)}
+  return `<div class="tkt"><div class="tk-main"><div><b>${esc(sName(s))}</b> ${late>0?`due since ${late===1?'yesterday':late+' days'}`:'due today'}</div><button class="tk-ign" type="button" data-dueign="${s.id}">Ignore for today</button></div><div class="tk-perf"></div><button class="tk-btn" type="button" data-duetake="${s.id}">Punch</button></div>`}).join('')}</div>`}
+function punchSup(s){s.takes=s.takes||[];s.skip=(s.skip||[]).filter(x=>x!==S.date);if(!s.takes.includes(S.date))s.takes.push(S.date);STAMP=s.id;try{navigator.vibrate&&navigator.vibrate([20,40,20])}catch(e){}toast(`${sName(s)} punched`);render();setTimeout(()=>{STAMP=null},1200)}
 function bindDue(v){v.querySelectorAll('[data-duetake]').forEach(b=>b.onclick=()=>{const s=(S.sups||[]).find(x=>x.id===b.dataset.duetake);if(s)punchSup(s)});
  v.querySelectorAll('[data-dueign]').forEach(b=>b.onclick=()=>{const s=(S.sups||[]).find(x=>x.id===b.dataset.dueign);if(s){s.ign=TODAY;render()}})}
 /* calendar file: repeats weekly or every N days with an alert at the chosen time; your phone's calendar does the reminding */
