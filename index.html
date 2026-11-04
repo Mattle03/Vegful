@@ -393,6 +393,7 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .onb-nav{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px}
 .onb-nav .btn{min-width:120px}
 .segrow{display:flex;gap:10px}
+.fsrow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:8px}.fsrow b{font-size:22px}.fsbar{position:relative;height:10px;border-radius:5px;background:var(--surface2);margin-top:8px;overflow:visible}.fsbar i{display:block;height:100%;border-radius:5px}.fsm{position:absolute;top:-4px;width:2px;height:18px;background:var(--ink);opacity:.5}
 .swatches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.swatch{min-width:0;overflow:hidden;display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 10px;gap:8px;border-radius:14px;border:2px solid transparent;background:var(--surface2);font:inherit;font-weight:600;color:var(--ink)}
 .swatch i{width:24px;height:24px;border-radius:50%;background:var(--sw);flex:none;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}.swatch[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
 .actpill{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;margin:12px auto 0;border:0;border-radius:999px;padding:8px 14px;min-height:40px;background:var(--hero-seg);color:var(--hero-ink);font:inherit;font-size:14px}
@@ -943,7 +944,7 @@ let S;
 let raw0=null;try{const raw=JSON.parse(localStorage.getItem('vpc2')||'null');raw0=raw;S=structuredClone(DEF);if(raw){Object.assign(S,raw);S.prof=Object.assign({},DEF.prof,raw.prof||{});S.sup=Object.assign({},DEF.sup,raw.sup||{});if(!(+S.prof.age>=18))S.prof.age=DEF.prof.age;if(S.prof.pg==='dge')S.prof.pg='base';Object.keys(S.sup).forEach(k=>{const v=S.sup[k];S.sup[k]=(v&&v!=='0')?'1':'0'})}}catch(e){S=structuredClone(DEF)}
 const save=()=>{try{localStorage.setItem('vpc2',JSON.stringify(S,function(k,v){return this===S&&k==='plan'?undefined:v}))}catch(e){}};
 if(!Array.isArray(S.custom))S.custom=[];
-function registerFood(c){const f={id:c.id,n:c.n,cat:'My foods',por:c.por,parts:c.parts,cook:c.cook,v:K.map((k,i)=>+(c.v||[])[i]||0),pl:c.pack?`pack ${c.pack} g`:'',pack:c.pack,est:c.est,bc:c.bc,ing:c.ing,img:c.img,ph:c.ph};const old=F.findIndex(x=>x.id===f.id);if(old>=0)F[old]=f;else F.push(f);FM[f.id]=f;return f}
+function registerFood(c){const f={id:c.id,n:c.n,cat:'My foods',por:c.por,parts:c.parts,cook:c.cook,v:K.map((k,i)=>+(c.v||[])[i]||0),pl:c.pack?`pack ${c.pack} g`:'',pack:c.pack,est:c.est,bc:c.bc,ing:c.ing,img:c.img,ph:c.ph,fs:c.fs};const old=F.findIndex(x=>x.id===f.id);if(old>=0)F[old]=f;else F.push(f);FM[f.id]=f;return f}
 S.custom.forEach(registerFood);
 /* product photos: keep a small copy on the phone so icons work offline; older scans get their photo from the scan history */
 function thumbOf(url){return new Promise((ok,bad)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{try{const Z=96,c=document.createElement('canvas');c.width=c.height=Z;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,Z,Z);const sc=Math.max(Z/im.width,Z/im.height);g.drawImage(im,(Z-im.width*sc)/2,(Z-im.height*sc)/2,im.width*sc,im.height*sc);ok(c.toDataURL('image/jpeg',.8))}catch(e){bad(e)}};im.onerror=bad;im.src=url})}
@@ -1155,6 +1156,28 @@ function targets(){
  return Object.assign(T,{kcal,p:(+P.wt||70)*pf,epa:250,pot:ref==='dge'?4000:ref==='nih'?(m?3400:2600):3500});
 }
 const HK=()=>S.prof.hidekcal==='1';
+/* ---------- free sugar (WHO): added sugars and syrups plus fruit and vegetable juice; sugar inside whole fruit and vegetables does not count.
+   Limit 10 % of energy, ideally under 5 % (WHO 2015). Values in g per 100 g. */
+const FS={applejuice:10,grapejuice:15,multijuice:11,beetjuice:7,darkchoc:24,granola:15,soymilk:2.5,alprosoy:2.5,soyyog:2};
+const _FSC={};
+function fsOf(id,depth){if(id in _FSC)return _FSC[id];const f=FM[id];let v=0;
+ if(!f)v=0;else if(FS[id]!=null)v=FS[id];else if(f.fs!=null)v=+f.fs;
+ else if(f.parts&&f.parts.length&&(depth||0)<3){const tot=f.parts.reduce((a,p)=>a+(+p[1]||0),0);v=tot?f.parts.reduce((a,[q,g])=>a+fsOf(q,(depth||0)+1)*g/tot,0):0}
+ else{const n=f.n.toLowerCase(),kc=f.v[0]||0;
+  if(/juice|nectar|smoothie/.test(n)&&!/lemon|lime/.test(n))v=kc*.9/4;
+  else if(/syrup|molasses|jam|jelly|marmalade|candied|sweetened|with sugar|with added sugar/.test(n)&&!/unsweetened|without (added )?sugar/.test(n))v=kc*.4/4}
+ return _FSC[id]=Math.round(v*10)/10}
+const fsDay=p=>{let g=0;if(!p)return 0;mealKeys(p).forEach(k=>p[k].it.forEach(([id,q])=>{g+=fsOf(id)*(+q||0)/100}));return g};
+const fsLim=T=>Math.round((T||targets()).kcal*.10/4),fsIdeal=T=>Math.round((T||targets()).kcal*.05/4);
+function fsView(){const T=targets();if(S.range===1)return {g:fsDay(S.plan),n:1,lab:S.date===TODAY?'today':'this day'};
+ const w=S.range===0?7:S.range;let sum=0,n=0;for(let i=0;i<w;i++){const p=S.days[shift(S.date,-i)];if(p&&logged(p)){sum+=fsDay(p);n++}}return {g:n?sum/n:0,n,lab:'a day, last '+w+' days'}}
+function fsSources(dates){const m={};dates.forEach(d=>{const p=S.days[d];if(!p)return;mealKeys(p).forEach(k=>p[k].it.forEach(([id,q])=>{const g=fsOf(id)*(+q||0)/100;if(g>=1)m[id]=(m[id]||0)+g}))});return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([id])=>FM[id]?FM[id].n.split(',')[0]:'')}
+function fsCard(){const T=targets(),v=fsView(),L=fsLim(T),I=fsIdeal(T),p=Math.min(150,v.g/L*100),col=v.g>L?'var(--low)':v.g>I?'var(--mid)':'var(--ok)';
+ const dates=S.range===1?[S.date]:Array.from({length:S.range===0?7:S.range},(_,i)=>shift(S.date,-i)),src=fsSources(dates);
+ return `<div class="card fscard"><div class="card-head"><div><h2>Free sugar</h2><p class="cap">Added sugar, syrups and juice. Sugar in whole fruit and vegetables does not count.</p></div></div>
+ <div class="fsrow"><b style="color:${col}">${Math.round(v.g)} g</b><span class="cap">${v.lab} · limit ${L} g, ideally under ${I} g</span></div>
+ <div class="fsbar"><i style="width:${p/1.5}%;background:${col}"></i><span class="fsm" style="left:${50/1.5}%"></span><span class="fsm" style="left:${100/1.5}%"></span></div>
+ ${src.length?`<p class="cap" style="margin:8px 0 0">Main sources: ${src.map(esc).join(', ')}.</p>`:''}</div>`}
 const ACC=[['green','Green','#2D5A3F'],['teal','Teal','#1F6B66'],['blue','Blue','#2C5282'],['purple','Purple','#5B3F86'],['rose','Rose','#8E3B57'],['amber','Amber','#8A4B1F']];
 function applyTheme(){const r=document.documentElement,m=S.prof.mode||'auto',a=S.prof.acc||'green';
  if(m==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',m);
@@ -1419,6 +1442,7 @@ function renderNutrients(T,D){
  $('nutrients').innerHTML=attHtml+groups.map(g=>`<div class="card"><h2 style="margin-bottom:6px">${g}</h2><div class="ngroup">${NORD.filter(k=>NUT[k].g===g&&!(k==='kcal'&&HK())).map(k=>{const i=K.indexOf(k),s=nstat(k,D,T);
    const segs=SL.map((sl,j)=>{const w=sv[j][i]/T[k]*100/1.5;return w>0?`<i style="width:${w}%;background:${sl.c}"></i>`:''}).join('');
    return `<button class="nrow" type="button" data-sel="${k}"><span><span class="nn">${NUT[k].n}</span>${S.range===0?`<span class="wtag">${winLabel(k)}</span>`:''}${s.over?`<span class="tag" style="color:var(--over);background:color-mix(in srgb,var(--over) 16%,transparent)">Too much</span>`:''}${NUT[k].opt?'<span class="tag">Optional</span>':''}<br><span class="nv num">${k==='kcal'?EN(D[0])+' of '+EN(T.kcal):fmt(D[i])+' of '+fmt(T[k])+' '+NUT[k].u}</span></span><span class="np" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="stack">${segs}</span></button>`}).join('')}</div></div>`).join('')+(rr>1&&!fvAvg?'':fvCard(S.plan,fvAvg));
+ $('nutrients').insertAdjacentHTML('beforeend',fsCard());
  $('nutrients').querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>selectNut(b.dataset.sel));
  if($('n-fix'))$('n-fix').onclick=()=>{S.nsub='imp';render();scrollTo({top:0})};
  document.querySelectorAll('[data-plants]').forEach(b=>b.onclick=openPlants);
@@ -1524,6 +1548,7 @@ function planTips(T,D){
  if(D[1]>0&&lp/D[1]<.35)out.push({w:0,t:'<b>Few legumes or soy today.</b> Grains are low in lysine, an essential amino acid. Two to three portions of legumes or soy a day cover it.'});
  if(ids.has('tofu'))out.push({w:0,t:'<b>Tofu calcium varies a lot.</b> Tofu set with calcium sulfate (E516) has several times more than nigari tofu. Check the label.'});
  if(D[2]>60)out.push({w:0,t:'<b>Lots of fiber.</b> Fine if you are used to it; drink enough water.'});
+ {const g=fsDay(P),L=fsLim(T);if(g>L){const src=fsSources([S.date]);out.push({w:1,t:`<b>Free sugar is high ${S.date===TODAY?'today':'this day'}:</b> about ${Math.round(g)} g, the limit is ${L} g.${src.length?' Most comes from '+src.map(esc).join(', ')+'.':''} Whole fruit instead of juice or sweets keeps the taste with less free sugar.`})}}
  out.forEach(t=>{if(t.a)t.a=t.a.filter(x=>!(x[1].fid&&isDis(x[1].fid)))});
  return out.sort((a,b)=>b.w-a.w);
 }
@@ -1579,6 +1604,7 @@ function bindFg(v){v.querySelectorAll('[data-fgf]').forEach(b=>b.onclick=()=>{FG
 function weekTips(T){
  const out=[],R7=rangeStats(7),R30=rangeStats(30);if(R7.L.length<3)return out;
  fgLow().forEach(x=>{const G=FG[x.k];out.push({w:1,t:`<b>No ${G.n} in your last ${x.miss} logged days.</b> ${G.why} Easy options: ${fgSug(x.k).map(id=>FM[id].n.split(',')[0].toLowerCase()).join(', ')}.`})});
+ {let sum=0;R7.L.forEach(d=>sum+=fsDay(S.days[d]));const av=R7.L.length?sum/R7.L.length:0,L=fsLim(T);if(R7.L.length>=3&&av>L)out.push({w:1,t:`<b>This week free sugar averages ${Math.round(av)} g a day,</b> above the ${L} g limit. Main sources: ${fsSources(R7.L).map(esc).join(', ')||'sweet products'}.`})}
  const np=plantSet(R7.dates).size;if(np<20)out.push({w:0,t:`<b>${np} different plants this week.</b> Aim for 30: swap your grain once (buckwheat, quinoa), try a new bean, add seeds or frozen berries.`});
  ALLK.forEach(k=>{const i=K.indexOf(k),p=R7.avg[i]/T[k]*100;if(p>=80)return;
   const lowDays=R7.L.filter(d=>planV(S.days[d])[i]/T[k]<.9).length;
@@ -1602,6 +1628,12 @@ const OFF_FIELDS='ingredients,ingredients_text,ingredients_text_en,nutriscore_gr
 const GUESS=[['apple-juice','applejuice'],['apfelsaft','applejuice'],['beetroot-juice','beetjuice'],['beet-juice','beetjuice'],['orange-juice','u09206'],['carrot-juice','u11655'],['tomato-juice','u11886'],['grape-juice','grapejuice'],['multifruit','multijuice'],['fruit-juices','multijuice'],['tofu','tofu'],['tempeh','tempeh'],['seitan','seitan'],['textured','tvp'],['soy-chunk','tvp'],['sojaschnetzel','tvp'],['soja-schnetzel','tvp'],['yogurt','soyyog'],['yoghurt','soyyog'],['joghurt','soyyog'],['soy-milk','soymilk'],['soy-drink','soymilk'],['soy-based-drink','soymilk'],['oat-milk','oatmilk'],['oat-drink','oatmilk'],['oat-based-drink','oatmilk'],['plant-based-milk','soymilk'],['granola','granola'],['muesli','granola'],['rolled-oat','oats'],['oat-flake','oats'],['haferflocken','oats'],['red-lentil','redlentils'],['lentil','lentils'],['chickpea','chickpeas'],['hummus','hummus'],['kidney','kidney'],['black-bean','blackbeans'],['white-bean','whitebeans'],['bean','kidney'],['peanut-butter','pb'],['tortilla','tortilla'],['wrap','tortilla'],['bread','bread'],['walnut','walnuts'],['almond','almonds'],['cashew','cashews'],['pumpkin-seed','pumpkin'],['chia','chia'],['flax','flax'],['linseed','flax'],['meat-analogue','mince'],['meat-substitute','mince'],['minced','mince'],['quinoa','quinoa'],['buckwheat','buckwheat'],['brown-rice','brownrice'],['rice','rice'],['noodle','noodles'],['pasta','wwpasta'],['coconut-milk','coco'],['passata','passata'],['tomato','passata'],['nutritional-yeast','nooch']];
 function guessGeneric(p){const hay=[...(p.categories_tags||[]),(p.product_name||'').toLowerCase().replace(/\s+/g,'-')].join(' ');const m=GUESS.find(([w])=>hay.includes(w));return m?m[1]:''}
 const OFFMAP=[['kcal','energy-kcal',1],['p','proteins',1],['fib','fiber',1],['ca','calcium',1e3],['fe','iron',1e3],['zn','zinc',1e3],['mg','magnesium',1e3],['c','vitamin-c',1e3],['b12','vitamin-b12',1e6],['d','vitamin-d',1e6],['iod','iodine',1e6],['se','selenium',1e6],['fol','vitamin-b9',1e6],['a','vitamin-a',1e6],['k','vitamin-k',1e6],['ala','alpha-linolenic-acid',1],['pot','potassium',1e3]];
+/* free sugar from a product: label sugar counts if sugar, syrup or juice is added, or the product is a juice; sugar only from fruit, vegetables or oats does not */
+const ADDSUG=/sugar|syrup|dextrose|glucose|fructose|sucrose|saccharose|invert|agave|molasses|treacle|caramel|honey|juice|concentrate|zucker|sirup|saft|konzentrat|suiker|siroop|maltose|malt extract|rice syrup|coconut blossom|kokosbl/;
+function offFreeSugar(p){const n=p.nutriments||{},sg=parseFloat(n['sugars_100g']);if(!isFinite(sg))return null;
+ const ids=(p.ingredients||[]).map(x=>String(x.id||'')).join(' ')+' '+String(p.ingredients_text||'').toLowerCase()+' '+String(p.ingredients_text_en||'').toLowerCase();
+ const juice=/juice|saft|nectar/.test((p.categories_tags||[]).join(' '));
+ return +(juice||ADDSUG.test(ids)?sg:0).toFixed(1)}
 function fromOFF0(code,p){
  const n=p.nutriments||{},lab={};
  OFFMAP.forEach(([k,key,f])=>{const x=parseFloat(n[key+'_100g']);if(isFinite(x))lab[k]=+(x*f).toFixed(k==='b12'||k==='d'?2:1)});
@@ -1609,7 +1641,7 @@ function fromOFF0(code,p){
  const tags=p.ingredients_analysis_tags||[],labels=p.labels_tags||[];
  const vegan=labels.includes('en:vegan')||tags.includes('en:vegan')?'vegan':tags.includes('en:non-vegan')?'no':'unknown';
  return {code,n:[p.brands&&p.brands.split(',')[0],p.product_name||p.product_name_en].filter(Boolean).join(' ')||'Product '+code,img:p.image_front_small_url||'',
-  lab,vegan,base:guessGeneric(p)||'',ingx:parseIng(p.ingredients),pack:Math.round(+p.product_quantity)||'',por:Math.round(+p.serving_quantity)||'',found:true};
+  lab,vegan,base:guessGeneric(p)||'',fs:offFreeSugar(p),ingx:parseIng(p.ingredients),pack:Math.round(+p.product_quantity)||'',por:Math.round(+p.serving_quantity)||'',found:true};
 }
 /* ---------- ingredients from Open Food Facts: language independent taxonomy ids (en:oat-flakes) mapped to Vegful foods ---------- */
 const INGMAP=[[/apple juice/,'applejuice'],[/(beet|beetroot) juice/,'beetjuice'],[/orange juice/,'u09206'],[/carrot juice/,'u11655'],[/tomato juice/,'u11886'],[/grape juice/,'grapejuice'],[/pomegranate juice/,'u09442'],[/grapefruit juice/,'u09128'],[/lemon juice/,'u09152'],[/lime juice/,'u09160'],[/prune juice/,'u09294'],[/juice|nectar/,null],[/nutritional yeast|yeast flake|inactive (dried )?yeast|deactivated yeast|nahrhefe/,'nooch'],[/black pepper|white pepper|pepper powder|peppercorn/,null],[/salt|sugar|syrup|water|flavou?r|aroma|extract|vinegar|starch|thickener|acid|emulsifier|lecithin|gum|pectin|vitamin|calcium|iron|zinc|iodine|mineral|spice|herb mix/,null],[/oat (drink|milk|base)/,null],[/soya? (drink|milk|base)/,'u16120'],[/sweet potato/,'sweetpotato'],[/potato/,'potato'],[/whole ?grain oat|oat flake|rolled oat|^oats?$|oat bran|oatmeal|oat flour|oats/,'oats'],[/buckwheat/,'buckwheat'],[/quinoa/,'quinoa'],[/millet/,'u20031'],[/barley/,'u20005'],[/spelt/,'u20140'],[/\brye\b/,'u20063'],[/brown rice|whole ?grain rice/,'brownrice'],[/rice flour/,'u20061'],[/rice noodle/,'ricenoodles'],[/rice/,'rice'],[/wheat gluten|seitan/,'seitan'],[/whole ?(grain|meal) wheat|wholemeal|whole wheat/,'u20080'],[/wheat|flour|semolina/,'u20481'],[/corn flour|maize flour|cornmeal|polenta/,'u20016'],[/sweetcorn|sweet corn|^corn$|^maize$/,'corn'],[/cashew/,'cashews'],[/almond/,'almonds'],[/walnut/,'walnuts'],[/hazelnut/,'u12120'],[/brazil/,'brazil'],[/pistachio/,'u12151'],[/pecan/,'u12142'],[/macadamia/,'u12131'],[/peanut butter|peanut paste/,'pb'],[/peanut/,'u16087'],[/coconut (milk|cream)/,'coco'],[/coconut oil/,'u04047'],[/pumpkin seed/,'pumpkin'],[/sunflower oil/,'u04060'],[/sunflower/,'sunflower'],[/linseed|flax/,'flax'],[/chia/,'chia'],[/hemp/,'hemp'],[/tahini|sesame paste/,'tahini'],[/sesame/,'u12023'],[/rapeseed|canola/,'rapeseed'],[/olive oil/,'olive'],[/tofu/,'tofu'],[/tempeh/,'tempeh'],[/soya? protein|textured soy|soya? flour|soya? granule/,'tvp'],[/soy sauce|tamari/,'soysauce'],[/miso/,'miso'],[/soya? ?beans?|edamame/,'edamame'],[/red lentil/,'redlentils'],[/lentil/,'lentils'],[/chickpea flour|gram flour/,'u16157'],[/chickpea/,'chickpeas'],[/black bean/,'blackbeans'],[/kidney/,'kidney'],[/pinto/,'u16044'],[/white bean|cannellini|haricot|navy bean/,'whitebeans'],[/split pea/,'u16085'],[/green bean/,'greenbeans'],[/pea protein|^peas?$|garden pea|green pea/,'peas'],[/broccoli/,'broccoli'],[/cauliflower/,'cauliflower'],[/carrot/,'carrots'],[/spinach/,'spinach'],[/kale/,'kale'],[/brussels/,'brussels'],[/red pepper|bell pepper|sweet pepper|^peppers?$/,'pepper'],[/tomato (paste|puree|concentrate|sauce)|passata/,'passata'],[/tomato/,'tomatoes'],[/mushroom/,'mushrooms'],[/beet/,'beetroot'],[/sauerkraut/,'sauerkraut'],[/onion/,'u11282'],[/garlic/,'u11215'],[/ginger/,'u11216'],[/zucchini|courgette/,'u11477'],[/leek/,'u11246'],[/celery/,'u11143'],[/cabbage/,'u11109'],[/eggplant|aubergine/,'u11209'],[/asparagus/,'u11011'],[/avocado/,'avocado'],[/parsley/,'u11297'],[/strawberr/,'strawberries'],[/raspberr/,'u09302'],[/blueberr/,'u09050'],[/cranberr/,'u09078'],[/berr/,'berries'],[/apple/,'apple'],[/banana/,'banana'],[/mango/,'mango'],[/orange/,'orange'],[/kiwi/,'kiwi'],[/pineapple/,'u09266'],[/\bpears?\b/,'u09252'],[/raisin|sultana/,'u09298'],[/\bdates?\b/,'dates'],[/apricot/,'apricots'],[/\bfigs?\b/,'u09094'],[/prune|plum/,'u09291'],[/cherr/,'u09070'],[/lemon/,'u09152'],[/\blime/,'u09160'],[/cocoa|chocolate/,'darkchoc'],[/seaweed|nori|wakame|kelp/,'nori']];
@@ -1695,6 +1727,7 @@ function renderScan(){
    <input type="search" id="rv-bq" placeholder="Search, e.g. apple juice, oats, tofu" autocomplete="off"><div id="rv-bres"></div></div>
   <div><div class="lbl" style="margin-bottom:6px">Per 100 g, from the label <span style="text-transform:none;letter-spacing:0;font-weight:400">(green = filled from the label)</span></div>
   <div class="rvf">${RVF.map(([k,l])=>`<label${P.lab[k]!=null?' class="lab"':''}>${l}<input id="rv-${k}" type="number" inputmode="decimal" step="any" value="${P.lab[k]!=null?P.lab[k]:''}" placeholder="${EV?fmt(EV[K.indexOf(k)]):''}"></label>`).join('')}</div></div>
+  <div class="rvf"><label class="full">Free sugar g per 100 g<input id="rv-fs" type="number" inputmode="decimal" step="any" value="${P.fs!=null?P.fs:''}" placeholder="0"><small class="cap" style="display:block;font-weight:400">Sugar from the label if sugar, syrup or juice is added. Leave 0 if it comes only from fruit, vegetables or oats.</small></label></div>
   <div class="rvf"><label>Pack size g<input id="rv-pack" type="number" inputmode="numeric" value="${P.pack}"></label><label>Your portion g<input id="rv-por" type="number" inputmode="numeric" value="${P.por||(base?base.por:100)}"></label></div>
   <p class="muted" style="font-size:12px;margin:0">Empty fields use ${useI?'the estimate from the ingredients':'the similar food\'s values'}. Product data from Open Food Facts (ODbL). Check it against your pack.</p>
   <button class="btn primary" type="button" id="rv-save" style="padding:10px;font-size:15px">${slot?'Save and add to '+slot.n:'Save to My foods'}</button><p class="scanstat" id="rv-err" style="margin:0;color:var(--low)"></p></div>`;
@@ -1711,7 +1744,7 @@ function renderScan(){
   K.forEach((k,i)=>{const el=$('rv-'+k);if(el&&el.value!=='')v[i]=+el.value;else if((useI||bf)&&v[i]>0&&k!=='kcal')est.push(k)});
   if(!(v[0]>0)){$('rv-err').textContent='Enter the energy (kcal) from the label.';return}
   const id='c_'+(P.code||Date.now().toString(36));
-  const old0=S.custom.find(x=>x.id===id);const c={id,n:name,bc:P.code,v,est,ing:P.ing&&P.ing.length?P.ing:undefined,pack:+$('rv-pack').value||0,por:+$('rv-por').value||100,img:P.img||(old0&&old0.img)||undefined,ph:(old0&&old0.img===P.img&&old0.ph)||undefined};
+  const old0=S.custom.find(x=>x.id===id);const fsv=parseFloat(String(($('rv-fs')||{}).value||'').replace(',','.'));const c={id,n:name,bc:P.code,fs:fsv>=0?fsv:undefined,v,est,ing:P.ing&&P.ing.length?P.ing:undefined,pack:+$('rv-pack').value||0,por:+$('rv-por').value||100,img:P.img||(old0&&old0.img)||undefined,ph:(old0&&old0.img===P.img&&old0.ph)||undefined};
   S.custom=S.custom.filter(x=>x.id!==id);S.custom.push(c);registerFood(c);
   if(SC.slot)addFood(SC.slot,id,c.por);else toast(`Saved "${name}" to My foods`);closeScan();render();setTimeout(()=>{try{photoFill()}catch(e){}},50);
  };
@@ -1776,7 +1809,7 @@ function renderScanTab(){
 function bindST(P){
  const nx=()=>{ST={state:'cam',prod:null,drawn:''};renderScanTab();scrollTo({top:0})};
  if($('st-next'))$('st-next').onclick=nx;
- const rv=()=>{SC={slot:null,stage:'review',prod:{code:P.code,n:P.n||'',lab:Object.assign({},P.lab||{}),vegan:P.vegan,base:P.base||'',pack:P.pack||'',por:P.por||'',img:P.img||'',found:!!P.found,ing:P.ing||[],share:P.share||0,src:P.src||'base',unk:P.unk||[]},msg:''};const d=$('scan');renderScan();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}};
+ const rv=()=>{SC={slot:null,stage:'review',prod:{code:P.code,fs:P.fs,n:P.n||'',lab:Object.assign({},P.lab||{}),vegan:P.vegan,base:P.base||'',pack:P.pack||'',por:P.por||'',img:P.img||'',found:!!P.found,ing:P.ing||[],share:P.share||0,src:P.src||'base',unk:P.unk||[]},msg:''};const d=$('scan');renderScan();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}};
  if($('st-save'))$('st-save').onclick=rv;if($('st-label'))$('st-label').onclick=rv;
 }
 $('scan').addEventListener('close',()=>{if(S.view==='scan'&&ST.state==='res'){ST.drawn='';renderScanTab()}});
@@ -2323,7 +2356,8 @@ function repDayOps(R,T,W,P,FONT){const m=document.createElement('canvas').getCon
    ops.push({gap:12,t:lab,s:24,w:700,c:'acc',h:30});
    wrap(sl.it.map(([id,g])=>nm(id)+' '+Math.round(g)+' g').join(', '),26,500,W-2*P).forEach(l=>ops.push({gap:0,t:l,s:26,w:500,h:34}))});
   const su=(S.sups||[]).filter(x=>sNuts(x).some(k=>sDay(x,k,d,T)>0)).map(x=>sName(x)+(x.freq!=='d'&&(x.takes||[]).includes(d)?' (taken)':''));
-  const wt=WON()?wTotal(p):0;
+  const wt=WON()?wTotal(p):0,fsg=fsDay(p);
+  if(fsg>fsLim(T))ops.push({gap:6,t:`Free sugar ${Math.round(fsg)} g, above the ${fsLim(T)} g limit`,s:24,w:600,c:'low',h:32});
   if(su.length||wt)ops.push({gap:10,t:[su.length?'Supplements: '+su.join(', '):'',wt?'Water: '+wL(wt):''].filter(Boolean).join(' · '),s:24,w:500,c:'muted',h:32})});
  return ops}
 function drawReport(n){const {T,R,L,D,fg,sups,score}=repData(n);
@@ -2331,7 +2365,7 @@ function drawReport(n){const {T,R,L,D,fg,sups,score}=repData(n);
  const C={bg:'#F8FAF5',ink:'#1F2E25',muted:'#5C6B60',line:'#DFE6DA',track:'#E7EDE3',ok:'#2E7D4F',mid:'#B4561A',low:'#B83A2A',over:'#9C3B8A',acc:'#2D5A3F',hero:'#2D5A3F'};
  const nk=['b12','d','iod','ca','fe','zn','se','ala','c','fol','a','k','mg','pot','epa'].filter(k=>NUT[k]);
  const dops=REP.days?repDayOps(R,T,W,P,FONT):[];const dH=dops.length?110+dops.reduce((a,o)=>a+o.gap+o.h,0):0;
- const H=P+300+(HK()?2:3)*70+90+nk.length*58+90+Math.ceil(FGK.length/2)*58+90+Math.max(1,sups.length)*44+200+dH;
+ const H=P+350+(HK()?2:3)*70+90+nk.length*58+90+Math.ceil(FGK.length/2)*58+90+Math.max(1,sups.length)*44+200+dH;
  const c=document.createElement('canvas'),SC=Math.min(1,14000/H);c.width=Math.round(W*SC);c.height=Math.round(H*SC);const g=c.getContext('2d');g.scale(SC,SC);/* phones limit canvas size; very long reports get a little smaller */
  const t=(s,x,y,o)=>{o=o||{};g.font=`${o.w||600} ${o.s||30}px ${FONT}`;g.fillStyle=o.c||C.ink;g.textAlign=o.a||'left';g.textBaseline='alphabetic';g.fillText(s,x,y)};
  const rr=(x,y,w,h,r,col)=>{g.fillStyle=col;g.beginPath();g.roundRect?g.roundRect(x,y,w,h,r):g.rect(x,y,w,h);g.fill()};
@@ -2348,6 +2382,7 @@ function drawReport(n){const {T,R,L,D,fg,sups,score}=repData(n);
  const macro=(k,lab,unit)=>{const i=K.indexOf(k),v=D[i],p=v/T[k]*100;y+=46;t(lab,P,y,{s:28});t(`${k==='kcal'?Math.round(v).toLocaleString('en'):fmt(v)} / ${k==='kcal'?Math.round(T[k]).toLocaleString('en'):Math.round(T[k])} ${unit}`,W-P,y,{s:28,a:'right',c:C.muted,w:600});bar(P,y+12,W-2*P,p,k==='kcal'?(p>115?C.mid:p>=85?C.ok:C.mid):p>=90?C.ok:p>=50?C.mid:C.low);y+=24};
  if(!HK())macro('kcal','Energy','kcal');macro('p','Protein','g');macro('fib','Fiber','g');
  {const ch=L.filter(d=>S.days[d].act&&+S.days[d].act!==+S.prof.act),up=ch.filter(d=>+S.days[d].act>+S.prof.act).length,dn=ch.length-up;y+=50;
+  {let fsum=0;L.forEach(d=>fsum+=fsDay(S.days[d]));const fav=L.length?fsum/L.length:0,FL=fsLim(T);t(`Free sugar: ${Math.round(fav)} g a day · limit ${FL} g`,P,y,{s:26,w:600,c:fav>FL?C.low:C.muted});y+=40}
   t(`Activity: usually ${actName(S.prof.act).toLowerCase()}${ch.length?` · ${up?up+(up===1?' day':' days')+' more active':''}${up&&dn?', ':''}${dn?dn+(dn===1?' day':' days')+' less active':''}`:''}`,P,y,{s:26,w:600,c:C.muted})}
  y+=80;t('Nutrients',P,y,{s:34,w:800});t('✓ covered   ~ close   ! low',W-P,y,{s:24,w:600,c:C.muted,a:'right'});y+=16;
  nk.forEach(k=>{const s=st(k);y+=58;g.fillStyle=C.line;g.fillRect(P,y-42,W-2*P,2);
@@ -2361,7 +2396,7 @@ function drawReport(n){const {T,R,L,D,fg,sups,score}=repData(n);
  if(!sups.length){y+=44;t('None logged.',P,y,{s:28,c:C.muted})}
  sups.forEach(s=>{y+=44;t(`${sName(s)}: ${sSched(s).toLowerCase()}, ${sDose(s)}`,P,y,{s:28})});
  if(dops.length){y+=90;t('Day by day',P,y,{s:34,w:800});t('newest first',W-P,y,{s:24,w:600,c:C.muted,a:'right'});y+=10;
-  dops.forEach(o=>{y+=o.gap;if(o.rule){g.fillStyle=C.line;g.fillRect(P,y-4,W-2*P,2);y+=6}y+=o.h;t(o.t,P,y-8,{s:o.s,w:o.w,c:o.c==='muted'?C.muted:o.c==='acc'?C.acc:C.ink});if(o.right)t(o.right,W-P,y-8,{s:24,w:600,c:C.muted,a:'right'})})}
+  dops.forEach(o=>{y+=o.gap;if(o.rule){g.fillStyle=C.line;g.fillRect(P,y-4,W-2*P,2);y+=6}y+=o.h;t(o.t,P,y-8,{s:o.s,w:o.w,c:o.c==='muted'?C.muted:o.c==='acc'?C.acc:o.c==='low'?C.low:C.ink});if(o.right)t(o.right,W-P,y-8,{s:24,w:600,c:C.muted,a:'right'})})}
  y+=70;g.fillStyle=C.line;g.fillRect(P,y-30,W-2*P,2);
  t('Averages over the logged days. Values are estimates from typical food data and labels.',P,y+4,{s:22,w:500,c:C.muted});
  t('A planning aid, not medical advice. Targets: EFSA values, adjusted for vegan eating.',P,y+36,{s:22,w:500,c:C.muted});
