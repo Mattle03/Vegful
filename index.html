@@ -952,7 +952,10 @@ let S;
 let raw0=null;try{const raw=JSON.parse(localStorage.getItem('vpc2')||'null');raw0=raw;S=structuredClone(DEF);if(raw){Object.assign(S,raw);S.prof=Object.assign({},DEF.prof,raw.prof||{});S.sup=Object.assign({},DEF.sup,raw.sup||{});if(!(+S.prof.age>=18))S.prof.age=DEF.prof.age;if(S.prof.pg==='dge')S.prof.pg='base';Object.keys(S.sup).forEach(k=>{const v=S.sup[k];S.sup[k]=(v&&v!=='0')?'1':'0'})}}catch(e){S=structuredClone(DEF)}
 const save=()=>{try{localStorage.setItem('vpc2',JSON.stringify(S,function(k,v){return this===S&&k==='plan'?undefined:v}))}catch(e){}};
 if(!Array.isArray(S.custom))S.custom=[];
-function registerFood(c){const f={id:c.id,n:c.n,cat:'My foods',por:c.por,parts:c.parts,cook:c.cook,v:K.map((k,i)=>+(c.v||[])[i]||0),pl:c.pack?`pack ${c.pack} g`:'',pack:c.pack,est:c.est,bc:c.bc,ing:c.ing,img:c.img,ph:c.ph,fs:c.fs};const old=F.findIndex(x=>x.id===f.id);if(old>=0)F[old]=f;else F.push(f);FM[f.id]=f;return f}
+/* removing a product hides it from lists and search; days you already logged keep it */
+function hideCustom(id){const c=S.custom.find(x=>x.id===id);if(!c)return;const used=Object.values(S.days).some(p=>mealKeys(p).some(k=>p[k].it.some(x=>x[0]===id)))||Object.values(S.dishes).some(d=>(d.it||[]).some(x=>x[0]===id));
+ if(used){c.hide=1;registerFood(c)}else{S.custom=S.custom.filter(x=>x.id!==id);const i=F.findIndex(x=>x.id===id);if(i>=0)F.splice(i,1);delete FM[id]}S.recentFoods=(S.recentFoods||[]).filter(x=>x!==id);S.favFoods=(S.favFoods||[]).filter(x=>x!==id)}
+function registerFood(c){const f={id:c.id,n:c.n,cat:'My foods',por:c.por,parts:c.parts,cook:c.cook,v:K.map((k,i)=>+(c.v||[])[i]||0),pl:c.pack?`pack ${c.pack} g`:'',pack:c.pack,est:c.est,bc:c.bc,ing:c.ing,img:c.img,ph:c.ph,fs:c.fs,hide:c.hide};const old=F.findIndex(x=>x.id===f.id);if(old>=0)F[old]=f;else F.push(f);FM[f.id]=f;return f}
 S.custom.forEach(registerFood);
 /* product photos: keep a small copy on the phone so icons work offline; older scans get their photo from the scan history */
 function thumbOf(url){return new Promise((ok,bad)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{try{const Z=96,c=document.createElement('canvas');c.width=c.height=Z;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,Z,Z);const sc=Math.max(Z/im.width,Z/im.height);g.drawImage(im,(Z-im.width*sc)/2,(Z-im.height*sc)/2,im.width*sc,im.height*sc);ok(c.toDataURL('image/jpeg',.8))}catch(e){bad(e)}};im.onerror=bad;im.src=url})}
@@ -987,6 +990,8 @@ if(!S.date)S.date=TODAY;
 if(![0,1,7,30].includes(S.range))S.range=0;
 if(!S.r7){S.range=7;S.r7=1}
 if(!S.rmix){S.range=0;S.rmix=1}
+/* copy only the meals of a day; water, activity and other per day data of the target day stay */
+function copyMeals(src,dst){mealKeys(dst).forEach(k=>delete dst[k]);mealKeys(src).forEach(k=>{dst[k]=JSON.parse(JSON.stringify(src[k]))});['b','l','d','s'].forEach(k=>{if(!dst[k])dst[k]={t:'',it:[]}});return dst}
 function setDate(k){S.date=k;if(!S.days[k])S.days[k]=emptyPlan();S.plan=S.days[k];rebuildSlots()}
 setDate(S.date);
 const logged=p=>p&&mealKeys(p).some(k=>p[k].it.length);
@@ -1436,7 +1441,7 @@ ${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[
  $('go-sup').onclick=openSupD;
  $('d-prev').onclick=()=>{setDate(shift(S.date,-1));render()};$('d-next').onclick=()=>{setDate(shift(S.date,1));render()};
  if($('d-today'))$('d-today').onclick=()=>{setDate(TODAY);render()};
- if($('d-copy'))$('d-copy').onclick=()=>{S.days[S.date]=JSON.parse(JSON.stringify(S.days[prev]));setDate(S.date);render()};
+ if($('d-copy'))$('d-copy').onclick=()=>{copyMeals(S.days[prev],S.plan);setDate(S.date);render()};
  document.querySelectorAll('[data-plants]').forEach(b=>b.onclick=openPlants);
  if($('go-week'))$('go-week').onclick=()=>{S.range=7;S.nsub='over';go('nutr')};
  if($('t-ring'))$('t-ring').onclick=()=>{S.nsub='over';go('nutr')};
@@ -1881,11 +1886,11 @@ function bindST(P){
 }
 $('scan').addEventListener('close',()=>{if(S.view==='scan'&&ST.state==='res'){ST.drawn='';renderScanTab()}});
 function renderProducts(){
- $('prof-prod').innerHTML=S.custom.length?S.custom.map(c=>`<div class="prodrow"><span class="mico">${fIcon(c.id)}</span><button class="nmbtn" type="button" data-openf="${c.id}"><span style="font-weight:600">${esc(c.n)}</span><span class="muted num" style="font-size:12px">${(FM[c.id]&&FM[c.id].parts)?'Mix · ':''}${HK()?'':Math.round(FM[c.id]?FM[c.id].v[0]:0)+' kcal · '}${fmt(FM[c.id]?FM[c.id].v[1]:0)} g protein${c.pack?' · pack '+c.pack+' g':''}</span></button><button class="btn" type="button" data-delprod="${c.id}">Remove</button></div>`).join(''):'<p class="muted" style="margin:0;font-size:13px">None yet.</p>';
+ const CV=S.custom.filter(c=>!c.hide);$('prof-prod').innerHTML=CV.length?CV.map(c=>`<div class="prodrow"><span class="mico">${fIcon(c.id)}</span><button class="nmbtn" type="button" data-openf="${c.id}"><span style="font-weight:600">${esc(c.n)}</span><span class="muted num" style="font-size:12px">${(FM[c.id]&&FM[c.id].parts)?'Mix · ':''}${HK()?'':Math.round(FM[c.id]?FM[c.id].v[0]:0)+' kcal · '}${fmt(FM[c.id]?FM[c.id].v[1]:0)} g protein${c.pack?' · pack '+c.pack+' g':''}</span></button><button class="btn" type="button" data-delprod="${c.id}">Remove</button></div>`).join(''):'<p class="muted" style="margin:0;font-size:13px">None yet.</p>';
  $('prof-prod').querySelectorAll('[data-openf]').forEach(b=>b.onclick=()=>openFood(b.dataset.openf));
  $('prof-prod').querySelectorAll('[data-delprod]').forEach(b=>b.onclick=()=>{const id=b.dataset.delprod;
   if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Tap again to remove';return}
-  S.custom=S.custom.filter(x=>x.id!==id);Object.values(S.days).forEach(p=>mealKeys(p).forEach(mk=>{const sl=p[mk];sl.it=sl.it.filter(x=>x[0]!==id)}));const i=F.findIndex(x=>x.id===id);if(i>=0)F.splice(i,1);delete FM[id];render()});
+  hideCustom(id);render()});
 }
 $('prof-scan').onclick=()=>openScan(null,'scan');
 
@@ -1940,7 +1945,7 @@ function renderPicker(){
   let fs;
   if(fm==='recent')fs=S.recentFoods.map(id=>FM[id]).filter(f=>f&&mq(f));
   else if(fm==='fav')fs=S.favFoods.map(id=>FM[id]).filter(f=>f&&mq(f));
-  else if(fm==='mine')fs=F.filter(f=>f.cat==='My foods'&&mq(f));
+  else if(fm==='mine')fs=F.filter(f=>f.cat==='My foods'&&!f.hide&&mq(f));
   else{fs=F.filter(f=>!f.hide&&(PK.cat==='All'||f.cat===PK.cat)&&mq(f));if(!q)fs=fs.filter(f=>f.src!=='usda'||f.common);
    if(q)fs.sort((a,b)=>fscore(a,q)-fscore(b,q)||((a.src==='usda'&&!a.common)-(b.src==='usda'&&!b.common))||a.n.toLowerCase().indexOf(q)-b.n.toLowerCase().indexOf(q)||a.n.length-b.n.length)}
   if(PK.part)fs=fs.filter(f=>f.id!==PK.part&&!f.parts);
@@ -2005,7 +2010,7 @@ function renderFood(){
  if($('fd-cook'))$('fd-cook').onchange=e=>{f.cook=e.target.value==='1';const c=S.custom.find(x=>x.id===f.id);if(c)c.cook=f.cook;render()};
  if($('fd-reset'))$('fd-reset').onclick=()=>{delete S.fedit[f.id];applyEdits();render()};
  if($('fd-del'))$('fd-del').onclick=e=>{if(e.target.dataset.sure!=='1'){e.target.dataset.sure='1';e.target.textContent='Tap again to delete';return}
-  S.custom=S.custom.filter(x=>x.id!==f.id);Object.values(S.days).forEach(p=>mealKeys(p).forEach(mk=>{const sl=p[mk];sl.it=sl.it.filter(x=>x[0]!==f.id)}));const i=F.findIndex(x=>x.id===f.id);if(i>=0)F.splice(i,1);delete FM[f.id];closeFood();render()};
+  hideCustom(f.id);closeFood();render()};
 }
 
 /* ---------- food guide ---------- */
@@ -2186,7 +2191,7 @@ $('bk-copy').onclick=async()=>{save();try{await navigator.clipboard.writeText(ba
 $('bk-file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const o=JSON.parse(await f.text());if(!o||!o.days)throw 0;
  const n=Object.keys(o.days).length;delete o.app;delete o.v;delete o.saved;S=Object.assign(structuredClone(DEF),o);S.custom=S.custom||[];S.custom.forEach(registerFood);setDate(TODAY);render();$('bk-msg').textContent=`Restored ${n} days.`}catch(err){$('bk-msg').textContent='That file is not a Vegful backup.'}};
 $('re-onb').onclick=()=>{S.onb=0;OS=0;render()};
-$('reset-day').onclick=()=>{S.days[S.date]=structuredClone(DEF.plan);setDate(S.date);S.view='today';render();scrollTo({top:0})};
+$('reset-day').onclick=()=>{copyMeals(structuredClone(DEF.plan),S.plan);setDate(S.date);S.view='today';render();scrollTo({top:0})};
 /* ---------- swaps ---------- */
 const GROUPS=[
  {m:'kcal',ids:['rice','brownrice','quinoa','buckwheat','wwpasta','hppasta','noodles','potato','sweetpotato']},
