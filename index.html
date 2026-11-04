@@ -1173,7 +1173,7 @@ function sStatus(s,d,T){
  return {ok:false,t:agoTxt(ago)[0].toUpperCase()+agoTxt(ago).slice(1)+' · next in '+(N-ago)+(N-ago===1?' day':' days'),act:d<=TODAY?['take','Taken']:null}}
 function supCard(isT){const T=targets(),d=S.date;const rows=(S.sups||[]).map(s=>({s,st:sStatus(s,d,T)})).filter(x=>x.st);
  if(!rows.length)return `<button class="suprow2" type="button" id="go-sup"><span class="micon" style="--c:var(--s5)">${ICON.x}</span><span style="flex:1;min-width:0"><span class="mslot" style="display:block">Supplements</span><span style="font-weight:700">None set</span></span>${CHEV}</button>`;
- return `<div class="card supcard"><div class="card-head" style="margin-bottom:10px"><div><h2>Supplemented</h2><p class="cap">${isT?'Today':'This day'}</p></div><button class="btn sm ghost" type="button" id="go-sup">Edit</button></div>
+ return `<div class="card supcard"><div class="card-head" style="margin-bottom:10px"><div><h2>Supplements</h2><p class="cap">${isT?'Today':'This day'}</p></div><button class="btn sm ghost" type="button" id="go-sup">Edit</button></div>
  ${rows.map(({s,st})=>{const iv=sInterval(s),l=iv?sLast(s,d):null,pun=(s.takes||[]).includes(d),sk=(s.skip||[]).includes(d),fut=d>TODAY;
   const am=s.amt||{},dz=Object.keys(am).length===1&&am.d?Math.round(am.d*40).toLocaleString('en')+' IU':sDose(s)==='normal dose'?'':sDose(s);const info=`${dz?dz+' · ':''}${sSched(s).toLowerCase()}`;
   const when=s.freq==='d'?(sk?'skipped today':pun?'taken today':''):iv?(l?(pun?'next '+fdS(shift(l,sInt(s))):shift(l,sInt(s))<=d?(dayDiff(shift(l,sInt(s)),d)>0?'due since '+dayDiff(shift(l,sInt(s)),d)+(dayDiff(shift(l,sInt(s)),d)===1?' day':' days'):'due today'):'next '+fdS(shift(l,sInt(s)))):'not taken yet'):st.t;
