@@ -1087,7 +1087,7 @@ function sTake(s,k,T){const u=sKind(s),need=T[k]||1,cap=CAP[k]||1;
  const days=Math.max(1,Math.min(cap,N,Math.floor(a/need)));return {days,per:a/days}}
 const sDays=(s,T)=>{const k=sKind(s).cov[0]||sNuts(s)[0];return k?sTake(s,k,T||targets()).days:1};
 const sActive=(s,d)=>s.start<=d&&(!s.end||d<s.end);
-function sDay(s,k,d,T){const t=sTake(s,k,T);
+function sDay(s,k,d,T){if(!sNuts(s).includes(k))return 0;const t=sTake(s,k,T);
  if(s.freq==='d')return sActive(s,d)&&!(s.skip||[]).includes(d)?t.per:0;
  for(const x of (s.takes||[]))if(x<=d&&dayDiff(x,d)<t.days)return t.per;return 0}
 const sLast=(s,d)=>(s.takes||[]).filter(x=>x<=d).sort().pop()||null;
