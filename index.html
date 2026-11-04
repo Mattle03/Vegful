@@ -51,6 +51,22 @@ img{max-width:100%}
   --hg:#2D6A45; --hm:#C2621F; --hl:#B83A2A; --bar:#0F1511; --bar-line:#26302A;
   --s1:#E58A63; --s2:#7FC79A; --s3:#B79BE0; --s4:#E2B460; --s5:#8C9A90;
   --ok:#6FCF94; --mid:#F5A46A; --low:#FF8370; --over:#E58AD3; color-scheme:dark}
+/* color themes: green is the default above; others override the neutral and accent tokens */
+:root[data-acc="purple"]{--bg:#ECE8F1;--surface:#FAF8FC;--surface2:#F1EDF5;--line:#E2DCE9;--ink:#2A2433;--muted:#6A6276;--accent:#5B3F86;--accent-soft:#E3DAF0;--hero:#5B3F86;--hero-muted:#D8CCEA;--hero-sel-ink:#3A2759;--bar-line:#DAD3E3}
+:root[data-acc="blue"]{--bg:#E5EBF1;--surface:#F7F9FC;--surface2:#ECF0F5;--line:#DCE3EB;--ink:#1F2A36;--muted:#5D6875;--accent:#2C5282;--accent-soft:#D6E2F0;--hero:#2C5282;--hero-muted:#C8D7EA;--hero-sel-ink:#1D3557;--bar-line:#D2DBE5}
+:root[data-acc="teal"]{--bg:#E3EEEC;--surface:#F6FAF9;--surface2:#EAF2F0;--line:#D8E6E3;--ink:#1C2E2C;--muted:#5A6B69;--accent:#1F6B66;--accent-soft:#D1E8E5;--hero:#1F6B66;--hero-muted:#C3DEDA;--hero-sel-ink:#134743;--bar-line:#D0DEDB}
+:root[data-acc="rose"]{--bg:#F2E8EA;--surface:#FCF8F9;--surface2:#F5EDEF;--line:#EADDE1;--ink:#33232A;--muted:#74626A;--accent:#8E3B57;--accent-soft:#F1DAE2;--hero:#8E3B57;--hero-muted:#EBCCD7;--hero-sel-ink:#5E2238;--bar-line:#E3D4D9}
+:root[data-acc="amber"]{--bg:#F1EBE3;--surface:#FCFAF6;--surface2:#F5F0E9;--line:#E8E0D5;--ink:#2F261F;--muted:#74685D;--accent:#8A4B1F;--accent-soft:#F1E0CF;--hero:#8A4B1F;--hero-muted:#EBD5C1;--hero-sel-ink:#5C3013;--bar-line:#E0D6CA}
+@media (prefers-color-scheme: dark){:root[data-acc="purple"]:not([data-theme="light"]){--bg:#1C1A22;--surface:#2C2836;--surface2:#36313F;--line:#3D3747;--ink:#EEEAF3;--muted:#B0A8BC;--accent:#C3A9EA;--accent-soft:#3E3550;--hero:#E0D4F2;--hero-ink:#241B33;--hero-muted:#54466C;--hero-sel:#5B3F86;--hero-sel-ink:#FFFFFF;--bar:#121017;--bar-line:#2A2631}}
+:root[data-acc="purple"][data-theme="dark"]{--bg:#1C1A22;--surface:#2C2836;--surface2:#36313F;--line:#3D3747;--ink:#EEEAF3;--muted:#B0A8BC;--accent:#C3A9EA;--accent-soft:#3E3550;--hero:#E0D4F2;--hero-ink:#241B33;--hero-muted:#54466C;--hero-sel:#5B3F86;--hero-sel-ink:#FFFFFF;--bar:#121017;--bar-line:#2A2631}
+@media (prefers-color-scheme: dark){:root[data-acc="blue"]:not([data-theme="light"]){--bg:#171C22;--surface:#26303A;--surface2:#303A45;--line:#36414D;--ink:#E9EEF4;--muted:#A5B2C0;--accent:#93B8E6;--accent-soft:#2F3E50;--hero:#D2E1F2;--hero-ink:#152338;--hero-muted:#3F536B;--hero-sel:#2C5282;--hero-sel-ink:#FFFFFF;--bar:#0F1318;--bar-line:#252D36}}
+:root[data-acc="blue"][data-theme="dark"]{--bg:#171C22;--surface:#26303A;--surface2:#303A45;--line:#36414D;--ink:#E9EEF4;--muted:#A5B2C0;--accent:#93B8E6;--accent-soft:#2F3E50;--hero:#D2E1F2;--hero-ink:#152338;--hero-muted:#3F536B;--hero-sel:#2C5282;--hero-sel-ink:#FFFFFF;--bar:#0F1318;--bar-line:#252D36}
+@media (prefers-color-scheme: dark){:root[data-acc="teal"]:not([data-theme="light"]){--bg:#161E1D;--surface:#25322F;--surface2:#2F3D3A;--line:#354441;--ink:#E8F1EF;--muted:#A3B6B3;--accent:#86CFC7;--accent-soft:#2C4542;--hero:#CDE7E3;--hero-ink:#112826;--hero-muted:#3D5A56;--hero-sel:#1F6B66;--hero-sel-ink:#FFFFFF;--bar:#0E1514;--bar-line:#232E2C}}
+:root[data-acc="teal"][data-theme="dark"]{--bg:#161E1D;--surface:#25322F;--surface2:#2F3D3A;--line:#354441;--ink:#E8F1EF;--muted:#A3B6B3;--accent:#86CFC7;--accent-soft:#2C4542;--hero:#CDE7E3;--hero-ink:#112826;--hero-muted:#3D5A56;--hero-sel:#1F6B66;--hero-sel-ink:#FFFFFF;--bar:#0E1514;--bar-line:#232E2C}
+@media (prefers-color-scheme: dark){:root[data-acc="rose"]:not([data-theme="light"]){--bg:#201A1C;--surface:#33282C;--surface2:#3D3136;--line:#45383D;--ink:#F3EBEE;--muted:#BBA9B0;--accent:#E9A3BB;--accent-soft:#4A3239;--hero:#F1D7E0;--hero-ink:#33141F;--hero-muted:#6A4553;--hero-sel:#8E3B57;--hero-sel-ink:#FFFFFF;--bar:#151012;--bar-line:#2E2427}}
+:root[data-acc="rose"][data-theme="dark"]{--bg:#201A1C;--surface:#33282C;--surface2:#3D3136;--line:#45383D;--ink:#F3EBEE;--muted:#BBA9B0;--accent:#E9A3BB;--accent-soft:#4A3239;--hero:#F1D7E0;--hero-ink:#33141F;--hero-muted:#6A4553;--hero-sel:#8E3B57;--hero-sel-ink:#FFFFFF;--bar:#151012;--bar-line:#2E2427}
+@media (prefers-color-scheme: dark){:root[data-acc="amber"]:not([data-theme="light"]){--bg:#1F1B17;--surface:#322B24;--surface2:#3C342C;--line:#443B32;--ink:#F3EDE6;--muted:#BBAE9F;--accent:#E8B98C;--accent-soft:#4A3A2B;--hero:#F1DECB;--hero-ink:#2E1C0E;--hero-muted:#6B513B;--hero-sel:#8A4B1F;--hero-sel-ink:#FFFFFF;--bar:#15110D;--bar-line:#2E2720}}
+:root[data-acc="amber"][data-theme="dark"]{--bg:#1F1B17;--surface:#322B24;--surface2:#3C342C;--line:#443B32;--ink:#F3EDE6;--muted:#BBAE9F;--accent:#E8B98C;--accent-soft:#4A3A2B;--hero:#F1DECB;--hero-ink:#2E1C0E;--hero-muted:#6B513B;--hero-sel:#8A4B1F;--hero-sel-ink:#FFFFFF;--bar:#15110D;--bar-line:#2E2720}
 *{box-sizing:border-box}
 html,body{background:var(--bg)}
 body{color:var(--ink);font-family:var(--body);font-size:16px;line-height:1.45;margin:0;
@@ -377,6 +393,8 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .onb-nav{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px}
 .onb-nav .btn{min-width:120px}
 .segrow{display:flex;gap:10px}
+.swatches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.swatch{min-width:0;overflow:hidden;display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 10px;gap:8px;border-radius:14px;border:2px solid transparent;background:var(--surface2);font:inherit;font-weight:600;color:var(--ink)}
+.swatch i{width:24px;height:24px;border-radius:50%;background:var(--sw);flex:none;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}.swatch[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
 .actpill{display:flex;align-items:center;justify-content:center;gap:4px;flex-wrap:wrap;margin:12px auto 0;border:0;border-radius:999px;padding:8px 14px;min-height:40px;background:var(--hero-seg);color:var(--hero-ink);font:inherit;font-size:14px}
 .actpill span{color:var(--hero-muted)}.actpill b{font-weight:700}.actpill svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round;opacity:.7}
 .actpill.ch{}.actpill .actu{display:block;width:100%;font-size:12.5px;margin-top:-2px}
@@ -575,6 +593,14 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
         </div>
         <p class="cap" style="margin-top:8px">Switch reference values only if your doctor or dietitian works with another set.</p>
       </details>
+    </div>
+    <div class="card">
+      <h2>Look</h2>
+      <div class="lbl" style="margin:12px 0 6px">Mode</div>
+      <div class="seg sm" id="p-mode"><button type="button" data-mode="auto">Automatic</button><button type="button" data-mode="light">Light</button><button type="button" data-mode="dark">Dark</button></div>
+      <p class="cap" style="margin:-6px 0 0">Automatic follows your phone.</p>
+      <div class="lbl" style="margin:16px 0 8px">Color</div>
+      <div class="swatches" id="p-acc"></div>
     </div>
     <div class="card">
       <h2>Water</h2>
@@ -1120,6 +1146,11 @@ function targets(){
  return Object.assign(T,{kcal,p:(+P.wt||70)*pf,epa:250,pot:ref==='dge'?4000:ref==='nih'?(m?3400:2600):3500});
 }
 const HK=()=>S.prof.hidekcal==='1';
+const ACC=[['green','Green','#2D5A3F'],['teal','Teal','#1F6B66'],['blue','Blue','#2C5282'],['purple','Purple','#5B3F86'],['rose','Rose','#8E3B57'],['amber','Amber','#8A4B1F']];
+function applyTheme(){const r=document.documentElement,m=S.prof.mode||'auto',a=S.prof.acc||'green';
+ if(m==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',m);
+ if(a==='green')r.removeAttribute('data-acc');else r.setAttribute('data-acc',a);
+ try{const bg=getComputedStyle(r).getPropertyValue('--bg').trim();document.querySelectorAll('meta[name="theme-color"]').forEach(x=>{x.setAttribute('content',bg);x.removeAttribute('media')})}catch(e){}}
 /* ---------- water bottle (optional, Profile): hold to fill adds one bottle; the bottle drains at the pace you should drink ---------- */
 /* EFSA adequate intake for total water: 2.5 L men, 2.0 L women; about 20 % comes from food, so drinks target 2.0 L and 1.6 L.
    The pace spreads that over 16 waking hours. S.plan.w = ml from fills, S.plan.wt = time of the last fill */
@@ -1921,6 +1952,9 @@ function renderDishes(){
 }
 function renderProfileView(){
  if($('logo-prof'))$('logo-prof').innerHTML=LOGO;
+ document.querySelectorAll('#p-mode [data-mode]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.mode||'auto')===b.dataset.mode);b.onclick=()=>{S.prof.mode=b.dataset.mode;applyTheme();render()}});
+ $('p-acc').innerHTML=ACC.map(([k,n,c])=>`<button type="button" class="swatch" data-acc="${k}" aria-pressed="${(S.prof.acc||'green')===k}" style="--sw:${c}"><i></i><span>${n}</span></button>`).join('');
+ $('p-acc').querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>{S.prof.acc=b.dataset.acc;applyTheme();render()});
  const T=targets(),sv=supV();$('p-hk').checked=!HK();$('p-water').checked=WON();$('p-btl-row').hidden=!WON();if(document.activeElement!==$('p-btl'))$('p-btl').value=BTL();document.querySelectorAll('[data-kc]').forEach(el=>el.hidden=HK());renderDislikes();
  Object.entries(PF).forEach(([k,id])=>{const el=$(id);if(document.activeElement!==el)el.value=S.prof[k]});
  $('prof-targets').innerHTML=withAct(S.prof.act,()=>targetBoxes(targets()));
@@ -2432,6 +2466,7 @@ function dayTick(){const t=dkey(new Date());if(t===TODAY)return;if(busy())return
 function dayReturn(){const t=dkey(new Date());if(t===TODAY)return;const was=S.date===TODAY;TODAY=t;if(was&&!busy())setDate(TODAY);render()}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')dayReturn()});
 addEventListener('pageshow',e=>{if(e.persisted)dayReturn()});setInterval(dayTick,60000);
+applyTheme();
 function render(){
  supMigrate();
  const v0=S.view;
