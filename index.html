@@ -144,7 +144,8 @@ button.ring{border:0;background:none;padding:0;cursor:pointer;color:inherit;font
 .pill{font-size:14px;font-weight:700;border-radius:999px;padding:4px 10px}
 .chev{width:18px;height:18px;fill:none;stroke:var(--muted);stroke-width:2;flex:none}
 .meals{display:flex;flex-direction:column;gap:12px}
-.meal{background:var(--surface);border-radius:var(--r);padding:16px;display:flex;flex-direction:column;gap:12px}
+.meal{background:var(--surface);border-radius:var(--r);padding:16px 16px 16px 20px;display:flex;flex-direction:column;gap:12px;position:relative;box-shadow:0 1px 2px rgba(20,30,25,.06),0 4px 14px rgba(20,30,25,.05)}.meal::before{content:'';position:absolute;left:0;top:18px;bottom:18px;width:5px;border-radius:0 5px 5px 0;background:var(--c)}
+.meal .mname{font-size:18px}.secthead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:6px 2px -6px}.secthead h2{font-size:22px}
 .meal-top{display:flex;gap:12px;align-items:center}
 .micon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:color-mix(in srgb,var(--c) 18%,transparent);color:var(--c);flex:none}
 .micon:not(.em) svg,.micon.em svg:not([viewBox='0 0 36 36']){width:24px;height:24px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -620,6 +621,11 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
       <p class="cap" style="margin:-6px 0 0">Automatic follows your phone.</p>
       <div class="lbl" style="margin:16px 0 8px">Color</div>
       <div class="swatches" id="p-acc"></div>
+    </div>
+    <div class="card">
+      <h2>Reminders</h2>
+      <p class="cap" style="margin:4px 0 10px">For supplements you take weekly or every few days. Adds a repeating event to your phone's calendar, which reminds you even when the app is closed. Daily supplements need no reminder.</p>
+      <div id="p-rem"></div>
     </div>
     <div class="card">
       <h2>Tracking</h2>
@@ -1455,12 +1461,15 @@ function renderToday(T,D){
   ${emptyDay?`<div class="card newday"><h2>${isT?'New day':'Nothing logged'}</h2><p class="cap" style="margin:4px 0 12px">Add what you eat: pick foods one by one, or a dish.</p>${actPill(isT,1)}${wsc!==null?`<button class="weekline" type="button" id="go-week" style="margin:0 0 10px"><span>Last 7 days</span><b>${wsc}% covered</b>${CHEV}</button>`:''}${prev?`<button class="btn wide" type="button" id="d-copy">Same as ${prev===shift(S.date,-1)?'yesterday':kdate(prev).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'})}</button>`:''}</div>`:''}
 ${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero${WON()?' hw':''}"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}. Open Nutrients"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
    <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div>${WON()?bottleHTML():''}</div>${waterRow()}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div>${actPill(isT)}<p class="cap" style="margin:6px 0 0;text-align:center">Tap the circle for all nutrients</p></div>
+  <div class="secthead"><h2>Meals</h2>${emptyDay?'':`<span class="cap num">${HK()?'':Math.round(D[0]).toLocaleString('en')+' kcal · '}${Math.round(D[1])} g protein so far</span>`}</div>
+  <div class="meals">${SLOTS.filter(s=>s.id!=='x').map(meal).join('')}</div>
+  <div class="addmeal"><span class="lbl">Add a meal</span><div class="chips">${[...'blds'].map(t=>`<button class="chip" type="button" data-addmeal="${t}">+ ${TY[t].n}</button>`).join('')}</div></div>
   ${iss.length?`<div class="card"><div class="card-head" style="margin-bottom:4px"><div><h2>${iss.length===1?'1 thing to look at':iss.length+' things to look at'}</h2><p class="cap">${S.range===0?'Each nutrient over the time your body stores it':S.range===1?(isT?'Today':'This day'):'Last '+S.range+' days'}</p></div><button class="btn sm ghost" type="button" id="go-ideas">Improve</button></div>
    <div class="attn">${iss.slice(0,3).map(x=>`<button class="arow" type="button" data-sel="${x.k}"><span class="dotst" style="background:${x.s.c}"></span><span class="nm">${NUT[x.k].n}</span><span class="pill" style="color:${x.s.c};background:color-mix(in srgb,${x.s.c} 16%,transparent)">${x.s.over?'Too much':Math.round(x.s.p)+' %'}</span>${CHEV}</button>`).join('')}
    ${iss.length>3?`<button class="arow" type="button" id="go-nutr"><span class="nm muted" style="font-weight:600">${iss.length-3} more</span>${CHEV}</button>`:''}</div></div>`
   :`<div class="card"><h2>Everything covered</h2><p class="cap" style="margin-top:4px">${S.range===0?'Every nutrient reaches its target over its own time window.':(S.range===1?'This day reaches':'Your last '+S.range+' days reach')+' all your targets.'}</p></div>`}
-`}  ${fgCard()}<div class="meals">${SLOTS.filter(s=>s.id!=='x').map(meal).join('')}</div>
-  <div class="addmeal"><span class="lbl">Add a meal</span><div class="chips">${[...'blds'].map(t=>`<button class="chip" type="button" data-addmeal="${t}">+ ${TY[t].n}</button>`).join('')}</div></div>
+`}
+  ${fgCard()}
   ${supCard(isT)}${weightRow()}`;
  const v=$('v-today');
  bindFg(v);bindSupCard(v);bindWater(v);bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
@@ -2122,6 +2131,11 @@ function renderProfileView(){
  $('p-acc').innerHTML=ACC.map(([k,n,c])=>`<button type="button" class="swatch" data-acc="${k}" aria-pressed="${(S.prof.acc||'green')===k}" style="--sw:${c}"><i></i><span>${n}</span></button>`).join('');
  $('p-acc').querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>{S.prof.acc=b.dataset.acc;applyTheme();render()});
  if(document.activeElement===null||!document.activeElement.classList.contains('pgr')){$('p-pgs').innerHTML=protSlider();bindProt($('p-pgs'))}
+ {const L=(S.sups||[]).filter(x=>sInterval(x)&&sCurrent(x));
+  $('p-rem').innerHTML=L.length?`<div class="amtrow" style="grid-template-columns:auto 1fr;margin-bottom:6px"><span>Time</span><input type="time" id="p-remt" value="${S.prof.remt||'09:00'}"></div>`+L.map(x=>`<div class="dishrow"><span style="flex:1;min-width:0"><span style="font-weight:600">${esc(sName(x))}</span><br><span class="cap">${sSched(x)} · next ${kdate(sNextDue(x)<TODAY?TODAY:sNextDue(x)).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span></span><button class="btn sm" type="button" data-prem="${x.id}">Add to calendar</button></div>`).join('')+`<p class="cap" style="margin:8px 0 0">Changed a schedule? Add it again and delete the old event in your calendar.</p>`
+   :'<p class="cap">No weekly or every few days supplement yet. Add one in Supplements on Today.</p>';
+  if($('p-remt'))$('p-remt').onchange=e=>{if(/^\d\d:\d\d$/.test(e.target.value))S.prof.remt=e.target.value;save()};
+  $('p-rem').querySelectorAll('[data-prem]').forEach(b=>b.onclick=()=>{const x=S.sups.find(y=>y.id===b.dataset.prem);if(x)addReminder(x,S.prof.remt||'09:00')})}
  const T=targets(),sv=supV();$('p-hk').checked=!HK();$('p-water').checked=WON();$('p-wlog').checked=WLON();$('p-btl-row').hidden=!WON();if(document.activeElement!==$('p-btl'))$('p-btl').value=BTL();document.querySelectorAll('[data-kc]').forEach(el=>el.hidden=HK());renderDislikes();
  Object.entries(PF).forEach(([k,id])=>{const el=$(id);if(document.activeElement!==el)el.value=S.prof[k]});
  $('prof-targets').innerHTML=withAct(S.prof.act,()=>targetBoxes(targets()));
@@ -2602,7 +2616,7 @@ function sForm(s){return s?{kind:s.kind,mode:Object.keys(s.amt||{}).length?'x':'
 function renderSupD(){const T=targets(),body=$('supd-body');
  if(SUPD.v==='list'){
   const cur=(S.sups||[]).filter(sCurrent),old=(S.sups||[]).filter(s=>!sCurrent(s)).sort((a,b)=>(b.end||sLast(b,TODAY)||'')<(a.end||sLast(a,TODAY)||'')?-1:1).slice(0,8);
-  const row=s=>`<div class="dishrow"><span style="min-width:0;flex:1"><span style="font-weight:600">${esc(sName(s))}</span><br><span class="cap">${sSched(s)} · ${sDose(s)}${s.freq!=='d'&&sLast(s,TODAY)?' · '+agoTxt(dayDiff(sLast(s,TODAY),TODAY)):''}${s.end&&s.end<=TODAY?' · stopped '+kdate(s.end).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):''}</span>${sCurrent(s)?punchCard(s):''}</span><button class="btn sm" type="button" data-sedit="${s.id}">Edit</button></div>`;
+  const row=s=>`<div class="dishrow"><span style="min-width:0;flex:1"><span style="font-weight:600">${esc(sName(s))}</span><br><span class="cap">${sSched(s)} · ${sDose(s)}${s.freq!=='d'&&sLast(s,TODAY)?' · '+agoTxt(dayDiff(sLast(s,TODAY),TODAY)):''}${s.end&&s.end<=TODAY?' · stopped '+kdate(s.end).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):''}</span></span><button class="btn sm" type="button" data-sedit="${s.id}">Edit</button></div>`;
   body.innerHTML=`<p class="cap" style="margin:0 0 10px">Add what you take and how often. Daily ones count by themselves; tap Skip on Today if you miss one. For the others, tap Taken on the day you take them.</p>
   ${cur.length?cur.map(row).join(''):'<p class="cap">Nothing added yet.</p>'}
   <button class="btn primary" type="button" id="s-new" style="width:100%;margin-top:12px">Add a supplement</button>
@@ -2629,8 +2643,7 @@ function renderSupD(){const T=targets(),body=$('supd-body');
  ${f.freq!=='d'&&!ed?`<label class="amtrow" style="margin-top:8px"><span>${f.freq==='o'?'Taken on':'Last taken'}</span><input type="date" id="s-taken" value="${f.taken}" max="${TODAY}"></label>`:''}`}
  ${ed&&ed.freq!=='d'?`<div class="lbl" style="margin:18px 0 6px">Taken on</div><div class="chips wrap">${(ed.takes||[]).slice().sort().reverse().slice(0,6).map(x=>`<button class="chip" type="button" data-sdel="${x}">${kdate(x).toLocaleDateString('en-GB',{day:'numeric',month:'short'})} ✕</button>`).join('')||'<span class="cap">Not yet</span>'}</div>
   <label class="amtrow" style="margin-top:8px"><span>Add a date</span><input type="date" id="s-addtake" max="${TODAY}"></label>`:''}
- ${ed&&sInterval(ed)&&!(ed.end&&ed.end<=TODAY)?`<div class="lbl" style="margin:18px 0 6px">Calendar reminder</div><p class="cap" style="margin:0 0 8px">Adds a repeating event to your phone's calendar, ${ed.freq==='w'?'every week':'every '+sInt(ed)+' days'} from ${kdate(sNextDue(ed)<TODAY?TODAY:sNextDue(ed)).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}. Your calendar reminds you even when the app is closed. If you change the schedule, add a new one and delete the old one in your calendar.</p>
-  <div class="amtrow" style="grid-template-columns:auto 1fr"><span>Time</span><input type="time" id="s-remt" value="${S.prof.remt||'09:00'}"></div><button class="btn" type="button" id="s-rem" style="width:100%;margin-top:8px">Add to calendar</button>`:''}
+ ${ed&&sInterval(ed)?`<p class="cap" style="margin:14px 0 0">Calendar reminders for this supplement: Profile, Reminders.</p>`:''}
  <div class="notice" style="margin-top:16px">${prev}${warn.length?warn.map(w=>`<br><b style="color:var(--low)">${w}</b>`).join(''):''}</div>`:''}
  <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">${u?`<button class="btn primary" type="button" id="s-save">${ed?'Save':'Add'}</button>`:''}<button class="btn" type="button" id="s-back">Back</button>
  ${ed&&!(ed.end&&ed.end<=TODAY)?`<button class="btn" type="button" id="s-stop">Stop taking</button>`:''}${ed?`<button class="btn ghost" type="button" id="s-del">${SUPD.sure==='del'?'Tap again to delete':'Delete'}</button>`:''}</div>
@@ -2645,13 +2658,11 @@ function renderSupD(){const T=targets(),body=$('supd-body');
  if(q('#s-taken'))q('#s-taken').onchange=e=>{if(e.target.value&&e.target.value<=TODAY)f.taken=e.target.value};
  if(q('#s-addtake'))q('#s-addtake').onchange=e=>{const v=e.target.value;if(v&&v<=TODAY&&!ed.takes.includes(v)){ed.takes.push(v);render()}renderSupD()};
  body.querySelectorAll('[data-sdel]').forEach(b=>b.onclick=()=>{ed.takes=ed.takes.filter(x=>x!==b.dataset.sdel);render();renderSupD()});
- if(q('#s-remt'))q('#s-remt').onchange=e=>{if(/^\d\d:\d\d$/.test(e.target.value))S.prof.remt=e.target.value};
- if(q('#s-rem'))q('#s-rem').onclick=()=>addReminder(ed,S.prof.remt||'09:00');
  q('#s-back').onclick=()=>{SUPD={v:'list',id:null,f:null,sure:null};renderSupD()};
  if(q('#s-stop'))q('#s-stop').onclick=()=>{if(ed.start>=TODAY&&!(ed.takes||[]).some(x=>x<TODAY))S.sups=S.sups.filter(x=>x!==ed);else ed.end=TODAY;SUPD={v:'list',id:null,f:null,sure:null};render();renderSupD()};
  if(q('#s-del'))q('#s-del').onclick=()=>{if(SUPD.sure!=='del'){SUPD.sure='del';renderSupD();return}S.sups=S.sups.filter(x=>x!==ed);SUPD={v:'list',id:null,f:null,sure:null};render();renderSupD()};
  if(q('#s-save'))q('#s-save').onclick=()=>{const nid='s'+Math.random().toString(36).slice(2,8);
-  if(!ed){const s={id:nid,kind:draft.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:draft.freq==='d'?(S.date<TODAY?S.date:TODAY):f.taken,takes:draft.freq==='d'?[]:[f.taken],skip:[]};if(draft.freq==='o')s.end=f.taken;S.sups=S.sups||[];S.sups.push(s);if(sInterval(s)){SUPD={v:'form',id:s.id,f:sForm(s),sure:null};render();renderSupD();toast('Saved. Add a calendar reminder below if you like.');return}}
+  if(!ed){const s={id:nid,kind:draft.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:draft.freq==='d'?(S.date<TODAY?S.date:TODAY):f.taken,takes:draft.freq==='d'?[]:[f.taken],skip:[]};if(draft.freq==='o')s.end=f.taken;S.sups=S.sups||[];S.sups.push(s);if(sInterval(s))toast('Saved. Calendar reminders: Profile, Reminders.');}
   else{const same=JSON.stringify([ed.amt,ed.freq,ed.every||0])===JSON.stringify([draft.amt,draft.freq,draft.freq==='n'?draft.every:(ed.every||0)]);
    if(!same){if(ed.start<TODAY){const n={id:nid,kind:ed.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:TODAY,takes:(ed.takes||[]).filter(x=>x>=TODAY),skip:(ed.skip||[]).filter(x=>x>=TODAY)};
      ed.takes=(ed.takes||[]).filter(x=>x<TODAY);ed.skip=(ed.skip||[]).filter(x=>x<TODAY);ed.end=TODAY;
