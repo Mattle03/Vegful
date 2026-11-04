@@ -396,16 +396,17 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .onb-nav .btn{min-width:120px}
 .segrow{display:flex;gap:10px}
 .dueline{display:flex;flex-direction:column;gap:8px;margin:-4px 0 0}
-.tkt{position:relative;display:flex;align-items:stretch;background:var(--surface2);border-radius:14px;min-height:64px;overflow:hidden;margin-top:8px}
+.tkt{position:relative;display:flex;align-items:stretch;background:var(--surface2);border-radius:14px;min-height:52px;overflow:hidden;margin-top:6px}
 .dueline .tkt{background:var(--surface);border:1px solid var(--line);margin:0}
-.tkt::before,.tkt::after{content:'';position:absolute;right:92px;width:16px;height:16px;border-radius:50%;background:var(--surface);transform:translateX(50%)}.tkt::before{top:-8px}.tkt::after{bottom:-8px}
+.tkt::before,.tkt::after{content:'';position:absolute;right:80px;width:16px;height:16px;border-radius:50%;background:var(--surface);transform:translateX(50%)}.tkt::before{top:-8px}.tkt::after{bottom:-8px}
 .dueline .tkt::before,.dueline .tkt::after{background:var(--bg)}
-.tkt .tk-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:1px;padding:10px 14px;font-size:15px}
-.tkt .tk-perf{width:0;border-left:2px dashed var(--line);margin:10px 0}
-.tkt .tk-btn{border:0;background:var(--coral);color:var(--coral-ink);font:inherit;font-weight:800;font-size:15px;width:92px;flex:none;cursor:pointer}
+.tkt .tk-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:2px;padding:7px 12px;font-size:15px}.tk-l1{display:flex;align-items:center;justify-content:space-between;gap:8px}.tk-l1 b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.tk-l1 .holes{margin:0;flex:none}.tk-l2{display:flex;align-items:center;justify-content:space-between;gap:8px}.tk-l2 .cap{min-width:0}.tk-l2 .tk-ign{padding:0;min-height:28px;align-self:center}
+.tkt .tk-perf{width:0;border-left:2px dashed var(--line);margin:8px 0}
+.tkt .tk-btn{border:0;background:var(--coral);color:var(--coral-ink);font:inherit;font-weight:800;font-size:15px;width:80px;flex:none;cursor:pointer}
 .tkt .tk-btn:active{filter:brightness(.92)}
-.tk-stamp,.tk-next{width:92px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12.5px;color:var(--muted);text-align:center;line-height:1.25}
-.stampmark{width:38px;height:38px;border-radius:50%;border:2.5px solid var(--accent);color:var(--accent);display:grid;place-items:center;font-weight:900;font-size:19px;transform:rotate(-14deg)}
+.tk-stamp,.tk-next{width:80px;flex:none;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;font-size:12.5px;color:var(--muted);text-align:center;line-height:1.25}
+.stampmark.sm{width:28px;height:28px;font-size:14px;border-width:2px;opacity:.75}
+.stampmark{width:34px;height:34px;border-radius:50%;border:2.5px solid var(--accent);color:var(--accent);display:grid;place-items:center;font-weight:900;font-size:19px;transform:rotate(-14deg)}
 .stampmark.hit{animation:rubber .5s cubic-bezier(.2,1.6,.4,1)}@keyframes rubber{0%{transform:scale(2.4) rotate(-40deg);opacity:0}100%{transform:rotate(-14deg);opacity:1}}
 .tkt.chomp{animation:chomp .35s ease}@keyframes chomp{0%{transform:none}30%{transform:translateX(-4px)}60%{transform:translateX(3px)}100%{transform:none}}
 .tk-ign{align-self:flex-start;border:0;background:none;padding:6px 0 0;min-height:32px;font:inherit;font-size:13px;font-weight:700;color:var(--accent);cursor:pointer}.tk-stamp .tk-ign{align-self:center;padding:2px 0 0;min-height:28px}
@@ -413,10 +414,9 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .duerem{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 14px;min-height:54px;font-size:15px}
 .duerem .duedot{width:10px;height:10px;border-radius:50%;background:var(--coral);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--coral) 30%,transparent)}
 .supbtns{display:flex;gap:6px;flex:none;align-items:center}
-.holes{display:flex;gap:5px;align-items:center;margin-top:6px}.holes i,.hk{width:11px;height:11px;border-radius:50%;box-sizing:border-box;display:inline-block;vertical-align:-1px}
-.holes i.none{opacity:0}.holes i.cur{border:1.5px dotted var(--muted)}.holes i.off,.hk.off{border:1.5px dashed var(--muted);opacity:.75}
-.holes i.on,.hk.on{background:var(--bg);box-shadow:inset 0 1.5px 2.5px rgba(10,20,15,.5),0 0 0 1px var(--line)}
-.holes i.auto,.hk.auto{background:var(--accent-soft);box-shadow:0 0 0 1px var(--line)}
+.holes{display:flex;gap:4px;align-items:center;margin-top:6px}.holes i,.hk{width:10px;height:10px;border-radius:50%;box-sizing:border-box;display:inline-block;vertical-align:-1px}
+.holes i.none{opacity:0}.holes i.cur,.hk.cur{border:1.5px dotted var(--ink);opacity:.55}.holes i.off,.hk.off{border:1.5px solid var(--muted);opacity:.6}
+.holes i.on,.hk.on{background:var(--accent)}
 .holes i.pop{animation:holepop .35s ease-out}@keyframes holepop{0%{transform:scale(0)}70%{transform:scale(1.35)}100%{transform:scale(1)}}
 @media (prefers-reduced-motion:reduce){.holes i.pop{animation:none}}
 .favst{color:var(--coral);font-size:.95em}[data-lfav][aria-pressed="true"]{background:var(--accent-soft)}
@@ -1170,12 +1170,12 @@ function supCard(isT){const T=targets(),d=S.date;const rows=(S.sups||[]).map(s=>
  if(!rows.length)return `<button class="suprow2" type="button" id="go-sup"><span class="micon" style="--c:var(--s5)">${ICON.x}</span><span style="flex:1;min-width:0"><span class="mslot" style="display:block">Supplements</span><span style="font-weight:700">None set</span></span>${CHEV}</button>`;
  return `<div class="card supcard"><div class="card-head" style="margin-bottom:10px"><div><h2>Supplemented</h2><p class="cap">${isT?'Today':'This day'}</p></div><button class="btn sm ghost" type="button" id="go-sup">Edit</button></div>
  ${rows.map(({s,st})=>{const iv=sInterval(s),l=iv?sLast(s,d):null,pun=(s.takes||[]).includes(d),sk=(s.skip||[]).includes(d),fut=d>TODAY;
-  const info=`${sDose(s)} · ${sSched(s).toLowerCase()}`;
-  const when=s.freq==='d'?(sk?'Skipped today':pun?'Punched today':'Punch it when you take it'):iv?(l?`Last taken ${dayDiff(l,d)===0?'today':fdS(l)} · next ${fdS(shift(l,sInt(s)))}`:'Not taken yet'):st.t;
+  const am=s.amt||{},dz=Object.keys(am).length===1&&am.d?Math.round(am.d*40).toLocaleString('en')+' IU':sDose(s)==='normal dose'?'':sDose(s);const info=`${dz?dz+' · ':''}${sSched(s).toLowerCase()}`;
+  const when=s.freq==='d'?(sk?'skipped today':pun?'taken today':''):iv?(l?(pun?'next '+fdS(shift(l,sInt(s))):shift(l,sInt(s))<=d?(dayDiff(shift(l,sInt(s)),d)>0?'due since '+dayDiff(shift(l,sInt(s)),d)+(dayDiff(shift(l,sInt(s)),d)===1?' day':' days'):'due today'):'next '+fdS(shift(l,sInt(s)))):'not taken yet'):st.t;
   const canP=!fut&&!pun&&!(s.freq==='d'&&sk)&&(s.freq==='d'||st.due||!st.ok),chomp=STAMP===s.id;
-  const stub=fut?`<div class="tk-next">${iv&&l?'next<br>'+fdS(shift(l,sInt(s))):''}</div>`:pun?`<div class="tk-stamp"><span class="stampmark${chomp?' hit':''}">✓</span><button class="tk-ign" type="button" data-sact="${s.id}:unpunch">Undo</button></div>`:canP?`<button class="tk-btn" type="button" data-sact="${s.id}:punch">Punch</button>`:sk?`<div class="tk-stamp"><span class="cap">Skipped</span><button class="tk-ign" type="button" data-sact="${s.id}:undo">Undo</button></div>`:`<div class="tk-next">${iv&&l?'next<br>'+fdS(shift(l,sInt(s))):''}</div>`;
-  return `<div class="tkt${chomp?' chomp':''}"><div class="tk-main"><span style="font-weight:700">${esc(sName(s))}</span><span class="cap">${info}</span><span class="cap">${when}</span>${sHoles(s,d,chomp)}${s.freq==='d'&&!pun&&!sk&&!fut?`<button class="tk-ign" type="button" data-sact="${s.id}:skip">Skip today</button>`:''}</div><div class="tk-perf"></div>${stub}</div>`}).join('')}
- <p class="cap" style="margin:8px 0 0">${'<i class="hk on"></i> punched <i class="hk auto"></i> counted <i class="hk off"></i> missed'}</p></div>`}
+  const stub=fut?`<div class="tk-next"></div>`:pun?`<div class="tk-stamp"><span class="stampmark${chomp?' hit':''}">✓</span><button class="tk-ign" type="button" data-sact="${s.id}:unpunch">Undo</button></div>`:canP?`<button class="tk-btn" type="button" data-sact="${s.id}:punch">Punch</button>`:sk?`<div class="tk-stamp"><button class="tk-ign" type="button" data-sact="${s.id}:undo">Undo skip</button></div>`:`<div class="tk-stamp"><span class="stampmark sm">✓</span></div>`;
+  return `<div class="tkt${chomp?' chomp':''}"><div class="tk-main"><div class="tk-l1"><b>${esc(sName(s).replace(/ \(.*\)$/,''))}</b>${sHoles(s,d,chomp)}</div><div class="tk-l2"><span class="cap">${info}${when?' · '+when:''}</span>${s.freq==='d'&&!pun&&!sk&&!fut?`<button class="tk-ign" type="button" data-sact="${s.id}:skip">Skip</button>`:''}</div></div><div class="tk-perf"></div>${stub}</div>`}).join('')}
+ <p class="cap" style="margin:8px 0 0"><i class="hk on"></i> taken <i class="hk off"></i> missed <i class="hk cur"></i> open. Daily ones count as taken unless you skip them.</p></div>`}
 function bindSupCard(v){v.querySelectorAll('[data-sact]').forEach(b=>b.onclick=()=>{const [id,a]=b.dataset.sact.split(':'),s=(S.sups||[]).find(x=>x.id===id);if(!s)return;const d=S.date;
  s.takes=s.takes||[];s.skip=s.skip||[];
  if(a==='punch'){punchSup(s);return}if(a==='skip'){if(!s.skip.includes(d))s.skip.push(d);s.takes=s.takes.filter(x=>x!==d)}else if(a==='undo')s.skip=s.skip.filter(x=>x!==d);else if(a==='take'){if(!s.takes.includes(d))s.takes.push(d)}else if(a==='untake'||a==='unpunch')s.takes=s.takes.filter(x=>x!==d);
@@ -2616,10 +2616,10 @@ const fdS=d=>kdate(d).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',
 /* dose slots for one supplement in its own period; the last 6 shown as punched holes */
 function sHoles(s,upto,fresh){let sl=[];
  if(s.freq==='d'){for(let i=6;i>=0;i--){const d=shift(upto,-i);if(d<s.start||(s.end&&d>=s.end)){sl.push({k:'none'});continue}
-   const pu=(s.takes||[]).includes(d),sk=(s.skip||[]).includes(d);sl.push({k:pu?'on':sk?'off':d===upto?'cur':'auto',d})}}
+   const pu=(s.takes||[]).includes(d),sk=(s.skip||[]).includes(d);sl.push({k:sk?'off':pu||d<upto?'on':'cur',d})}}
  else{const N=sInt(s),tk=(s.takes||[]).filter(x=>x<=upto).sort();if(!tk.length)return '';let st=tk[0];
   while(st<=upto&&sl.length<400){const en=shift(st,N),on=tk.some(x=>x>=st&&x<en);sl.push({k:on?'on':en>upto?'cur':'off'});st=en}sl=sl.slice(-6)}
- const n=sl.filter(x=>x.k==='on'||x.k==='auto').length;
+ const n=sl.filter(x=>x.k==='on').length;
  return `<span class="holes" aria-label="${n} of ${sl.filter(x=>x.k!=='none').length} recent doses">${sl.map((x,i,a)=>`<i class="${x.k}${x.k==='on'&&fresh&&i===a.length-1?' pop':''}"></i>`).join('')}</span>`}
 function dueLine(){if(S.date!==TODAY)return '';const L=(S.sups||[]).filter(s=>sInterval(s)&&sActive(s,TODAY)&&sNextDue(s)<=TODAY&&!(s.takes||[]).includes(TODAY)&&s.ign!==TODAY);
  if(!L.length)return '';
