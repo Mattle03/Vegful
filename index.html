@@ -393,6 +393,7 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .onb-nav{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px}
 .onb-nav .btn{min-width:120px}
 .segrow{display:flex;gap:10px}
+#lib-t,#learn-seg{flex-wrap:wrap;overflow:visible}
 .wchart{width:100%;height:auto;display:block;margin-top:6px}.wchart .wgrid{stroke:var(--line);stroke-width:1}.wchart .wlab{fill:var(--muted);font-size:10px;font-family:var(--body)}.wchart .wline{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}.wchart .wdot{fill:var(--surface);stroke:var(--accent);stroke-width:1.8}
 .wrow2{margin-top:10px}.micon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .fsrow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:8px}.fsrow b{font-size:22px}.fsbar{position:relative;height:10px;border-radius:5px;background:var(--surface2);margin-top:8px;overflow:visible}.fsbar i{display:block;height:100%;border-radius:5px}.fsm{position:absolute;top:-4px;width:2px;height:18px;background:var(--ink);opacity:.5}
@@ -494,7 +495,6 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .tideas.multi{display:flex;gap:10px;overflow-x:auto;scroll-snap-type:x mandatory;-webkit-overflow-scrolling:touch;overscroll-behavior-x:contain;scrollbar-width:none;margin:2px -4px 10px;padding:0 4px}.tideas.multi::-webkit-scrollbar{display:none}
 .tideas.multi .tidea{flex:0 0 88%;scroll-snap-align:start;margin:0}
 .tidea .thumb{width:40px;height:40px;flex:none;background:var(--surface)}
-#lib-seg{flex-wrap:wrap;overflow:visible;margin-bottom:2px}
 #lib-t{margin:10px 0}
 .ldish{border-bottom:1px solid var(--line)}
 .ldhead{display:flex;align-items:center;gap:12px;width:100%;padding:10px 0;background:none;border:0;font:inherit;color:inherit;text-align:left;min-height:60px}
@@ -556,12 +556,12 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
   <section id="v-scan" class="view" hidden></section>
 
   <section id="v-lib" class="view" hidden>
-    <div class="vhead"><div><h1>Library</h1><p class="cap">Your meals and foods, all dishes, and what to eat for which nutrient</p></div></div>
-    <div class="chips" id="lib-seg"><button class="chip" type="button" data-lb="meals">My meals</button><button class="chip" type="button" data-lb="foods">My foods</button><button class="chip" type="button" data-lb="dishes">Dishes</button><button class="chip" type="button" data-lb="guide">Food guide</button><button class="chip" type="button" data-lb="kitchen">Kitchen tips</button></div>
-    <div id="lib-meals" class="view"><div class="card"><p class="cap" style="margin:0 0 10px">Meals you built or changed. They are saved when you leave Edit.</p><div id="prof-dishes"></div></div></div>
-    <div id="lib-foods" class="view" hidden><div class="card"><p class="cap" style="margin:0 0 10px">Products you scanned or entered, and mixes you made. Tap one to see or change its values.</p><div id="prof-prod"></div>
+    <div class="vhead"><div><h1>Library</h1><p class="cap">Dishes, your foods, and what to eat for which nutrient</p></div></div>
+    <div class="seg" id="lib-seg"><button type="button" data-lb="dishes">Dishes</button><button type="button" data-lb="foods">Foods</button><button type="button" data-lb="learn">Learn</button></div>
+    <div id="lib-foods" class="view" hidden><div class="card"><h2 style="margin-bottom:4px">Your foods</h2><p class="cap" style="margin:0 0 10px">Products you scanned or entered, and mixes you made. Tap one to see or change its values.</p><div id="prof-prod"></div>
       <div class="btnrow2" style="margin-top:12px"><button class="btn scanbtn" type="button" id="prof-scan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3M7 8v8M10.5 8v8M14 8v8M17 8v8"/></svg>Scan a product</button><button class="btn" type="button" id="lib-label">Enter from a label</button><button class="btn" type="button" id="lib-mix">Make a mix</button></div></div></div>
-    <div id="lib-dishes" class="view" hidden><input type="search" id="lib-q" placeholder="Search dishes or ingredients"><div class="chips" id="lib-t"></div><div class="card" style="padding-top:4px"><div id="lib-list"></div></div></div>
+    <div id="lib-dishes" class="view" hidden><input type="search" id="lib-q" placeholder="Search dishes or ingredients"><div class="chips" id="lib-t"></div><div id="lib-mine"></div><div class="card" style="padding-top:4px"><h2 style="margin:10px 0 4px" id="lib-allh">All dishes</h2><div id="lib-list"></div></div></div>
+    <div class="chips" id="learn-seg" hidden><button class="chip" type="button" data-ln="guide">Best sources by nutrient</button><button class="chip" type="button" data-ln="kitchen">Kitchen tips</button></div>
     <div id="it-foods" class="view" hidden>
       <div class="card" style="display:flex;flex-direction:column;gap:12px">
         <label class="lbl" for="g-nut">Best vegan sources of</label>
@@ -2008,40 +2008,42 @@ function renderKitchen(){
  $('it-kitchen').querySelectorAll('[data-kc]').forEach(b=>b.onclick=()=>{S.kc=b.dataset.kc;render()});
 }
 document.querySelectorAll('#nsub-seg [data-ns]').forEach(b=>b.onclick=()=>{S.nsub=b.dataset.ns;render();scrollTo({top:0})});
-document.querySelectorAll('#lib-seg [data-lb]').forEach(b=>b.onclick=()=>{S.lib=b.dataset.lb;render()});
+document.querySelectorAll('#lib-seg [data-lb]').forEach(b=>b.onclick=()=>{S.lib=b.dataset.lb;render();scrollTo({top:0})});
+document.querySelectorAll('#learn-seg [data-ln]').forEach(b=>b.onclick=()=>{S.learn=b.dataset.ln;render()});
 $('lib-q').oninput=()=>renderLibDishes();
 $('lib-label').onclick=()=>openScan(null,'label');
 $('lib-mix').onclick=()=>newMix('d');
 function renderLib(T){
  document.querySelectorAll('#lib-seg [data-lb]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lb===S.lib));
- [['meals','lib-meals'],['foods','lib-foods'],['dishes','lib-dishes'],['guide','it-foods'],['kitchen','it-kitchen']].forEach(([k,id])=>$(id).hidden=k!==S.lib);
- if(S.lib==='meals')renderDishes();else if(S.lib==='foods')renderProducts();else if(S.lib==='dishes')renderLibDishes();else if(S.lib==='guide')renderFoods(T);else renderKitchen();
+ const ln=S.learn==='kitchen'?'kitchen':'guide';$('learn-seg').hidden=S.lib!=='learn';document.querySelectorAll('#learn-seg [data-ln]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ln===ln));
+ $('lib-foods').hidden=S.lib!=='foods';$('lib-dishes').hidden=S.lib!=='dishes';$('it-foods').hidden=!(S.lib==='learn'&&ln==='guide');$('it-kitchen').hidden=!(S.lib==='learn'&&ln==='kitchen');
+ if(S.lib==='foods')renderProducts();else if(S.lib==='dishes')renderLibDishes();else if(ln==='guide')renderFoods(T);else renderKitchen();
 }
 let LX=null;
 function renderLibDishes(){
  const T=targets(),q=$('lib-q').value.toLowerCase().trim(),lt=S.libt||'all';
  $('lib-t').innerHTML=[['all','All'],['b','Breakfast'],['m','Lunch and dinner'],['s','Snacks']].map(([k,l])=>`<button class="chip" type="button" data-lt="${k}" aria-pressed="${lt===k}">${l}</button>`).join('');
  $('lib-t').querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{S.libt=b.dataset.lt;renderLibDishes()});
- const ds=allDishes(lt==='all'?null:lt).filter(d=>!q||d.n.toLowerCase().includes(q)||d.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q))).sort((a,b)=>a.n.localeCompare(b.n));
- $('lib-list').innerHTML=ds.length?ds.map(d=>{const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),open=LX===d.id,slots=d.t==='b'?['b']:d.t==='s'?['s']:['l','d'];
-  return `<div class="ldish"><button class="ldhead" type="button" data-lx="${d.id}" aria-expanded="${open}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.own?'<span class="mine">yours</span>':''}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein${d.min?' · '+d.min+' min':''}</span></span>${CHEV}</button>
-   ${open?`<div class="ldbody"><p class="cap">${d.it.map(([id,g])=>esc(FM[id].n.split(',')[0])+' '+g+' g').join(', ')}</p><div class="btnrow">${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}</div></div>`:''}</div>`}).join(''):'<p class="cap">No match.</p>';
- $('lib-list').querySelectorAll('[data-lx]').forEach(b=>b.onclick=()=>{LX=LX===b.dataset.lx?null:b.dataset.lx;renderLibDishes()});
- $('lib-list').querySelectorAll('[data-ladd]').forEach(b=>b.onclick=()=>{const [id,t]=b.dataset.ladd.split(':'),d=dish(id),k=slotOfType(t);useDish(k,d);toast(`Added ${d.n} to ${TY[t].n.toLowerCase()}`);render()});
+ const ds=allDishes(lt==='all'?null:lt).filter(d=>!q||d.n.toLowerCase().includes(q)||d.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q)));
+ const mine=ds.filter(d=>d.own||d.edited).sort((a,b)=>(b.used-a.used)||a.n.localeCompare(b.n)),rest=ds.filter(d=>!d.own&&!d.edited).sort((a,b)=>a.n.localeCompare(b.n));
+ const row=d=>{const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),open=LX===d.id,slots=d.t==='b'?['b']:d.t==='s'?['s']:['l','d'];
+  return `<div class="ldish"><button class="ldhead" type="button" data-lx="${d.id}" aria-expanded="${open}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.edited?'<span class="mine">changed</span>':''}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein${d.min?' · '+d.min+' min':''}</span></span>${CHEV}</button>
+   ${open?`<div class="ldbody"><p class="cap">${d.it.map(([id,g])=>esc(FM[id]?FM[id].n.split(',')[0]:'Food')+' '+g+' g').join(', ')}</p><div class="btnrow">${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}${d.own||d.edited?`<button class="btn sm ghost" type="button" data-ldel="${d.id}">${d.edited?'Reset to original':'Delete'}</button>`:''}</div></div>`:''}</div>`};
+ $('lib-mine').innerHTML=mine.length||!q?`<div class="card" style="padding-top:4px"><h2 style="margin:10px 0 2px">Your dishes</h2>${mine.length?'':'<p class="cap" style="margin:4px 0 12px">Dishes you build or change are saved here when you leave Edit.</p>'}${mine.map(row).join('')}</div>`:'';
+ $('lib-allh').textContent=mine.length?'All dishes':'Dishes';
+ $('lib-list').innerHTML=rest.length?rest.map(row).join(''):'<p class="cap">No match.</p>';
+ const v=$('lib-dishes');
+ v.querySelectorAll('[data-lx]').forEach(b=>b.onclick=()=>{LX=LX===b.dataset.lx?null:b.dataset.lx;renderLibDishes()});
+ v.querySelectorAll('[data-ladd]').forEach(b=>b.onclick=()=>{const [id,t]=b.dataset.ladd.split(':'),d=dish(id),k=slotOfType(t);useDish(k,d);toast(`Added ${d.n} to ${TY[t].n.toLowerCase()}`);render()});
+ v.querySelectorAll('[data-ldel]').forEach(b=>b.onclick=()=>{if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Tap again';return}
+  const id=b.dataset.ldel;delete S.dishes[id];if(!REC.find(r=>r.id===id)){delete S.meta[id];Object.values(S.days).forEach(p=>mealKeys(p).forEach(k=>{if(p[k].did===id)p[k].did=null}))}LX=null;render()});
 }
-
 /* ---------- profile + tabs ---------- */
 const PF={ref:'p-ref',sex:'p-sex',age:'p-age',ht:'p-ht',wt:'p-wt',act:'p-act',pg:'p-pg',kcal:'p-kcal',unit:'p-unit'};
 Object.entries(PF).forEach(([k,id])=>{const el=$(id);el.onchange=()=>{S.prof[k]=el.value;if(k==='wt'&&WLON()&&+el.value>=30){S.weights=S.weights||{};S.weights[TODAY]=Math.round(+el.value*10)/10}render()}});
 function supRows(prefix){return SUP.map(u=>`<label class="suprow" for="${prefix}${u.id}"><span class="supname">${u.n}</span><span class="switch"><input type="checkbox" id="${prefix}${u.id}" data-sup="${u.id}" ${supOn(u)?'checked':''}><i></i></span><small>${u.h}</small></label>`).join('')}
 function bindSup(root){root.querySelectorAll('[data-sup]').forEach(cb=>cb.onchange=()=>{setQuick(cb.dataset.sup,cb.checked);render()})}
 function targetBoxes(T){return `${HK()?'':`<div><span>Energy</span><b>${EN(T.kcal)}</b></div>`}<div><span>Protein</span><b>${Math.round(T.p)} g</b></div><div><span>Fiber</span><b>${Math.round(T.fib)} g</b></div>`}
-function renderDishes(){
- const list=allDishes().filter(d=>d.own).sort((a,b)=>b.used-a.used);
- $('prof-dishes').innerHTML=list.length?list.map(d=>`<div class="dishrow"><span class="mico">${dIcon(d)}</span><span style="min-width:0;flex:1"><span style="font-weight:600">${esc(d.n)}</span><br><span class="cap">${d.t==='b'?'Breakfast':d.t==='s'?'Snack':'Lunch or dinner'}</span></span><button class="btn sm" type="button" data-dd="${d.id}">Delete</button></div>`).join(''):'<p class="cap">None yet. Edit a dish or save your own mix from Edit.</p>';
- $('prof-dishes').querySelectorAll('[data-dd]').forEach(b=>b.onclick=()=>{if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Tap again';return}
-  const id=b.dataset.dd;delete S.dishes[id];if(!REC.find(r=>r.id===id)){delete S.meta[id];Object.values(S.days).forEach(p=>mealKeys(p).forEach(k=>{if(p[k].did===id)p[k].did=null}))}render()});
-}
 function renderProfileView(){
  if($('logo-prof'))$('logo-prof').innerHTML=LOGO;
  document.querySelectorAll('#p-mode [data-mode]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.mode||'auto')===b.dataset.mode);b.onclick=()=>{S.prof.mode=b.dataset.mode;applyTheme();render()}});
@@ -2574,7 +2576,7 @@ function render(){
  if(S.view==='ideas'){S.view='nutr';S.nsub='imp'}
  if(!['today','nutr','scan','lib','profile'].includes(S.view))S.view='today';
  if(v0!=='scan'&&SCAN.tab){stopCamera();SCAN.tab=false;ST.drawn=''}
- if(!['over','imp','hist'].includes(S.nsub))S.nsub='over';if(!['meals','foods','dishes','guide','kitchen'].includes(S.lib))S.lib='meals';
+ if(!['over','imp','hist'].includes(S.nsub))S.nsub='over';if(S.lib==='meals')S.lib='dishes';if(S.lib==='guide'||S.lib==='kitchen'){S.learn=S.lib;S.lib='learn'}if(!['dishes','foods','learn'].includes(S.lib))S.lib='dishes';
  save();
  const T=targets(),D=dayV(),v=S.view;
  ['today','nutr','scan','lib','profile'].forEach(x=>{$('v-'+x).hidden=x!==v});
