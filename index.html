@@ -86,7 +86,7 @@ p{margin:0}
 .info{font-size:15px;line-height:1.5}
 button{font:inherit;color:inherit;cursor:pointer;-webkit-tap-highlight-color:transparent}
 button:focus-visible,input:focus-visible,select:focus-visible,summary:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-select,input[type=number],input[type=search],input[type=text],input[type=date]{font:inherit;font-size:16px;color:var(--ink);background:var(--surface2);border:1px solid transparent;border-radius:12px;padding:12px 14px;min-height:48px;width:100%;min-width:0}
+select,input[type=number],input[type=search],input[type=text],input[type=date],input[type=time]{font:inherit;font-size:16px;color:var(--ink);background:var(--surface2);border:1px solid transparent;border-radius:12px;padding:12px 14px;min-height:48px;width:100%;min-width:0}
 select:focus,input:focus{border-color:var(--accent);outline:none}
 .view{display:flex;flex-direction:column;gap:16px}
 [hidden]{display:none!important}
@@ -394,6 +394,12 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .onb-nav{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px}
 .onb-nav .btn{min-width:120px}
 .segrow{display:flex;gap:10px}
+.dueline{display:flex;flex-direction:column;gap:6px;margin:-4px 0 0}.duerow{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 14px;min-height:52px;font-size:15px}
+.duerow .duedot{width:10px;height:10px;border-radius:50%;background:var(--coral);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--coral) 30%,transparent)}
+.duerow.ok{background:var(--accent-soft);border-color:transparent;animation:stampin .5s ease}.stampic{width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;flex:none;animation:stamp .45s cubic-bezier(.2,1.6,.4,1)}
+@keyframes stamp{0%{transform:scale(2.2) rotate(-20deg);opacity:0}100%{transform:none;opacity:1}}@keyframes stampin{from{opacity:.4}to{opacity:1}}
+.punch{display:flex;align-items:center;gap:5px;margin-top:6px;flex-wrap:wrap}.punch i{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);background:transparent}.punch i.on{background:var(--accent);border-color:var(--accent)}.punch i.cur:not(.on){border-style:dashed;border-color:var(--muted)}.punch i.new{animation:stamp .45s cubic-bezier(.2,1.6,.4,1)}.punch .cap{margin-left:4px}
+@media (prefers-reduced-motion:reduce){.stampic,.punch i.new,.duerow.ok{animation:none}}
 .favst{color:var(--coral);font-size:.95em}[data-lfav][aria-pressed="true"]{background:var(--accent-soft)}
 .linkbtn{display:flex;align-items:center;gap:8px;border:0;background:none;color:var(--accent);font:inherit;font-weight:700;font-size:14px;padding:12px 4px;min-height:44px}.linkbtn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .measrow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:15px}.measrow b{text-align:right;font-weight:600}
@@ -416,8 +422,9 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .repcard .seg{margin:12px 0}.repimg{width:100%;height:auto;display:block;border-radius:14px;border:1px solid var(--line)}
 a.btn{display:inline-flex;align-items:center;justify-content:center;text-decoration:none;color:inherit}
 @media print{body.printrep *{visibility:hidden}body.printrep #repd,body.printrep #repd .repimg{visibility:visible}body.printrep #repd{position:absolute;inset:0;max-height:none;width:100%;margin:0;padding:0;border:0;box-shadow:none;background:#fff}body.printrep #repd .pk-head,body.printrep #repd .acts,body.printrep #repd .cap{display:none}body.printrep #repd .repimg{border:0;border-radius:0;max-width:100%}body.printrep #repd .pk,body.printrep #repd .pk-list{max-height:none;overflow:visible;padding:0}}
+input[type=time]{-webkit-appearance:none;appearance:none;font-weight:600;color-scheme:light}
 input[type=date]{-webkit-appearance:none;appearance:none;font-weight:600;display:flex;align-items:center;justify-content:space-between;text-align:left;color-scheme:light}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) input[type=date]{color-scheme:dark}}:root[data-theme="dark"] input[type=date]{color-scheme:dark}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]) input[type=date],:root:not([data-theme="light"]) input[type=time]{color-scheme:dark}}:root[data-theme="dark"] input[type=date],:root[data-theme="dark"] input[type=time]{color-scheme:dark}
 input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::-webkit-calendar-picker-indicator{opacity:.55;cursor:pointer}
 .amtrow:has(input[type=date]){grid-template-columns:auto 1fr}
 .obsup .amtrow input[type=date]{background:var(--surface)}
@@ -1444,7 +1451,7 @@ function renderToday(T,D){
   return `<article class="meal${empty?'':' tap'}" style="--c:${s.c}"${empty?'':` data-edit="${s.id}" role="button" tabindex="0" aria-label="Edit ${s.n}"`}>${ph?`<img class="mphoto" src="${ph}" alt="">`:''}<div class="meal-top"><span class="micon em">${empty?(ICON[s.ty]||ICON[s.id]):slotIcon(sl,s.ty)}</span><div class="mt">${empty&&s.ty==='s'?`<div class="mname">${s.n}</div>`:`<div class="mslot">${s.n}</div>`}<div class="mname"${empty&&s.ty==='s'?' hidden':''}>${esc(empty?'Nothing planned':(sl.t||sl.it.map(([id],i)=>{const n=FM[id].n.split(',')[0];return i?n.toLowerCase():n}).slice(0,2).join(' and ')))}</div></div>${empty?'':`<div class="mk num">${HK()?`${Math.round(v[1])} g<span>protein</span>`:`${EN(v[0])}<span>${Math.round(v[1])} g protein</span>`}</div>`}</div>
    ${empty?'':`<p class="mfoods">${sl.it.map(([id,g])=>esc(FM[id].n.split(',')[0])+' '+g+' g').join(', ')}</p>`}
    ${empty?`${idea(s)}<div class="mact"><button class="btn primary" type="button" data-start="${s.id}">${s.t==='s'?'Add a snack':'Add '+s.n.toLowerCase()}</button><button class="btn" type="button" data-pick="${s.id}">More ideas</button></div>`:''}</article>`};
- $('v-today').innerHTML=`<div class="vhead"><div><h1>${title}</h1><p class="cap">${date}</p></div><div class="datenav"><button class="iconbtn" type="button" id="d-cal" aria-label="History calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button class="iconbtn" type="button" id="d-prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>${isT?'':`<button class="btn sm" type="button" id="d-today">Today</button>`}<button class="iconbtn" type="button" id="d-next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>
+ $('v-today').innerHTML=`<div class="vhead"><div><h1>${title}</h1><p class="cap">${date}</p></div><div class="datenav"><button class="iconbtn" type="button" id="d-cal" aria-label="History calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button class="iconbtn" type="button" id="d-prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>${isT?'':`<button class="btn sm" type="button" id="d-today">Today</button>`}<button class="iconbtn" type="button" id="d-next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>${dueLine()}
   ${emptyDay?`<div class="card newday"><h2>${isT?'New day':'Nothing logged'}</h2><p class="cap" style="margin:4px 0 12px">Add what you eat: pick foods one by one, or a dish.</p>${actPill(isT,1)}${wsc!==null?`<button class="weekline" type="button" id="go-week" style="margin:0 0 10px"><span>Last 7 days</span><b>${wsc}% covered</b>${CHEV}</button>`:''}${prev?`<button class="btn wide" type="button" id="d-copy">Same as ${prev===shift(S.date,-1)?'yesterday':kdate(prev).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'})}</button>`:''}</div>`:''}
 ${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero${WON()?' hw':''}"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}. Open Nutrients"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
    <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div>${WON()?bottleHTML():''}</div>${waterRow()}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div>${actPill(isT)}<p class="cap" style="margin:6px 0 0;text-align:center">Tap the circle for all nutrients</p></div>
@@ -1456,7 +1463,7 @@ ${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[
   <div class="addmeal"><span class="lbl">Add a meal</span><div class="chips">${[...'blds'].map(t=>`<button class="chip" type="button" data-addmeal="${t}">+ ${TY[t].n}</button>`).join('')}</div></div>
   ${supCard(isT)}${weightRow()}`;
  const v=$('v-today');
- bindFg(v);bindSupCard(v);bindWater(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
+ bindFg(v);bindSupCard(v);bindWater(v);bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
  v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>openPicker(b.dataset.pick,'recipe'));
  v.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>startMeal(b.dataset.start));
  v.querySelectorAll('[data-edit]').forEach(b=>{b.onclick=()=>openMeal(b.dataset.edit);b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openMeal(b.dataset.edit)}}});
@@ -2563,13 +2570,39 @@ function renderHistory0(T){
 /* ---------- navigation + render ---------- */
 function go(v){S.view=v;render();scrollTo({top:0})}
 document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.onclick=()=>go(b.dataset.v));
+/* ---------- reminders for weekly and every N days supplements: a due line on Today, a punch card, and a repeating calendar event ---------- */
+const sInterval=s=>s.freq==='w'||s.freq==='n';
+function sNextDue(s){const l=sLast(s,TODAY);if(!l)return TODAY;return shift(l,sInt(s))}
+let STAMP=null;
+function dueLine(){if(S.date!==TODAY)return '';const L=(S.sups||[]).filter(s=>sInterval(s)&&sActive(s,TODAY)&&sNextDue(s)<=TODAY&&!(s.takes||[]).includes(TODAY));
+ const done=STAMP?(S.sups||[]).find(s=>s.id===STAMP):null;
+ if(!L.length&&!done)return '';
+ return `<div class="dueline">${done?`<div class="duerow ok"><span class="stampic">✓</span><span><b>${esc(sName(done))}</b> stamped for today</span></div>`:''}${L.map(s=>{const late=dayDiff(sNextDue(s),TODAY);
+  return `<div class="duerow"><span class="duedot"></span><span style="flex:1;min-width:0"><b>${esc(sName(s))}</b> ${late>0?`due since ${late===1?'yesterday':late+' days'}`:'due today'}</span><button class="btn sm primary" type="button" data-duetake="${s.id}">Taken</button></div>`}).join('')}</div>`}
+function bindDue(v){v.querySelectorAll('[data-duetake]').forEach(b=>b.onclick=()=>{const s=(S.sups||[]).find(x=>x.id===b.dataset.duetake);if(!s)return;s.takes=s.takes||[];if(!s.takes.includes(TODAY))s.takes.push(TODAY);
+  STAMP=s.id;try{navigator.vibrate&&navigator.vibrate([20,40,20])}catch(e){}render();setTimeout(()=>{if(STAMP===s.id){STAMP=null;render()}},2600)})}
+/* punch card: one dot per dose slot since the first dose, the last 8 shown; a slot is punched if you took it within that period */
+function punchCard(s){if(!sInterval(s))return '';const N=sInt(s),tk=(s.takes||[]).slice().sort();if(!tk.length)return '';
+ const slots=[];let st=tk[0];while(st<=TODAY&&slots.length<400){const en=shift(st,N);slots.push([st,en,tk.some(x=>x>=st&&x<en)]);st=en}
+ const show=slots.slice(-8),miss=slots.filter((x,i)=>!x[2]&&i<slots.length-1).length;
+ return `<div class="punch" aria-label="Doses: ${slots.filter(x=>x[2]).length} of ${slots.length}">${show.map((x,i)=>{const cur=i===show.length-1&&x[1]>TODAY;return `<i class="${x[2]?'on':''}${cur?' cur':''}${x[2]&&STAMP===s.id&&i===show.length-1?' new':''}" title="${kdate(x[0]).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}"></i>`}).join('')}<span class="cap">${miss?miss+(miss===1?' missed':' missed'):'none missed'}</span></div>`}
+/* calendar file: repeats weekly or every N days with an alert at the chosen time; your phone's calendar does the reminding */
+function icsFor(s,time){const N=sInt(s),d=sNextDue(s)<TODAY?TODAY:sNextDue(s),[hh,mm]=(time||'09:00').split(':'),dt=d.replace(/-/g,'')+'T'+hh+mm+'00';
+ const rr=s.freq==='w'?'FREQ=WEEKLY;INTERVAL=1':'FREQ=DAILY;INTERVAL='+N,uid='vegful-'+s.id+'@vegful.app',now=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
+ const nm=sName(s)+(Object.keys(s.amt||{}).length?' '+sDose(s):'');
+ return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Vegful//Supplement reminder//EN','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:'+uid,'DTSTAMP:'+now,'DTSTART:'+dt,'DURATION:PT10M','RRULE:'+rr,
+  'SUMMARY:Take '+nm,'DESCRIPTION:Vegful reminder. Tap Taken in the app after you take it.','BEGIN:VALARM','ACTION:DISPLAY','DESCRIPTION:Take '+nm,'TRIGGER:PT0M','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n')}
+async function addReminder(s,time){const txt=icsFor(s,time),fn=`vegful-${sName(s).toLowerCase().replace(/[^a-z0-9]+/g,'-')}.ics`,blob=new Blob([txt],{type:'text/calendar'});
+ try{const f=new File([blob],fn,{type:'text/calendar'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Reminder: '+sName(s)});return}}catch(e){if(e&&e.name==='AbortError')return}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)}
+
 let SUPD={v:'list',id:null,f:null,sure:null};
 const sCurrent=s=>!s.end||s.end>TODAY||(s.freq!=='d'&&(s.takes||[]).some(x=>dayDiff(x,TODAY)<sDays(s)));
 function sForm(s){return s?{kind:s.kind,mode:Object.keys(s.amt||{}).length?'x':'n',amt:Object.assign({},s.amt||{}),du:'iu',freq:s.freq,every:s.every||14,taken:S.date<=TODAY?S.date:TODAY}:{kind:null,mode:'n',amt:{},du:'iu',freq:'d',every:14,taken:S.date<=TODAY?S.date:TODAY}}
 function renderSupD(){const T=targets(),body=$('supd-body');
  if(SUPD.v==='list'){
   const cur=(S.sups||[]).filter(sCurrent),old=(S.sups||[]).filter(s=>!sCurrent(s)).sort((a,b)=>(b.end||sLast(b,TODAY)||'')<(a.end||sLast(a,TODAY)||'')?-1:1).slice(0,8);
-  const row=s=>`<div class="dishrow"><span style="min-width:0;flex:1"><span style="font-weight:600">${esc(sName(s))}</span><br><span class="cap">${sSched(s)} · ${sDose(s)}${s.freq!=='d'&&sLast(s,TODAY)?' · '+agoTxt(dayDiff(sLast(s,TODAY),TODAY)):''}${s.end&&s.end<=TODAY?' · stopped '+kdate(s.end).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):''}</span></span><button class="btn sm" type="button" data-sedit="${s.id}">Edit</button></div>`;
+  const row=s=>`<div class="dishrow"><span style="min-width:0;flex:1"><span style="font-weight:600">${esc(sName(s))}</span><br><span class="cap">${sSched(s)} · ${sDose(s)}${s.freq!=='d'&&sLast(s,TODAY)?' · '+agoTxt(dayDiff(sLast(s,TODAY),TODAY)):''}${s.end&&s.end<=TODAY?' · stopped '+kdate(s.end).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):''}</span>${sCurrent(s)?punchCard(s):''}</span><button class="btn sm" type="button" data-sedit="${s.id}">Edit</button></div>`;
   body.innerHTML=`<p class="cap" style="margin:0 0 10px">Add what you take and how often. Daily ones count by themselves; tap Skip on Today if you miss one. For the others, tap Taken on the day you take them.</p>
   ${cur.length?cur.map(row).join(''):'<p class="cap">Nothing added yet.</p>'}
   <button class="btn primary" type="button" id="s-new" style="width:100%;margin-top:12px">Add a supplement</button>
@@ -2596,6 +2629,8 @@ function renderSupD(){const T=targets(),body=$('supd-body');
  ${f.freq!=='d'&&!ed?`<label class="amtrow" style="margin-top:8px"><span>${f.freq==='o'?'Taken on':'Last taken'}</span><input type="date" id="s-taken" value="${f.taken}" max="${TODAY}"></label>`:''}`}
  ${ed&&ed.freq!=='d'?`<div class="lbl" style="margin:18px 0 6px">Taken on</div><div class="chips wrap">${(ed.takes||[]).slice().sort().reverse().slice(0,6).map(x=>`<button class="chip" type="button" data-sdel="${x}">${kdate(x).toLocaleDateString('en-GB',{day:'numeric',month:'short'})} ✕</button>`).join('')||'<span class="cap">Not yet</span>'}</div>
   <label class="amtrow" style="margin-top:8px"><span>Add a date</span><input type="date" id="s-addtake" max="${TODAY}"></label>`:''}
+ ${ed&&sInterval(ed)&&!(ed.end&&ed.end<=TODAY)?`<div class="lbl" style="margin:18px 0 6px">Calendar reminder</div><p class="cap" style="margin:0 0 8px">Adds a repeating event to your phone's calendar, ${ed.freq==='w'?'every week':'every '+sInt(ed)+' days'} from ${kdate(sNextDue(ed)<TODAY?TODAY:sNextDue(ed)).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}. Your calendar reminds you even when the app is closed. If you change the schedule, add a new one and delete the old one in your calendar.</p>
+  <div class="amtrow" style="grid-template-columns:auto 1fr"><span>Time</span><input type="time" id="s-remt" value="${S.prof.remt||'09:00'}"></div><button class="btn" type="button" id="s-rem" style="width:100%;margin-top:8px">Add to calendar</button>`:''}
  <div class="notice" style="margin-top:16px">${prev}${warn.length?warn.map(w=>`<br><b style="color:var(--low)">${w}</b>`).join(''):''}</div>`:''}
  <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">${u?`<button class="btn primary" type="button" id="s-save">${ed?'Save':'Add'}</button>`:''}<button class="btn" type="button" id="s-back">Back</button>
  ${ed&&!(ed.end&&ed.end<=TODAY)?`<button class="btn" type="button" id="s-stop">Stop taking</button>`:''}${ed?`<button class="btn ghost" type="button" id="s-del">${SUPD.sure==='del'?'Tap again to delete':'Delete'}</button>`:''}</div>
@@ -2610,11 +2645,13 @@ function renderSupD(){const T=targets(),body=$('supd-body');
  if(q('#s-taken'))q('#s-taken').onchange=e=>{if(e.target.value&&e.target.value<=TODAY)f.taken=e.target.value};
  if(q('#s-addtake'))q('#s-addtake').onchange=e=>{const v=e.target.value;if(v&&v<=TODAY&&!ed.takes.includes(v)){ed.takes.push(v);render()}renderSupD()};
  body.querySelectorAll('[data-sdel]').forEach(b=>b.onclick=()=>{ed.takes=ed.takes.filter(x=>x!==b.dataset.sdel);render();renderSupD()});
+ if(q('#s-remt'))q('#s-remt').onchange=e=>{if(/^\d\d:\d\d$/.test(e.target.value))S.prof.remt=e.target.value};
+ if(q('#s-rem'))q('#s-rem').onclick=()=>addReminder(ed,S.prof.remt||'09:00');
  q('#s-back').onclick=()=>{SUPD={v:'list',id:null,f:null,sure:null};renderSupD()};
  if(q('#s-stop'))q('#s-stop').onclick=()=>{if(ed.start>=TODAY&&!(ed.takes||[]).some(x=>x<TODAY))S.sups=S.sups.filter(x=>x!==ed);else ed.end=TODAY;SUPD={v:'list',id:null,f:null,sure:null};render();renderSupD()};
  if(q('#s-del'))q('#s-del').onclick=()=>{if(SUPD.sure!=='del'){SUPD.sure='del';renderSupD();return}S.sups=S.sups.filter(x=>x!==ed);SUPD={v:'list',id:null,f:null,sure:null};render();renderSupD()};
  if(q('#s-save'))q('#s-save').onclick=()=>{const nid='s'+Math.random().toString(36).slice(2,8);
-  if(!ed){const s={id:nid,kind:draft.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:draft.freq==='d'?(S.date<TODAY?S.date:TODAY):f.taken,takes:draft.freq==='d'?[]:[f.taken],skip:[]};if(draft.freq==='o')s.end=f.taken;S.sups=S.sups||[];S.sups.push(s)}
+  if(!ed){const s={id:nid,kind:draft.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:draft.freq==='d'?(S.date<TODAY?S.date:TODAY):f.taken,takes:draft.freq==='d'?[]:[f.taken],skip:[]};if(draft.freq==='o')s.end=f.taken;S.sups=S.sups||[];S.sups.push(s);if(sInterval(s)){SUPD={v:'form',id:s.id,f:sForm(s),sure:null};render();renderSupD();toast('Saved. Add a calendar reminder below if you like.');return}}
   else{const same=JSON.stringify([ed.amt,ed.freq,ed.every||0])===JSON.stringify([draft.amt,draft.freq,draft.freq==='n'?draft.every:(ed.every||0)]);
    if(!same){if(ed.start<TODAY){const n={id:nid,kind:ed.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:TODAY,takes:(ed.takes||[]).filter(x=>x>=TODAY),skip:(ed.skip||[]).filter(x=>x>=TODAY)};
      ed.takes=(ed.takes||[]).filter(x=>x<TODAY);ed.skip=(ed.skip||[]).filter(x=>x<TODAY);ed.end=TODAY;
