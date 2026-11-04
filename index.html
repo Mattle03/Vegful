@@ -393,6 +393,11 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .onb-nav{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px}
 .onb-nav .btn{min-width:120px}
 .segrow{display:flex;gap:10px}
+.pgbox{display:flex;flex-direction:column;gap:6px}.pghead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}.pghead b{font-size:15px}
+.pgr{width:100%;accent-color:var(--accent);height:28px;margin:0}.pgmarks{position:relative;height:30px;margin:0 10px}
+.pgmarks button{position:absolute;transform:translateX(-50%);border:0;background:none;font:inherit;font-size:12.5px;font-weight:700;color:var(--muted);padding:6px 4px 0;white-space:nowrap;display:flex;flex-direction:column;align-items:center}.pgmarks i{width:2px;height:8px;background:var(--muted);margin-bottom:2px}
+.opt.added{background:var(--accent-soft);border-radius:16px}.opt.added .optmain{opacity:.8}.addok{background:var(--accent)!important;color:var(--accent-ink)!important}
+.opt.added .optmain{grid-column:1/-1}.addctl{grid-column:1/-1;display:flex;align-items:center;gap:8px;width:100%;padding:0 12px 10px 62px}.addctl label{display:flex;align-items:center;gap:6px;font-weight:600}.addctl input{width:96px;min-height:40px;padding:8px 10px;background:var(--surface)}
 #lib-t,#learn-seg{flex-wrap:wrap;overflow:visible}
 .wchart{width:100%;height:auto;display:block;margin-top:6px}.wchart .wgrid{stroke:var(--line);stroke-width:1}.wchart .wlab{fill:var(--muted);font-size:10px;font-family:var(--body)}.wchart .wline{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}.wchart .wdot{fill:var(--surface);stroke:var(--accent);stroke-width:1.8}
 .wrow2{margin-top:10px}.micon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
@@ -584,7 +589,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
         <label>Height cm<input id="p-ht" type="number" min="130" max="220" inputmode="numeric"></label>
         <label>Weight kg<input id="p-wt" type="number" min="35" max="200" inputmode="decimal"></label>
         <label class="full">Usual activity<small class="cap" style="display:block;font-weight:400;margin:-2px 0 2px">Your normal day. To change a single day, use the activity button on Today.</small><select id="p-act"><option value="1.4">Mostly sitting</option><option value="1.6">Some walking or cycling</option><option value="1.8">Active job or daily sport</option><option value="2.0">Very active, hard training</option></select></label>
-        <label class="full">Protein goal<select id="p-pg"><option value="base">Basic (0.8 g/kg, 1.0 from 65)</option><option value="vegan">Vegan, 10 % extra</option><option value="sport">Strength training (1.6 g/kg)</option></select></label>
+        <div class="full" id="p-pgs"></div>
       </div>
       <label class="suprow" for="p-hk" style="margin-top:14px"><span class="supname">Show calories</span><span class="switch"><input type="checkbox" id="p-hk"><i></i></span><small>Turn off to hide energy numbers everywhere. The app still checks in the background that a day is not far too light.</small></label>
       <div id="prof-targets" class="targets"></div>
@@ -1155,7 +1160,7 @@ function kcalNeed(){
 function targets(){
  const P=S.prof,m=P.sex==='m',age=+P.age||30,old=age>=51,ref=P.ref;
  const kcal=+P.kcal?Math.round(+P.kcal*actEff()/(+P.act||1.6)/50)*50:kcalNeed();
- const pb=age>=65?1:.8, pf={base:pb,vegan:pb*1.1,sport:1.6}[P.pg]||pb;
+ const pb=age>=65?1:.8, pf=+P.pgk||({base:pb,vegan:pb*1.1,sport:1.6}[P.pg]||pb*1.1);
  let T;
  if(ref==='dge') T={fib:30,b12:4,d:20,iod:old?180:200,ca:1000,fe:m?11:(old?10:15),zn:m?16:10,se:m?70:60,ala:kcal*.01/9,
    c:m?110:95,fol:300,a:m?850:700,k:old?(m?80:65):(m?70:60),mg:m?350:300,ul:{iod:500,se:300,zn:25,ca:2500}};
@@ -1167,6 +1172,18 @@ function targets(){
  return Object.assign(T,{kcal,p:wtAt(S.date)*pf,epa:250,pot:ref==='dge'?4000:ref==='nih'?(m?3400:2600):3500});
 }
 const HK=()=>S.prof.hidekcal==='1';
+/* protein goal as g per kg body weight, 0.8 to 2.0; marks for the vegan recommendation and for building muscle */
+const pgBase=()=>(+S.prof.age||30)>=65?1:.8,pgVegan=()=>Math.round(pgBase()*1.1*100)/100;
+const pgk=()=>{const P=S.prof;if(+P.pgk>0)return +P.pgk;return {base:pgBase(),vegan:pgVegan(),sport:1.6}[P.pg]||pgVegan()};
+function protSlider(){const v=pgk(),pos=x=>((x-.8)/1.2*100).toFixed(1),w=wtAt(S.date);
+ return `<div class="pgbox"><div class="pghead"><span class="lbl">Protein goal</span><b id="pg-val">${v.toFixed(2).replace(/0$/,'')} g per kg · ${Math.round(v*w)} g a day</b></div>
+ <input type="range" class="pgr" min="0.8" max="2" step="0.05" value="${v}" aria-label="Protein goal in grams per kg body weight">
+ <div class="pgmarks"><button type="button" data-pgm="${pgVegan()}" style="left:${pos(pgVegan())}%"><i></i>Vegan</button><button type="button" data-pgm="1.6" style="left:${pos(1.6)}%"><i></i>Building muscle</button></div>
+ <p class="cap" style="margin:4px 0 0">Vegan: ${pgVegan()} g per kg, 10 % above the standard because plant protein digests slightly less well. Building muscle: 1.6 g per kg with strength training. More than 2 g per kg brings no extra benefit.</p></div>`}
+function bindProt(root){if(!root)return;const r=root.querySelector('.pgr');if(!r)return;
+ const lab=()=>{const v=+r.value,el=root.querySelector('#pg-val');if(el)el.textContent=`${v.toFixed(2).replace(/0$/,'')} g per kg · ${Math.round(v*wtAt(S.date))} g a day`};
+ r.oninput=lab;r.onchange=()=>{S.prof.pgk=String(+r.value);render()};
+ root.querySelectorAll('[data-pgm]').forEach(b=>b.onclick=()=>{S.prof.pgk=b.dataset.pgm;render()})}
 /* ---------- weight log (optional, Profile): S.weights = {date: kg}. A value counts from its day on, so past days keep the weight they had. ---------- */
 const WLON=()=>S.prof.wlog==='1';
 const wDates=()=>Object.keys(S.weights||{}).filter(d=>+S.weights[d]>0).sort();
@@ -1391,7 +1408,7 @@ function renderToday(T,D){
    return `<div class="tideas${L.length>1?' multi':''}">${L.map(card).join('')}</div>`};
  const meal=s=>{const sl=S.plan[s.id],v=slotV(s.id),empty=!sl.it.length;s=Object.assign({},s,{t:TY[s.ty].t});
   const ph=sl.did&&PH[sl.did];
-  return `<article class="meal${empty?'':' tap'}" style="--c:${s.c}"${empty?'':` data-edit="${s.id}" role="button" tabindex="0" aria-label="Edit ${s.n}"`}>${ph?`<img class="mphoto" src="${ph}" alt="">`:''}<div class="meal-top"><span class="micon em">${empty?(ICON[s.ty]||ICON[s.id]):slotIcon(sl,s.ty)}</span><div class="mt"><div class="mslot">${s.n}</div><div class="mname">${esc(empty?'Nothing planned':(sl.t||sl.it.map(([id],i)=>{const n=FM[id].n.split(',')[0];return i?n.toLowerCase():n}).slice(0,2).join(' and ')))}</div></div>${empty?'':`<div class="mk num">${HK()?`${Math.round(v[1])} g<span>protein</span>`:`${EN(v[0])}<span>${Math.round(v[1])} g protein</span>`}</div>`}</div>
+  return `<article class="meal${empty?'':' tap'}" style="--c:${s.c}"${empty?'':` data-edit="${s.id}" role="button" tabindex="0" aria-label="Edit ${s.n}"`}>${ph?`<img class="mphoto" src="${ph}" alt="">`:''}<div class="meal-top"><span class="micon em">${empty?(ICON[s.ty]||ICON[s.id]):slotIcon(sl,s.ty)}</span><div class="mt">${empty&&s.ty==='s'?`<div class="mname">${s.n}</div>`:`<div class="mslot">${s.n}</div>`}<div class="mname"${empty&&s.ty==='s'?' hidden':''}>${esc(empty?'Nothing planned':(sl.t||sl.it.map(([id],i)=>{const n=FM[id].n.split(',')[0];return i?n.toLowerCase():n}).slice(0,2).join(' and ')))}</div></div>${empty?'':`<div class="mk num">${HK()?`${Math.round(v[1])} g<span>protein</span>`:`${EN(v[0])}<span>${Math.round(v[1])} g protein</span>`}</div>`}</div>
    ${empty?'':`<p class="mfoods">${sl.it.map(([id,g])=>esc(FM[id].n.split(',')[0])+' '+g+' g').join(', ')}</p>`}
    ${empty?`${idea(s)}<div class="mact"><button class="btn primary" type="button" data-start="${s.id}">${s.t==='s'?'Add a snack':'Add '+s.n.toLowerCase()}</button><button class="btn" type="button" data-pick="${s.id}">More ideas</button></div>`:''}</article>`};
  $('v-today').innerHTML=`<div class="vhead"><div><h1>${title}</h1><p class="cap">${date}</p></div><div class="datenav"><button class="iconbtn" type="button" id="d-cal" aria-label="History calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button class="iconbtn" type="button" id="d-prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>${isT?'':`<button class="btn sm" type="button" id="d-today">Today</button>`}<button class="iconbtn" type="button" id="d-next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>
@@ -1884,8 +1901,14 @@ $('pk').addEventListener('click',e=>{if(e.target===$('pk'))closePicker()});
 $('pk-q').oninput=e=>{PK.q=e.target.value;renderPicker()};
 function dishRow(d,T){const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z());const ph=PH[d.id];
  return `<div class="opt"><button class="optmain" type="button" data-r="${d.id}"><span class="thumb em">${ph?`<img src="${ph}" alt="">`:dIcon(d)}</span><span class="otx"><span class="t">${esc(d.n)}${d.own?'<span class="mine">yours</span>':d.edited?'<span class="mine">edited</span>':''}${d.min?`<span class="min">${d.min} min</span>`:''}</span><span class="s num">${ENs(v[0])}${Math.round(v[1])} g protein · ${Math.round(v[2])} g fiber</span><span class="tags">${topTags(v,T).map(x=>`<span>${NUT[x.k].n} ${Math.round(x.p)}%</span>`).join('')}</span></span></button><button class="iconbtn star" type="button" data-star="d:${d.id}" aria-pressed="${d.fav}" aria-label="Favourite ${esc(d.n)}">${STAR}</button></div>`}
-function foodRow(f,T){const v=itemV([f.id,f.por]),inSlot=!PK.part&&S.plan[PK.slot].it.some(x=>x[0]===f.id),fav=S.favFoods.includes(f.id);
- return `<div class="opt"><button class="optmain" type="button" data-f="${f.id}"><span class="thumb em">${fIcon(f.id)}</span><span class="otx"><span class="t">${esc(f.n)}${f.src==='usda'?'<span class="mine" style="background:var(--surface2);color:var(--muted)">USDA</span>':''}${f.parts?'<span class="mine">mix</span>':''}${inSlot?'<span class="mine">added</span>':''}</span><span class="s num">${f.pl?esc(f.pl)+', ':''}${f.por} g · ${ENs(v[0])}${fmt(v[1])} g protein</span><span class="tags">${topTags(v,T).map(x=>`<span>${NUT[x.k].n} ${Math.round(x.p)}%</span>`).join('')}</span></span></button><button class="iconbtn star" type="button" data-star="f:${f.id}" aria-pressed="${fav}" aria-label="Favourite ${esc(f.n)}">${STAR}</button></div>`}
+function foodRow(f,T){const v=itemV([f.id,f.por]),it0=!PK.part&&S.plan[PK.slot].it.find(x=>x[0]===f.id),inSlot=!!it0,fav=S.favFoods.includes(f.id);
+ return `<div class="opt${inSlot?' added':''}"><button class="optmain" type="button" data-f="${f.id}"><span class="thumb em">${fIcon(f.id)}</span><span class="otx"><span class="t">${esc(f.n)}${f.src==='usda'?'<span class="mine" style="background:var(--surface2);color:var(--muted)">USDA</span>':''}${f.parts?'<span class="mine">mix</span>':''}${inSlot?'<span class="mine addok">✓ added</span>':''}</span><span class="s num">${f.pl?esc(f.pl)+', ':''}${f.por} g · ${ENs(v[0])}${fmt(v[1])} g protein</span>${inSlot?'':`<span class="tags">${topTags(v,T).map(x=>`<span>${NUT[x.k].n} ${Math.round(x.p)}%</span>`).join('')}</span>`}</span></button>${inSlot?'':`<button class="iconbtn star" type="button" data-star="f:${f.id}" aria-pressed="${fav}" aria-label="Favourite ${esc(f.n)}">${STAR}</button>`}
+ ${inSlot?`<div class="addctl"><label><input type="number" inputmode="decimal" min="1" step="any" value="${Math.round(it0[1])}" data-fg="${f.id}" aria-label="Amount of ${esc(f.n)} in grams"><span>g</span></label><button class="btn sm ghost" type="button" data-frm="${f.id}">Remove</button></div>`:''}</div>`}
+/* taps on a list while the keyboard is open: act on finger up, before the keyboard closes and the list jumps; ignore scroll gestures */
+function tapBind(el,fn){let x0=0,y0=0,t0=0,done=false;
+ el.addEventListener('pointerdown',e=>{x0=e.clientX;y0=e.clientY;t0=Date.now();done=false},{passive:true});
+ el.addEventListener('pointerup',e=>{if(Math.abs(e.clientX-x0)>10||Math.abs(e.clientY-y0)>10||Date.now()-t0>700)return;done=true;e.preventDefault();fn(e)});
+ el.addEventListener('click',e=>{if(done){done=false;e.preventDefault();return}fn(e)})}
 function renderPicker(){
  const s=SLOTS.find(x=>x.id===PK.slot)||SLOTS[0],T=targets(),q=PK.q.toLowerCase().trim(),isD=PK.kind==='dish',fm=q?'all':PK.f;
  const dn=s.t==='s'?'snack ideas':s.t==='b'?'breakfasts':'dishes';
@@ -1931,10 +1954,14 @@ function renderPicker(){
  if($('pk-todish'))$('pk-todish').onclick=()=>{PK.kind='dish';PK.f=allDishes(s.t).some(d=>d.used)?'recent':'all';PK.q='';$('pk-q').value='';renderPicker();$('pk-list').scrollTop=0};
  if($('pk-tofood'))$('pk-tofood').onclick=()=>{PK.kind='food';PK.f=S.recentFoods.length?'recent':'all';PK.q='';$('pk-q').value='';renderPicker();$('pk-list').scrollTop=0};
  if($('pk-blank'))$('pk-blank').onclick=()=>{const ty0=typeOf(S.plan,PK.slot);S.plan[PK.slot]=Object.assign({t:'',it:[]},ty0!==PK.slot?{ty:ty0}:{});closePicker();render();openMeal(PK.slot);openPicker(PK.slot,'food')};
- $('pk-list').querySelectorAll('[data-r]').forEach(b=>b.onclick=()=>{useDish(PK.slot,dish(b.dataset.r));render();closePicker()});
- $('pk-list').querySelectorAll('[data-f]').forEach(b=>b.onclick=()=>{const id=b.dataset.f;
+ $('pk-list').querySelectorAll('[data-r]').forEach(b=>tapBind(b,()=>{useDish(PK.slot,dish(b.dataset.r));render();closePicker()}));
+ const rePick=()=>{const L=$('pk-list'),y=L.scrollTop;renderPicker();L.scrollTop=y};
+ $('pk-list').querySelectorAll('[data-f]').forEach(b=>tapBind(b,()=>{const id=b.dataset.f;
   if(PK.part){const m=FM[PK.part];m.parts.push([id,20]);saveParts(m);closePicker();render();return}
-  addFood(PK.slot,id);render()});
+  if(S.plan[PK.slot].it.some(x=>x[0]===id)){const i=b.closest('.opt').querySelector('[data-fg]');if(i){i.focus();i.select&&i.select()}return}
+  addFood(PK.slot,id);try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}const it=S.plan[PK.slot].it.find(x=>x[0]===id);toast(`Added ${FM[id].n.split(',')[0]}${it?' '+Math.round(it[1])+' g':''}`);render();rePick()}));
+ $('pk-list').querySelectorAll('[data-fg]').forEach(i=>i.onchange=()=>{const g=parseFloat(String(i.value).replace(',','.'));const it=S.plan[PK.slot].it.find(x=>x[0]===i.dataset.fg);if(it&&g>0){it[1]=Math.round(g);edited(PK.slot);render()}});
+ $('pk-list').querySelectorAll('[data-frm]').forEach(b=>tapBind(b,()=>{const id=b.dataset.frm;S.plan[PK.slot].it=S.plan[PK.slot].it.filter(x=>x[0]!==id);edited(PK.slot);toast(`Removed ${FM[id].n.split(',')[0]}`);render();rePick()}));
  $('pk-list').querySelectorAll('[data-star]').forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.star.split(':');
   if(k==='d')meta(id).fav=!meta(id).fav;else S.favFoods=S.favFoods.includes(id)?S.favFoods.filter(x=>x!==id):[id,...S.favFoods];save();b.setAttribute('aria-pressed',b.getAttribute('aria-pressed')!=='true')});
 }
@@ -2039,7 +2066,7 @@ function renderLibDishes(){
   const id=b.dataset.ldel;delete S.dishes[id];if(!REC.find(r=>r.id===id)){delete S.meta[id];Object.values(S.days).forEach(p=>mealKeys(p).forEach(k=>{if(p[k].did===id)p[k].did=null}))}LX=null;render()});
 }
 /* ---------- profile + tabs ---------- */
-const PF={ref:'p-ref',sex:'p-sex',age:'p-age',ht:'p-ht',wt:'p-wt',act:'p-act',pg:'p-pg',kcal:'p-kcal',unit:'p-unit'};
+const PF={ref:'p-ref',sex:'p-sex',age:'p-age',ht:'p-ht',wt:'p-wt',act:'p-act',kcal:'p-kcal',unit:'p-unit'};
 Object.entries(PF).forEach(([k,id])=>{const el=$(id);el.onchange=()=>{S.prof[k]=el.value;if(k==='wt'&&WLON()&&+el.value>=30){S.weights=S.weights||{};S.weights[TODAY]=Math.round(+el.value*10)/10}render()}});
 function supRows(prefix){return SUP.map(u=>`<label class="suprow" for="${prefix}${u.id}"><span class="supname">${u.n}</span><span class="switch"><input type="checkbox" id="${prefix}${u.id}" data-sup="${u.id}" ${supOn(u)?'checked':''}><i></i></span><small>${u.h}</small></label>`).join('')}
 function bindSup(root){root.querySelectorAll('[data-sup]').forEach(cb=>cb.onchange=()=>{setQuick(cb.dataset.sup,cb.checked);render()})}
@@ -2049,6 +2076,7 @@ function renderProfileView(){
  document.querySelectorAll('#p-mode [data-mode]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.mode||'auto')===b.dataset.mode);b.onclick=()=>{S.prof.mode=b.dataset.mode;applyTheme();render()}});
  $('p-acc').innerHTML=ACC.map(([k,n,c])=>`<button type="button" class="swatch" data-acc="${k}" aria-pressed="${(S.prof.acc||'green')===k}" style="--sw:${c}"><i></i><span>${n}</span></button>`).join('');
  $('p-acc').querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>{S.prof.acc=b.dataset.acc;applyTheme();render()});
+ if(document.activeElement===null||!document.activeElement.classList.contains('pgr')){$('p-pgs').innerHTML=protSlider();bindProt($('p-pgs'))}
  const T=targets(),sv=supV();$('p-hk').checked=!HK();$('p-water').checked=WON();$('p-wlog').checked=WLON();$('p-btl-row').hidden=!WON();if(document.activeElement!==$('p-btl'))$('p-btl').value=BTL();document.querySelectorAll('[data-kc]').forEach(el=>el.hidden=HK());renderDislikes();
  Object.entries(PF).forEach(([k,id])=>{const el=$(id);if(document.activeElement!==el)el.value=S.prof[k]});
  $('prof-targets').innerHTML=withAct(S.prof.act,()=>targetBoxes(targets()));
@@ -2116,8 +2144,7 @@ function renderOnb(){
   ()=>`<h2>Activity and goal</h2><div class="lbl">How active is a normal day?</div><div class="choices">
     ${ch('prof.act','1.4','Mostly sitting','Desk work, little walking')}${ch('prof.act','1.6','Some walking or cycling','Commute by bike or on foot')}${ch('prof.act','1.8','Active','Standing job or daily sport')}${ch('prof.act','2.0','Very active','Physical job or hard training')}</div>
     <p class="cap" style="margin:-6px 0 0">Pick your usual day. On Today you can change it for a single day.</p>
-    <div class="lbl">Protein goal</div><div class="choices">
-    ${ch('prof.pg','base','Basic','Reference value, 0.8 g per kg')}${ch('prof.pg','vegan','Vegan','10 % extra, plant protein digests slightly less well')}${ch('prof.pg','sport','Building muscle','1.6 g per kg')}</div>
+    <div id="o-pgs">${protSlider()}</div>
     <div class="lbl">Show calories?</div><div class="segrow">${ch('prof.hidekcal','0','Show')}${ch('prof.hidekcal','1','Hide')}</div><p class="cap" style="margin:-6px 0 0">Some people prefer a nutrition app without calorie numbers.</p>`,
   supStep,disStep,extraStep,
   ()=>`<h2>All set</h2><p class="info">Your daily targets:</p><div class="targets">${targetBoxes(T)}</div>
@@ -2140,6 +2167,7 @@ function renderOnb(){
  const dq=$('o-dis');if(dq)dq.oninput=()=>{const q=dq.value.toLowerCase().trim(),L=DL();const res=q?F.filter(f=>!f.hide&&!L.includes(f.id)&&f.cat!=='My foods'&&fmatch(f,q)).sort((a,b)=>(a.src==='usda')-(b.src==='usda')||a.n.length-b.n.length).slice(0,6):[];
   $('o-dis-res').innerHTML=res.map(f=>`<button class="optmain disrow" type="button" data-obadd="${f.id}"><span class="thumb em">${fIcon(f.id)}</span><span>${esc(f.n)}</span><span class="muted" style="margin-left:auto">Add</span></button>`).join('');
   $('o-dis-res').querySelectorAll('[data-obadd]').forEach(b=>b.onclick=()=>keep(()=>{DL().push(b.dataset.obadd)}))};
+ bindProt($('o-pgs'));
  const owl=$('o-wlog');if(owl)owl.onchange=()=>keep(()=>{S.prof.wlog=owl.checked?'1':'0';if(WLON()){S.weights=S.weights||{};if(!wDates().length)S.weights[TODAY]=Math.round((+S.prof.wt||70)*10)/10}});
  const ow=$('o-water');if(ow)ow.onchange=()=>keep(()=>{S.prof.water=ow.checked?'1':'0';if(!S.prof.btl)S.prof.btl=750});
  const ob=$('o-btl');if(ob)ob.onchange=()=>{const v=parseInt(ob.value);S.prof.btl=v>=100&&v<=3000?v:750;save()};
