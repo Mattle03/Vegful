@@ -393,6 +393,8 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .onb-nav{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px}
 .onb-nav .btn{min-width:120px}
 .segrow{display:flex;gap:10px}
+.wchart{width:100%;height:auto;display:block;margin-top:6px}.wchart .wgrid{stroke:var(--line);stroke-width:1}.wchart .wlab{fill:var(--muted);font-size:10px;font-family:var(--body)}.wchart .wline{fill:none;stroke:var(--accent);stroke-width:2.5;stroke-linejoin:round;stroke-linecap:round}.wchart .wdot{fill:var(--surface);stroke:var(--accent);stroke-width:1.8}
+.wrow2{margin-top:10px}.micon svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
 .fsrow{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;margin-top:8px}.fsrow b{font-size:22px}.fsbar{position:relative;height:10px;border-radius:5px;background:var(--surface2);margin-top:8px;overflow:visible}.fsbar i{display:block;height:100%;border-radius:5px}.fsm{position:absolute;top:-4px;width:2px;height:18px;background:var(--ink);opacity:.5}
 .swatches{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}.swatch{min-width:0;overflow:hidden;display:flex;align-items:center;gap:10px;min-height:48px;padding:8px 10px;gap:8px;border-radius:14px;border:2px solid transparent;background:var(--surface2);font:inherit;font-weight:600;color:var(--ink)}
 .swatch i{width:24px;height:24px;border-radius:50%;background:var(--sw);flex:none;box-shadow:inset 0 0 0 2px rgba(255,255,255,.35)}.swatch[aria-pressed="true"]{border-color:var(--accent);background:var(--accent-soft)}
@@ -604,8 +606,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
       <div class="swatches" id="p-acc"></div>
     </div>
     <div class="card">
-      <h2>Water</h2>
+      <h2>Tracking</h2>
       <label class="suprow" for="p-water" style="margin-top:10px"><span class="supname">Water bottle</span><span class="switch"><input type="checkbox" id="p-water"><i></i></span><small>Shows a bottle on Today. Hold it to log a filled bottle; it empties at the pace you should drink.</small></label>
+      <label class="suprow" for="p-wlog" style="margin-top:10px"><span class="supname">Weight log</span><span class="switch"><input type="checkbox" id="p-wlog"><i></i></span><small>Log your weight when you like. Each value counts from that day on and keeps your energy and protein targets current. Shows a trend graph.</small></label>
       <label class="full" id="p-btl-row" hidden style="margin-top:14px;display:grid;gap:6px">Bottle size in ml<input id="p-btl" type="number" min="100" max="3000" step="50" inputmode="numeric"></label>
     </div>
     <div class="card">
@@ -1137,7 +1140,7 @@ function actEff(){if(_ACTO!=null)return +_ACTO;const base=+S.prof.act||1.6;
  return +((S.plan&&S.plan.act)||base)}
 const withAct=(a,fn)=>{const o=_ACTO;_ACTO=a;try{return fn()}finally{_ACTO=o}};
 function kcalNeed(){
- const P=S.prof,w=+P.wt||70,h=+P.ht||170,a=+P.age||30;
+ const P=S.prof,w=wtAt(S.date),h=+P.ht||170,a=+P.age||30;
  const bmr=10*w+6.25*h-5*a+(P.sex==='m'?5:-161);
  return Math.round(bmr*actEff()/50)*50;
 }
@@ -1153,9 +1156,48 @@ function targets(){
    ul:{iod:1100,se:400,zn:40,ca:old?2000:2500}};
  else T={fib:25,b12:4,d:15,iod:150,ca:age<25?1000:950,fe:m||old?11:16,zn:m?16.3:12.7,se:70,ala:kcal*.01/9,
    c:m?110:95,fol:330,a:m?750:650,k:70,mg:m?350:300,ul:{iod:600,se:255,zn:25,ca:2500}};
- return Object.assign(T,{kcal,p:(+P.wt||70)*pf,epa:250,pot:ref==='dge'?4000:ref==='nih'?(m?3400:2600):3500});
+ return Object.assign(T,{kcal,p:wtAt(S.date)*pf,epa:250,pot:ref==='dge'?4000:ref==='nih'?(m?3400:2600):3500});
 }
 const HK=()=>S.prof.hidekcal==='1';
+/* ---------- weight log (optional, Profile): S.weights = {date: kg}. A value counts from its day on, so past days keep the weight they had. ---------- */
+const WLON=()=>S.prof.wlog==='1';
+const wDates=()=>Object.keys(S.weights||{}).filter(d=>+S.weights[d]>0).sort();
+function wtAt(d){const ds=wDates();if(!WLON()||!ds.length)return +S.prof.wt||70;let v=null;for(const x of ds){if(x<=d)v=+S.weights[x];else break}return v==null?+S.weights[ds[0]]:v}
+const fmtKg=v=>(Math.round(v*10)/10).toFixed(1);
+function wAvg(d){const ds=wDates().filter(x=>x<=d&&dayDiff(x,d)<7);if(!ds.length)return null;return ds.reduce((a,x)=>a+ +S.weights[x],0)/ds.length}
+function weightRow(){if(!WLON())return '';const ds=wDates(),last=ds.filter(x=>x<=S.date).pop(),isT=S.date===TODAY;
+ const v=S.weights&&S.weights[S.date],cur=wtAt(S.date);
+ return `<button class="suprow2 wrow2" type="button" id="go-wt"><span class="micon" style="--c:var(--s5)"><svg viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="4"/><path d="M9 10a3 3 0 0 1 6 0"/><path d="M12 10l1.5-1.5"/></svg></span><span style="flex:1;min-width:0"><span class="mslot" style="display:block">Weight</span><span style="font-weight:700">${last?fmtKg(cur)+' kg':'Not logged yet'}</span>${last&&!v?`<span class="cap" style="display:block">${dayDiff(last,S.date)===1?'Logged yesterday':'Logged '+kdate(last).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span>`:v?`<span class="cap" style="display:block">Logged ${isT?'today':'this day'}</span>`:''}</span>${CHEV}</button>`}
+let WTR=30;
+function wChart(n){const end=TODAY,start=shift(end,-(n-1)),ds=wDates().filter(x=>x>=start&&x<=end);
+ if(!ds.length)return '<p class="cap" style="margin:8px 0">No entries in this period yet.</p>';
+ const W=320,H=150,pl=34,pr=8,pt=10,pb=22,xs=d=>pl+(dayDiff(start,d)/(n-1||1))*(W-pl-pr);
+ const avg=[];for(let i=0;i<n;i++){const d=shift(start,i);const a=wAvg(d);if(a!=null&&wDates().some(x=>x<=d&&x>=start))avg.push([d,a])}
+ const vals=[...ds.map(x=>+S.weights[x]),...avg.map(x=>x[1])];let lo=Math.min(...vals),hi=Math.max(...vals);if(hi-lo<2){const m=(hi+lo)/2;lo=m-1;hi=m+1}lo-=.3;hi+=.3;
+ const ys=v=>pt+(hi-v)/(hi-lo)*(H-pt-pb);
+ const line=avg.map(([d,a],i)=>(i?'L':'M')+xs(d).toFixed(1)+' '+ys(a).toFixed(1)).join(' ');
+ const fd=d=>kdate(d).toLocaleDateString('en-GB',{day:'numeric',month:'short'});
+ return `<svg class="wchart" viewBox="0 0 ${W} ${H}" role="img" aria-label="Weight over the last ${n} days">
+  ${[hi-.3,(hi+lo)/2,lo+.3].map(v=>`<line x1="${pl}" x2="${W-pr}" y1="${ys(v)}" y2="${ys(v)}" class="wgrid"/><text x="${pl-6}" y="${ys(v)+4}" text-anchor="end" class="wlab">${fmtKg(v)}</text>`).join('')}
+  <path d="${line}" class="wline"/>
+  ${ds.map(x=>`<circle cx="${xs(x).toFixed(1)}" cy="${ys(+S.weights[x]).toFixed(1)}" r="3.2" class="wdot"/>`).join('')}
+  <text x="${pl}" y="${H-5}" class="wlab">${fd(start)}</text><text x="${W-pr}" y="${H-5}" text-anchor="end" class="wlab">${fd(end)}</text></svg>
+  <p class="cap" style="margin:4px 0 0">Dots: your entries. Line: 7 day average, which shows the trend better than single days; daily weight moves 1 to 2 kg with water and food.</p>`}
+function openWeight(){let d=$('wtd');if(!d){document.body.insertAdjacentHTML('beforeend',`<dialog id="wtd"><div class="pk"><div class="pk-head"><div class="row"><h2>Weight</h2><button class="btn sm" id="wt-close" type="button">Done</button></div></div><div class="pk-list" id="wt-body" style="padding:14px 16px 22px"></div></div></dialog>`);d=$('wtd');$('wt-close').onclick=()=>{d.close?d.close():d.removeAttribute('open');render()}}
+ renderWeight();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}}
+function renderWeight(){const b=$('wt-body');if(!b)return;const isT=S.date===TODAY,v=S.weights&&S.weights[S.date],ds=wDates();
+ b.innerHTML=`<label class="amtrow" style="grid-template-columns:1fr 120px auto"><span>${isT?'Today':kdate(S.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span><input type="number" id="wt-in" inputmode="decimal" step="0.1" min="30" max="300" value="${v?fmtKg(v):fmtKg(wtAt(S.date))}"><span class="cap">kg</span></label>
+ <button class="btn primary" type="button" id="wt-save" style="width:100%;margin-top:10px">${v?'Update':'Save'}</button>
+ <p class="cap" style="margin:8px 0 0">Counts from this day on; your energy and protein targets follow it. Days before keep their weight.</p>
+ <div class="seg sm" id="wt-r" style="margin:18px 0 6px">${[[30,'30 days'],[90,'90 days'],[365,'1 year']].map(([n,l])=>`<button type="button" data-wr="${n}" aria-pressed="${WTR===n}">${l}</button>`).join('')}</div>
+ ${wChart(WTR)}
+ ${ds.length?`<div class="lbl" style="margin:16px 0 4px">Entries</div>${ds.slice().reverse().slice(0,6).map(x=>`<div class="dishrow"><span style="flex:1">${kdate(x).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span><b style="margin-right:6px">${fmtKg(+S.weights[x])} kg</b><button class="btn sm ghost" type="button" data-wdel="${x}">Remove</button></div>`).join('')}`:''}`;
+ const sv=()=>{const x=parseFloat(String($('wt-in').value).replace(',','.'));if(!(x>=30&&x<=300)){toast('Enter a weight between 30 and 300 kg');return}
+  S.weights=S.weights||{};S.weights[S.date]=Math.round(x*10)/10;const last=wDates().pop();S.prof.wt=String(S.weights[last]);render();renderWeight();toast('Weight saved')};
+ $('wt-save').onpointerdown=e=>e.preventDefault();$('wt-save').onclick=sv;$('wt-in').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();sv()}};
+ b.querySelectorAll('[data-wr]').forEach(x=>x.onclick=()=>{WTR=+x.dataset.wr;renderWeight()});
+ b.querySelectorAll('[data-wdel]').forEach(x=>x.onclick=()=>{delete S.weights[x.dataset.wdel];const last=wDates().pop();if(last)S.prof.wt=String(S.weights[last]);render();renderWeight()})}
+
 /* ---------- free sugar (WHO): added sugars and syrups plus fruit and vegetable juice; sugar inside whole fruit and vegetables does not count.
    Limit 10 % of energy, ideally under 5 % (WHO 2015). Values in g per 100 g. */
 const FS={applejuice:10,grapejuice:15,multijuice:11,beetjuice:7,darkchoc:24,granola:15,soymilk:2.5,alprosoy:2.5,soyyog:2};
@@ -1354,9 +1396,9 @@ ${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[
   :`<div class="card"><h2>Everything covered</h2><p class="cap" style="margin-top:4px">${S.range===0?'Every nutrient reaches its target over its own time window.':(S.range===1?'This day reaches':'Your last '+S.range+' days reach')+' all your targets.'}</p></div>`}
 `}  ${fgCard()}<div class="meals">${SLOTS.filter(s=>s.id!=='x').map(meal).join('')}</div>
   <div class="addmeal"><span class="lbl">Add a meal</span><div class="chips">${[...'blds'].map(t=>`<button class="chip" type="button" data-addmeal="${t}">+ ${TY[t].n}</button>`).join('')}</div></div>
-  ${supCard(isT)}`;
+  ${supCard(isT)}${weightRow()}`;
  const v=$('v-today');
- bindFg(v);bindSupCard(v);bindWater(v);v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
+ bindFg(v);bindSupCard(v);bindWater(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
  v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>openPicker(b.dataset.pick,'recipe'));
  v.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>startMeal(b.dataset.start));
  v.querySelectorAll('[data-edit]').forEach(b=>{b.onclick=()=>openMeal(b.dataset.edit);b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openMeal(b.dataset.edit)}}});
@@ -1982,7 +2024,7 @@ function renderLibDishes(){
 
 /* ---------- profile + tabs ---------- */
 const PF={ref:'p-ref',sex:'p-sex',age:'p-age',ht:'p-ht',wt:'p-wt',act:'p-act',pg:'p-pg',kcal:'p-kcal',unit:'p-unit'};
-Object.entries(PF).forEach(([k,id])=>{const el=$(id);el.onchange=()=>{S.prof[k]=el.value;render()}});
+Object.entries(PF).forEach(([k,id])=>{const el=$(id);el.onchange=()=>{S.prof[k]=el.value;if(k==='wt'&&WLON()&&+el.value>=30){S.weights=S.weights||{};S.weights[TODAY]=Math.round(+el.value*10)/10}render()}});
 function supRows(prefix){return SUP.map(u=>`<label class="suprow" for="${prefix}${u.id}"><span class="supname">${u.n}</span><span class="switch"><input type="checkbox" id="${prefix}${u.id}" data-sup="${u.id}" ${supOn(u)?'checked':''}><i></i></span><small>${u.h}</small></label>`).join('')}
 function bindSup(root){root.querySelectorAll('[data-sup]').forEach(cb=>cb.onchange=()=>{setQuick(cb.dataset.sup,cb.checked);render()})}
 function targetBoxes(T){return `${HK()?'':`<div><span>Energy</span><b>${EN(T.kcal)}</b></div>`}<div><span>Protein</span><b>${Math.round(T.p)} g</b></div><div><span>Fiber</span><b>${Math.round(T.fib)} g</b></div>`}
@@ -1997,7 +2039,7 @@ function renderProfileView(){
  document.querySelectorAll('#p-mode [data-mode]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.mode||'auto')===b.dataset.mode);b.onclick=()=>{S.prof.mode=b.dataset.mode;applyTheme();render()}});
  $('p-acc').innerHTML=ACC.map(([k,n,c])=>`<button type="button" class="swatch" data-acc="${k}" aria-pressed="${(S.prof.acc||'green')===k}" style="--sw:${c}"><i></i><span>${n}</span></button>`).join('');
  $('p-acc').querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>{S.prof.acc=b.dataset.acc;applyTheme();render()});
- const T=targets(),sv=supV();$('p-hk').checked=!HK();$('p-water').checked=WON();$('p-btl-row').hidden=!WON();if(document.activeElement!==$('p-btl'))$('p-btl').value=BTL();document.querySelectorAll('[data-kc]').forEach(el=>el.hidden=HK());renderDislikes();
+ const T=targets(),sv=supV();$('p-hk').checked=!HK();$('p-water').checked=WON();$('p-wlog').checked=WLON();$('p-btl-row').hidden=!WON();if(document.activeElement!==$('p-btl'))$('p-btl').value=BTL();document.querySelectorAll('[data-kc]').forEach(el=>el.hidden=HK());renderDislikes();
  Object.entries(PF).forEach(([k,id])=>{const el=$(id);if(document.activeElement!==el)el.value=S.prof[k]});
  $('prof-targets').innerHTML=withAct(S.prof.act,()=>targetBoxes(targets()));
  $('prof-sup').innerHTML=supRows('sup-');bindSup($('prof-sup'));
@@ -2047,6 +2089,7 @@ function renderOnb(){
   <p class="muted" style="font-size:12.5px;margin:0">For allergies, check every label yourself. Food data can be incomplete.</p>`};
  const extraStep=()=>`<h2>Extras</h2><p class="info">Optional. You can change this later in Profile.</p>
   <label class="suprow" for="o-water"><span class="supname">Water bottle</span><span class="switch"><input type="checkbox" id="o-water" ${WON()?'checked':''}><i></i></span><small>Shows a bottle on Today. Hold it when you fill your bottle; it empties at the pace you should drink.</small></label>
+  <label class="suprow" for="o-wlog"><span class="supname">Weight log</span><span class="switch"><input type="checkbox" id="o-wlog" ${WLON()?'checked':''}><i></i></span><small>Log your weight when you like; your targets follow it and you see a trend graph.</small></label>
   ${WON()?`<label class="amtrow"><span>Bottle size</span><input type="number" id="o-btl" min="100" max="3000" step="50" inputmode="numeric" value="${BTL()}"><span class="cap">ml</span></label>`:''}`;
  const steps=[
   ()=>`<div class="brandmark">${LOGO}</div><h2>Welcome to Vegful</h2><p class="info" style="font-weight:700">Complete your nutrition.</p><p class="info">Plan vegan days and see which food covers which nutrient. A few quick steps; you can change everything later in Profile.</p>
@@ -2087,6 +2130,7 @@ function renderOnb(){
  const dq=$('o-dis');if(dq)dq.oninput=()=>{const q=dq.value.toLowerCase().trim(),L=DL();const res=q?F.filter(f=>!f.hide&&!L.includes(f.id)&&f.cat!=='My foods'&&fmatch(f,q)).sort((a,b)=>(a.src==='usda')-(b.src==='usda')||a.n.length-b.n.length).slice(0,6):[];
   $('o-dis-res').innerHTML=res.map(f=>`<button class="optmain disrow" type="button" data-obadd="${f.id}"><span class="thumb em">${fIcon(f.id)}</span><span>${esc(f.n)}</span><span class="muted" style="margin-left:auto">Add</span></button>`).join('');
   $('o-dis-res').querySelectorAll('[data-obadd]').forEach(b=>b.onclick=()=>keep(()=>{DL().push(b.dataset.obadd)}))};
+ const owl=$('o-wlog');if(owl)owl.onchange=()=>keep(()=>{S.prof.wlog=owl.checked?'1':'0';if(WLON()){S.weights=S.weights||{};if(!wDates().length)S.weights[TODAY]=Math.round((+S.prof.wt||70)*10)/10}});
  const ow=$('o-water');if(ow)ow.onchange=()=>keep(()=>{S.prof.water=ow.checked?'1':'0';if(!S.prof.btl)S.prof.btl=750});
  const ob=$('o-btl');if(ob)ob.onchange=()=>{const v=parseInt(ob.value);S.prof.btl=v>=100&&v<=3000?v:750;save()};
  const fin=()=>{S.onb=1;OS=0;S.view='today';(S.sups||[]).forEach(s=>delete s.ob);render();scrollTo({top:0})};
@@ -2095,6 +2139,7 @@ function renderOnb(){
  if($('onb-skip'))$('onb-skip').onclick=fin;
 }
 $('p-hk').onchange=e=>{S.prof.hidekcal=e.target.checked?'0':'1';render()};
+$('p-wlog').onchange=e=>{S.prof.wlog=e.target.checked?'1':'0';if(WLON()){S.weights=S.weights||{};if(!wDates().length)S.weights[TODAY]=Math.round((+S.prof.wt||70)*10)/10}render()};
 $('p-water').onchange=e=>{S.prof.water=e.target.checked?'1':'0';if(!S.prof.btl)S.prof.btl=750;render()};
 $('p-btl').onchange=e=>{const v=parseInt(e.target.value);S.prof.btl=v>=100&&v<=3000?v:750;render()};
 function backupJSON(){return JSON.stringify(Object.assign({app:'vegful',v:1,saved:new Date().toISOString()},JSON.parse(localStorage.getItem('vpc2')||JSON.stringify(S,function(k,v){return this===S&&k==='plan'?undefined:v}))))}
@@ -2365,7 +2410,7 @@ function drawReport(n){const {T,R,L,D,fg,sups,score}=repData(n);
  const C={bg:'#F8FAF5',ink:'#1F2E25',muted:'#5C6B60',line:'#DFE6DA',track:'#E7EDE3',ok:'#2E7D4F',mid:'#B4561A',low:'#B83A2A',over:'#9C3B8A',acc:'#2D5A3F',hero:'#2D5A3F'};
  const nk=['b12','d','iod','ca','fe','zn','se','ala','c','fol','a','k','mg','pot','epa'].filter(k=>NUT[k]);
  const dops=REP.days?repDayOps(R,T,W,P,FONT):[];const dH=dops.length?110+dops.reduce((a,o)=>a+o.gap+o.h,0):0;
- const H=P+350+(HK()?2:3)*70+90+nk.length*58+90+Math.ceil(FGK.length/2)*58+90+Math.max(1,sups.length)*44+200+dH;
+ const H=P+390+(HK()?2:3)*70+90+nk.length*58+90+Math.ceil(FGK.length/2)*58+90+Math.max(1,sups.length)*44+200+dH;
  const c=document.createElement('canvas'),SC=Math.min(1,14000/H);c.width=Math.round(W*SC);c.height=Math.round(H*SC);const g=c.getContext('2d');g.scale(SC,SC);/* phones limit canvas size; very long reports get a little smaller */
  const t=(s,x,y,o)=>{o=o||{};g.font=`${o.w||600} ${o.s||30}px ${FONT}`;g.fillStyle=o.c||C.ink;g.textAlign=o.a||'left';g.textBaseline='alphabetic';g.fillText(s,x,y)};
  const rr=(x,y,w,h,r,col)=>{g.fillStyle=col;g.beginPath();g.roundRect?g.roundRect(x,y,w,h,r):g.rect(x,y,w,h);g.fill()};
@@ -2382,6 +2427,7 @@ function drawReport(n){const {T,R,L,D,fg,sups,score}=repData(n);
  const macro=(k,lab,unit)=>{const i=K.indexOf(k),v=D[i],p=v/T[k]*100;y+=46;t(lab,P,y,{s:28});t(`${k==='kcal'?Math.round(v).toLocaleString('en'):fmt(v)} / ${k==='kcal'?Math.round(T[k]).toLocaleString('en'):Math.round(T[k])} ${unit}`,W-P,y,{s:28,a:'right',c:C.muted,w:600});bar(P,y+12,W-2*P,p,k==='kcal'?(p>115?C.mid:p>=85?C.ok:C.mid):p>=90?C.ok:p>=50?C.mid:C.low);y+=24};
  if(!HK())macro('kcal','Energy','kcal');macro('p','Protein','g');macro('fib','Fiber','g');
  {const ch=L.filter(d=>S.days[d].act&&+S.days[d].act!==+S.prof.act),up=ch.filter(d=>+S.days[d].act>+S.prof.act).length,dn=ch.length-up;y+=50;
+  if(WLON()){const wd=wDates().filter(x=>x>=R.dates[0]&&x<=R.dates[R.dates.length-1]);if(wd.length){const a=wd.reduce((q,x)=>q+ +S.weights[x],0)/wd.length;t(`Weight: average ${fmtKg(a)} kg (${wd.length} ${wd.length===1?'entry':'entries'})`,P,y,{s:26,w:600,c:C.muted});y+=40}}
   {let fsum=0;L.forEach(d=>fsum+=fsDay(S.days[d]));const fav=L.length?fsum/L.length:0,FL=fsLim(T);t(`Free sugar: ${Math.round(fav)} g a day · limit ${FL} g`,P,y,{s:26,w:600,c:fav>FL?C.low:C.muted});y+=40}
   t(`Activity: usually ${actName(S.prof.act).toLowerCase()}${ch.length?` · ${up?up+(up===1?' day':' days')+' more active':''}${up&&dn?', ':''}${dn?dn+(dn===1?' day':' days')+' less active':''}`:''}`,P,y,{s:26,w:600,c:C.muted})}
  y+=80;t('Nutrients',P,y,{s:34,w:800});t('✓ covered   ~ close   ! low',W-P,y,{s:24,w:600,c:C.muted,a:'right'});y+=16;
@@ -2415,7 +2461,7 @@ function openReport(){let d=$('repd');if(!d){document.body.insertAdjacentHTML('b
   },'image/png')};
  (document.fonts&&document.fonts.ready?document.fonts.ready:Promise.resolve()).then(go,go)}
 
-function renderHistory(T){renderHistory0(T);addRepCard()}
+function renderHistory(T){renderHistory0(T);addRepCard();if(WLON()){const v=$('n-hist');v.insertAdjacentHTML('afterbegin',`<div class="card"><div class="card-head"><div><h2>Weight</h2><p class="cap">Last 90 days</p></div><button class="btn sm" type="button" id="h-wt">Log weight</button></div>${wChart(90)}</div>`);$('h-wt').onclick=openWeight}}
 function renderHistory0(T){
  const first=Object.keys(S.days).filter(k=>logged(S.days[k])).sort()[0]||TODAY;
  const span=Math.ceil((kdate(TODAY)-kdate(first))/864e5/7)+1;
