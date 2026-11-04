@@ -1693,7 +1693,7 @@ function fgStatus(end){end=end||S.date;const need=kcalNeed(),ki2=K.indexOf('kcal
   const low=miss>=FG[k].w;res.push({k,miss,low,seen})});
  return res}
 function fgLow(end){const sn=S.fgsnooze||{};return fgStatus(end).filter(x=>x.low&&!(sn[x.k]&&sn[x.k]>=S.date)).sort((a,b)=>b.miss/FG[b.k].w-a.miss/FG[a.k].w)}
-function fgSug(k){const E=eaten(),G=FG[k];const mine=[...E].filter(id=>FM[id]&&fgOf(id).has(k)&&!isDis(id)&&!FM[id].hide&&FM[id].cat!=='My foods');
+function fgSug(k){const E=eaten(),G=FG[k];const mine=[...E].filter(id=>FM[id]&&fgOf(id).has(k)&&!isDis(id)&&!FM[id].hide&&FM[id].cat!=='My foods').sort((a,b)=>S.favFoods.includes(b)-S.favFoods.includes(a));
  const def=G.sug.filter(id=>FM[id]&&!isDis(id));return [...new Set([...mine,...def])].slice(0,3)}
 let FGO=null;
 function fgCard(){if(S.date!==TODAY)return '';const L=fgLow();if(!L.length)return '';const x=L[0],G=FG[x.k],sug=fgSug(x.k);
@@ -2388,8 +2388,8 @@ function computeSugg(){
   out.meals.push({slot:k,ty,opts:top.map(x=>({d:x.d,add:x.add,fills:fillsOf(Dg,x.add,TN)}))});
   Dg=top[0].D1;fg=f});
  const f=Math.min(1,filledShare(.15)),Tf=partT(TN,f),base=score(D,Tf),cand=[];
- F.filter(x=>!x.hide&&['Fruit','Nuts and seeds','Plant milk and yogurt'].includes(x.cat)&&x.src!=='usda'&&!isDis(x.id)&&x.id!=='brazil').forEach(x=>{const add=itemV([x.id,x.por]),D1=D.slice();addv(D1,add);const h=hasF(x.id);cand.push({food:x,add,cat:x.cat,has:h,sc:score(D1,Tf)-base+(h?.06:0)})});
- allDishes('s').filter(d=>!dishBad(d)).forEach(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D.slice();addv(D1,add);const h=hasD(d);cand.push({d,add,cat:'dish',has:h,sc:score(D1,Tf)-base-(recentDish(d.id)?.2:0)+(h?.06:0)})});
+ F.filter(x=>!x.hide&&['Fruit','Nuts and seeds','Plant milk and yogurt'].includes(x.cat)&&x.src!=='usda'&&!isDis(x.id)&&x.id!=='brazil').forEach(x=>{const add=itemV([x.id,x.por]),D1=D.slice();addv(D1,add);const h=hasF(x.id);cand.push({food:x,add,cat:x.cat,has:h,sc:score(D1,Tf)-base+(h?.06:0)+(S.favFoods.includes(x.id)?.06:0)})});
+ allDishes('s').filter(d=>!dishBad(d)).forEach(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D.slice();addv(D1,add);const h=hasD(d);cand.push({d,add,cat:'dish',has:h,sc:score(D1,Tf)-base-(recentDish(d.id)?.2:0)+(h?.06:0)+(d.fav?.1:0)})});
  cand.sort((a,b)=>b.sc-a.sc);const per={};
  for(const x of cand){if(x.sc<=.02)break;if((per[x.cat]||0)>=3)continue;per[x.cat]=(per[x.cat]||0)+1;x.fills=fillsOf(D,x.add,TN);if(x.fills.length)out.snacks.push(x);if(out.snacks.length>=8)break}
  return out}
