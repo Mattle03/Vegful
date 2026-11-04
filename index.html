@@ -624,7 +624,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
     </div>
     <div class="card">
       <h2>Reminders</h2>
-      <p class="cap" style="margin:4px 0 10px">For supplements you take weekly or every few days. Adds a repeating event to your phone's calendar, which reminds you even when the app is closed. Daily supplements need no reminder.</p>
+      <p class="cap" style="margin:4px 0 10px">Adds a repeating event to your phone's calendar for a supplement you take daily, weekly or every few days. Your calendar reminds you even when the app is closed.</p>
       <div id="p-rem"></div>
     </div>
     <div class="card">
@@ -2131,9 +2131,9 @@ function renderProfileView(){
  $('p-acc').innerHTML=ACC.map(([k,n,c])=>`<button type="button" class="swatch" data-acc="${k}" aria-pressed="${(S.prof.acc||'green')===k}" style="--sw:${c}"><i></i><span>${n}</span></button>`).join('');
  $('p-acc').querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>{S.prof.acc=b.dataset.acc;applyTheme();render()});
  if(document.activeElement===null||!document.activeElement.classList.contains('pgr')){$('p-pgs').innerHTML=protSlider();bindProt($('p-pgs'))}
- {const L=(S.sups||[]).filter(x=>sInterval(x)&&sCurrent(x));
-  $('p-rem').innerHTML=L.length?`<div class="amtrow" style="grid-template-columns:auto 1fr;margin-bottom:6px"><span>Time</span><input type="time" id="p-remt" value="${S.prof.remt||'09:00'}"></div>`+L.map(x=>`<div class="dishrow"><span style="flex:1;min-width:0"><span style="font-weight:600">${esc(sName(x))}</span><br><span class="cap">${sSched(x)} · next ${kdate(sNextDue(x)<TODAY?TODAY:sNextDue(x)).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span></span><button class="btn sm" type="button" data-prem="${x.id}">Add to calendar</button></div>`).join('')+`<p class="cap" style="margin:8px 0 0">Changed a schedule? Add it again and delete the old event in your calendar.</p>`
-   :'<p class="cap">No weekly or every few days supplement yet. Add one in Supplements on Today.</p>';
+ {const L=(S.sups||[]).filter(x=>x.freq!=='o'&&sCurrent(x)&&!(x.end&&x.end<=TODAY));
+  $('p-rem').innerHTML=L.length?`<div class="amtrow" style="grid-template-columns:auto 1fr;margin-bottom:6px"><span>Time</span><input type="time" id="p-remt" value="${S.prof.remt||'09:00'}"></div>`+L.map(x=>`<div class="dishrow"><span style="flex:1;min-width:0"><span style="font-weight:600">${esc(sName(x))}</span><br><span class="cap">${sSched(x)}${x.freq==='d'?'':' · next '+kdate(sNextDue(x)<TODAY?TODAY:sNextDue(x)).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span></span><button class="btn sm" type="button" data-prem="${x.id}">Add to calendar</button></div>`).join('')+`<p class="cap" style="margin:8px 0 0">Changed a schedule? Add it again and delete the old event in your calendar.</p>`
+   :'<p class="cap">No supplements yet. Add one in Supplements on Today.</p>';
   if($('p-remt'))$('p-remt').onchange=e=>{if(/^\d\d:\d\d$/.test(e.target.value))S.prof.remt=e.target.value;save()};
   $('p-rem').querySelectorAll('[data-prem]').forEach(b=>b.onclick=()=>{const x=S.sups.find(y=>y.id===b.dataset.prem);if(x)addReminder(x,S.prof.remt||'09:00')})}
  const T=targets(),sv=supV();$('p-hk').checked=!HK();$('p-water').checked=WON();$('p-wlog').checked=WLON();$('p-btl-row').hidden=!WON();if(document.activeElement!==$('p-btl'))$('p-btl').value=BTL();document.querySelectorAll('[data-kc]').forEach(el=>el.hidden=HK());renderDislikes();
@@ -2586,7 +2586,7 @@ function go(v){S.view=v;render();scrollTo({top:0})}
 document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.onclick=()=>go(b.dataset.v));
 /* ---------- reminders for weekly and every N days supplements: a due line on Today, a punch card, and a repeating calendar event ---------- */
 const sInterval=s=>s.freq==='w'||s.freq==='n';
-function sNextDue(s){const l=sLast(s,TODAY);if(!l)return TODAY;return shift(l,sInt(s))}
+function sNextDue(s){if(s.freq==='d')return TODAY;const l=sLast(s,TODAY);if(!l)return TODAY;return shift(l,sInt(s))}
 let STAMP=null;
 function dueLine(){if(S.date!==TODAY)return '';const L=(S.sups||[]).filter(s=>sInterval(s)&&sActive(s,TODAY)&&sNextDue(s)<=TODAY&&!(s.takes||[]).includes(TODAY));
  const done=STAMP?(S.sups||[]).find(s=>s.id===STAMP):null;
@@ -2643,7 +2643,7 @@ function renderSupD(){const T=targets(),body=$('supd-body');
  ${f.freq!=='d'&&!ed?`<label class="amtrow" style="margin-top:8px"><span>${f.freq==='o'?'Taken on':'Last taken'}</span><input type="date" id="s-taken" value="${f.taken}" max="${TODAY}"></label>`:''}`}
  ${ed&&ed.freq!=='d'?`<div class="lbl" style="margin:18px 0 6px">Taken on</div><div class="chips wrap">${(ed.takes||[]).slice().sort().reverse().slice(0,6).map(x=>`<button class="chip" type="button" data-sdel="${x}">${kdate(x).toLocaleDateString('en-GB',{day:'numeric',month:'short'})} ✕</button>`).join('')||'<span class="cap">Not yet</span>'}</div>
   <label class="amtrow" style="margin-top:8px"><span>Add a date</span><input type="date" id="s-addtake" max="${TODAY}"></label>`:''}
- ${ed&&sInterval(ed)?`<p class="cap" style="margin:14px 0 0">Calendar reminders for this supplement: Profile, Reminders.</p>`:''}
+ ${ed&&ed.freq!=='o'?`<p class="cap" style="margin:14px 0 0">Calendar reminders for this supplement: Profile, Reminders.</p>`:''}
  <div class="notice" style="margin-top:16px">${prev}${warn.length?warn.map(w=>`<br><b style="color:var(--low)">${w}</b>`).join(''):''}</div>`:''}
  <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">${u?`<button class="btn primary" type="button" id="s-save">${ed?'Save':'Add'}</button>`:''}<button class="btn" type="button" id="s-back">Back</button>
  ${ed&&!(ed.end&&ed.end<=TODAY)?`<button class="btn" type="button" id="s-stop">Stop taking</button>`:''}${ed?`<button class="btn ghost" type="button" id="s-del">${SUPD.sure==='del'?'Tap again to delete':'Delete'}</button>`:''}</div>
@@ -2662,7 +2662,7 @@ function renderSupD(){const T=targets(),body=$('supd-body');
  if(q('#s-stop'))q('#s-stop').onclick=()=>{if(ed.start>=TODAY&&!(ed.takes||[]).some(x=>x<TODAY))S.sups=S.sups.filter(x=>x!==ed);else ed.end=TODAY;SUPD={v:'list',id:null,f:null,sure:null};render();renderSupD()};
  if(q('#s-del'))q('#s-del').onclick=()=>{if(SUPD.sure!=='del'){SUPD.sure='del';renderSupD();return}S.sups=S.sups.filter(x=>x!==ed);SUPD={v:'list',id:null,f:null,sure:null};render();renderSupD()};
  if(q('#s-save'))q('#s-save').onclick=()=>{const nid='s'+Math.random().toString(36).slice(2,8);
-  if(!ed){const s={id:nid,kind:draft.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:draft.freq==='d'?(S.date<TODAY?S.date:TODAY):f.taken,takes:draft.freq==='d'?[]:[f.taken],skip:[]};if(draft.freq==='o')s.end=f.taken;S.sups=S.sups||[];S.sups.push(s);if(sInterval(s))toast('Saved. Calendar reminders: Profile, Reminders.');}
+  if(!ed){const s={id:nid,kind:draft.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:draft.freq==='d'?(S.date<TODAY?S.date:TODAY):f.taken,takes:draft.freq==='d'?[]:[f.taken],skip:[]};if(draft.freq==='o')s.end=f.taken;S.sups=S.sups||[];S.sups.push(s);if(s.freq!=='o')toast('Saved. Calendar reminders: Profile, Reminders.');}
   else{const same=JSON.stringify([ed.amt,ed.freq,ed.every||0])===JSON.stringify([draft.amt,draft.freq,draft.freq==='n'?draft.every:(ed.every||0)]);
    if(!same){if(ed.start<TODAY){const n={id:nid,kind:ed.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:TODAY,takes:(ed.takes||[]).filter(x=>x>=TODAY),skip:(ed.skip||[]).filter(x=>x>=TODAY)};
      ed.takes=(ed.takes||[]).filter(x=>x<TODAY);ed.skip=(ed.skip||[]).filter(x=>x<TODAY);ed.end=TODAY;
