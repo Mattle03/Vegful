@@ -578,7 +578,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
     <div class="seg" id="nsub-seg"><button data-ns="over">Overview</button><button data-ns="imp">Improve</button><button data-ns="hist">History</button></div>
     <div id="n-over" class="view">
     <div class="seg" id="range-seg"><button data-r="0">Mixed</button><button data-r="1">Day</button><button data-r="7">7 days</button><button data-r="30">30 days</button></div>
-    <details class="why"><summary><span class="whyi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></span>How to read this<svg class="whyc" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><p class="cap">Mixed is the default: each nutrient is averaged over the time your body holds on to it. Energy counts per day, protein, fiber and potassium over 3 days, zinc and vitamin K over 7, vitamin C, magnesium and omega 3 over 14, and stored nutrients like B12, vitamin D, iron, calcium and iodine over 30 days. Day, 7 days and 30 days show one period for everything.</p><div class="legend" id="legend" style="margin-top:10px"></div><p class="cap" style="margin-top:6px">Bar colors show which meal a nutrient came from. The line marks 100 %. Tap a nutrient for details.</p></details>
+    <details class="why"><summary><span class="whyi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></span>How to read this<svg class="whyc" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><p class="cap">Mixed is the default: each nutrient is looked at over the time your body holds on to it. Energy counts per day, protein, fiber and potassium mostly the last 3 days, zinc and vitamin K 7, vitamin C, magnesium and omega 3 14, and stored nutrients like B12, vitamin D, iron, calcium and iodine 30 days. Recent days count most and older days fade out gradually, so nothing drops off at once. Days without entries are left out. Day, 7 days and 30 days show one period for everything.</p><div class="legend" id="legend" style="margin-top:10px"></div><p class="cap" style="margin-top:6px">Bar colors show which meal a nutrient came from. The line marks 100 %. Tap a nutrient for details.</p></details>
     <div id="nutrients" class="view"></div>
     </div>
     <div id="n-hist" class="view" hidden></div>
@@ -990,7 +990,8 @@ const DEF={view:'today',it:'ideas',sel:null,gn:'b12',gm:'rank',gc:'All',addto:'s
  sup:{b12:'0',d:'0',epa:'0',iod:'0',salt:'0',multi:'0'},onb:0};
 let S;
 let raw0=null;try{const raw=JSON.parse(localStorage.getItem('vpc2')||'null');raw0=raw;S=structuredClone(DEF);if(raw){Object.assign(S,raw);S.prof=Object.assign({},DEF.prof,raw.prof||{});S.sup=Object.assign({},DEF.sup,raw.sup||{});if(!(+S.prof.age>=18))S.prof.age=DEF.prof.age;if(S.prof.pg==='dge')S.prof.pg='base';Object.keys(S.sup).forEach(k=>{const v=S.sup[k];S.sup[k]=(v&&v!=='0')?'1':'0'})}}catch(e){S=structuredClone(DEF)}
-const save=()=>{try{localStorage.setItem('vpc2',JSON.stringify(S,function(k,v){return this===S&&k==='plan'?undefined:v}))}catch(e){}};
+let VCV=0;/* bumped on every save so cached view numbers follow edits */
+const save=()=>{VCV++;try{localStorage.setItem('vpc2',JSON.stringify(S,function(k,v){return this===S&&k==='plan'?undefined:v}))}catch(e){}};
 if(!Array.isArray(S.custom))S.custom=[];
 /* removing a product hides it from lists and search; days you already logged keep it */
 function hideCustom(id){const c=S.custom.find(x=>x.id===id);if(!c)return;const used=Object.values(S.days).some(p=>mealKeys(p).some(k=>p[k].it.some(x=>x[0]===id)))||Object.values(S.dishes).some(d=>(d.it||[]).some(x=>x[0]===id));
@@ -1041,21 +1042,42 @@ const planV=p=>{const v=supV(p);mealKeys(p).forEach(k=>p[k].it.forEach(it=>addv(
 const WIN={kcal:1,p:3,fib:3,pot:3,zn:7,k:7,c:14,mg:14,ala:14,epa:14,b12:30,d:30,a:30,fe:30,ca:30,iod:30,se:30,fol:30};
 const WINWHY={1:'Your body needs energy every day; a day without food is not made up by other days.',3:'Hardly stored, so you need it steadily; a short window catches a few low days.',7:'Small stores that last days, so a week shows how you are doing.',14:'The body keeps a pool that lasts a few weeks.',30:'Stored for months in the liver, bones, fat or thyroid, so the month counts more than one day.'};
 const winLabel=k=>WIN[k]===1?'today':WIN[k]+' days';
-function mixStats(end){end=end||S.date;const Rs={};[1,3,7,14,30].forEach(w=>Rs[w]=rangeStats(w,end));const avg=z(),slots=TSL.map(()=>z()),p=S.days[end],pv=p?planV(p):z();
- K.forEach((k,i)=>{const w=WIN[k]||7,R=Rs[w];avg[i]=w===1?pv[i]:(R.L.length?R.avg[i]:pv[i]);slots.forEach((sl,j)=>sl[i]=R.slots[j][i])});
- return {avg,slots,L:Rs[30].L}}
+/* Mixed: each nutrient is a weighted average of your logged days. The day you look at counts fully and older days fade out gradually:
+   a day counts about half after half the nutrient's span (WIN), a fifth after the span, and nothing after twice the span.
+   Days with nothing logged are left out, never counted as zero. Spans of 1 day (energy) use that day only. */
+const MIXH=60;
+function mixW(k,a){const W=WIN[k]||7;if(W<=1)return a===0?1:0;const H=2*W;if(a<0||a>=H)return 0;const f=1/16;return (Math.pow(.5,a/(W/2))-f)/(1-f)}
+const mixSpan=k=>{const W=WIN[k]||7;return W<=1?1:2*W};
+/* one day's numbers, kept for the length of one calculation only so edits never see stale values */
+function mixMemo(){const M=new Map();return d=>{if(M.has(d))return M.get(d);const p=S.days[d];if(!logged(p)){M.set(d,null);return null}
+ const sl=TSL.map(()=>z());addv(sl[4],supV(p));mealKeys(p).forEach(k=>{const j='blds'.indexOf(typeOf(p,k));p[k].it.forEach(it=>addv(sl[j<0?3:j],itemV(it)))});
+ const v=z();sl.forEach(x=>addv(v,x));const o={v,sl};M.set(d,o);return o}}
+const mixDates=end=>{const ds=[];for(let a=0;a<MIXH;a++)ds.push(shift(end,-a));return ds};
+function mixOne(k,end,V){const i=K.indexOf(k),H=mixSpan(k);let sw=0,sum=0;for(let a=0;a<H;a++){const x=V(shift(end,-a));if(!x)continue;const w=mixW(k,a);sw+=w;sum+=w*x.v[i]}return sw?sum/sw:null}
+function mixStats(end,V,noSlots){end=end||S.date;V=V||mixMemo();const ds=mixDates(end),avg=z(),slots=TSL.map(()=>z()),p=S.days[end],pv=p?planV(p):z();
+ const L=ds.slice(0,30).filter(d=>V(d)).reverse();
+ K.forEach((k,i)=>{const H=mixSpan(k);let sw=0;
+  for(let a=0;a<H;a++){const x=V(ds[a]);if(!x)continue;const w=mixW(k,a);sw+=w;avg[i]+=w*x.v[i];if(!noSlots)x.sl.forEach((q,j)=>slots[j][i]+=w*q[i])}
+  if(sw){avg[i]/=sw;if(!noSlots)slots.forEach(q=>q[i]/=sw)}else avg[i]=pv[i]});
+ return {avg,slots,L}}
+/* how many days a nutrient has been below target in Mixed, counted back from end; days without entries neither break nor add */
+function lowRun(k,end,V,T){if(NUT[k].opt||(WIN[k]||7)<=1)return 0;const lim=T[k]*.9;let first=null;
+ for(let a=0;a<90;a++){const d=shift(end,-a);if(a>0&&!V(d))continue;const v=mixOne(k,d,V);if(v===null||v>=lim)break;first=d}
+ return first?dayDiff(first,end)+1:0}
+const runTxt=n=>n>=90?'3+ months':n>=28?Math.floor(n/7)+' weeks':n+' days';
 /* the view at the top (Mixed, Day, 7 or 30 days) decides how ideas are ranked and how before and after are shown */
 const vWin=k=>S.range===0?(WIN[k]||7):S.range===1?1:S.range;
 let _VC=null;
-function vPrev(){const key=S.date+'|'+S.range;if(_VC&&_VC.key===key)return _VC;const prev=[];
- for(let i=1;i<30;i++){const p=S.days[shift(S.date,-i)];prev.push(logged(p)?planV(p):null)}
- const w={};K.forEach((k,i)=>{const n=vWin(k);let m=0,sum=0;for(let d=0;d<n-1;d++){const v=prev[d];if(v){m++;sum+=v[i]}}w[k]=[m,sum]});
+/* weight of a day a days back in the selected view: faded in Mixed, equal inside the period for 7 and 30 days */
+const vW=(k,a)=>S.range===0?mixW(k,a):a<vWin(k)?1:0;
+function vPrev(){const key=S.date+'|'+S.range+'|'+VCV;if(_VC&&_VC.key===key)return _VC;const prev=[];
+ for(let i=1;i<MIXH;i++){const p=S.days[shift(S.date,-i)];prev.push(logged(p)?planV(p):null)}
+ const w={};K.forEach((k,i)=>{let m=0,sum=0;for(let a=1;a<MIXH;a++){const v=prev[a-1];if(!v)continue;const q=vW(k,a);if(q){m+=q;sum+=q*v[i]}}w[k]=[m,sum]});
  return _VC={key,w}}
 /* turns a vector for the day you are on into what the selected view would show */
 function viewVec(D){if(S.range===1)return D;const P=vPrev(),on=D[0]>0;return K.map((k,i)=>{const [m,sum]=P.w[k];if(vWin(k)<=1||!m)return D[i];return on?(sum+D[i])/(m+1):sum/m})}
-function needT(T){const N=Object.assign({},T),prev=[];
- for(let i=1;i<30;i++){const p=S.days[shift(S.date,-i)];prev.push(logged(p)?planV(p):null)}
- ALLK.forEach(k=>{const w=vWin(k);if(w<=1)return;const i=K.indexOf(k);let m=0,sum=0;for(let d=0;d<w-1;d++){const v=prev[d];if(v){m++;sum+=v[i]}}
+function needT(T){const N=Object.assign({},T),P=vPrev();
+ ALLK.forEach(k=>{if(vWin(k)<=1)return;const [m,sum]=P.w[k];
   if(m)N[k]=Math.min(T[k]*1.5,Math.max(T[k]*.5,T[k]*(m+1)-sum))});
  return N}
 function rangeStats(n,end){end=end||TODAY;const dates=[];for(let i=n-1;i>=0;i--)dates.push(shift(end,-i));
@@ -1468,7 +1490,7 @@ function renderToday(T,D){
  const sc=dayScore(D,T),C=2*Math.PI*52,date=kdate(S.date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
  const isT=S.date===TODAY,title=isT?'Today':S.date===shift(TODAY,-1)?'Yesterday':S.date===shift(TODAY,1)?'Tomorrow':kdate(S.date).toLocaleDateString('en-GB',{weekday:'long'});
  const wk=rangeStats(7,S.date),wsc=wk.L.length?dayScore(wk.avg,T):null,emptyDay=!logged(S.plan);
- const MX=S.range===0?mixStats(S.date):null,RG=S.range>1?rangeStats(S.range,S.date):null,useR=RG&&RG.L.length,DS=MX?MX.avg:useR?RG.avg:D,rs=dayScore(DS,T),iss=issues(DS,T);
+ const MXV=mixMemo(),MX=S.range===0?mixStats(S.date,MXV):null,RG=S.range>1?rangeStats(S.range,S.date):null,useR=RG&&RG.L.length,DS=MX?MX.avg:useR?RG.avg:D,rs=dayScore(DS,T),iss=issues(DS,T);if(MX)iss.slice(0,3).forEach(x=>{x.run=x.s.over?0:lowRun(x.k,S.date,MXV,T)});
  const rlab=S.range===0?'mixed':S.range===1?(isT?'today':'this day'):S.range+' days',rnote=S.range===0?(isT?'Energy today, protein and fiber 3 days':'Energy this day, protein and fiber 3 days'):S.range===1?(isT?'Today':'This day'):(useR?`Average of ${RG.L.length} logged day${RG.L.length>1?'s':''}`:'No days logged');
  let prev=null;for(let i=1;i<=14&&!prev;i++){const k=shift(S.date,-i);if(logged(S.days[k]))prev=k}
  const HC=p=>p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)';
@@ -1494,7 +1516,7 @@ ${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[
   <div class="meals">${SLOTS.filter(s=>s.id!=='x').map(meal).join('')}</div>
   <div class="addmeal"><span class="lbl">Add a meal</span><div class="chips">${[...'blds'].map(t=>`<button class="chip" type="button" data-addmeal="${t}">+ ${TY[t].n}</button>`).join('')}</div></div>
   ${iss.length?`<div class="card"><div class="card-head" style="margin-bottom:4px"><div><h2>${iss.length===1?'1 thing to look at':iss.length+' things to look at'}</h2><p class="cap">${S.range===0?'Each nutrient over the time your body stores it':S.range===1?(isT?'Today':'This day'):'Last '+S.range+' days'}</p></div><button class="btn sm ghost" type="button" id="go-ideas">Improve</button></div>
-   <div class="attn">${iss.slice(0,3).map(x=>`<button class="arow" type="button" data-sel="${x.k}"><span class="dotst" style="background:${x.s.c}"></span><span class="nm">${NUT[x.k].n}</span><span class="pill" style="color:${x.s.c};background:color-mix(in srgb,${x.s.c} 16%,transparent)">${x.s.over?'Too much':Math.round(x.s.p)+' %'}</span>${CHEV}</button>`).join('')}
+   <div class="attn">${iss.slice(0,3).map(x=>`<button class="arow" type="button" data-sel="${x.k}"><span class="dotst" style="background:${x.s.c}"></span><span class="nm">${NUT[x.k].n}${x.run>=3?` <span class="cap">for ${runTxt(x.run)}</span>`:''}</span><span class="pill" style="color:${x.s.c};background:color-mix(in srgb,${x.s.c} 16%,transparent)">${x.s.over?'Too much':Math.round(x.s.p)+' %'}</span>${CHEV}</button>`).join('')}
    ${iss.length>3?`<button class="arow" type="button" id="go-nutr"><span class="nm muted" style="font-weight:600">${iss.length-3} more</span>${CHEV}</button>`:''}</div></div>`
   :`<div class="card"><h2>Everything covered</h2><p class="cap" style="margin-top:4px">${S.range===0?'Every nutrient reaches its target over its own time window.':(S.range===1?'This day reaches':'Your last '+S.range+' days reach')+' all your targets.'}</p></div>`}
 `}
@@ -1595,13 +1617,13 @@ function renderNutrients(T,D){
  if($('n-fix'))$('n-fix').onclick=()=>{S.nsub='imp';render();scrollTo({top:0})};
  document.querySelectorAll('[data-plants]').forEach(b=>b.onclick=openPlants);
 }
-function spark(k,T){const R=rangeStats(S.range>1?S.range:14,TODAY),ser=R.series(k),i=K.indexOf(k),n=ser.length,W=320,H=90,bw=W/n;
+function spark(k,T){const mx0=S.range===0&&(WIN[k]||7)>1,R=rangeStats(S.range>1?S.range:mx0?30:14,TODAY),i=K.indexOf(k),V=mx0?mixMemo():null,ser=mx0?R.dates.map(d=>mixOne(k,d,V)):R.series(k),n=ser.length,W=320,H=90,bw=W/n;
  const mx=Math.max(150,...ser.filter(x=>x!==null).map(v=>v/T[k]*100));
- return `<div><h3 style="margin-bottom:8px">Last ${n} days</h3><svg viewBox="0 0 ${W} ${H+16}" style="width:100%;height:auto" role="img" aria-label="Daily ${NUT[k].n}">
+ return `<div><h3 style="margin-bottom:8px">Last ${n} days${mx0?', mixed':''}</h3><svg viewBox="0 0 ${W} ${H+16}" style="width:100%;height:auto" role="img" aria-label="Daily ${NUT[k].n}">
   <line x1="0" x2="${W}" y1="${H-H*100/mx}" y2="${H-H*100/mx}" stroke="var(--muted)" stroke-dasharray="3 3" stroke-width="1"/>
   ${ser.map((v,j)=>{if(v===null)return `<rect x="${j*bw+bw*.2}" y="${H-2}" width="${bw*.6}" height="2" fill="var(--line)"/>`;const p=v/T[k]*100,h=Math.max(2,H*Math.min(p,mx)/mx);const c=T.ul[k]&&v>T.ul[k]?'var(--over)':p<50?'var(--low)':p<90?'var(--mid)':'var(--ok)';return `<rect x="${j*bw+bw*.15}" y="${H-h}" width="${bw*.7}" height="${h}" rx="${Math.min(3,bw*.3)}" fill="${c}"/>`}).join('')}
   <text x="0" y="${H+14}" font-size="11" fill="var(--muted)">${kdate(R.dates[0]).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</text><text x="${W}" y="${H+14}" font-size="11" fill="var(--muted)" text-anchor="end">Today</text></svg>
-  <p class="cap">Dashed line is your daily target. Grey marks are days without entries.</p></div>`}
+  <p class="cap">${mx0?'Each bar is where you stood that day, with recent days counting most and older days fading out. Dashed line is your target. Grey marks: no entries yet.':'Dashed line is your daily target. Grey marks are days without entries.'}</p></div>`}
 function renderDetail(T,root){
  if(!S.sel&&root.id==='sheet-body'&&$('sheet-grp').textContent==='Plant variety')return;
  const k=S.sel||'b12',i=K.indexOf(k),N=NUT[k],MXd=S.range===0?mixStats():null,R=S.range>1?rangeStats(S.range,S.date):null,D=MXd?MXd.avg:R&&R.L.length?R.avg:dayV(),s=nstat(k,D,T);
@@ -1623,7 +1645,7 @@ function renderDetail(T,root){
  const srcs=srcList.slice(0,SRC.n);
  const supTip=['b12','d','iod'].includes(k)&&!supHas(k);
  root.innerHTML=`<div><h2 style="font-size:26px">${N.n}</h2>
-   <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px"><span class="big" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="muted num">${fmt(D[i])} of ${fmt(T[k])} ${N.u}${MXd?` · ${WIN[k]===1?'this day':'averaged over '+WIN[k]+' days'}`:R&&R.L.length?` · average of ${R.L.length} days`:''}</span></div>${MXd?`<p class="cap" style="margin-top:6px">${WINWHY[WIN[k]||7]}</p>`:''}
+   <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px"><span class="big" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="muted num">${fmt(D[i])} of ${fmt(T[k])} ${N.u}${MXd?` · ${WIN[k]===1?'this day':'mostly the last '+WIN[k]+' days'}`:R&&R.L.length?` · average of ${R.L.length} days`:''}</span></div>${MXd?`<p class="cap" style="margin-top:6px">${WINWHY[WIN[k]||7]}${(WIN[k]||7)>1?` Recent days count most; a day fades to half after ${WIN[k]/2} days and stops counting after ${2*WIN[k]}.`:''}${(()=>{const n=lowRun(k,S.date,mixMemo(),T);return n>=3?` <b style="color:var(--ink)">Below target for ${runTxt(n)}.</b>`:''})()}</p>`:''}
    <div style="margin-top:8px">${srcLinks([k],`Target from ${REFL[S.prof.ref||'efsa'][0]}${['zn','ala','p'].includes(k)?', adjusted for vegan eating':''}. Food amounts are typical averages; brands differ.`)}</div>
    ${T.ul[k]?`<p class="cap" style="margin-top:6px">Upper safe limit ${fmt(T.ul[k])} ${N.u}${s.over?'. You are above it.':''}</p>`:''}</div>
   <p class="info">${N.i}</p>
@@ -2499,7 +2521,9 @@ document.addEventListener('focusin',e=>{fitDialogs();const t=e.target;if(t&&t.ma
 document.addEventListener('focusout',()=>setTimeout(fitDialogs,60));
 new MutationObserver(fitDialogs).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
 /* ---------- history: a square per day, colored by how much of your needs the day covered ---------- */
-function histLevel(p,T){if(!logged(p))return -1;const sc=dayScore(planV(p),T);return sc>=90?4:sc>=75?3:sc>=60?2:sc>=40?1:0}
+/* a day's square shows where you stood that day in Mixed: each nutrient over the time your body stores it, so one weak day for B12 barely shows and a week without zinc does */
+const histScore=(d,T,V)=>dayScore(mixStats(d,V,1).avg,T);
+function histLevel(d,T,V){if(!V(d))return -1;const sc=histScore(d,T,V);return sc>=90?4:sc>=75?3:sc>=60?2:sc>=40?1:0}
 /* ---------- report: a picture of the last 7, 14 or 30 days to share with a friend or a dietitian ---------- */
 let REP={n:7,url:null,blob:null,days:true};
 function addRepCard(){const v=$('n-hist');if(!v)return;
@@ -2591,20 +2615,20 @@ function renderHistory(T){renderHistory0(T);addRepCard();if(WLON()){const v=$('n
 function renderHistory0(T){
  const first=Object.keys(S.days).filter(k=>logged(S.days[k])).sort()[0]||TODAY;
  const span=Math.ceil((kdate(TODAY)-kdate(first))/864e5/7)+1;
- const v=$('n-hist'),W=Math.max(26,span),end=kdate(TODAY),dow=(end.getDay()+6)%7,start=shift(TODAY,-(dow+7*(W-1)));
- const cells=[];for(let i=0;i<W*7;i++){const k=shift(start,i);cells.push({k,fut:k>TODAY,l:histLevel(S.days[k],T)})}
+ const HV=mixMemo(),v=$('n-hist'),W=Math.max(26,span),end=kdate(TODAY),dow=(end.getDay()+6)%7,start=shift(TODAY,-(dow+7*(W-1)));
+ const cells=[];for(let i=0;i<W*7;i++){const k=shift(start,i);cells.push({k,fut:k>TODAY,l:k>TODAY?-1:histLevel(k,T,HV)})}
  const logd=Object.keys(S.days).filter(k=>logged(S.days[k])).sort();
  let streak=0;for(let i=0;;i++){const k=shift(TODAY,-i);if(logged(S.days[k]))streak++;else if(i>0||streak>0)break;else if(i===0)continue;if(i>400)break}
- const R30=rangeStats(30),avg=R30.L.length?dayScore(R30.avg,T):null;
+ const avg=logd.length?histScore(TODAY,T,HV):null;
  const months=[];for(let c=0;c<W;c++){const d=kdate(shift(start,c*7));if(c===0||d.getDate()<=7)months.push([c,d.getMonth()===0||c===0?d.toLocaleDateString('en-GB',{month:'short'})+' '+String(d.getFullYear()).slice(2):d.toLocaleDateString('en-GB',{month:'short'})])}
- const sel=S.hsel&&S.days[S.hsel]?S.hsel:(logd[logd.length-1]||TODAY);S.hsel=sel;const sp=S.days[sel],sl=histLevel(sp,T);
- v.innerHTML=`<div class="card"><div class="hstats"><div><b>${logd.length}</b><span>days logged</span></div><div><b>${streak}</b><span>day streak</span></div><div><b>${avg===null?'·':avg+'%'}</b><span>covered, last 30 days</span></div></div></div>
+ const sel=S.hsel&&S.days[S.hsel]?S.hsel:(logd[logd.length-1]||TODAY);S.hsel=sel;const sp=S.days[sel],sl=histLevel(sel,T,HV);
+ v.innerHTML=`<div class="card"><div class="hstats"><div><b>${logd.length}</b><span>days logged</span></div><div><b>${streak}</b><span>day streak</span></div><div><b>${avg===null?'·':avg+'%'}</b><span>covered now, mixed</span></div></div></div>
   <div class="card"><h2 style="margin-bottom:10px">Your history</h2><div class="hscroll" id="hscroll"><div class="hgrid-wrap">
    <div class="hmonths" style="grid-template-columns:repeat(${W},14px)">${months.map(([c,m])=>`<span style="grid-column:${c+1}">${m}</span>`).join('')}</div>
    <div class="hgrid" style="grid-template-columns:repeat(${W},14px)">${cells.map(c=>c.fut?'<i class="hf"></i>':`<button type="button" class="hc l${c.l}${c.k===sel?' sel':''}" data-hd="${c.k}" aria-label="${kdate(c.k).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}${c.l<0?', nothing logged':''}"></button>`).join('')}</div></div></div>
    <div class="hlegend"><span>Less</span><i class="hc l-1"></i><i class="hc l0"></i><i class="hc l1"></i><i class="hc l2"></i><i class="hc l3"></i><i class="hc l4"></i><span>More covered</span></div>
-   <p class="cap" style="margin-top:6px">Each square is one day, colored by how much of your daily needs it covered. Swipe left for earlier days, back to your first logged day. Tap a day to see it.</p></div>
-  <div class="card"><div class="card-head"><div><h2>${kdate(sel).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</h2><p class="cap">${sl<0?'Nothing logged':dayScore(planV(sp),T)+' % of nutrients covered'}</p></div><button class="btn sm primary" type="button" id="h-open">Open day</button></div>
+   <p class="cap" style="margin-top:6px">Each square is one day, colored by where you stood that day: each nutrient over the time your body stores it, like Mixed. A single weak day barely shows; several in a row do. Swipe left for earlier days, back to your first logged day. Tap a day to see it.</p></div>
+  <div class="card"><div class="card-head"><div><h2>${kdate(sel).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</h2><p class="cap">${sl<0?'Nothing logged':histScore(sel,T,HV)+' % covered, mixed · this day alone '+dayScore(planV(sp),T)+' %'}</p></div><button class="btn sm primary" type="button" id="h-open">Open day</button></div>
    ${sl<0?'':`<div class="hmeals">${mealKeys(sp).filter(k=>sp[k].it.length).map(k=>{const ty=typeOf(sp,k);return `<div class="hmeal"><span class="dotst" style="background:${TY[ty].c}"></span><span><b>${TY[ty].n}</b> ${esc(sp[k].t||sp[k].it.map(([id])=>FM[id]?FM[id].n.split(',')[0]:id).slice(0,3).join(', '))}</span></div>`}).join('')}</div>`}</div>`;
  const sc=$('hscroll');sc.scrollLeft=sc.scrollWidth;
  v.querySelectorAll('[data-hd]').forEach(b=>b.onclick=()=>{S.hsel=b.dataset.hd;const x=sc.scrollLeft;renderHistory(T);$('hscroll').scrollLeft=x});
