@@ -1499,7 +1499,7 @@ function renderToday(T,D){
  const rlab=S.range===0?'mixed':S.range===1?(isT?'today':'this day'):S.range+' days',rnote=S.range===0?(isT?'Energy today, protein and fiber 3 days':'Energy this day, protein and fiber 3 days'):S.range===1?(isT?'Today':'This day'):(useR?`Average of ${RG.L.length} logged day${RG.L.length>1?'s':''}`:'No days logged');
  let prev=null;for(let i=1;i<=14&&!prev;i++){const k=shift(S.date,-i);if(logged(S.days[k]))prev=k}
  const HC=p=>p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)';
- const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?EN(T.kcal).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const sc=Math.max(100,Math.min(p,200));return `<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?HC(p>=85?100:p):HC(p)}"></i><s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`})()}</div></div>`};
+ const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?EN(T.kcal).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const sc=Math.max(100,Math.min(p,200));return `<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?HC(p>=85?100:p):HC(p)}"></i>${p>100?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
  const SGt=computeSugg(),TT=targets(),TN=needT(TT);
  let sni=0;const usedI=new Set();const idea=s=>{let L=[];
    if(s.ty==='s'){const ix=sni++,n=SGt.snacks.length;for(let j=0;j<n;j++){const q=(ix+j)%n,x=SGt.snacks[q];L.push({nm:x.food?x.food.n.split(',')[0]+' '+x.food.por+' g':x.d.n,add:x.add,ic:x.food?fIcon(x.food.id):dIcon(x.d),attr:`data-tsn="${s.id}:${q}"`})}}
@@ -2577,7 +2577,7 @@ function drawReport(n){const {T,R,L,D,fg,sups,score}=repData(n);
  /* score badge */
  rr(W-P-210,P,210,150,28,C.hero);t(score===null?'·':score+'%',W-P-105,P+92,{s:64,w:800,c:'#fff',a:'center'});t('covered',W-P-105,P+128,{s:24,w:600,c:'#C9DCCD',a:'center'});
  y=P+250;
- const bar=(x,y,w,p,col)=>{const sc=Math.max(100,Math.min(p,200));rr(x,y,w,14,7,C.track);rr(x,y,Math.max(14,w*Math.min(p,200)/sc),14,7,col);g.fillStyle=C.ink;g.fillRect(x+w*100/sc-3,y-6,3,26)};
+ const bar=(x,y,w,p,col)=>{const sc=Math.max(100,Math.min(p,200));rr(x,y,w,14,7,C.track);rr(x,y,Math.max(14,w*Math.min(p,200)/sc),14,7,col);if(p>100){g.fillStyle=C.ink;g.fillRect(x+w*100/sc-3,y-6,3,26)}};
  t('Daily average',P,y,{s:34,w:800});y+=24;
  const macro=(k,lab,unit)=>{const i=K.indexOf(k),v=D[i],p=v/T[k]*100;y+=46;t(lab,P,y,{s:28});t(`${k==='kcal'?Math.round(v).toLocaleString('en'):fmt(v)} / ${k==='kcal'?Math.round(T[k]).toLocaleString('en'):Math.round(T[k])} ${unit}`,W-P,y,{s:28,a:'right',c:C.muted,w:600});bar(P,y+12,W-2*P,p,k==='kcal'?(p>=85?C.ok:C.mid):p>=90?C.ok:p>=50?C.mid:C.low);y+=24};
  if(!HK())macro('kcal','Energy','kcal');macro('p','Protein','g');macro('fib','Fiber','g');
