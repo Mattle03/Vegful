@@ -395,12 +395,16 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .onb-nav{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px}
 .onb-nav .btn{min-width:120px}
 .segrow{display:flex;gap:10px}
-.dueline{display:flex;flex-direction:column;gap:6px;margin:-4px 0 0}.duerow{display:flex;align-items:center;gap:10px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 14px;min-height:52px;font-size:15px}
-.duerow .duedot{width:10px;height:10px;border-radius:50%;background:var(--coral);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--coral) 30%,transparent)}
-.duerow.ok{background:var(--accent-soft);border-color:transparent;animation:stampin .5s ease}.stampic{width:28px;height:28px;border-radius:50%;background:var(--accent);color:var(--accent-ink);display:grid;place-items:center;font-weight:800;flex:none;animation:stamp .45s cubic-bezier(.2,1.6,.4,1)}
-@keyframes stamp{0%{transform:scale(2.2) rotate(-20deg);opacity:0}100%{transform:none;opacity:1}}@keyframes stampin{from{opacity:.4}to{opacity:1}}
-.punch{display:flex;align-items:center;gap:5px;margin-top:6px;flex-wrap:wrap}.punch i{width:14px;height:14px;border-radius:50%;border:2px solid var(--line);background:transparent}.punch i.on{background:var(--accent);border-color:var(--accent)}.punch i.cur:not(.on){border-style:dashed;border-color:var(--muted)}.punch i.new{animation:stamp .45s cubic-bezier(.2,1.6,.4,1)}.punch .cap{margin-left:4px}
-@media (prefers-reduced-motion:reduce){.stampic,.punch i.new,.duerow.ok{animation:none}}
+.dueline{display:flex;flex-direction:column;gap:8px;margin:-4px 0 0}
+.ticket{display:flex;align-items:stretch;background:var(--surface);border:1px solid var(--line);border-radius:14px;min-height:58px;overflow:hidden;font-size:15px}
+.tk-main{flex:1;min-width:0;display:flex;flex-direction:column;justify-content:center;gap:5px;padding:8px 14px}
+.tk-perf{width:0;border-left:2px dashed var(--line);margin:6px 0}
+.tk-btn{border:0;background:var(--coral);color:var(--coral-ink);font:inherit;font-weight:800;min-width:92px;padding:0 14px;cursor:pointer}
+.tk-done{min-width:92px;display:grid;place-items:center;color:var(--accent);font-weight:800;font-size:14px}.ticket.done{background:var(--accent-soft);border-color:transparent}
+.holes{display:flex;gap:5px;align-items:center;margin-top:4px}.holes i{width:10px;height:10px;border-radius:50%;border:1.5px dashed var(--muted);box-sizing:border-box;opacity:.7}
+.holes i.on{border:0;opacity:1;background:var(--bg);box-shadow:inset 0 1.5px 2.5px rgba(10,20,15,.45)}.holes i.cur:not(.on){border-style:dotted;opacity:.5}
+.holes i.pop{animation:holepop .35s ease-out}@keyframes holepop{0%{transform:scale(0)}70%{transform:scale(1.3)}100%{transform:scale(1)}}
+@media (prefers-reduced-motion:reduce){.holes i.pop{animation:none}}
 .favst{color:var(--coral);font-size:.95em}[data-lfav][aria-pressed="true"]{background:var(--accent-soft)}
 .linkbtn{display:flex;align-items:center;gap:8px;border:0;background:none;color:var(--accent);font:inherit;font-weight:700;font-size:14px;padding:12px 4px;min-height:44px}.linkbtn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .measrow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:15px}.measrow b{text-align:right;font-weight:600}
@@ -1151,7 +1155,8 @@ function sStatus(s,d,T){
 function supCard(isT){const T=targets(),d=S.date;const rows=(S.sups||[]).map(s=>({s,st:sStatus(s,d,T)})).filter(x=>x.st);
  if(!rows.length)return `<button class="suprow2" type="button" id="go-sup"><span class="micon" style="--c:var(--s5)">${ICON.x}</span><span style="flex:1;min-width:0"><span class="mslot" style="display:block">Supplements</span><span style="font-weight:700">None set</span></span>${CHEV}</button>`;
  return `<div class="card supcard"><div class="card-head" style="margin-bottom:6px"><div><h2>Supplemented</h2><p class="cap">${isT?'Today':'This day'}</p></div><button class="btn sm ghost" type="button" id="go-sup">Edit</button></div>
- ${rows.map(({s,st})=>`<div class="suprowt"><span class="dotst" style="background:${st.ok?'var(--ok)':st.due?'var(--mid)':'var(--muted)'}"></span><span style="flex:1;min-width:0"><span style="font-weight:600">${esc(sName(s))}</span><br><span class="cap">${st.t}</span></span>${st.act?`<button class="btn sm${st.act[0]==='take'?' primary':''}" type="button" data-sact="${s.id}:${st.act[0]}">${st.act[1]}</button>`:''}</div>`).join('')}</div>`}
+ ${rows.map(({s,st})=>{const iv=sInterval(s),l=iv?sLast(s,d):null,info=iv?`${sDose(s)} · ${sSched(s).toLowerCase()}`:'',when=iv?(l?`Last taken ${dayDiff(l,d)===0?'today':fdS(l)} · next ${fdS(shift(l,sInt(s)))}`:'Not taken yet'):'';
+ return `<div class="suprowt"><span class="dotst" style="background:${st.ok?'var(--ok)':st.due?'var(--mid)':'var(--muted)'}"></span><span style="flex:1;min-width:0"><span style="font-weight:600">${esc(sName(s))}</span>${iv?`<span class="cap" style="display:block">${info}</span><span class="cap" style="display:block">${when}</span>${sHoles(s,d,false)}`:`<br><span class="cap">${st.t}</span>`}</span>${st.act?`<button class="btn sm${st.act[0]==='take'?' primary':''}" type="button" data-sact="${s.id}:${st.act[0]}">${st.act[1]}</button>`:''}</div>`}).join('')}</div>`}
 function bindSupCard(v){v.querySelectorAll('[data-sact]').forEach(b=>b.onclick=()=>{const [id,a]=b.dataset.sact.split(':'),s=(S.sups||[]).find(x=>x.id===id);if(!s)return;const d=S.date;
  s.takes=s.takes||[];s.skip=s.skip||[];
  if(a==='skip')s.skip.push(d);else if(a==='undo')s.skip=s.skip.filter(x=>x!==d);else if(a==='take'){if(!s.takes.includes(d))s.takes.push(d)}else if(a==='untake')s.takes=s.takes.filter(x=>x!==d);
@@ -2588,18 +2593,17 @@ document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.onclick=()=>go(b.data
 const sInterval=s=>s.freq==='w'||s.freq==='n';
 function sNextDue(s){if(s.freq==='d')return TODAY;const l=sLast(s,TODAY);if(!l)return TODAY;return shift(l,sInt(s))}
 let STAMP=null;
-function dueLine(){if(S.date!==TODAY)return '';const L=(S.sups||[]).filter(s=>sInterval(s)&&sActive(s,TODAY)&&sNextDue(s)<=TODAY&&!(s.takes||[]).includes(TODAY));
- const done=STAMP?(S.sups||[]).find(s=>s.id===STAMP):null;
- if(!L.length&&!done)return '';
- return `<div class="dueline">${done?`<div class="duerow ok"><span class="stampic">✓</span><span><b>${esc(sName(done))}</b> stamped for today</span></div>`:''}${L.map(s=>{const late=dayDiff(sNextDue(s),TODAY);
-  return `<div class="duerow"><span class="duedot"></span><span style="flex:1;min-width:0"><b>${esc(sName(s))}</b> ${late>0?`due since ${late===1?'yesterday':late+' days'}`:'due today'}</span><button class="btn sm primary" type="button" data-duetake="${s.id}">Taken</button></div>`}).join('')}</div>`}
+const fdS=d=>kdate(d).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+/* dose slots for one supplement in its own period; the last 6 shown as punched holes */
+function sHoles(s,upto,fresh){const N=sInt(s),tk=(s.takes||[]).filter(x=>x<=upto).sort();if(!tk.length)return '';const sl=[];let st=tk[0];
+ while(st<=upto&&sl.length<400){const en=shift(st,N);sl.push({on:tk.some(x=>x>=st&&x<en),cur:en>upto,st,en});st=en}
+ return `<span class="holes" aria-label="${sl.filter(x=>x.on).length} of ${sl.length} doses taken">${sl.slice(-6).map((x,i,a)=>`<i class="${x.on?'on':''}${x.cur&&!x.on?' cur':''}${x.on&&fresh&&i===a.length-1?' pop':''}"></i>`).join('')}</span>`}
+function dueLine(){if(S.date!==TODAY)return '';const L=(S.sups||[]).filter(s=>sInterval(s)&&sActive(s,TODAY)&&(sNextDue(s)<=TODAY||(s.takes||[]).includes(TODAY)));
+ if(!L.length)return '';
+ return `<div class="dueline">${L.map(s=>{const done=(s.takes||[]).includes(TODAY),late=dayDiff(sNextDue(s),TODAY);
+  return `<div class="ticket${done?' done':''}"><div class="tk-main"><div><b>${esc(sName(s))}</b> ${done?'punched · next '+fdS(shift(TODAY,sInt(s))):late>0?`due since ${late===1?'yesterday':late+' days'}`:'due today'}</div>${sHoles(s,TODAY,STAMP===s.id)}</div><div class="tk-perf"></div>${done?`<div class="tk-done">Done</div>`:`<button class="tk-btn" type="button" data-duetake="${s.id}">Punch</button>`}</div>`}).join('')}</div>`}
 function bindDue(v){v.querySelectorAll('[data-duetake]').forEach(b=>b.onclick=()=>{const s=(S.sups||[]).find(x=>x.id===b.dataset.duetake);if(!s)return;s.takes=s.takes||[];if(!s.takes.includes(TODAY))s.takes.push(TODAY);
-  STAMP=s.id;try{navigator.vibrate&&navigator.vibrate([20,40,20])}catch(e){}render();setTimeout(()=>{if(STAMP===s.id){STAMP=null;render()}},2600)})}
-/* punch card: one dot per dose slot since the first dose, the last 8 shown; a slot is punched if you took it within that period */
-function punchCard(s){if(!sInterval(s))return '';const N=sInt(s),tk=(s.takes||[]).slice().sort();if(!tk.length)return '';
- const slots=[];let st=tk[0];while(st<=TODAY&&slots.length<400){const en=shift(st,N);slots.push([st,en,tk.some(x=>x>=st&&x<en)]);st=en}
- const show=slots.slice(-8),miss=slots.filter((x,i)=>!x[2]&&i<slots.length-1).length;
- return `<div class="punch" aria-label="Doses: ${slots.filter(x=>x[2]).length} of ${slots.length}">${show.map((x,i)=>{const cur=i===show.length-1&&x[1]>TODAY;return `<i class="${x[2]?'on':''}${cur?' cur':''}${x[2]&&STAMP===s.id&&i===show.length-1?' new':''}" title="${kdate(x[0]).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}"></i>`}).join('')}<span class="cap">${miss?miss+(miss===1?' missed':' missed'):'none missed'}</span></div>`}
+  STAMP=s.id;try{navigator.vibrate&&navigator.vibrate([20,40,20])}catch(e){}render();setTimeout(()=>{STAMP=null},800)})}
 /* calendar file: repeats weekly or every N days with an alert at the chosen time; your phone's calendar does the reminding */
 function icsFor(s,time){const N=sInt(s),d=sNextDue(s)<TODAY?TODAY:sNextDue(s),[hh,mm]=(time||'09:00').split(':'),dt=d.replace(/-/g,'')+'T'+hh+mm+'00';
  const rr=s.freq==='w'?'FREQ=WEEKLY;INTERVAL=1':'FREQ=DAILY;INTERVAL='+N,uid='vegful-'+s.id+'@vegful.app',now=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z';
