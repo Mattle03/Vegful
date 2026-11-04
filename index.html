@@ -954,6 +954,14 @@ function thumbOf(url){return new Promise((ok,bad)=>{const im=new Image();im.cros
 function photoFill(){let n=0;(S.custom||[]).forEach(c=>{if(!c.img&&c.bc){const h=(S.scanHist||[]).find(x=>x.code===c.bc&&x.img);if(h){c.img=h.img;n++}}
   if(c.img&&!c.ph&&!c._pt){c._pt=1;thumbOf(c.img).then(d=>{c.ph=d;delete c._pt;registerFood(c);render()}).catch(()=>{delete c._pt})}});if(n){S.custom.forEach(registerFood)}}
 setTimeout(()=>{try{photoFill()}catch(e){}},800);
+/* products saved before free sugar existed: look the sugar up again by barcode, or estimate it from the ingredients, so past days count too */
+async function sugarFill(){let ch=false;for(const c of (S.custom||[])){if(c.fs!=null||c.parts)continue;
+  if(c.bc&&String(c.bc).length>=8&&!(c.fsTry&&c.fsTry===TODAY)){c.fsTry=TODAY;try{const ctl=new AbortController(),t=setTimeout(()=>ctl.abort(),8000);
+   const r=await fetch(`https://world.openfoodfacts.org/api/v2/product/${c.bc}.json?fields=nutriments,ingredients,ingredients_text,ingredients_text_en,categories_tags`,{signal:ctl.signal});clearTimeout(t);const j=await r.json();
+   if(j&&j.product){const v=offFreeSugar(j.product);if(v!=null){c.fs=v;delete c.fsTry;ch=true;continue}}}catch(e){}}
+  if(c.fs==null&&c.ing&&c.ing.length){let v=0;c.ing.forEach(([q,pc])=>{v+=fsOf(q)*(+pc||0)/100});if(v>0){c.fs=Math.round(v*10)/10;ch=true}}}
+ if(ch){for(const k in _FSC)delete _FSC[k];S.custom.forEach(registerFood);save();render()}}
+setTimeout(()=>{try{sugarFill()}catch(e){}},1500);
 /* food edits: S.fedit[id] = {vals:{k:value}} or {parts:[[id,g]]}; composite foods compute their values from parts */
 if(!S.fedit||typeof S.fedit!=='object')S.fedit={};
 F.forEach(f=>{f.v0=f.v.slice();if(f.parts&&f.cat!=='My foods')f.parts0=f.parts.map(p=>p.slice())});
