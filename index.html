@@ -394,6 +394,7 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .onb-nav{display:flex;justify-content:space-between;gap:10px;margin-top:auto;padding-top:10px}
 .onb-nav .btn{min-width:120px}
 .segrow{display:flex;gap:10px}
+.favst{color:var(--coral);font-size:.95em}[data-lfav][aria-pressed="true"]{background:var(--accent-soft)}
 .linkbtn{display:flex;align-items:center;gap:8px;border:0;background:none;color:var(--accent);font:inherit;font-weight:700;font-size:14px;padding:12px 4px;min-height:44px}.linkbtn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .measrow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:15px}.measrow b{text-align:right;font-weight:600}
 .pgbox{display:flex;flex-direction:column;gap:6px}.pghead{display:flex;justify-content:space-between;align-items:baseline;gap:8px;flex-wrap:wrap}.pghead b{font-size:15px}
@@ -2085,19 +2086,20 @@ function renderLib(T){
 let LX=null;
 function renderLibDishes(){
  const T=targets(),q=$('lib-q').value.toLowerCase().trim(),lt=S.libt||'all';
- $('lib-t').innerHTML=[['all','All'],['b','Breakfast'],['m','Lunch and dinner'],['s','Snacks']].map(([k,l])=>`<button class="chip" type="button" data-lt="${k}" aria-pressed="${lt===k}">${l}</button>`).join('');
+ $('lib-t').innerHTML=[['all','All'],['fav','★ Favourites'],['b','Breakfast'],['m','Lunch and dinner'],['s','Snacks']].map(([k,l])=>`<button class="chip" type="button" data-lt="${k}" aria-pressed="${lt===k}">${l}</button>`).join('');
  $('lib-t').querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{S.libt=b.dataset.lt;renderLibDishes()});
- const ds=allDishes(lt==='all'?null:lt).filter(d=>!q||d.n.toLowerCase().includes(q)||d.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q)));
+ const ds=allDishes(lt==='all'||lt==='fav'?null:lt).filter(d=>lt!=='fav'||d.fav).filter(d=>!q||d.n.toLowerCase().includes(q)||d.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q)));
  const mine=ds.filter(d=>d.own||d.edited).sort((a,b)=>(b.used-a.used)||a.n.localeCompare(b.n)),rest=ds.filter(d=>!d.own&&!d.edited).sort((a,b)=>a.n.localeCompare(b.n));
  const row=d=>{const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),open=LX===d.id,slots=d.t==='b'?['b']:d.t==='s'?['s']:['l','d'];
-  return `<div class="ldish"><button class="ldhead" type="button" data-lx="${d.id}" aria-expanded="${open}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.edited?'<span class="mine">changed</span>':''}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein${d.min?' · '+d.min+' min':''}</span></span>${CHEV}</button>
-   ${open?`<div class="ldbody"><p class="cap">${d.it.map(([id,g])=>esc(FM[id]?FM[id].n.split(',')[0]:'Food')+' '+g+' g').join(', ')}</p><div class="btnrow">${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}${d.own||d.edited?`<button class="btn sm ghost" type="button" data-ldel="${d.id}">${d.edited?'Reset to original':'Delete'}</button>`:''}</div></div>`:''}</div>`};
- $('lib-mine').innerHTML=mine.length||!q?`<div class="card" style="padding-top:4px"><h2 style="margin:10px 0 2px">Your dishes</h2>${mine.length?'':'<p class="cap" style="margin:4px 0 12px">Dishes you build or change are saved here when you leave Edit.</p>'}${mine.map(row).join('')}</div>`:'';
+  return `<div class="ldish"><button class="ldhead" type="button" data-lx="${d.id}" aria-expanded="${open}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.fav?' <span class="favst" aria-label="Favourite">★</span>':''}${d.edited?'<span class="mine">changed</span>':''}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein${d.min?' · '+d.min+' min':''}</span></span>${CHEV}</button>
+   ${open?`<div class="ldbody"><p class="cap">${d.it.map(([id,g])=>esc(FM[id]?FM[id].n.split(',')[0]:'Food')+' '+g+' g').join(', ')}</p><div class="btnrow">${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}<button class="btn sm" type="button" data-lfav="${d.id}" aria-pressed="${d.fav}">${d.fav?'★ Favourite':'☆ Add to favourites'}</button>${d.own||d.edited?`<button class="btn sm ghost" type="button" data-ldel="${d.id}">${d.edited?'Reset to original':'Delete'}</button>`:''}</div></div>`:''}</div>`};
+ $('lib-mine').innerHTML=mine.length||(!q&&lt!=='fav')?`<div class="card" style="padding-top:4px"><h2 style="margin:10px 0 2px">Your dishes</h2>${mine.length?'':'<p class="cap" style="margin:4px 0 12px">Dishes you build or change are saved here when you leave Edit.</p>'}${mine.map(row).join('')}</div>`:'';
  $('lib-allh').textContent=mine.length?'All dishes':'Dishes';
- $('lib-list').innerHTML=rest.length?rest.map(row).join(''):'<p class="cap">No match.</p>';
+ $('lib-list').innerHTML=rest.length?rest.map(row).join(''):`<p class="cap">${lt==='fav'&&!q?(mine.length?'No other favourites.':'No favourites yet. Tap a dish, then Add to favourites. The star in the add menu works too.'):'No match.'}</p>`;
  const v=$('lib-dishes');
  v.querySelectorAll('[data-lx]').forEach(b=>b.onclick=()=>{LX=LX===b.dataset.lx?null:b.dataset.lx;renderLibDishes()});
  v.querySelectorAll('[data-ladd]').forEach(b=>b.onclick=()=>{const [id,t]=b.dataset.ladd.split(':'),d=dish(id),k=slotOfType(t);useDish(k,d);toast(`Added ${d.n} to ${TY[t].n.toLowerCase()}`);render()});
+ v.querySelectorAll('[data-lfav]').forEach(b=>b.onclick=()=>{const m=meta(b.dataset.lfav);m.fav=!m.fav;save();renderLibDishes()});
  v.querySelectorAll('[data-ldel]').forEach(b=>b.onclick=()=>{if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Tap again';return}
   const id=b.dataset.ldel;delete S.dishes[id];if(!REC.find(r=>r.id===id)){delete S.meta[id];Object.values(S.days).forEach(p=>mealKeys(p).forEach(k=>{if(p[k].did===id)p[k].did=null}))}LX=null;render()});
 }
