@@ -434,7 +434,8 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .dueline .tkt.tear{overflow:visible;animation:tearoff .6s ease-in forwards}.dueline .tkt.tear .tk-btn{position:relative;z-index:1;transform-origin:0 0;clip-path:polygon(6px 0,100% 0,100% 100%,6px 100%,0 95%,6px 90%,0 85%,6px 80%,0 75%,6px 70%,0 65%,6px 60%,0 55%,6px 50%,0 45%,6px 40%,0 35%,6px 30%,0 25%,6px 20%,0 15%,6px 10%,0 5%,6px 0%);animation:tearfall .6s cubic-bezier(.4,0,.7,1) forwards}.dueline .tkt.tear .tk-perf{visibility:hidden}
 @keyframes tearoff{0%,45%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
 .tk-ign{align-self:flex-start;border:0;background:none;padding:6px 0 0;min-height:32px;font:inherit;font-size:13px;font-weight:700;color:var(--accent);cursor:pointer}.tk-stamp .tk-ign{align-self:center;padding:2px 0 0;min-height:28px}
-@media (prefers-reduced-motion:reduce){.stampmark.hit,.tkt.chomp,.phole.hit,.tkt.tear,.tkt.tear .tk-btn,.tkt.chomp .tk-stub small{animation:none;opacity:.85}.tk-fly{display:none}.chad,.crumb,.phole.hit::after{display:none}}
+/* still: set when animations are off in Profile, or on Automatic when the phone asks apps for less motion (accessibility or battery saver) */
+:root.still .stampmark.hit,:root.still .tkt.chomp,:root.still .phole.hit,:root.still .tkt.tear,:root.still .tkt.tear .tk-btn,:root.still .tkt.chomp .tk-stub small{animation:none;opacity:.85}:root.still .tk-fly,:root.still .chad,:root.still .crumb,:root.still .phole.hit::after{display:none}
 .duerem{display:flex;align-items:center;gap:8px;background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:6px 8px 6px 14px;min-height:54px;font-size:15px}
 .duerem .duedot{width:10px;height:10px;border-radius:50%;background:var(--coral);flex:none;box-shadow:0 0 0 4px color-mix(in srgb,var(--coral) 30%,transparent)}
 .supbtns{display:flex;gap:6px;flex:none;align-items:center}
@@ -442,7 +443,7 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .holes i.none{opacity:0}.holes i.cur,.hk.cur{border:1.5px dotted var(--ink);opacity:.55}.holes i.off,.hk.off{border:1.5px solid var(--muted);opacity:.6}
 .holes i.on,.hk.on{background:var(--accent)}
 .holes i.pop{animation:holepop .5s cubic-bezier(.3,1.8,.5,1) .12s both}@keyframes holepop{0%{transform:scale(0);box-shadow:0 0 0 0 color-mix(in srgb,var(--accent) 60%,transparent)}60%{transform:scale(1.4)}100%{transform:scale(1);box-shadow:0 0 0 7px transparent}}
-@media (prefers-reduced-motion:reduce){.holes i.pop{animation:none}}
+:root.still .holes i.pop{animation:none}
 .favst{color:var(--coral);font-size:.95em}[data-lfav][aria-pressed="true"]{background:var(--accent-soft)}
 .linkbtn{display:flex;align-items:center;gap:8px;border:0;background:none;color:var(--accent);font:inherit;font-weight:700;font-size:14px;padding:12px 4px;min-height:44px}.linkbtn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
 .measrow{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid var(--line);font-size:15px}.measrow b{text-align:right;font-weight:600}
@@ -663,6 +664,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
       <p class="cap" style="margin:-6px 0 0">Automatic follows your phone.</p>
       <div class="lbl" style="margin:16px 0 8px">Color</div>
       <div class="swatches" id="p-acc"></div>
+      <div class="lbl" style="margin:16px 0 6px">Animations</div>
+      <div class="seg sm" id="p-anim"><button type="button" data-anim="auto">Automatic</button><button type="button" data-anim="on">On</button><button type="button" data-anim="off">Off</button></div>
+      <p class="cap" id="p-anim-note" style="margin:-6px 0 0">Automatic follows your phone.</p>
     </div>
     <div class="card">
       <h2>Reminders</h2>
@@ -1349,7 +1353,10 @@ function fsCard(){const T=targets(),v=fsView(),L=fsLim(T),I=fsIdeal(T),p=Math.mi
  <div class="fsbar"><i style="width:${p/1.5}%;background:${col}"></i><span class="fsm" style="left:${50/1.5}%"></span><span class="fsm" style="left:${100/1.5}%"></span></div>
  ${src.length?`<p class="cap" style="margin:8px 0 0">Main sources: ${src.map(esc).join(', ')}.</p>`:''}</div>`}
 const ACC=[['green','Forest','#2D5A3F'],['teal','Lagoon','#1F5F5C'],['blue','Ocean','#2B4C7E'],['purple','Lilac','#55407E'],['rose','Berry','#7A3553'],['amber','Sunset','#924322']];
-function applyTheme(){const r=document.documentElement,m=S.prof.mode||'auto',a=S.prof.acc||'green';
+const REDUCE=()=>{try{return matchMedia('(prefers-reduced-motion: reduce)').matches}catch(e){return false}};
+try{matchMedia('(prefers-reduced-motion: reduce)').addEventListener('change',()=>applyTheme())}catch(e){}
+function applyTheme(){const r=document.documentElement,m=S.prof.mode||'auto',a=S.prof.acc||'green',an=S.prof.anim||'auto';
+ r.classList.toggle('still',an==='off'||(an==='auto'&&REDUCE()));
  if(m==='auto')r.removeAttribute('data-theme');else r.setAttribute('data-theme',m);
  if(a==='green')r.removeAttribute('data-acc');else r.setAttribute('data-acc',a);
  try{const bg=getComputedStyle(r).getPropertyValue('--bg').trim();document.querySelectorAll('meta[name="theme-color"]').forEach(x=>{x.setAttribute('content',bg);x.removeAttribute('media')})}catch(e){}}
@@ -2198,6 +2205,8 @@ function bindSup(root){root.querySelectorAll('[data-sup]').forEach(cb=>cb.onchan
 function targetBoxes(T){return `${HK()?'':`<div><span>Energy</span><b>${EN(T.kcal)}</b></div>`}<div><span>Protein</span><b>${Math.round(T.p)} g</b></div><div><span>Fiber</span><b>${Math.round(T.fib)} g</b></div>`}
 function renderProfileView(){
  if($('logo-prof'))$('logo-prof').innerHTML=LOGO;
+ document.querySelectorAll('#p-anim [data-anim]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.anim||'auto')===b.dataset.anim);b.onclick=()=>{S.prof.anim=b.dataset.anim;applyTheme();render()}});
+ {const n=$('p-anim-note');if(n)n.textContent=REDUCE()?'Your phone asks apps for less motion right now (an accessibility setting or battery saver), so Automatic leaves the animations out. Pick On to see them anyway.':'Automatic follows your phone.'}
  document.querySelectorAll('#p-mode [data-mode]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.mode||'auto')===b.dataset.mode);b.onclick=()=>{S.prof.mode=b.dataset.mode;applyTheme();render()}});
  $('p-acc').innerHTML=ACC.map(([k,n,c])=>`<button type="button" class="swatch" data-acc="${k}" aria-pressed="${(S.prof.acc||'green')===k}" style="--sw:${c}"><i></i><span>${n}</span></button>`).join('');
  $('p-acc').querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>{S.prof.acc=b.dataset.acc;applyTheme();render()});
@@ -2678,7 +2687,7 @@ function dueLine(){if(S.date!==TODAY)return '';const L=(S.sups||[]).filter(s=>sI
   return `<div class="tkt"><div class="tk-main"><div><b>${esc(sName(s))}</b> ${late>0?`due since ${late===1?'yesterday':late+' days'}`:'due today'}</div><button class="tk-ign" type="button" data-dueign="${s.id}">Ignore for today</button></div><div class="tk-perf"></div><button class="tk-btn" type="button" data-duetake="${s.id}">Punch</button></div>`}).join('')}</div>`}
 function punchSup(s){s.takes=s.takes||[];s.skip=(s.skip||[]).filter(x=>x!==S.date);if(!s.takes.includes(S.date))s.takes.push(S.date);STAMP=s.id;try{navigator.vibrate&&navigator.vibrate([20,40,20])}catch(e){}toast(`${sName(s).replace(/ \(.*\)$/,'')} taken`);render();setTimeout(()=>{STAMP=null},1200)}
 function bindDue(v){v.querySelectorAll('[data-duetake]').forEach(b=>b.onclick=()=>{const s=(S.sups||[]).find(x=>x.id===b.dataset.duetake);if(!s||b.disabled)return;b.disabled=true;
-  const still=matchMedia('(prefers-reduced-motion: reduce)').matches,t=b.closest('.tkt');if(still||!t){punchSup(s);return}
+  const still=document.documentElement.classList.contains('still'),t=b.closest('.tkt');if(still||!t){punchSup(s);return}
   try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}t.classList.add('tear');setTimeout(()=>punchSup(s),560)});
  v.querySelectorAll('[data-dueign]').forEach(b=>b.onclick=()=>{const s=(S.sups||[]).find(x=>x.id===b.dataset.dueign);if(s){s.ign=TODAY;render()}})}
 /* calendar file: repeats weekly or every N days with an alert at the chosen time; your phone's calendar does the reminding */
