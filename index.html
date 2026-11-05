@@ -434,6 +434,8 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .dueline .tkt.tear{overflow:visible;animation:tearoff .6s ease-in var(--ag,0ms) forwards}.dueline .tkt.tear .tk-btn{position:relative;z-index:1;transform-origin:0 0;clip-path:polygon(0 0,100% 0,100% 100%,0 100%,0 calc(8px + (100% - 16px) * 1.0000),5px calc(8px + (100% - 16px) * 0.9286),0 calc(8px + (100% - 16px) * 0.8571),5px calc(8px + (100% - 16px) * 0.7857),0 calc(8px + (100% - 16px) * 0.7143),5px calc(8px + (100% - 16px) * 0.6429),0 calc(8px + (100% - 16px) * 0.5714),5px calc(8px + (100% - 16px) * 0.5000),0 calc(8px + (100% - 16px) * 0.4286),5px calc(8px + (100% - 16px) * 0.3571),0 calc(8px + (100% - 16px) * 0.2857),5px calc(8px + (100% - 16px) * 0.2143),0 calc(8px + (100% - 16px) * 0.1429),5px calc(8px + (100% - 16px) * 0.0714),0 calc(8px + (100% - 16px) * 0.0000));animation:tearfall .6s cubic-bezier(.4,0,.7,1) var(--ag,0ms) forwards}.dueline .tkt.tear .tk-perf{visibility:hidden}
 @keyframes tearoff{0%,45%{opacity:1;transform:none}100%{opacity:0;transform:translateY(-6px)}}
 .focusrow{flex-wrap:nowrap;overflow-x:auto;margin:0 -2px 10px;padding:2px;scrollbar-width:none}.focusrow::-webkit-scrollbar{display:none}.focusrow .chip{flex:none}
+.rh{font-size:15px;margin:16px 0 6px}.ringr{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:6px}.ringr li{display:flex;align-items:center;gap:10px;font-size:14px}.ringr .ficon{width:28px;height:28px;font-size:16px;flex:none}.ringr .rn{flex:1;min-width:0}.ringr .num{color:var(--muted);font-weight:700}
+.rsteps{margin:0;padding:0 0 0 22px;display:flex;flex-direction:column;gap:8px;font-size:15px;line-height:1.45}.rsteps li::marker{color:var(--accent);font-weight:800}.rlink{margin-top:4px;padding:0;min-height:32px;font-weight:700;color:var(--accent)}
 /* ticket shape: each piece carries its own half circles at the tear line (cut out, nothing layered on top), so a stub that tears off keeps its notches */
 .tkt{background:transparent;--tkbg:var(--surface2);--nr:radial-gradient(circle 8px at calc(100% + 1px) 0,#0000 96%,#000 100%) top/100% 51% no-repeat,radial-gradient(circle 8px at calc(100% + 1px) 100%,#0000 96%,#000 100%) bottom/100% 51% no-repeat;--nl:radial-gradient(circle 8px at -1px 0,#0000 96%,#000 100%) top/100% 51% no-repeat,radial-gradient(circle 8px at -1px 100%,#0000 96%,#000 100%) bottom/100% 51% no-repeat}
 .dueline .tkt{--tkbg:var(--surface);background:transparent;border:0}
@@ -1129,6 +1131,115 @@ const cp=it=>it.map(x=>x[2]?[x[0],x[1],x[2]]:[x[0],x[1]]);
 const sameIt=(a,b)=>a.length===b.length&&a.every((x,i)=>x[0]===b[i][0]&&+x[1]===+b[i][1]&&(x[2]||defState(x[0],'l'))===(b[i][2]||defState(b[i][0],'l')));
 function dish(id){const base=REC.find(r=>r.id===id),own=S.dishes[id];if(!base&&!own)return null;
  return Object.assign({},base||{},own||{},{id,it:cp((own||base).it),edited:!!(base&&own),own:!base,fav:!!(S.meta[id]&&S.meta[id].fav),used:(S.meta[id]&&S.meta[id].used)||0})}
+/* short recipes for the built in dishes: amounts are in the ingredient list above the steps, grains, pasta and dry lentils are weighed dry, canned beans drained */
+const RSTEPS={
+granola:['Spoon the soy yogurt into a bowl.','Top with the granola and pour the soy milk around it.'],
+oats:['In a jar, stir the oats and chia into the soy milk.','Add the berries, cover and leave in the fridge overnight, or at least 2 hours.','Top with the chopped walnuts before eating.'],
+yogkiwi:['Peel and slice the kiwi.','Spoon the soy yogurt into a bowl, top with kiwi, ground flax and chopped walnuts.'],
+chiamango:['Stir the chia into the soy milk, wait 5 minutes and stir again so it does not clump.','Leave in the fridge for at least 2 hours or overnight.','Top with diced mango and the hemp seeds.'],
+smoothie:['Put everything in a blender: soy milk, banana, berries, oats, spinach and flax.','Blend for about a minute until smooth. Add a splash of water if it is too thick.'],
+muesli:['Put the oats and ground flax in a bowl and pour over the oat milk.','Let it soak 2 to 3 minutes, then top with sliced kiwi.'],
+pboat:['Bring the oats and soy milk to a simmer and cook for 4 to 5 minutes, stirring.','Stir in the peanut butter.','Top with sliced banana.'],
+buckwheat:['Rinse the buckwheat, then simmer it in the soy milk for about 10 minutes until soft, stirring now and then.','Stir in the berries for the last minute.','Top with hemp seeds.'],
+pbtoast:['Toast the bread.','Spread with peanut butter and top with sliced banana.'],
+avotoast:['Toast the bread.','Mash the white beans with the avocado, a pinch of salt and pepper.','Spread on the toast and top with sliced tomatoes.'],
+humtoast:['Toast the bread.','Spread with hummus and top with sliced bell pepper.'],
+scramble:['Press the tofu with a towel to remove water, then crumble it.','Heat the oil in a pan and fry the tofu for 5 minutes. Season with salt, pepper and a pinch of turmeric.','Add the chopped tomatoes and the spinach and cook until the spinach wilts.','Serve on toasted bread.'],
+bolo:['Cook the pasta in salted water as on the pack.','Meanwhile heat the oil and brown the vegan mince for 5 minutes.','Add the tomato sauce, season with salt, pepper and oregano, and simmer for 10 minutes.','Serve the sauce over the drained pasta.'],
+tvpnoodles:['Soak the soy chunks in hot water or broth for 10 minutes, then squeeze out the liquid.','Cook the noodles as on the pack.','Fry the soy chunks in the oil until browned, add the frozen vegetables and cook 5 minutes.','Toss in the drained noodles and season with soy sauce.'],
+curry:['Press the tofu and cut it into cubes. Start cooking the rice.','Fry the tofu in the oil until golden.','Add the vegetables, coconut milk and 1 to 2 teaspoons of curry paste or powder. Simmer 10 minutes.','Serve with the rice.'],
+burrito:['Cook the rice.','Warm the drained beans and corn with the tomato sauce in a pan.','Slice the bell pepper and avocado.','Fill the warm tortillas with rice, beans, pepper and avocado, then roll them up.'],
+wraps:['Grate the carrots and slice the bell pepper.','Spread hummus on the tortillas, add drained chickpeas and the vegetables.','Roll up tightly and cut in half.'],
+quesadilla:['Mash the drained beans roughly with a fork and mix in the corn and diced bell pepper.','Spread on half of each tortilla and fold over.','Toast in a dry pan for 2 to 3 minutes per side.','Serve with sliced avocado.'],
+seitanwrap:['Slice the seitan and fry it in a pan until browned.','Spread hummus on the tortillas.','Add spinach, sliced tomatoes and the seitan, then roll up.'],
+chickcurry:['Cook the rice.','Simmer the drained chickpeas in the tomato sauce and coconut milk with 1 to 2 teaspoons of curry powder for 10 minutes.','Stir in the spinach until it wilts and season with salt.','Serve with the rice.'],
+beanpasta:['Cook the pasta in salted water. Add the broccoli florets for the last 4 minutes.','Drain and toss with the drained white beans, the olive oil, salt, pepper and a little garlic.'],
+lentbolo:['Rinse the red lentils. Heat the oil and soften the grated carrots for 3 minutes.','Add the lentils, the tomato sauce and about 200 ml water. Simmer 15 minutes, stirring, until the lentils are soft.','Meanwhile cook the pasta. Season the sauce and serve over the pasta.'],
+peanut:['Cook the noodles and add the edamame for the last 3 minutes.','Steam or stir fry the broccoli and the sliced carrots.','Whisk the peanut butter with a little hot water, soy sauce and lime juice into a sauce.','Toss everything together.'],
+tempehnoodle:['Cook the noodles as on the pack.','Cut the tempeh into strips and fry in the oil until golden.','Add broccoli and sliced bell pepper and stir fry 4 minutes.','Add the noodles and a splash of soy sauce and toss.'],
+shakshuka:['Heat the oil and soften the sliced bell pepper for 5 minutes.','Add the tomato sauce with cumin and paprika and simmer 5 minutes.','Crumble in the tofu in chunks and warm through for 5 minutes. Season with salt and a pinch of black salt for an egg taste.','Serve with the bread.'],
+edaquinoa:['Rinse the quinoa and cook it in twice its volume of water for 12 minutes.','Cook the edamame for 3 minutes. Massage the chopped kale with a pinch of salt.','Dice the bell pepper.','Mix everything and dress with the tahini thinned with lemon juice and water.'],
+friedrice:['Cook the brown rice, ideally a day ahead so it is cold.','Press the tofu, crumble or cube it and fry in the oil until golden.','Add diced carrots and peas and fry 3 minutes.','Add the rice and soy sauce and fry until hot.'],
+sweetpan:['Dice the sweet potato and fry it in the oil with a lid for about 12 minutes, stirring now and then.','Add the drained black beans, cumin and paprika.','Stir in the chopped kale and cook until it softens.'],
+tempeh:['Cook the brown rice.','Slice the tempeh and fry in the oil until golden on both sides.','Steam the broccoli for 5 minutes.','Serve together with the tahini thinned with lemon juice, water and soy sauce.'],
+quinoa:['Rinse the quinoa and cook it in twice its volume of water for 12 minutes, then let it cool a little.','Dice the bell pepper and tomatoes.','Mix with the drained white beans, olive oil, lemon juice, salt and pepper.','Top with the pumpkin seeds.'],
+buckmush:['Rinse the buckwheat and simmer it in twice its volume of water for 10 minutes.','Fry the sliced mushrooms in the oil until browned.','Add the drained white beans and the chopped kale and cook until the kale softens.','Mix with the buckwheat and season with salt, pepper and soy sauce.'],
+dal:['Rinse the lentils. Start cooking the rice.','Heat the oil with 1 teaspoon each of cumin and turmeric, then add the lentils, tomato sauce, coconut milk and about 300 ml water.','Simmer 15 to 20 minutes until the lentils fall apart.','Stir in the spinach, season with salt and serve with the rice.'],
+potato:['Cut the potatoes into chunks and boil for 15 minutes.','Heat the oil and add the chopped kale with a splash of water. Cook 5 minutes.','Add the drained white beans and the potatoes and fry together until warm. Season with salt, pepper and garlic.'],
+chili:['Soak the soy chunks in hot water for 10 minutes and squeeze them out. Start cooking the rice.','Fry the soy chunks and diced bell pepper in the oil for 5 minutes.','Add the tomato sauce, drained kidney beans, corn, and 1 teaspoon each of cumin and chili powder.','Simmer 15 minutes and serve with the rice.'],
+lentsoup:['Rinse the lentils. Dice the carrots and potatoes.','Soften the vegetables in the oil for 3 minutes, then add the lentils and about 700 ml broth.','Simmer 25 minutes until the lentils are soft.','Stir in the spinach, season and serve with the bread.'],
+'s-yog':['Spoon the soy yogurt into a bowl.','Top with the berries and ground flax.'],
+'s-apple':['Slice the apple and dip the slices in the peanut butter.'],
+'s-hum':['Cut the carrots into sticks and dip them in the hummus.'],
+'s-mix':['Mix the walnuts, pumpkin seeds, chopped apricots and the Brazil nut.','One Brazil nut a day covers selenium. Do not eat several every day.'],
+'s-eda':['Boil the edamame in salted water for 4 to 5 minutes.','Drain and sprinkle with coarse salt.'],
+'s-kiwi':['Halve the kiwis and eat them with a spoon, with the almonds on the side.'],
+'s-milk':['Pour a glass of soy milk and have it with the banana.'],
+'s-dates':['Pit the dates and fill each one with a walnut half.'],
+porridge:['Simmer the oats in the soy milk for 5 minutes, stirring.','Grate or dice the apple and stir half in.','Top with the rest of the apple, chopped walnuts, ground flax and some cinnamon.'],
+pancakes:['Blend the oats into a flour, then mix with the soy milk, chia and a pinch of baking powder. Rest 5 minutes.','Heat a little of the oil in a pan and fry small pancakes for 2 minutes per side.','Warm the berries and serve on top.'],
+smoothiebowl:['Blend the frozen berries with the soy yogurt until thick.','Pour into a bowl and top with granola and chia.'],
+beanstoast:['Warm the drained white beans in the tomato sauce with a pinch of paprika for 5 minutes.','Toast the bread and pile the beans on top.'],
+bfburrito:['Press and crumble the tofu, then fry it in a dry or lightly oiled pan with turmeric, salt and pepper for 5 minutes.','Add the drained black beans and diced bell pepper and warm through.','Fill the warm tortilla with it and sliced avocado, then roll up.'],
+pbberry:['Toast the bread.','Spread with peanut butter and top with sliced strawberries.'],
+misosoup:['Cook the rice. Soak the wakame in water for 5 minutes.','Heat about 400 ml water with the sliced onion, add the cubed tofu and the wakame.','Take off the heat and stir in the miso so it does not boil.','Serve with the rice.'],
+ramen:['Cook the noodles as on the pack.','Simmer about 500 ml water with the sliced shiitake for 5 minutes. Add the pak choi and the cubed tofu for 2 minutes.','Take off the heat and stir in the miso.','Pour over the noodles and top with corn and strips of nori.'],
+pho:['Soak or cook the rice noodles as on the pack.','Simmer about 600 ml vegetable broth with star anise, cinnamon, ginger and the soy sauce for 10 minutes.','Add sliced shiitake, pak choi and tofu for the last 3 minutes.','Pour over the noodles and top with bean sprouts, coriander and lime juice.'],
+padthai:['Soak the rice noodles in hot water until soft, then drain.','Fry the cubed tofu in the oil until golden, add the grated carrots.','Add the noodles, soy sauce and lime juice, plus a little sugar or tamarind if you have it, and toss 2 minutes.','Top with bean sprouts and chopped peanuts.'],
+soba:['Cook the soba noodles, then rinse them in cold water.','Cook the edamame for 3 minutes. Cut the cucumber and carrots into thin sticks.','Toss everything with the soy sauce and a little rice vinegar, then sprinkle with sesame.'],
+stirfry:['Cook the rice. Press the tofu and cut it into cubes.','Fry the tofu in the oil until golden, then push it aside.','Add the broccoli, sliced bell pepper and carrots and stir fry 4 minutes.','Add the soy sauce, toss and serve with the rice.'],
+teriyaki:['Cook the rice. Press the tofu and cut it into cubes.','Fry the tofu in a pan until golden on all sides.','Mix the soy sauce with 1 teaspoon each of sugar and rice vinegar and a little ginger. Pour over the tofu and let it thicken for a minute.','Steam the broccoli for 5 minutes. Serve everything over the rice with sesame on top.'],
+mapo:['Cook the rice. Cut the tofu into cubes.','Fry the vegan mince in the oil with the chopped chili and some garlic for 3 minutes.','Add the soy sauce and about 150 ml water, then gently add the tofu and simmer 5 minutes.','Thicken with a little starch mixed in water if you like and serve with the rice.'],
+greencurry:['Cook the rice. Cube the tofu and slice the vegetables.','Fry 1 to 2 tablespoons of green curry paste (check it is vegan) in a dry pan, then add the coconut milk.','Add the tofu, zucchini, green beans and bell pepper and simmer 8 minutes.','Serve with the rice.'],
+bibimbap:['Cook the rice. Press and cube the tofu and fry until golden.','Wilt the spinach in a pan, blanch the bean sprouts, cut the carrots into thin sticks.','Arrange everything on the rice with the kimchi. Pick a vegan kimchi, many contain fish sauce.','Sprinkle with sesame. Add gochujang if you like it spicy.'],
+kimchirice:['Use cold cooked rice if you can. Cube the tofu and fry it in the oil until golden.','Add the chopped kimchi (a vegan one, many contain fish sauce) and fry 2 minutes.','Add the rice and the peas and fry until hot, with a splash of kimchi juice.'],
+poke:['Cook the rice and let it cool a little.','Cube the tofu and marinate it in the soy sauce for 10 minutes.','Cook the edamame for 3 minutes. Dice the cucumber, avocado and mango.','Arrange it all on the rice and top with strips of nori.'],
+sushi:['Cook the sushi rice and season it with a little rice vinegar, sugar and salt. Let it cool.','Cut the avocado, cucumber, carrots and tofu into thin strips.','Spread rice thinly on each nori sheet, leaving a strip free at the top. Lay the fillings in a line and roll tightly.','Cut each roll into pieces with a wet knife. Serve with the soy sauce.'],
+gadogado:['Boil the potatoes in chunks for 15 minutes. Blanch the green beans for 4 minutes.','Slice the tempeh and fry until golden.','Whisk the peanut butter with hot water, soy sauce and lime into a sauce.','Arrange potatoes, beans, tempeh, sprouts and cucumber and pour the sauce over.'],
+chana:['Cook the rice. Dice the onion and fry it in the oil until soft.','Add 1 teaspoon each of cumin, coriander and garam masala and fry 30 seconds.','Add the tomato sauce and drained chickpeas and simmer 10 minutes.','Stir in the spinach and serve with the rice.'],
+rajma:['Cook the rice. Fry the diced onion in the oil until golden.','Add ginger, garlic, cumin and garam masala, then the tomato sauce.','Add the drained kidney beans and a little water and simmer 15 minutes.','Serve with the rice.'],
+buddha:['Dice the sweet potato and roast it at 200 °C for 25 minutes. Roast the drained chickpeas next to it for the last 15 minutes.','Rinse and cook the quinoa for 12 minutes.','Massage the kale with a pinch of salt. Slice the avocado.','Arrange in a bowl and drizzle with tahini thinned with lemon juice and water.'],
+falafelwrap:['Warm the falafel in the oven or a pan.','Warm the pita and spread hummus inside.','Fill with lettuce, sliced tomatoes, cucumber and the falafel.'],
+tabbouleh:['Pour hot water over the bulgur, cover and let it soak 15 minutes, then fluff it.','Chop the parsley finely and dice the tomatoes and cucumber.','Mix everything with the lemon juice, olive oil and salt.','Serve with warm falafel.'],
+couscous:['Pour the same volume of boiling water over the couscous, cover for 5 minutes, then fluff it.','Dice the cucumber and tomatoes and chop the parsley.','Mix with the drained chickpeas, lemon juice, olive oil, salt and pepper.'],
+mujadara:['Slice the onions and fry them slowly in the olive oil for about 20 minutes until deep brown.','Meanwhile simmer the lentils in water for 10 minutes, then add the rice and enough water to cover, plus cumin and salt. Cook 15 minutes with a lid.','Serve topped with the onions, with sliced cucumber on the side.'],
+gyros:['Slice the seitan thinly and fry it with oregano, paprika and garlic until crispy.','Mix the soy yogurt with grated cucumber, garlic and salt for a quick tzatziki.','Fill the warm pita with seitan, tomatoes, onion and the sauce.'],
+arrabbiata:['Cook the pasta in salted water.','Warm the olive oil with the chopped chili and some garlic, add the tomato sauce and simmer 5 minutes.','Add the drained white beans and warm through.','Toss with the drained pasta.'],
+pestopasta:['Cook the pasta. Add the frozen peas for the last 2 minutes.','Drain, keeping a little cooking water.','Stir in the pesto, the spinach and the drained white beans, with a splash of cooking water to make it silky.'],
+minestrone:['Dice the onion, carrots, celery and zucchini and soften them in the olive oil for 5 minutes.','Add the tomato sauce and about 600 ml broth and simmer 15 minutes.','Add the pasta and the drained white beans and cook until the pasta is done.','Season with salt, pepper and basil.'],
+peasoup:['Rinse the split peas and simmer them in about 800 ml water for 30 minutes.','Add the diced carrots, potatoes, onion and celery and cook 20 minutes more, until thick.','Season with salt, pepper and a little smoked paprika. Serve with the bread.'],
+pumpkinsoup:['Dice the pumpkin and onion. Rinse the lentils.','Simmer them in about 500 ml broth for 20 minutes until soft.','Blend with the coconut milk until smooth and season with salt, pepper and a little ginger.','Top with the pumpkin seeds.'],
+ratatouille:['Dice the aubergine, zucchini, bell pepper and onion.','Fry them in the olive oil for 10 minutes, then add the chopped tomatoes and herbs and simmer 20 minutes.','Meanwhile rinse and cook the quinoa for 12 minutes.','Stir the drained chickpeas into the vegetables and serve with the quinoa.'],
+risotto:['Fry the diced onion and sliced mushrooms in the olive oil for 5 minutes.','Add the rice and stir 1 minute, then add hot broth a ladle at a time, stirring, for about 18 minutes.','Add the peas and drained white beans for the last 3 minutes.','Stir in the nutritional yeast and season.'],
+paella:['Fry the sliced bell pepper in the olive oil for 3 minutes.','Add the rice, chopped tomatoes, paprika, a pinch of saffron or turmeric and about 250 ml hot broth.','Simmer without stirring for 15 minutes.','Add the peas and drained chickpeas, cover and cook 5 minutes more.'],
+tacos:['Warm the drained black beans with cumin and a pinch of salt, mashing them a little.','Warm the tortillas in a dry pan.','Fill with beans, corn, diced tomatoes, avocado and lettuce.'],
+burritobowl:['Cook the rice and stir in some of the lime juice.','Warm the drained black beans with cumin.','Dice the bell pepper, tomatoes and avocado.','Arrange everything over the rice with the corn and the rest of the lime.'],
+jacket:['Prick the potatoes and bake them at 200 °C for about 50 minutes until soft inside.','Warm the drained kidney beans and corn in the tomato sauce with chili and cumin.','Split the potatoes and spoon the beans over.'],
+shepherd:['Boil the potatoes for 15 minutes and mash them with the soy milk and some of the oil.','Simmer the lentils for 20 minutes. Soften the diced onion and carrots in the rest of the oil.','Mix the lentils with the vegetables, peas and a little tomato paste or broth, and put it in a baking dish.','Spread the mash on top and bake at 200 °C for 20 minutes.'],
+stuffedpep:['Cook the rice. Cut the tops off the peppers and remove the seeds.','Mix the rice with the drained black beans, diced tomatoes, corn, cumin and salt.','Fill the peppers, put the tops back on and bake at 190 °C for 30 minutes.'],
+polenta:['Whisk the polenta into about 400 ml boiling salted water and stir for 5 minutes, or as on the pack.','Fry the sliced mushrooms in the olive oil until browned.','Add the drained white beans and the spinach and cook until it wilts. Season with garlic and salt.','Serve over the polenta.'],
+barleystew:['Rinse the barley and the lentils.','Dice the carrots, celery, leek and potatoes.','Simmer everything in about 800 ml broth for 40 minutes until the barley is soft.','Season with salt, pepper and thyme.'],
+beanburger:['Mash the drained black beans with the oats, a pinch of cumin and salt. Shape into patties and rest 10 minutes.','Fry the patties in a little oil for 4 minutes per side.','Serve in the bread with lettuce, tomatoes and avocado.'],
+'s-miso':['Heat about 300 ml water with the soaked wakame and the cubed tofu.','Take off the heat and stir in the miso.'],
+'s-pop':['Heat the kernels in a pot with a lid on medium heat, shaking now and then, until the popping stops.','Season with a pinch of salt.'],
+'s-choc':['Break the chocolate into pieces and enjoy with the almonds.'],
+'s-ricecake':['Spread the peanut butter on the rice cakes.'],
+'s-chick':['Pat the drained chickpeas dry and toss them with the olive oil, salt and paprika.','Roast at 200 °C for about 25 minutes until crunchy, shaking once.'],
+'s-balls':['Blend the pitted dates, oats, walnuts and chocolate into a sticky dough.','Roll into small balls and chill for 10 minutes.'],
+'s-fruit':['Peel and dice the orange, slice the strawberries and apple.','Mix with the blueberries.'],
+'s-guac':['Mash the avocado with the diced tomatoes, lime juice and salt.','Cut the carrots and cucumber into sticks for dipping.'],
+'s-pear':['Slice the pear and have it with the walnuts.'],
+'s-granola':['Spoon the soy yogurt into a bowl and top with granola and blueberries.'],
+'s-oni':['Cook the rice and let it cool a little. Cook and shell the edamame.','Mix the edamame into the rice with a pinch of salt.','With wet hands, press the rice into triangles and wrap each with a strip of nori.']
+};
+function openRecipe(id,slot){const d=dish(id);if(!d)return;const st=RSTEPS[id],dl=$('sheet');S.sel=null;$('sheet-grp').textContent='Recipe';
+ const q=encodeURIComponent('vegan '+d.n+' recipe'),ty=slot?typeOf(S.plan,slot):null;
+ $('sheet-body').innerHTML=`<h2 style="font-size:24px;margin:0 0 2px">${esc(d.n)}</h2><p class="cap" style="margin:0">${d.min?d.min+' min · ':''}one portion</p>
+  <h3 class="rh">Ingredients</h3><ul class="ringr">${d.it.map(([fid,g])=>`<li><span class="ficon em">${fIcon(fid)}</span><span class="rn">${esc(FM[fid]?FM[fid].n:'Food')}</span><span class="num">${g} g</span></li>`).join('')}</ul>
+  ${st?`<h3 class="rh">Steps</h3><ol class="rsteps">${st.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><p class="cap">Spices, salt, broth and a splash of sauce are not in the nutrient numbers.${d.edited?' You changed this dish, so some amounts may differ from the steps.':''}</p>`:`<p class="cap">No steps saved for this dish yet.</p>`}
+  <div class="btnrow" style="margin-top:14px">${slot?`<button class="btn primary" type="button" id="rc-add">Add to ${TY[ty].n.toLowerCase()}</button>`:''}<a class="btn" href="https://duckduckgo.com/?q=${q}" target="_blank" rel="noopener">${st?'More recipes online':'Find a recipe online'}</a></div>`;
+ if($('rc-add'))$('rc-add').onclick=()=>{useDish(slot,d);toast(`Added ${d.n}`);closeSheet();if($('pk').open)closePicker();render()};
+ if(!dl.open){dl.showModal?dl.showModal():dl.setAttribute('open','')}$('sheet-body').scrollTop=0}
 function allDishes(t){const ids=[...REC.map(r=>r.id),...Object.keys(S.dishes).filter(id=>!REC.find(r=>r.id===id))];return ids.map(dish).filter(d=>d&&(!t||d.t===t))}
 function meta(id){return S.meta[id]||(S.meta[id]={})}
 function edited(slot){const sl=S.plan[slot];if(sl)sl.dirty=1}
@@ -1532,11 +1643,11 @@ function renderToday(T,D){
  const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?EN(T.kcal).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const sc=Math.max(100,Math.min(p,200));return `<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?HC(p>=85?100:p):HC(p)}"></i>${p>100?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
  const SGt=computeSugg(),TT=targets(),TN=needT(TT);
  let sni=0;const usedI=new Set();const idea=s=>{let L=[];
-   if(s.ty==='s'){const ix=sni++,n=SGt.snacks.length;for(let j=0;j<n;j++){const q=(ix+j)%n,x=SGt.snacks[q];L.push({nm:x.food?x.food.n.split(',')[0]+' '+x.food.por+' g':x.d.n,add:x.add,ic:x.food?fIcon(x.food.id):dIcon(x.d),attr:`data-tsn="${s.id}:${q}"`})}}
-   else{const m=SGt.meals.find(m=>m.slot===s.id);if(m)L=m.opts.filter(q=>!usedI.has(q.d.id)).slice(0,6).map(q=>{usedI.add(q.d.id);return q}).map(q=>({nm:q.d.n,add:q.add,ic:dIcon(q.d),attr:`data-tdi="${s.id}:${q.d.id}"`}))}
+   if(s.ty==='s'){const ix=sni++,n=SGt.snacks.length;for(let j=0;j<n;j++){const q=(ix+j)%n,x=SGt.snacks[q];L.push({nm:x.food?x.food.n.split(',')[0]+' '+x.food.por+' g':x.d.n,add:x.add,ic:x.food?fIcon(x.food.id):dIcon(x.d),attr:`data-tsn="${s.id}:${q}"`,did:x.d&&RSTEPS[x.d.id]?x.d.id:null})}}
+   else{const m=SGt.meals.find(m=>m.slot===s.id);if(m)L=m.opts.filter(q=>!usedI.has(q.d.id)).slice(0,6).map(q=>{usedI.add(q.d.id);return q}).map(q=>({nm:q.d.n,add:q.add,ic:dIcon(q.d),attr:`data-tdi="${s.id}:${q.d.id}"`,did:q.d.id}))}
    if(!L.length)return '';
    const V0=viewVec(D,1);const card=(o,i)=>{const D1=D.slice();addv(D1,o.add);const fo=fillsOf(D,o.add,TN),fl=fo.filter(x=>pctK(x.k,V0,TT)<100),ks=(fl.length?fl:fo).slice(0,2),V1=viewVec(D1);
-    return `<div class="tidea"><span class="thumb em">${o.ic}</span><span class="sgt"><span class="cap">Idea ${L.length>1?(i+1)+' of '+L.length:''}</span><b>${esc(o.nm)}</b><span class="cap num">${ks.map(x=>`${NUT[x.k].n} ${Math.round(pctK(x.k,V0,TT))} → ${Math.round(pctK(x.k,V1,TT))} %`).join(' · ')}</span></span><button class="btn sm acc" type="button" ${o.attr}>Add</button></div>`};
+    return `<div class="tidea"><span class="thumb em">${o.ic}</span><span class="sgt"><span class="cap">Idea ${L.length>1?(i+1)+' of '+L.length:''}</span><b>${esc(o.nm)}</b><span class="cap num">${ks.map(x=>`${NUT[x.k].n} ${Math.round(pctK(x.k,V0,TT))} → ${Math.round(pctK(x.k,V1,TT))} %`).join(' · ')}</span>${o.did?`<button class="linkbtn rlink" type="button" data-rcp="${o.did}" data-rslot="${s.id}">Recipe</button>`:''}</span><button class="btn sm acc" type="button" ${o.attr}>Add</button></div>`};
    return `<div class="tideas${L.length>1?' multi':''}">${L.map(card).join('')}</div>`};
  const meal=s=>{const sl=S.plan[s.id],v=slotV(s.id),empty=!sl.it.length;s=Object.assign({},s,{t:TY[s.ty].t});
   const ph=sl.did&&PH[sl.did];
@@ -1562,6 +1673,7 @@ ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="m
  v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>openPicker(b.dataset.pick,'recipe'));
  v.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>startMeal(b.dataset.start));
  v.querySelectorAll('[data-edit]').forEach(b=>{b.onclick=()=>openMeal(b.dataset.edit);b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openMeal(b.dataset.edit)}}});
+ v.querySelectorAll('[data-rcp]').forEach(b=>b.onclick=e=>{e.stopPropagation();openRecipe(b.dataset.rcp,b.dataset.rslot)});
  v.querySelectorAll('[data-tdi]').forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.tdi.split(':'),d=dish(id);useDish(k,d);toast(`Added ${d.n}`);render()});
  v.querySelectorAll('[data-tsn]').forEach(b=>b.onclick=()=>{const [k,ix]=b.dataset.tsn.split(':'),x=SGt.snacks[+ix];if(x.food)addFood(k,x.food.id,x.food.por);else useDish(k,x.d);toast('Added to snacks');render()});
  v.querySelectorAll('[data-addmeal]').forEach(b=>b.onclick=()=>{const k='e'+Date.now().toString(36);S.plan[k]={t:'',it:[],ty:b.dataset.addmeal};rebuildSlots();MS=k;render();startMeal(k)});
@@ -1610,11 +1722,12 @@ function renderMeal(){
    ${UNITS[id]?`<div class="packbtns">${UNITS[id].flatMap(([n,ug])=>(NOPL.has(n)?[1,2]:ug>=150?[.5,1,2]:[1,2,3]).map(x=>`<button type="button" data-unit="${i}:${Math.round(x*ug*10)/10}" aria-pressed="${Math.abs(g-x*ug)<.6}">${uLabel(n,x)}</button>`)).join('')}</div>`:''}
    ${f.pack?`<div class="packbtns">${[[.25,'¼ pack'],[1/3,'⅓ pack'],[.5,'½ pack'],[1,'Whole pack']].map(([x,l])=>`<button type="button" data-pack="${i}:${x}">${l}</button>`).join('')}</div>`:''}</div>`}).join('')
   :'<p class="cap" style="padding:20px 4px">Nothing in this meal yet.</p>';
+ if(d)$('m-items').insertAdjacentHTML('afterbegin',`<button class="linkbtn" type="button" id="m-rcp">${RSTEPS[d.id]?'Recipe for this dish':'Find a recipe for this dish'}</button>`);
  $('m-items').insertAdjacentHTML('beforeend',`<button class="linkbtn" type="button" id="m-meas">${INFO} How much is a spoon, a cup or a handful?</button>`);
  $('m-foot').innerHTML=`<button class="btn" type="button" id="m-add">Add food</button>
   <button class="btn" type="button" id="m-change">${s.t==='s'?'Snack ideas':'Choose a dish'}</button><button class="btn" type="button" id="m-clear" style="color:var(--low)">${s.extra?'Remove meal':'Clear'}</button>
   <button class="btn primary savebig" type="button" id="m-savemeal">${sl.it.length?'Save':'Close'}</button>`;
- const m=$('m-items');
+ const m=$('m-items');if($('m-rcp'))$('m-rcp').onclick=()=>openRecipe(d.id);
  m.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const [i,d]=b.dataset.q.split(':');const it=S.plan[MS].it[i];const f=FM[it[0]];const step=f.por>=100?25:f.por>=30?10:5;it[1]=Math.max(0,it[1]+step*d);edited(MS);render()});
  m.querySelectorAll('[data-qi]').forEach(inp=>inp.onchange=()=>{S.plan[MS].it[inp.dataset.qi][1]=Math.max(0,Math.round(+inp.value||0));edited(MS);render()});
  m.querySelectorAll('[data-food]').forEach(b=>b.onclick=()=>openFood(b.dataset.food));
@@ -1660,7 +1773,7 @@ function spark(k,T){const mx0=S.range===0&&(WIN[k]||7)>1,R=rangeStats(S.range>1?
   <text x="0" y="${H+14}" font-size="11" fill="var(--muted)">${kdate(R.dates[0]).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</text><text x="${W}" y="${H+14}" font-size="11" fill="var(--muted)" text-anchor="end">Today</text></svg>
   <p class="cap">${mx0?'Each bar is where you stood that day, with recent days counting most and older days fading out. Dashed line is your target. Grey marks: no entries yet.':'Dashed line is your daily target. Grey marks are days without entries.'}</p></div>`}
 function renderDetail(T,root){
- if(!S.sel&&root.id==='sheet-body'&&$('sheet-grp').textContent==='Plant variety')return;
+ if(!S.sel&&root.id==='sheet-body'&&['Plant variety','Recipe'].includes($('sheet-grp').textContent))return;
  const k=S.sel||'b12',i=K.indexOf(k),N=NUT[k],MXd=S.range===0?mixStats():null,R=S.range>1?rangeStats(S.range,S.date):null,D=MXd?MXd.avg:R&&R.L.length?R.avg:dayV(),s=nstat(k,D,T);
  $('sheet-grp').textContent=N.g;
  const contrib=[];
@@ -2066,7 +2179,7 @@ function renderPicker(){
   const mq=x=>!q||x.n.toLowerCase().includes(q)||x.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q));
   let ds=allDishes(s.t).filter(mq);
   if(fm==='ideas'){PK.focus=PK.focus||[];const LO=lowList(T);PK.focus=PK.focus.filter(k=>LO.some(x=>x.k===k));const I=slotIdeas(PK.slot,PK.focus.length?12:8,PK.focus).filter(x=>mq(x.d)),TN=needT(T);
-   html=(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!PK.focus.length}">All</button>${LO.map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${PK.focus.includes(x.k)}">${NUT[x.k].n} <span class="num">${Math.round(x.p)} %</span></button>`).join('')}</div>`:'')+I.map(x=>{const ph=PH[x.d.id];return `<div class="opt ideaopt"><button class="optmain" type="button" data-r="${x.d.id}"><span class="thumb em">${ph?`<img src="${ph}" alt="">`:dIcon(x.d)}</span><span class="otx"><span class="t">${esc(x.d.n)}${x.d.min?`<span class="min">${x.d.min} min</span>`:''}${x.has?'<span class="havetag">Familiar</span>':''}</span><span class="s num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein</span></span></button>${impactFor(x.D0,x.add,T,TN,PK.focus)}</div>`}).join('')||`<p class="empty2">${PK.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No match.'}</p>`;
+   html=(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!PK.focus.length}">All</button>${LO.map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${PK.focus.includes(x.k)}">${NUT[x.k].n} <span class="num">${Math.round(x.p)} %</span></button>`).join('')}</div>`:'')+I.map(x=>{const ph=PH[x.d.id];return `<div class="opt ideaopt"><button class="optmain" type="button" data-r="${x.d.id}"><span class="thumb em">${ph?`<img src="${ph}" alt="">`:dIcon(x.d)}</span><span class="otx"><span class="t">${esc(x.d.n)}${x.d.min?`<span class="min">${x.d.min} min</span>`:''}${x.has?'<span class="havetag">Familiar</span>':''}</span><span class="s num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein</span></span></button>${impactFor(x.D0,x.add,T,TN,PK.focus)}<button class="linkbtn rlink" type="button" data-rcp="${x.d.id}">${RSTEPS[x.d.id]?'Recipe':'Find a recipe'}</button></div>`}).join('')||`<p class="empty2">${PK.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No match.'}</p>`;
    ds=null}
   else if(fm==='recent')ds=ds.filter(d=>d.used).sort((a,b)=>b.used-a.used).slice(0,12);
   else if(fm==='fav')ds=ds.filter(d=>d.fav);
@@ -2089,6 +2202,7 @@ function renderPicker(){
  }
  if(!isD)html+=`<button class="linkbtn" type="button" id="pk-meas">${INFO} How much is a spoon, a cup or a handful?</button>`;
  $('pk-list').innerHTML=html;if($('pk-meas'))$('pk-meas').onclick=openMeasures;
+ $('pk-list').querySelectorAll('[data-rcp]').forEach(b=>b.onclick=()=>openRecipe(b.dataset.rcp,PK.slot));
  $('pk-list').querySelectorAll('[data-fx]').forEach(b=>b.onclick=()=>{const k=b.dataset.fx;PK.focus=!k?[]:PK.focus.includes(k)?PK.focus.filter(x=>x!==k):[...PK.focus,k];renderPicker()});
  if($('pk-scan'))$('pk-scan').onclick=()=>{closePicker();openScan(PK.slot,'scan')};
  if($('pk-todish'))$('pk-todish').onclick=()=>{PK.kind='dish';PK.f=allDishes(s.t).some(d=>d.used)?'recent':'all';PK.q='';$('pk-q').value='';renderPicker();$('pk-list').scrollTop=0};
@@ -2195,12 +2309,13 @@ function renderLibDishes(){
  const mine=ds.filter(d=>d.own||d.edited).sort((a,b)=>(b.used-a.used)||a.n.localeCompare(b.n)),rest=ds.filter(d=>!d.own&&!d.edited).sort((a,b)=>a.n.localeCompare(b.n));
  const row=d=>{const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),open=LX===d.id,slots=d.t==='b'?['b']:d.t==='s'?['s']:['l','d'];
   return `<div class="ldish"><button class="ldhead" type="button" data-lx="${d.id}" aria-expanded="${open}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.fav?' <span class="favst" aria-label="Favourite">★</span>':''}${d.edited?'<span class="mine">changed</span>':''}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein${d.min?' · '+d.min+' min':''}</span></span>${CHEV}</button>
-   ${open?`<div class="ldbody"><p class="cap">${d.it.map(([id,g])=>esc(FM[id]?FM[id].n.split(',')[0]:'Food')+' '+g+' g').join(', ')}</p><div class="btnrow">${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}<button class="btn sm" type="button" data-lfav="${d.id}" aria-pressed="${d.fav}">${d.fav?'★ Favourite':'☆ Add to favourites'}</button>${d.own||d.edited?`<button class="btn sm ghost" type="button" data-ldel="${d.id}">${d.edited?'Reset to original':'Delete'}</button>`:''}</div></div>`:''}</div>`};
+   ${open?`<div class="ldbody"><p class="cap">${d.it.map(([id,g])=>esc(FM[id]?FM[id].n.split(',')[0]:'Food')+' '+g+' g').join(', ')}</p><div class="btnrow"><button class="btn sm" type="button" data-lrcp="${d.id}">${RSTEPS[d.id]?'Recipe':'Find a recipe'}</button>${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}<button class="btn sm" type="button" data-lfav="${d.id}" aria-pressed="${d.fav}">${d.fav?'★ Favourite':'☆ Add to favourites'}</button>${d.own||d.edited?`<button class="btn sm ghost" type="button" data-ldel="${d.id}">${d.edited?'Reset to original':'Delete'}</button>`:''}</div></div>`:''}</div>`};
  $('lib-mine').innerHTML=mine.length||(!q&&lt!=='fav')?`<div class="card" style="padding-top:4px"><h2 style="margin:10px 0 2px">Your dishes</h2>${mine.length?'':'<p class="cap" style="margin:4px 0 12px">Dishes you build or change are saved here when you leave Edit.</p>'}${mine.map(row).join('')}</div>`:'';
  $('lib-allh').textContent=mine.length?'All dishes':'Dishes';
  $('lib-list').innerHTML=rest.length?rest.map(row).join(''):`<p class="cap">${lt==='fav'&&!q?(mine.length?'No other favourites.':'No favourites yet. Tap a dish, then Add to favourites. The star in the add menu works too.'):'No match.'}</p>`;
  const v=$('lib-dishes');
  v.querySelectorAll('[data-lx]').forEach(b=>b.onclick=()=>{LX=LX===b.dataset.lx?null:b.dataset.lx;renderLibDishes()});
+ v.querySelectorAll('[data-lrcp]').forEach(b=>b.onclick=()=>openRecipe(b.dataset.lrcp));
  v.querySelectorAll('[data-ladd]').forEach(b=>b.onclick=()=>{const [id,t]=b.dataset.ladd.split(':'),d=dish(id),k=slotOfType(t);useDish(k,d);toast(`Added ${d.n} to ${TY[t].n.toLowerCase()}`);render()});
  v.querySelectorAll('[data-lfav]').forEach(b=>b.onclick=()=>{const m=meta(b.dataset.lfav);m.fav=!m.fav;save();renderLibDishes()});
  v.querySelectorAll('[data-ldel]').forEach(b=>b.onclick=()=>{if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Tap again';return}
