@@ -2776,7 +2776,7 @@ function drawReport(n){const {T,R,L,D,fg,sups,score}=repData(n);
  const nk=['b12','d','iod','ca','fe','zn','se','ala','c','fol','a','k','mg','pot','epa'].filter(k=>NUT[k]);
  const dops=REP.days?repDayOps(R,T,W,P,FONT):[];const dH=dops.length?110+dops.reduce((a,o)=>a+o.gap+o.h,0):0;
  const AN=R.dates.length,AD=AN>10?18:28,AG=AN>10?7:12,ACTH=60+5*(AD+AG)+(AN>10?62:100)+50;
- const H=P+390+ACTH+(HK()?2:3)*70+90+nk.length*58+90+Math.ceil(FGK.length/2)*58+90+Math.max(1,sups.length)*44+200+dH;
+ const H=P+430+ACTH+(HK()?2:3)*70+90+nk.length*58+90+Math.ceil(FGK.length/2)*58+90+Math.max(1,sups.length)*44+200+dH;
  const c=document.createElement('canvas'),SC=Math.min(1,14000/H);c.width=Math.round(W*SC);c.height=Math.round(H*SC);const g=c.getContext('2d');g.scale(SC,SC);/* phones limit canvas size; very long reports get a little smaller */
  const t=(s,x,y,o)=>{o=o||{};g.font=`${o.w||600} ${o.s||30}px ${FONT}`;g.fillStyle=o.c||C.ink;g.textAlign=o.a||'left';g.textBaseline='alphabetic';g.fillText(s,x,y)};
  const rr=(x,y,w,h,r,col)=>{g.fillStyle=col;g.beginPath();g.roundRect?g.roundRect(x,y,w,h,r):g.rect(x,y,w,h);g.fill()};
@@ -2808,7 +2808,8 @@ function drawReport(n){const {T,R,L,D,fg,sups,score}=repData(n);
   y=top+5*dy+(AN>10?62:100);
   {let x=LX;const lg=(fill,dash,txt)=>{g.beginPath();g.arc(x+9,y-7,9,0,7);if(dash){g.setLineDash([4,4]);g.strokeStyle=C.dash;g.lineWidth=2;g.stroke();g.setLineDash([])}else{g.fillStyle=fill;g.fill()}t(txt,x+26,y,{s:20,w:600,c:C.muted});g.font=`600 20px ${FONT}`;x+=26+g.measureText(txt).width+30};
    lg(C.dim,0,'your usual');lg(C.ok,0,'more active');lg(0,1,'not logged')}}
- y+=80;t('Nutrients',P,y,{s:34,w:800});t('✓ covered   ~ close   ! low',W-P,y,{s:24,w:600,c:C.muted,a:'right'});y+=16;
+ y+=80;t('Nutrients',P,y,{s:34,w:800});t('✓ covered   ~ close   ! low',W-P,y,{s:24,w:600,c:C.muted,a:'right'});y+=40;
+ t('Plain average of these days. The app\'s Mixed view weighs nutrients differently.',P,y,{s:22,w:500,c:C.muted});y+=16;
  nk.forEach(k=>{const s=st(k);y+=58;g.fillStyle=C.line;g.fillRect(P,y-42,W-2*P,2);
   t(s.sym,P+14,y,{s:30,w:800,c:s.col,a:'center'});t(NUT[k].n+(NUT[k].opt?' (optional)':''),P+48,y,{s:28});
   const bx=W-P-360;rr(bx,y-18,240,14,7,C.track);rr(bx,y-18,Math.max(14,240*Math.min(s.p,100)/100),14,7,s.col);
