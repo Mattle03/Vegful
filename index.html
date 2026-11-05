@@ -544,7 +544,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .fills{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}.fills span{font-size:12px;font-weight:700;color:var(--ok);background:color-mix(in srgb,var(--ok) 13%,transparent);border-radius:6px;padding:2px 7px}
 .sgrow .btn{flex:none}
 .imp{display:grid;grid-template-columns:96px 1fr 84px;align-items:center;gap:8px;font-size:13px;padding:3px 0}
-.imp .in{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.imp .in{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}.imp .in small{display:block;font-size:11px;font-weight:600;color:var(--muted)}
 .imp .ib{position:relative;height:10px;border-radius:5px;background:var(--surface2);overflow:hidden}
 .imp .ib i{position:absolute;top:0;bottom:0;left:0}
 .imp .ib0{background:color-mix(in srgb,var(--ink) 30%,transparent)}
@@ -2472,7 +2472,8 @@ function swapCard(x,i,kind){
 const pc2=x=>x>=200?'200+':Math.round(x);
 const pctK=(k,D,T)=>D[K.indexOf(k)]/T[k]*100;
 function ibar(k,p0,p1){const sc=x=>Math.min(Math.max(x,0),150)/1.5,lo=Math.min(p0,p1),hi=Math.max(p0,p1),up=p1>=p0;
- return `<div class="imp"><span class="in">${NUT[k].n}</span><span class="ib"><i class="ib0" style="width:${sc(lo)}%"></i><i class="${up?'ibg':p1>=100?'ibn':'ibl'}" style="left:${sc(lo)}%;width:${sc(hi)-sc(lo)}%"></i><i class="ibm"></i></span><span class="iv num">${pc2(p0)} → <b style="color:${!up&&p1<90?'var(--low)':p1>=90?'var(--ok)':'var(--ink)'}">${pc2(p1)} %</b></span></div>`}
+ const per=S.range===0?winLabel(k):S.range===1?'today':S.range+' days';
+ return `<div class="imp"><span class="in">${NUT[k].n}<small>${per}</small></span><span class="ib"><i class="ib0" style="width:${sc(lo)}%"></i><i class="${up?'ibg':p1>=100?'ibn':'ibl'}" style="left:${sc(lo)}%;width:${sc(hi)-sc(lo)}%"></i><i class="ibm"></i></span><span class="iv num">${pc2(p0)} → <b style="color:${!up&&p1<90?'var(--low)':p1>=90?'var(--ok)':'var(--ink)'}">${pc2(p1)} %</b></span></div>`}
 function isum(D0,D1,T){D0=viewVec(D0,1);D1=viewVec(D1);const s0=dayScore(D0,T),s1=dayScore(D1,T),low=ALLK.filter(k=>pctK(k,D1,T)<90);
  return `<p class="isum">All nutrients: ${s0} → <b>${s1} %</b> covered. ${low.length?`Still low: ${low.length>5?low.length+' nutrients':low.map(k=>NUT[k].n).join(', ')}.`:'Nothing left low.'}</p>`}
 function impactFor(D0,add,T,TN,focus){const D1=D0.slice();addv(D1,add);const V0=viewVec(D0,1),V1=viewVec(D1);const fo=fillsOf(D0,add,TN,T),fl=fo.filter(x=>pctK(x.k,V0,T)<100);let ks=(fl.length?fl:fo).map(x=>x.k);
