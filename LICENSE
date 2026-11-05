@@ -1,0 +1,11 @@
+Copyright (c) 2026 Mattle03. All rights reserved.
+
+This repository is public so the Vegful app can be hosted at
+https://mattle03.github.io/Vegful/ and used there. Using the app is free.
+
+No license is granted to copy, modify, redistribute or publish the code,
+design, texts or data in this repository, in whole or in part, without
+written permission from the copyright holder.
+
+Third party code keeps its own license: vendor/zxing.min.js is under the
+Apache License 2.0, see vendor/ZXING-LICENSE.

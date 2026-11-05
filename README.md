@@ -61,3 +61,7 @@ Use the Scan tab to check products in the shop, or "Scan" inside a meal to add o
 - On iPhone, Safari can clear storage of web apps not opened for several weeks.
 - Fonts load from Google Fonts on first start; offline afterwards.
 - Dish photos are stored on the phone (IndexedDB), resized to 640 px.
+
+## Copyright
+
+© 2026 Mattle03. All rights reserved. See [LICENSE](LICENSE).
