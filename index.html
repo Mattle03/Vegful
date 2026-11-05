@@ -201,6 +201,10 @@ button.ring{border:0;background:none;padding:0;cursor:pointer;color:inherit;font
 .nrow .nv{font-size:13px;color:var(--muted)}
 .nrow .np{font-family:var(--display);font-weight:800;font-size:20px;text-align:right}
 .nrow .stack{grid-column:1/-1}
+.n2{grid-column:1/-1;display:grid;grid-template-columns:52px 1fr minmax(84px,auto);align-items:center;column-gap:10px;row-gap:6px;font-size:12px}.n2 .stack{grid-column:auto}
+.n2 .il{color:var(--muted);font-weight:600;font-size:12px;white-space:nowrap}.n2 .iv{color:var(--muted);text-align:right;white-space:nowrap;font-size:12px}.n2 .iv b{color:var(--ink);font-weight:800}
+.stack.thin{height:6px;border-radius:3px}
+.arow2.two{grid-template-columns:1fr auto;row-gap:6px}
 .stack{height:10px;border-radius:5px;background:var(--surface2);position:relative;overflow:hidden;display:flex}
 .stack i{height:100%;display:block;flex:none}
 .stack::after{content:"";position:absolute;left:66.67%;top:0;bottom:0;width:2px;background:var(--ink);opacity:.35}
@@ -335,6 +339,8 @@ html.modal-open,html.modal-open body{overflow:hidden;overscroll-behavior:none}
 .deltas span{font-size:13px;font-weight:700;border-radius:8px;padding:3px 8px}
 .up{background:color-mix(in srgb,var(--ok) 16%,transparent);color:var(--ok)}
 .srcd{display:inline-block;position:relative}
+.sinfo{width:32px;height:32px;margin:-8px -6px -8px 0;padding:0;border:0;background:none;color:var(--muted);display:inline-grid;place-items:center;vertical-align:middle;flex:none;cursor:pointer}.sinfo svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
+.tk-n{display:flex;align-items:center;gap:2px;min-width:0}.tk-n b{min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.sinfo-l{list-style:disc}
 .srcd summary{list-style:none;cursor:pointer;width:36px;height:36px;border-radius:10px;display:grid;place-items:center;color:var(--muted)}
 .srcd summary::-webkit-details-marker{display:none}
 .srcd summary svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round}
@@ -1352,9 +1358,9 @@ function supCard(isT){const T=targets(),d=S.date;const rows=(S.sups||[]).map(s=>
   const when=s.freq==='d'?(sk?'skipped today':pun?'taken today':''):iv?(l?(pun?'next '+fdS(shift(l,sInt(s))):shift(l,sInt(s))<=d?(dayDiff(shift(l,sInt(s)),d)>0?'due since '+dayDiff(shift(l,sInt(s)),d)+(dayDiff(shift(l,sInt(s)),d)===1?' day':' days'):'due today'):'next '+fdS(shift(l,sInt(s)))):'not taken yet'):st.t;
   const canP=!fut&&!pun&&!(s.freq==='d'&&sk)&&(s.freq==='d'||st.due||!st.ok),age=animAge(s.id),chomp=age!==null&&pun,fly=chomp&&!ANIM[s.id].due;
   const stub=fut?`<div class="tk-next"></div>`:pun?`<button class="tk-stub" type="button" data-sact="${s.id}:unpunch" aria-label="Taken today. Tap to undo"><small>undo</small></button>${fly?'<span class="tk-fly" aria-hidden="true">Punch</span>':''}`:canP?`<button class="tk-btn" type="button" data-sact="${s.id}:punch">Punch</button>`:sk?`<button class="tk-stub" type="button" data-sact="${s.id}:undo"><small>undo skip</small></button>`:`<div class="tk-stamp"><small>covered</small></div>`;
-  return `<div class="tkt${pun?' torn':''}${fly?' chomp':''}"${chomp?` style="--ag:-${Math.round(age)}ms"`:''}><div class="tk-main"><div class="tk-l1"><b>${esc(sName(s).replace(/ \(.*\)$/,''))}</b>${sHoles(s,d,chomp)}</div><div class="tk-l2"><span class="cap">${info}${when?' · '+when:''}</span>${s.freq==='d'&&!pun&&!sk&&!fut?`<button class="tk-ign" type="button" data-sact="${s.id}:skip">Skip</button>`:''}</div></div><div class="tk-perf"></div>${stub}</div>`}).join('')}
+  return `<div class="tkt${pun?' torn':''}${fly?' chomp':''}"${chomp?` style="--ag:-${Math.round(age)}ms"`:''}><div class="tk-main"><div class="tk-l1"><span class="tk-n"><b>${esc(sName(s).replace(/ \(.*\)$/,''))}</b>${sInfoBtn(s.kind)}</span>${sHoles(s,d,chomp)}</div><div class="tk-l2"><span class="cap">${info}${when?' · '+when:''}</span>${s.freq==='d'&&!pun&&!sk&&!fut?`<button class="tk-ign" type="button" data-sact="${s.id}:skip">Skip</button>`:''}</div></div><div class="tk-perf"></div>${stub}</div>`}).join('')}
  <p class="cap" style="margin:8px 0 0"><i class="hk on"></i> taken <i class="hk off"></i> missed <i class="hk cur"></i> open. Daily ones count as taken unless you skip them.</p></div>`}
-function bindSupCard(v){v.querySelectorAll('[data-sact]').forEach(b=>b.onclick=()=>{const [id,a]=b.dataset.sact.split(':'),s=(S.sups||[]).find(x=>x.id===id);if(!s)return;const d=S.date;
+function bindSupCard(v){v.querySelectorAll('[data-sinfo]').forEach(b=>b.onclick=e=>{e.stopPropagation();openSupInfo(b.dataset.sinfo)});v.querySelectorAll('[data-sact]').forEach(b=>b.onclick=()=>{const [id,a]=b.dataset.sact.split(':'),s=(S.sups||[]).find(x=>x.id===id);if(!s)return;const d=S.date;
  s.takes=s.takes||[];s.skip=s.skip||[];
  if(a==='punch'){punchSup(s);return}if(a==='skip'){if(!s.skip.includes(d))s.skip.push(d);s.takes=s.takes.filter(x=>x!==d)}else if(a==='undo')s.skip=s.skip.filter(x=>x!==d);else if(a==='take'){if(!s.takes.includes(d))s.takes.push(d)}else if(a==='untake'||a==='unpunch'){delete ANIM[s.id];s.takes=s.takes.filter(x=>x!==d)}
  render()})}
@@ -1614,6 +1620,29 @@ const FOODL=['USDA FoodData Central, food values','https://fdc.nal.usda.gov/'];
 const INFO='<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg>';
 function srcLinks(keys,note){const P=S.prof.ref||'efsa',L=[REFL[P]];const seen=new Set();(keys||[]).forEach(k=>{if(ODS[k]&&!seen.has(ODS[k])){seen.add(ODS[k]);L.push([`NIH fact sheet: ${NUT[k].n}`,`https://ods.od.nih.gov/factsheets/${ODS[k]}-HealthProfessional/`])}});L.push(FOODL);
  return `<details class="srcd"><summary aria-label="Sources">${INFO}</summary><div class="srcpop">${note?`<p>${note}</p>`:''}${L.map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join('')}</div></details>`}
+/* how to take each supplement: timing, food, what to keep apart. Shown behind the info circle */
+const MEDS='Ask your pharmacist about timing if you take medicines.';
+const HOW={b12:['Any time of day, with or without food.','Chew it, let it dissolve or swallow it; all work.','The body takes up only a little per dose, so tablets are strong. A daily small dose or one big weekly dose both work.'],
+ d:['Take it with a meal that has some fat, like your main meal. Vitamin D dissolves in fat and is taken up better that way.','Weekly or monthly doses work too, because the body stores it.','Lichen D3 is vegan. D2 is vegan as well but raises blood levels less.'],
+ epa:['Take it with a meal that has some fat. It is taken up better and causes fewer burps.','Keep the bottle closed and cool. Throw it out if it smells off.'],
+ iod:['Any time, with or without food.','Do not add kelp or seaweed tablets; their iodine varies a lot.','With a thyroid condition, ask your doctor first.'],
+ salt:['Use it for the salt you already use. Do not add extra salt for the iodine.','Keep the pack closed and dry; iodine fades in open, damp salt.'],
+ multi:['Take it with a meal. Fat helps vitamins D, A and K, and food makes nausea less likely.','If it already has iodine or vitamin D, a separate tablet can double the dose. Check the label.'],
+ c:['Any time, with or without food. With food is gentler on the stomach.','Take it with an iron rich meal like lentils or tofu; it helps the body take up plant iron.'],
+ mg:['Take it with a meal. Big doses on an empty stomach can cause loose stools.','Citrate and glycinate are taken up better than oxide.',MEDS],
+ ca:['Calcium carbonate: with a meal. Calcium citrate: any time.','The body takes up 500 mg or less at once best. Split bigger doses.','Keep it 2 hours away from iron or zinc tablets; it lowers their uptake.','Calcium set tofu and fortified plant milk often give plenty already.',MEDS],
+ zn:['Best taken up on an empty stomach. If that upsets your stomach, take it with a meal.','Keep it 2 hours away from iron or calcium tablets.','Do not take over 25 mg a day for long; it lowers copper.',MEDS],
+ se:['Any time, with or without food.','Do not eat Brazil nuts every day on top; together they can pass the safe limit.'],
+ fol:['Any time, with or without food.'],
+ fe:['Only after a blood test or on a doctor\'s advice.','Take it on an empty stomach, or with vitamin C like orange juice, for the best uptake. If it upsets your stomach, take it with a meal.','Keep it 1 to 2 hours away from tea, coffee and calcium.','Your doctor may suggest every other day; that is often taken up better and is easier on the stomach.','Dark stools are normal. Keep iron tablets away from children; they are dangerous for them.',MEDS]};
+HOW.dha=HOW.epa;HOW.epo=HOW.epa;
+function openSupInfo(kind){const u=ONE[kind];if(!u)return;const dl=$('sheet');S.sel=null;$('sheet-grp').textContent='Supplement';
+ $('sheet-body').innerHTML=`<h2 style="font-size:24px;margin:0 0 2px">${u.n}</h2>
+  <h3 class="rh">How to take it</h3><ul class="rsteps sinfo-l">${(HOW[kind]||[]).map(x=>`<li>${x}</li>`).join('')}</ul>
+  <h3 class="rh">Dose</h3><p style="margin:0;font-size:15px;line-height:1.45">${u.h}</p>
+  <div style="margin-top:10px">${srcLinks(kNuts(u),'Timing and food advice from the NIH fact sheets. Your label or doctor comes first.')}</div>`;
+ if(!dl.open){dl.showModal?dl.showModal():dl.setAttribute('open','')}$('sheet-body').scrollTop=0}
+const sInfoBtn=kind=>HOW[kind]?`<button class="sinfo" type="button" data-sinfo="${kind}" aria-label="How to take ${ONE[kind].n}">${INFO}</button>`:'';
 const keysIn=t=>K.filter(k=>k!=='kcal'&&t.includes(NUT[k].n));
 
 const LOGO='<svg viewBox="0 0 100 100"><rect width="100" height="100" rx="22.5" fill="#2D5A3F"/><path d="M50 80Q22 66 22 24Q46 38 50 80Z" fill="#A8DDB5"/><path d="M50 80Q80 70 80 28Q54 40 50 80Z" fill="#F4C9A8"/></svg>';
@@ -1752,21 +1781,25 @@ function renderMeal(){
 
 /* ---------- nutrients ---------- */
 function renderNutrients(T,D){
- let sv=SLOTS.map(s=>slotV(s.id)),SL=SLOTS;
+ let sv=SLOTS.map(s=>slotV(s.id)),SL=SLOTS;const Dd=D,svd=sv,tlab=S.date===TODAY?'today':kdate(S.date).toLocaleDateString('en-GB',{weekday:'short'});let two=S.range===0;
  document.querySelectorAll('#range-seg [data-r]').forEach(b=>{b.setAttribute('aria-pressed',+b.dataset.r===S.range);b.onclick=()=>{S.range=+b.dataset.r;render()}});
  if(S.range===0){const M=mixStats();$('n-sub').textContent=M.L.length?'Each nutrient over the time your body stores it':'No days logged yet';D=M.avg;sv=M.slots;SL=TSL}
  else if(S.range>1){const R=rangeStats(S.range);
   $('n-sub').textContent=R.L.length?`Average of ${R.L.length} logged day${R.L.length>1?'s':''} in the last ${S.range}`:'No days logged yet';
-  if(R.L.length){D=R.avg;sv=R.slots;SL=TSL}}
+  if(R.L.length){D=R.avg;sv=R.slots;SL=TSL;two=true}}
  else $('n-sub').textContent=kdate(S.date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
  $('legend').innerHTML=[...new Map(SL.map(s=>[s.n.replace(/ \d+$/,''),s.c])).entries()].map(([n,c])=>`<span><i style="--c:${c}"></i>${n}</span>`).join('');
  const NORD=['kcal','p','fib','b12','d','a','c','fol','k','ca','fe','zn','iod','se','mg','pot','ala','epa'],groups=[...new Set(NORD.map(k=>NUT[k].g))];
  const rr=S.range===0?7:S.range;const fvAvg=rr>1?(()=>{const R=rangeStats(rr);if(!R.L.length)return null;const a={veg:0,fruit:0};R.L.forEach(d=>{const x=fv(S.days[d]);a.veg+=x.veg/R.L.length;a.fruit+=x.fruit/R.L.length});return a})():null;
  const att=issues(D,T),cov=ALLK.length-att.filter(x=>!x.s.over).length;
  const attHtml=`<div class="card attn-card"><div class="card-head" style="margin-bottom:2px"><div><h2>${att.length?'Needs attention':'All covered'}</h2><p class="cap">${cov} of ${ALLK.length} nutrients covered${S.range===0?', each over the time your body stores it':S.range>1?' on average':''}</p></div>${att.length?'<button class="btn sm primary" type="button" id="n-fix">How to fix</button>':''}</div>
-  ${att.map(x=>{const p=Math.min(x.s.p,100);return `<button class="arow2" type="button" data-sel="${x.k}"><span class="nm">${NUT[x.k].n}</span><span class="abar"><i style="width:${p}%;background:${x.s.c}"></i></span><span class="pc num" style="color:${x.s.c}">${x.s.over?'Too much':Math.round(x.s.p)+' %'}</span></button>`}).join('')||'<p class="cap" style="margin-top:6px">Every nutrient reaches its target. Nice.</p>'}</div>`;
+  ${att.map(x=>{const p=Math.min(x.s.p,100),j=K.indexOf(x.k),sd=nstat(x.k,Dd,T),pc=`<span class="pc num" style="color:${x.s.c}">${x.s.over?'Too much':Math.round(x.s.p)+' %'}</span>`;
+   if(two&&vWin(x.k)>1){const b=(st,th)=>`<span class="stack${th?' thin':''}"><i style="width:${Math.min(st.p,150)/1.5}%;background:${st.c}"></i></span>`,am=v=>`<span class="iv num"><b>${fmt(v)}</b>/${fmt(T[x.k])} ${NUT[x.k].u}</span>`;
+    return `<button class="arow2 two" type="button" data-sel="${x.k}"><span class="nm">${NUT[x.k].n}</span>${pc}<span class="n2"><span class="il">${S.range===0?winLabel(x.k):S.range+' days'}</span>${b(x.s)}${am(D[j])}<span class="il">${tlab}</span>${b(sd,1)}${am(Dd[j])}</span></button>`}
+   return `<button class="arow2" type="button" data-sel="${x.k}"><span class="nm">${NUT[x.k].n}</span><span class="abar"><i style="width:${p}%;background:${x.s.c}"></i></span>${pc}</button>`}).join('')||'<p class="cap" style="margin-top:6px">Every nutrient reaches its target. Nice.</p>'}</div>`;
  $('nutrients').innerHTML=attHtml+groups.map(g=>`<div class="card"><h2 style="margin-bottom:6px">${g}</h2><div class="ngroup">${NORD.filter(k=>NUT[k].g===g&&!(k==='kcal'&&HK())).map(k=>{const i=K.indexOf(k),s=nstat(k,D,T);
-   const segs=SL.map((sl,j)=>{const w=sv[j][i]/T[k]*100/1.5;return w>0?`<i style="width:${w}%;background:${sl.c}"></i>`:''}).join('');
+   const sg=(L,v)=>L.map((sl,j)=>{const w=v[j][i]/T[k]*100/1.5;return w>0?`<i style="width:${w}%;background:${sl.c}"></i>`:''}).join(''),segs=sg(SL,sv),t2=two&&vWin(k)>1,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${EN(T.kcal)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${NUT[k].u}`}</span>`;
+   if(t2)return `<button class="nrow" type="button" data-sel="${k}"><span><span class="nn">${NUT[k].n}</span>${s.over?`<span class="tag" style="color:var(--over);background:color-mix(in srgb,var(--over) 16%,transparent)">Too much</span>`:''}${NUT[k].opt?'<span class="tag">Optional</span>':''}</span><span class="np" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="n2"><span class="il">${S.range===0?winLabel(k):S.range+' days'}</span><span class="stack">${segs}</span>${am(D[i])}<span class="il">${tlab}</span><span class="stack thin">${sg(SLOTS,svd)}</span>${am(Dd[i])}</span></button>`;
    return `<button class="nrow" type="button" data-sel="${k}"><span><span class="nn">${NUT[k].n}</span>${S.range===0?`<span class="wtag">${winLabel(k)}</span>`:''}${s.over?`<span class="tag" style="color:var(--over);background:color-mix(in srgb,var(--over) 16%,transparent)">Too much</span>`:''}${NUT[k].opt?'<span class="tag">Optional</span>':''}<br><span class="nv num">${k==='kcal'?EN(D[0])+' of '+EN(T.kcal):fmt(D[i])+' of '+fmt(T[k])+' '+NUT[k].u}</span></span><span class="np" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="stack">${segs}</span></button>`}).join('')}</div></div>`).join('')+(rr>1&&!fvAvg?'':fvCard(S.plan,fvAvg));
  $('nutrients').insertAdjacentHTML('beforeend',fsCard());
  $('nutrients').querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>selectNut(b.dataset.sel));
@@ -1781,8 +1814,8 @@ function spark(k,T){const mx0=S.range===0&&(WIN[k]||7)>1,R=rangeStats(S.range>1?
   <text x="0" y="${H+14}" font-size="11" fill="var(--muted)">${kdate(R.dates[0]).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</text><text x="${W}" y="${H+14}" font-size="11" fill="var(--muted)" text-anchor="end">Today</text></svg>
   <p class="cap">${mx0?'Each bar is where you stood that day, with recent days counting most and older days fading out. Dashed line is your target. Grey marks: no entries yet.':'Dashed line is your daily target. Grey marks are days without entries.'}</p></div>`}
 function renderDetail(T,root){
- if(!S.sel&&root.id==='sheet-body'&&['Plant variety','Recipe'].includes($('sheet-grp').textContent))return;
- const k=S.sel||'b12',i=K.indexOf(k),N=NUT[k],MXd=S.range===0?mixStats():null,R=S.range>1?rangeStats(S.range,S.date):null,D=MXd?MXd.avg:R&&R.L.length?R.avg:dayV(),s=nstat(k,D,T);
+ if(!S.sel&&root.id==='sheet-body'&&['Plant variety','Recipe','Supplement'].includes($('sheet-grp').textContent))return;
+ const k=S.sel||'b12',i=K.indexOf(k),N=NUT[k],MXd=S.range===0?mixStats():null,R=S.range>1?rangeStats(S.range,S.date):null,D=MXd?MXd.avg:R&&R.L.length?R.avg:dayV(),s=nstat(k,D,T),d2=(MXd&&(WIN[k]||7)>1)||!!(R&&R.L.length);
  $('sheet-grp').textContent=N.g;
  const contrib=[];
  SLOTS.forEach(sl=>{if(sl.id==='x'){const T0=targets();(S.sups||[]).forEach(su=>{const v=sDay(su,k,S.date,T0);if(v>0)contrib.push({n:sName(su),c:sl.c,v,m:su.freq==='d'?'Supplement, daily':'Supplement, '+agoTxt(dayDiff(sLast(su,S.date)||S.date,S.date))})});return}
@@ -1801,7 +1834,8 @@ function renderDetail(T,root){
  const srcs=srcList.slice(0,SRC.n);
  const supTip=['b12','d','iod'].includes(k)&&!supHas(k);
  root.innerHTML=`<div><h2 style="font-size:26px">${N.n}</h2>
-   <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px"><span class="big" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="muted num">${fmt(D[i])} of ${fmt(T[k])} ${N.u}${MXd?` · ${WIN[k]===1?'this day':'mostly the last '+WIN[k]+' days'}`:R&&R.L.length?` · average of ${R.L.length} days`:''}</span></div>${MXd?`<p class="cap" style="margin-top:6px">${WINWHY[WIN[k]||7]}${(WIN[k]||7)>1?` Recent days count most; a day fades to half after ${WIN[k]/2} days and stops counting after ${2*WIN[k]}.`:''}${(()=>{const n=lowRun(k,S.date,mixMemo(),T);return n>=3?` <b style="color:var(--ink)">Below target for ${runTxt(n)}.</b>`:''})()}</p>`:''}
+   <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px"><span class="big" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span>${d2?(R?`<span class="muted">Average of ${R.L.length} logged day${R.L.length>1?'s':''}</span>`:''):`<span class="muted num">${fmt(D[i])} of ${fmt(T[k])} ${N.u}</span>`}</div>${d2?(()=>{const Dy=dayV(),sd=nstat(k,Dy,T),b=(st,th)=>`<span class="stack${th?' thin':''}"><i style="width:${Math.min(st.p,150)/1.5}%;background:${k==='kcal'?'var(--accent)':st.c}"></i></span>`,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${EN(T.kcal)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${N.u}`}</span>`;
+    return `<div class="n2" style="margin-top:10px"><span class="il">${MXd?winLabel(k):S.range+' days'}</span>${b(s)}${am(D[i])}<span class="il">${S.date===TODAY?'today':kdate(S.date).toLocaleDateString('en-GB',{weekday:'short'})}</span>${b(sd,1)}${am(Dy[i])}</div>`})():''}${MXd?`<p class="cap" style="margin-top:6px">${WINWHY[WIN[k]||7]}${(WIN[k]||7)>1?` Recent days count most; a day fades to half after ${WIN[k]/2} days and stops counting after ${2*WIN[k]}.`:''}${(()=>{const n=lowRun(k,S.date,mixMemo(),T);return n>=3?` <b style="color:var(--ink)">Below target for ${runTxt(n)}.</b>`:''})()}</p>`:''}
    <div style="margin-top:8px">${srcLinks([k],`Target from ${REFL[S.prof.ref||'efsa'][0]}${['zn','ala','p'].includes(k)?', adjusted for vegan eating':''}. Food amounts are typical averages; brands differ.`)}</div>
    ${T.ul[k]?`<p class="cap" style="margin-top:6px">Upper safe limit ${fmt(T.ul[k])} ${N.u}${s.over?'. You are above it.':''}</p>`:''}</div>
   <p class="info">${N.i}</p>
@@ -2860,13 +2894,13 @@ function sForm(s){return s?{kind:s.kind,mode:Object.keys(s.amt||{}).length?'x':'
 function renderSupD(){const T=targets(),body=$('supd-body');
  if(SUPD.v==='list'){
   const cur=(S.sups||[]).filter(sCurrent),old=(S.sups||[]).filter(s=>!sCurrent(s)).sort((a,b)=>(b.end||sLast(b,TODAY)||'')<(a.end||sLast(a,TODAY)||'')?-1:1).slice(0,8);
-  const row=s=>`<div class="dishrow"><span style="min-width:0;flex:1"><span style="font-weight:600">${esc(sName(s))}</span><br><span class="cap">${sSched(s)} · ${sDose(s)}${s.freq!=='d'&&sLast(s,TODAY)?' · '+agoTxt(dayDiff(sLast(s,TODAY),TODAY)):''}${s.end&&s.end<=TODAY?' · stopped '+kdate(s.end).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):''}</span></span><button class="btn sm" type="button" data-sedit="${s.id}">Edit</button></div>`;
+  const row=s=>`<div class="dishrow"><span style="min-width:0;flex:1"><span style="font-weight:600">${esc(sName(s))}</span>${sInfoBtn(s.kind)}<br><span class="cap">${sSched(s)} · ${sDose(s)}${s.freq!=='d'&&sLast(s,TODAY)?' · '+agoTxt(dayDiff(sLast(s,TODAY),TODAY)):''}${s.end&&s.end<=TODAY?' · stopped '+kdate(s.end).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):''}</span></span><button class="btn sm" type="button" data-sedit="${s.id}">Edit</button></div>`;
   body.innerHTML=`<p class="cap" style="margin:0 0 10px">Add what you take and how often. Daily ones count by themselves; tap Skip on Today if you miss one. For the others, tap Taken on the day you take them.</p>
   ${cur.length?cur.map(row).join(''):'<p class="cap">Nothing added yet.</p>'}
   <button class="btn primary" type="button" id="s-new" style="width:100%;margin-top:12px">Add a supplement</button>
   ${old.length?`<div class="lbl" style="margin:22px 0 4px">Earlier</div>${old.map(row).join('')}`:''}
   <p class="muted" style="font-size:12.5px;margin:18px 0 0">B12 is needed by every vegan. Vitamin D depends on how much sun you get. Do not start other supplements because of this app; a blood test shows what you need.</p>`;
-  $('s-new').onclick=()=>{SUPD={v:'form',id:null,f:sForm(null),sure:null};renderSupD()};
+  $('s-new').onclick=()=>{SUPD={v:'form',id:null,f:sForm(null),sure:null};renderSupD()};body.querySelectorAll('[data-sinfo]').forEach(b=>b.onclick=()=>openSupInfo(b.dataset.sinfo));
   body.querySelectorAll('[data-sedit]').forEach(b=>b.onclick=()=>{const s=S.sups.find(x=>x.id===b.dataset.sedit);SUPD={v:'form',id:s.id,f:sForm(s),sure:null};renderSupD()});
   return}
  const f=SUPD.f,ed=SUPD.id?S.sups.find(x=>x.id===SUPD.id):null,u=f.kind?ONE[f.kind]:null;
@@ -2879,7 +2913,7 @@ function renderSupD(){const T=targets(),body=$('supd-body');
   warn=sWarn(draft,T,others)}
  const nuts=u?kNuts(u).filter(k=>!(u.add&&u.add[k]!=null&&f.kind==='salt')):[];
  body.innerHTML=`${ed?`<h3 style="margin:0 0 4px">${esc(u.n)}</h3>`:`<div class="lbl" style="margin-bottom:6px">What</div><div class="chips wrap">${Object.entries(ONE).map(([id,x])=>`<button class="chip${f.kind===id?' on':''}" type="button" data-skind="${id}">${x.n}</button>`).join('')}</div>`}
- ${u?`<p class="cap" style="margin:10px 0 0">${u.h}</p>
+ ${u?`<p class="cap" style="margin:10px 0 0">${u.h}${sInfoBtn(f.kind)}</p>
  ${f.kind==='salt'?'':`<div class="lbl" style="margin:18px 0 6px">Dose</div><div class="seg sm" id="s-mode"><button type="button" data-m="n" aria-pressed="${f.mode==='n'}">Normal dose</button><button type="button" data-m="x" aria-pressed="${f.mode==='x'}">Amount from label</button></div>
  ${f.mode==='x'?`<div style="display:grid;gap:8px">${nuts.map(k=>`<label class="amtrow"><span>${NUT[k].n}</span><input type="number" inputmode="decimal" min="0" step="any" data-samt="${k}" value="${f.amt[k]!=null&&f.amt[k]!==''?(k==='d'&&f.du==='iu'?Math.round(f.amt[k]*40):f.amt[k]):''}" placeholder="${k==='d'&&f.du==='iu'?'IU':NUT[k].u}">${k==='d'?`<select id="s-du" aria-label="Unit"><option value="iu"${f.du==='iu'?' selected':''}>IU</option><option value="ug"${f.du==='ug'?' selected':''}>µg</option></select>`:`<span class="cap">${NUT[k].u}</span>`}</label>`).join('')}</div>`:''}
  <div class="lbl" style="margin:18px 0 6px">How often</div><div class="seg sm" id="s-freq">${['d','w','n','o'].map(q=>`<button type="button" data-q="${q}" aria-pressed="${f.freq===q}">${q==='n'?'Every N days':FREQ[q]}</button>`).join('')}</div>
@@ -2892,7 +2926,7 @@ function renderSupD(){const T=targets(),body=$('supd-body');
  <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:16px">${u?`<button class="btn primary" type="button" id="s-save">${ed?'Save':'Add'}</button>`:''}<button class="btn" type="button" id="s-back">Back</button>
  ${ed&&!(ed.end&&ed.end<=TODAY)?`<button class="btn" type="button" id="s-stop">Stop taking</button>`:''}${ed?`<button class="btn ghost" type="button" id="s-del">${SUPD.sure==='del'?'Tap again to delete':'Delete'}</button>`:''}</div>
  ${ed?`<p class="muted" style="font-size:12.5px;margin:10px 0 0">Stop keeps your past days as they were. Delete also removes it from past days.</p>`:''}`;
- const q=sel=>body.querySelector(sel);
+ const q=sel=>body.querySelector(sel);body.querySelectorAll('[data-sinfo]').forEach(b=>b.onclick=()=>openSupInfo(b.dataset.sinfo));
  body.querySelectorAll('[data-skind]').forEach(b=>b.onclick=()=>{f.kind=b.dataset.skind;f.amt={};if(f.kind==='salt')f.freq='d';renderSupD()});
  body.querySelectorAll('#s-mode [data-m]').forEach(b=>b.onclick=()=>{f.mode=b.dataset.m;renderSupD()});
  body.querySelectorAll('#s-freq [data-q]').forEach(b=>b.onclick=()=>{f.freq=b.dataset.q;renderSupD()});
