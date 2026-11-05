@@ -890,7 +890,15 @@ function famOf(id){if(id in _FAM)return _FAM[id];const f=FM[id];if(!f)return _FA
  b=FALIAS[b]||b;return _FAM[id]=b.replace(/\s+/g,'')}
 function isDis(id,depth){const L=DL();if(!L.length)return false;if(L.includes(id))return true;const k=famOf(id);if(L.some(x=>famOf(x)===k))return true;const f=FM[id];if((depth||0)>1||!f)return false;
  return !!((f.parts&&f.parts.some(([q])=>q!==id&&isDis(q,(depth||0)+1)))||(f.ing&&f.ing.some(([q,pc])=>+pc>=10&&q!==id&&isDis(q,(depth||0)+1))))}
-const dishBad=d=>d.it.some(([id])=>isDis(id));
+/* dislikes in dishes: a disliked side ingredient is left out and the dish stays. A dish is skipped only when a disliked food is its main part
+   (named in the dish, or at least a third of its weight), or when less than two ingredients would be left */
+const stemW=w=>w.replace(/(es|s)$/,'');
+function disMain(d,id){const f=FM[id];if(!f)return false;const nm=d.n.toLowerCase();if(f.n.split(',')[0].toLowerCase().split(/\s+/).filter(w=>w.length>3).some(w=>nm.includes(stemW(w))))return true;
+ const tot=d.it.reduce((a,x)=>a+x[1],0),it=d.it.find(x=>x[0]===id);return !!it&&it[1]>=tot/3}
+function dishFit(d){if(!d)return null;const bad=d.it.filter(([id])=>isDis(id));if(!bad.length)return d;if(bad.some(([id])=>disMain(d,id)))return null;
+ const it=d.it.filter(([id])=>!isDis(id));return it.length<2?null:Object.assign({},d,{it,minus:bad.map(x=>x[0])})}
+const dishBad=d=>!dishFit(d);
+const minusTxt=d=>d&&d.minus&&d.minus.length?'without '+d.minus.map(id=>FM[id].n.split(',')[0].toLowerCase()).join(' and '):'';
 FM.vegmix.parts=[['carrots',30],['peas',25],['greenbeans',25],['corn',20]];
 const REC=[
  {id:'granola',n:'Granola bowl with soy yogurt',t:'b',min:2,it:[['granola',100],['soyyog',250],['soymilk',150]]},
@@ -1232,11 +1240,11 @@ beanburger:['Mash the drained black beans with the oats, a pinch of cumin and sa
 's-granola':['Spoon the soy yogurt into a bowl and top with granola and blueberries.'],
 's-oni':['Cook the rice and let it cool a little. Cook and shell the edamame.','Mix the edamame into the rice with a pinch of salt.','With wet hands, press the rice into triangles and wrap each with a strip of nori.']
 };
-function openRecipe(id,slot){const d=dish(id);if(!d)return;const st=RSTEPS[id],dl=$('sheet');S.sel=null;$('sheet-grp').textContent='Recipe';
+function openRecipe(id,slot){const d=dishFit(dish(id))||dish(id);if(!d)return;const st=RSTEPS[id],dl=$('sheet');S.sel=null;$('sheet-grp').textContent='Recipe';
  const q=encodeURIComponent('vegan '+d.n+' recipe'),ty=slot?typeOf(S.plan,slot):null;
  $('sheet-body').innerHTML=`<h2 style="font-size:24px;margin:0 0 2px">${esc(d.n)}</h2><p class="cap" style="margin:0">${d.min?d.min+' min · ':''}one portion</p>
   <h3 class="rh">Ingredients</h3><ul class="ringr">${d.it.map(([fid,g])=>`<li><span class="ficon em">${fIcon(fid)}</span><span class="rn">${esc(FM[fid]?FM[fid].n:'Food')}</span><span class="num">${g} g</span></li>`).join('')}</ul>
-  ${st?`<h3 class="rh">Steps</h3><ol class="rsteps">${st.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><p class="cap">Spices, salt, broth and a splash of sauce are not in the nutrient numbers.${d.edited?' You changed this dish, so some amounts may differ from the steps.':''}</p>`:`<p class="cap">No steps saved for this dish yet.</p>`}
+  ${st?`<h3 class="rh">Steps</h3><ol class="rsteps">${st.map(x=>`<li>${esc(x)}</li>`).join('')}</ol><p class="cap">${d.minus?'Leave out the '+d.minus.map(x=>FM[x].n.split(',')[0].toLowerCase()).join(' and ')+', it is on your do not eat list. ':''}Spices, salt, broth and a splash of sauce are not in the nutrient numbers.${d.edited?' You changed this dish, so some amounts may differ from the steps.':''}</p>`:`<p class="cap">No steps saved for this dish yet.</p>`}
   <div class="btnrow" style="margin-top:14px">${slot?`<button class="btn primary" type="button" id="rc-add">Add to ${TY[ty].n.toLowerCase()}</button>`:''}<a class="btn" href="https://duckduckgo.com/?q=${q}" target="_blank" rel="noopener">${st?'More recipes online':'Find a recipe online'}</a></div>`;
  if($('rc-add'))$('rc-add').onclick=()=>{useDish(slot,d);toast(`Added ${d.n}`);closeSheet();if($('pk').open)closePicker();render()};
  if(!dl.open){dl.showModal?dl.showModal():dl.setAttribute('open','')}$('sheet-body').scrollTop=0}
@@ -1247,7 +1255,7 @@ function edited(slot){const sl=S.plan[slot];if(sl)sl.dirty=1}
 Object.keys(S.dishes).forEach(id=>{if(REC.find(r=>r.id===id)){const nid='u_'+id;if(!S.dishes[nid])S.dishes[nid]=Object.assign({},S.dishes[id]);if(S.meta[id])S.meta[nid]=Object.assign({},S.meta[id]);delete S.dishes[id]}});
 function saveMeal(slot,name){const sl=S.plan[slot],t=TY[typeOf(S.plan,slot)].t;let id=sl.did&&String(sl.did).startsWith('u_')?sl.did:'u_'+Date.now().toString(36);
  S.dishes[id]={n:name,t,it:cp(sl.it),min:0};sl.did=id;sl.t=name;delete sl.dirty;meta(id).used=Date.now();return id}
-function useDish(slot,d){meta(d.id).used=Date.now();const ty=typeOf(S.plan,slot);if(d.t==='s'&&ty==='s'&&S.plan[slot].it.length){S.plan[slot].it.push(...cp(d.it));return}S.plan[slot]=Object.assign({t:d.n,it:cp(d.it),did:d.id},ty!==slot?{ty}:{})}
+function useDish(slot,d){d=dishFit(d)||d;meta(d.id).used=Date.now();const ty=typeOf(S.plan,slot);if(d.t==='s'&&ty==='s'&&S.plan[slot].it.length){S.plan[slot].it.push(...cp(d.it));return}S.plan[slot]=Object.assign({t:d.n,it:cp(d.it),did:d.id},ty!==slot?{ty}:{})}
 function addFood(slot,id,g){const f=FM[id],st=defState(id,slot);S.plan[slot].it.push(st?[id,g||f.por,st]:[id,g||f.por]);S.recentFoods=[id,...S.recentFoods.filter(x=>x!==id)].slice(0,12);edited(slot)}
 
 /* ---------- math ---------- */
@@ -1644,7 +1652,7 @@ function renderToday(T,D){
  const SGt=computeSugg(),TT=targets(),TN=needT(TT);
  let sni=0;const usedI=new Set();const idea=s=>{let L=[];
    if(s.ty==='s'){const ix=sni++,n=SGt.snacks.length;for(let j=0;j<n;j++){const q=(ix+j)%n,x=SGt.snacks[q];L.push({nm:x.food?x.food.n.split(',')[0]+' '+x.food.por+' g':x.d.n,add:x.add,ic:x.food?fIcon(x.food.id):dIcon(x.d),attr:`data-tsn="${s.id}:${q}"`,did:x.d&&RSTEPS[x.d.id]?x.d.id:null})}}
-   else{const m=SGt.meals.find(m=>m.slot===s.id);if(m)L=m.opts.filter(q=>!usedI.has(q.d.id)).slice(0,6).map(q=>{usedI.add(q.d.id);return q}).map(q=>({nm:q.d.n,add:q.add,ic:dIcon(q.d),attr:`data-tdi="${s.id}:${q.d.id}"`,did:q.d.id}))}
+   else{const m=SGt.meals.find(m=>m.slot===s.id);if(m)L=m.opts.filter(q=>!usedI.has(q.d.id)).slice(0,6).map(q=>{usedI.add(q.d.id);return q}).map(q=>({nm:q.d.n+(q.d.minus?', '+minusTxt(q.d):''),add:q.add,ic:dIcon(q.d),attr:`data-tdi="${s.id}:${q.d.id}"`,did:q.d.id}))}
    if(!L.length)return '';
    const V0=viewVec(D,1);const card=(o,i)=>{const D1=D.slice();addv(D1,o.add);const fo=fillsOf(D,o.add,TN),fl=fo.filter(x=>pctK(x.k,V0,TT)<100),ks=(fl.length?fl:fo).slice(0,2),V1=viewVec(D1);
     return `<div class="tidea"><span class="thumb em">${o.ic}</span><span class="sgt"><span class="cap">Idea ${L.length>1?(i+1)+' of '+L.length:''}</span><b>${esc(o.nm)}</b><span class="cap num">${ks.map(x=>`${NUT[x.k].n} ${Math.round(pctK(x.k,V0,TT))} → ${Math.round(pctK(x.k,V1,TT))} %`).join(' · ')}</span>${o.did?`<button class="linkbtn rlink" type="button" data-rcp="${o.did}" data-rslot="${s.id}">Recipe</button>`:''}</span><button class="btn sm acc" type="button" ${o.attr}>Add</button></div>`};
@@ -2179,12 +2187,12 @@ function renderPicker(){
   const mq=x=>!q||x.n.toLowerCase().includes(q)||x.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q));
   let ds=allDishes(s.t).filter(mq);
   if(fm==='ideas'){PK.focus=PK.focus||[];const LO=lowList(T);PK.focus=PK.focus.filter(k=>LO.some(x=>x.k===k));const I=slotIdeas(PK.slot,PK.focus.length?12:8,PK.focus).filter(x=>mq(x.d)),TN=needT(T);
-   html=(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!PK.focus.length}">All</button>${LO.map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${PK.focus.includes(x.k)}">${NUT[x.k].n} <span class="num">${Math.round(x.p)} %</span></button>`).join('')}</div>`:'')+I.map(x=>{const ph=PH[x.d.id];return `<div class="opt ideaopt"><button class="optmain" type="button" data-r="${x.d.id}"><span class="thumb em">${ph?`<img src="${ph}" alt="">`:dIcon(x.d)}</span><span class="otx"><span class="t">${esc(x.d.n)}${x.d.min?`<span class="min">${x.d.min} min</span>`:''}${x.has?'<span class="havetag">Familiar</span>':''}</span><span class="s num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein</span></span></button>${impactFor(x.D0,x.add,T,TN,PK.focus)}<button class="linkbtn rlink" type="button" data-rcp="${x.d.id}">${RSTEPS[x.d.id]?'Recipe':'Find a recipe'}</button></div>`}).join('')||`<p class="empty2">${PK.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No match.'}</p>`;
+   html=(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!PK.focus.length}">All</button>${LO.map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${PK.focus.includes(x.k)}">${NUT[x.k].n} <span class="num">${Math.round(x.p)} %</span></button>`).join('')}</div>`:'')+I.map(x=>{const ph=PH[x.d.id];return `<div class="opt ideaopt"><button class="optmain" type="button" data-r="${x.d.id}"><span class="thumb em">${ph?`<img src="${ph}" alt="">`:dIcon(x.d)}</span><span class="otx"><span class="t">${esc(x.d.n)}${x.d.min?`<span class="min">${x.d.min} min</span>`:''}${x.d.minus?`<span class="min">${minusTxt(x.d)}</span>`:''}${x.has?'<span class="havetag">Familiar</span>':''}</span><span class="s num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein</span></span></button>${impactFor(x.D0,x.add,T,TN,PK.focus)}<button class="linkbtn rlink" type="button" data-rcp="${x.d.id}">${RSTEPS[x.d.id]?'Recipe':'Find a recipe'}</button></div>`}).join('')||`<p class="empty2">${PK.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No match.'}</p>`;
    ds=null}
   else if(fm==='recent')ds=ds.filter(d=>d.used).sort((a,b)=>b.used-a.used).slice(0,12);
   else if(fm==='fav')ds=ds.filter(d=>d.fav);
   else if(fm==='mine')ds=ds.filter(d=>d.own).sort((a,b)=>b.used-a.used);
-  else{if(!q)ds=ds.filter(d=>!dishBad(d));ds.sort((a,b)=>(b.own-a.own)||((a.min||99)-(b.min||99)))}
+  else{if(!q)ds=ds.map(dishFit).filter(Boolean);ds.sort((a,b)=>(b.own-a.own)||((a.min||99)-(b.min||99)))}
   if(ds)html=ds.map(d=>dishRow(d,T)).join('')||`<p class="empty2">${fm==='recent'?'Nothing yet. Dishes you pick show up here.':fm==='fav'?'No favourites yet. Tap the star on a dish to keep it here.':fm==='mine'?'Empty for now. Put a meal together, tap Edit, then Save to My meals.':'No match.'}</p>`;
  }else{
   const mq=f=>fmatch(f,q);
@@ -2309,7 +2317,7 @@ function renderLibDishes(){
  const mine=ds.filter(d=>d.own||d.edited).sort((a,b)=>(b.used-a.used)||a.n.localeCompare(b.n)),rest=ds.filter(d=>!d.own&&!d.edited).sort((a,b)=>a.n.localeCompare(b.n));
  const row=d=>{const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),open=LX===d.id,slots=d.t==='b'?['b']:d.t==='s'?['s']:['l','d'];
   return `<div class="ldish"><button class="ldhead" type="button" data-lx="${d.id}" aria-expanded="${open}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.fav?' <span class="favst" aria-label="Favourite">★</span>':''}${d.edited?'<span class="mine">changed</span>':''}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein${d.min?' · '+d.min+' min':''}</span></span>${CHEV}</button>
-   ${open?`<div class="ldbody"><p class="cap">${d.it.map(([id,g])=>esc(FM[id]?FM[id].n.split(',')[0]:'Food')+' '+g+' g').join(', ')}</p><div class="btnrow"><button class="btn sm" type="button" data-lrcp="${d.id}">${RSTEPS[d.id]?'Recipe':'Find a recipe'}</button>${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}<button class="btn sm" type="button" data-lfav="${d.id}" aria-pressed="${d.fav}">${d.fav?'★ Favourite':'☆ Add to favourites'}</button>${d.own||d.edited?`<button class="btn sm ghost" type="button" data-ldel="${d.id}">${d.edited?'Reset to original':'Delete'}</button>`:''}</div></div>`:''}</div>`};
+   ${open?`<div class="ldbody"><p class="cap">${(dishFit(d)||d).it.map(([id,g])=>esc(FM[id]?FM[id].n.split(',')[0]:'Food')+' '+g+' g').join(', ')}${dishFit(d)&&dishFit(d).minus?' · '+minusTxt(dishFit(d)):''}</p><div class="btnrow"><button class="btn sm" type="button" data-lrcp="${d.id}">${RSTEPS[d.id]?'Recipe':'Find a recipe'}</button>${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}<button class="btn sm" type="button" data-lfav="${d.id}" aria-pressed="${d.fav}">${d.fav?'★ Favourite':'☆ Add to favourites'}</button>${d.own||d.edited?`<button class="btn sm ghost" type="button" data-ldel="${d.id}">${d.edited?'Reset to original':'Delete'}</button>`:''}</div></div>`:''}</div>`};
  $('lib-mine').innerHTML=mine.length||(!q&&lt!=='fav')?`<div class="card" style="padding-top:4px"><h2 style="margin:10px 0 2px">Your dishes</h2>${mine.length?'':'<p class="cap" style="margin:4px 0 12px">Dishes you build or change are saved here when you leave Edit.</p>'}${mine.map(row).join('')}</div>`:'';
  $('lib-allh').textContent=mine.length?'All dishes':'Dishes';
  $('lib-list').innerHTML=rest.length?rest.map(row).join(''):`<p class="cap">${lt==='fav'&&!q?(mine.length?'No other favourites.':'No favourites yet. Tap a dish, then Add to favourites. The star in the add menu works too.'):'No match.'}</p>`;
@@ -2552,7 +2560,7 @@ function computeSwaps(){
   });
   if(typeOf(S.plan,s)==='s'||!items.length)return;
   const cur=slotV(s)[0],type=SLOTS.find(x=>x.id===s).t;
-  allDishes(type).filter(r=>r.n!==S.plan[s].t&&!dishBad(r)).forEach(r=>{
+  allDishes(type).map(dishFit).filter(r=>r&&r.n!==S.plan[s].t).forEach(r=>{
    const rk=r.it.reduce((a,it)=>a+itemV(it)[0],0),fac=Math.min(1.6,Math.max(.6,cur/rk));
    const ni=r.it.map(([id,g])=>[id,r5(g*fac)]);
    const D1=swapSlot(s,ni,D),d=ugain(D,D1,T,TN),info=describe(D,D1,T);
@@ -2621,21 +2629,21 @@ function computeSugg(){
  let Dg=D.slice(),fg=filledShare();
  ['b','l','d'].forEach(ty=>{const k=slotOfType(ty);if(!S.plan[k]||S.plan[k].it.length)return;
   const f=Math.min(1,fg+SHARE[ty]),Tf=partT(TN,f);
-  const c=allDishes(TY[ty].t).filter(d=>!dishBad(d)).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=Dg.slice();addv(D1,add);
+  const c=allDishes(TY[ty].t).map(dishFit).filter(Boolean).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=Dg.slice();addv(D1,add);
    return{d,add,D1,sc:ugain(Dg,D1,T,Tf)-(recentDish(d.id)?.4:0)+(d.fav?.1:0)+(d.own?.05:0)+(hasD(d)?.06:0)}}).sort((a,b)=>b.sc-a.sc);
   const top=c.slice(0,12);if(!top.length)return;
   out.meals.push({slot:k,ty,opts:top.map(x=>({d:x.d,add:x.add,fills:fillsOf(Dg,x.add,TN)}))});
   Dg=top[0].D1;fg=f});
  const f=Math.min(1,filledShare(.15)),Tf=partT(TN,f),cand=[];
  F.filter(x=>!x.hide&&['Fruit','Nuts and seeds','Plant milk and yogurt'].includes(x.cat)&&x.src!=='usda'&&!isDis(x.id)&&x.id!=='brazil').forEach(x=>{const add=itemV([x.id,x.por]),D1=D.slice();addv(D1,add);const h=hasF(x.id);cand.push({food:x,add,cat:x.cat,has:h,sc:ugain(D,D1,T,Tf)+(h?.06:0)+(S.favFoods.includes(x.id)?.06:0)})});
- allDishes('s').filter(d=>!dishBad(d)).forEach(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D.slice();addv(D1,add);const h=hasD(d);cand.push({d,add,cat:'dish',has:h,sc:ugain(D,D1,T,Tf)-(recentDish(d.id)?.2:0)+(h?.06:0)+(d.fav?.1:0)})});
+ allDishes('s').map(dishFit).filter(Boolean).forEach(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D.slice();addv(D1,add);const h=hasD(d);cand.push({d,add,cat:'dish',has:h,sc:ugain(D,D1,T,Tf)-(recentDish(d.id)?.2:0)+(h?.06:0)+(d.fav?.1:0)})});
  cand.sort((a,b)=>b.sc-a.sc);const per={};
  for(const x of cand){if(x.sc<=.02)break;if((per[x.cat]||0)>=3)continue;per[x.cat]=(per[x.cat]||0)+1;x.fills=fillsOf(D,x.add,TN);if(x.fills.length)out.snacks.push(x);if(out.snacks.length>=8)break}
  return out}
 /* focus: nutrients picked in the ideas list; each idea must bring at least 15 % of a day's need of every picked one, and ranks by how much it brings, with overall balance as a tie breaker */
 function slotIdeas(slot,n,focus){const T=targets(),TN=needT(T),ty=typeOf(S.plan,slot),D=dayV(),D0=D.slice();addv(D0,slotV(slot),-1);
  const f=Math.min(1,filledShare()-(S.plan[slot].it.length?SHARE[ty]:0)+SHARE[ty]),Tf=partT(TN,f),fk=(focus||[]).filter(k=>K.includes(k));
- return allDishes(TY[ty].t).filter(d=>!dishBad(d)).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D0.slice();addv(D1,add);
+ return allDishes(TY[ty].t).map(dishFit).filter(Boolean).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D0.slice();addv(D1,add);
   let sc=ugain(D0,D1,T,Tf)-(recentDish(d.id)?.4:0)+(d.fav?.1:0)+(d.own?.05:0)+(hasD(d)?.06:0);
   if(fk.length){const g=fk.map(k=>add[K.indexOf(k)]/T[k]);if(Math.min(...g)<.15)return null;sc=sc*.3+g.reduce((a,b)=>a+Math.min(b,1),0)*2}
   return{d,add,has:hasD(d),sc}}).filter(Boolean).sort((a,b)=>b.sc-a.sc).slice(0,n||8).map(x=>Object.assign(x,{D0}))}
