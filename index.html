@@ -543,15 +543,16 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .sgt{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.sgt b{font-size:15px;line-height:1.25}
 .fills{display:flex;flex-wrap:wrap;gap:4px;margin-top:3px}.fills span{font-size:12px;font-weight:700;color:var(--ok);background:color-mix(in srgb,var(--ok) 13%,transparent);border-radius:6px;padding:2px 7px}
 .sgrow .btn{flex:none}
-.imp{display:grid;grid-template-columns:96px 1fr 84px;align-items:center;gap:8px;font-size:13px;padding:3px 0}
-.imp .in{font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2}.imp .in small{display:block;font-size:11px;font-weight:600;color:var(--muted)}
+.imp{display:grid;grid-template-columns:52px 1fr 92px;align-items:center;column-gap:10px;row-gap:5px;font-size:12px;padding:5px 0 4px}
+.imp .in{grid-column:1/-1;font-size:13.5px;font-weight:700;color:var(--ink);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.2;margin-bottom:1px}.imp .il{color:var(--muted);font-weight:600;white-space:nowrap}
 .imp .ib{position:relative;height:10px;border-radius:5px;background:var(--surface2);overflow:hidden}
+.imp .ib.thin{height:6px;border-radius:3px}
 .imp .ib i{position:absolute;top:0;bottom:0;left:0}
 .imp .ib0{background:color-mix(in srgb,var(--ink) 30%,transparent)}
-.imp .ibg{background:var(--ok)}
+.imp .ibg{background:var(--ok);box-shadow:0 0 8px color-mix(in srgb,var(--ok) 55%,transparent);transform-origin:left center;animation:gainin .5s cubic-bezier(.2,.8,.3,1) .05s both}@keyframes gainin{from{transform:scaleX(0)}to{transform:scaleX(1)}}:root.still .imp .ibg{animation:none}
 .imp .ibl{background:repeating-linear-gradient(135deg,var(--low) 0 3px,color-mix(in srgb,var(--low) 35%,transparent) 3px 6px)}
 .imp .ibn{background:repeating-linear-gradient(135deg,var(--muted) 0 3px,transparent 3px 6px)}
-.imp .ibm{left:66.67%!important;width:2px;background:var(--ink);opacity:.55}
+.imp .ibm{left:calc(66.67% - 1px)!important;width:2px;background:var(--ink);opacity:.7;border-radius:1px}
 .imp .iv{text-align:right;color:var(--muted);white-space:nowrap}.imp .iv b{font-weight:800}
 .ibox{display:flex;flex-direction:column;gap:2px;margin-top:8px}
 .isum{font-size:13px;color:var(--muted);margin:6px 0 0}.isum b{color:var(--ink)}
@@ -2065,7 +2066,7 @@ function renderPicker(){
   const mq=x=>!q||x.n.toLowerCase().includes(q)||x.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q));
   let ds=allDishes(s.t).filter(mq);
   if(fm==='ideas'){PK.focus=PK.focus||[];const LO=lowList(T);PK.focus=PK.focus.filter(k=>LO.some(x=>x.k===k));const I=slotIdeas(PK.slot,PK.focus.length?12:8,PK.focus).filter(x=>mq(x.d)),TN=needT(T);
-   html=(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!PK.focus.length}">Mixed</button>${LO.map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${PK.focus.includes(x.k)}">${NUT[x.k].n} <span class="num">${Math.round(x.p)} %</span></button>`).join('')}</div>`:'')+I.map(x=>{const ph=PH[x.d.id];return `<div class="opt ideaopt"><button class="optmain" type="button" data-r="${x.d.id}"><span class="thumb em">${ph?`<img src="${ph}" alt="">`:dIcon(x.d)}</span><span class="otx"><span class="t">${esc(x.d.n)}${x.d.min?`<span class="min">${x.d.min} min</span>`:''}${x.has?'<span class="havetag">Familiar</span>':''}</span><span class="s num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein</span></span></button>${impactFor(x.D0,x.add,T,TN,PK.focus)}</div>`}).join('')||`<p class="empty2">${PK.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No match.'}</p>`;
+   html=(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!PK.focus.length}">All</button>${LO.map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${PK.focus.includes(x.k)}">${NUT[x.k].n} <span class="num">${Math.round(x.p)} %</span></button>`).join('')}</div>`:'')+I.map(x=>{const ph=PH[x.d.id];return `<div class="opt ideaopt"><button class="optmain" type="button" data-r="${x.d.id}"><span class="thumb em">${ph?`<img src="${ph}" alt="">`:dIcon(x.d)}</span><span class="otx"><span class="t">${esc(x.d.n)}${x.d.min?`<span class="min">${x.d.min} min</span>`:''}${x.has?'<span class="havetag">Familiar</span>':''}</span><span class="s num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein</span></span></button>${impactFor(x.D0,x.add,T,TN,PK.focus)}</div>`}).join('')||`<p class="empty2">${PK.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No match.'}</p>`;
    ds=null}
   else if(fm==='recent')ds=ds.filter(d=>d.used).sort((a,b)=>b.used-a.used).slice(0,12);
   else if(fm==='fav')ds=ds.filter(d=>d.fav);
@@ -2471,17 +2472,22 @@ function swapCard(x,i,kind){
 /* ---------- impact bars: % of daily need before and after ---------- */
 const pc2=x=>x>=200?'200+':Math.round(x);
 const pctK=(k,D,T)=>D[K.indexOf(k)]/T[k]*100;
-function ibar(k,p0,p1){const sc=x=>Math.min(Math.max(x,0),150)/1.5,lo=Math.min(p0,p1),hi=Math.max(p0,p1),up=p1>=p0;
- const per=S.range===0?winLabel(k):S.range===1?'today':S.range+' days';
- return `<div class="imp"><span class="in">${NUT[k].n}<small>${per}</small></span><span class="ib"><i class="ib0" style="width:${sc(lo)}%"></i><i class="${up?'ibg':p1>=100?'ibn':'ibl'}" style="left:${sc(lo)}%;width:${sc(hi)-sc(lo)}%"></i><i class="ibm"></i></span><span class="iv num">${pc2(p0)} → <b style="color:${!up&&p1<90?'var(--low)':p1>=90?'var(--ok)':'var(--ink)'}">${pc2(p1)} %</b></span></div>`}
+/* one nutrient in an idea or swap: a bar over the nutrient's span in the selected view, and under it a thinner bar for today in its own unit.
+   Both run to 1.5 times the target, so the two target lines sit exactly above each other. Grey is what you have, green what the idea adds, striped what it takes away */
+function bar2(lo,hi,up,cls){const sc=x=>Math.min(Math.max(x,0),150)/1.5;return `<span class="ib${cls?' '+cls:''}"><i class="ib0" style="width:${sc(lo)}%"></i>${hi>lo?`<i class="${up?'ibg':'ibl'}" style="left:${sc(lo)}%;width:${sc(hi)-sc(lo)}%"></i>`:''}<i class="ibm"></i></span>`}
+function ibar(k,p0,p1,a0,a1,T){const up=p1>=p0,day=S.range===1,per=S.range===0?winLabel(k):S.range+' days',u=NUT[k].u,t0=a0/T[k]*100,t1=a1/T[k]*100;
+ const vc=!up&&p1<90?'var(--low)':p1>=90?'var(--ok)':'var(--ink)';
+ const wk=day?'':`<span class="il">${per}</span>${bar2(Math.min(p0,p1),Math.max(p0,p1),up)}<span class="iv num"><b style="color:${vc}">${pc2(p1)} %</b></span>`;
+ const td=a0==null?'':`<span class="il">today</span>${bar2(Math.min(t0,t1),Math.max(t0,t1),a1>=a0,'thin')}<span class="iv num"><b>${fmt(a1)}</b>/${fmt(T[k])} ${u}</span>`;
+ return `<div class="imp" role="group" aria-label="${NUT[k].n}"><span class="in">${NUT[k].n}</span>${wk}${td}</div>`}
 function isum(D0,D1,T){D0=viewVec(D0,1);D1=viewVec(D1);const s0=dayScore(D0,T),s1=dayScore(D1,T),low=ALLK.filter(k=>pctK(k,D1,T)<90);
  return `<p class="isum">All nutrients: ${s0} → <b>${s1} %</b> covered. ${low.length?`Still low: ${low.length>5?low.length+' nutrients':low.map(k=>NUT[k].n).join(', ')}.`:'Nothing left low.'}</p>`}
 function impactFor(D0,add,T,TN,focus){const D1=D0.slice();addv(D1,add);const V0=viewVec(D0,1),V1=viewVec(D1);const fo=fillsOf(D0,add,TN,T),fl=fo.filter(x=>pctK(x.k,V0,T)<100);let ks=(fl.length?fl:fo).map(x=>x.k);
  if(focus&&focus.length)ks=[...focus,...ks.filter(k=>!focus.includes(k))].slice(0,Math.max(3,focus.length));
  if(!ks.length)ks=K.filter(k=>k!=='kcal'&&!NUT[k].opt).map(k=>({k,v:add[K.indexOf(k)]/T[k]})).sort((a,b)=>b.v-a.v).slice(0,2).map(x=>x.k);
- return `<div class="ibox">${ks.map(k=>ibar(k,pctK(k,V0,T),pctK(k,V1,T))).join('')}${isum(D0,D1,T)}</div>`}
+ return `<div class="ibox">${ks.map(k=>{const i=K.indexOf(k);return ibar(k,pctK(k,V0,T),pctK(k,V1,T),D0[i],D1[i],T)}).join('')}${isum(D0,D1,T)}</div>`}
 function swapBars(D0,D1,T,info){let g=info.gains.filter(c=>c.p0<100).slice(0,3);if(!g.length)g=info.gains.slice(0,1);const lh=info.losses.filter(c=>c.p1<100),l=[...lh,...info.losses.filter(c=>c.p1>=100).slice(0,lh.length?0:1)].slice(0,3);
- return `<div class="ibox">${[...g,...l].map(c=>ibar(c.k,c.p0,c.p1)).join('')}${l.length?'':'<p class="cap" style="margin:2px 0 0">Nothing drops noticeably.</p>'}${isum(D0,D1,T)}</div>`}
+ return `<div class="ibox">${[...g,...l].map(c=>{const i=K.indexOf(c.k);return ibar(c.k,c.p0,c.p1,D0[i],D1[i],T)}).join('')}${l.length?'':'<p class="cap" style="margin:2px 0 0">Nothing drops noticeably.</p>'}${isum(D0,D1,T)}</div>`}
 /* ---------- foods you already have: eaten in the last 30 days, picked recently, or saved ---------- */
 let _EAT=null,_EATK='';
 function eaten(){const key=Object.keys(S.days).length+':'+JSON.stringify(S.plan).length;if(_EAT&&_EATK===key)return _EAT;const set=new Set(S.recentFoods||[]);(S.custom||[]).forEach(c=>set.add(c.id));
