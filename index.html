@@ -2353,6 +2353,13 @@ function score(D,T){
  const dev=Math.abs(D[0]/T.kcal-1);if(dev>.1)sc-=(dev-.1)*5;
  return sc;
 }
+/* how much a change helps, used to rank every suggestion: each nutrient moves along a curve that is steep while it is low and flat at target,
+   so the lowest nutrient in the selected view counts most (lower means more urgent). Amounts are shares of a day's need. Going over a safe upper limit,
+   or far off today's energy share, costs points */
+const urg=p=>1-Math.pow(1-Math.min(Math.max(p,0),1),3);
+function ugain(D0,D1,T,Te){const V0=viewVec(D0,1);let g=0;SK.forEach(k=>{const i=K.indexOf(k),p=V0[i]/T[k];g+=urg(p+(D1[i]-D0[i])/T[k])-urg(p)});g*=8;
+ Object.keys(T.ul).forEach(k=>{const i=K.indexOf(k);if(D1[i]>T.ul[k]&&!(D0[i]>T.ul[k]))g-=2});
+ const ev=D=>Math.max(0,Math.abs(D[0]/Te.kcal-1)-.1)*5;g-=ev(D1)-ev(D0);return g}
 const r5=g=>Math.max(5,Math.round(g/5)*5);
 function swapSlot(s,newItems,D){const nd=D.slice();addv(nd,slotV(s),-1);newItems.forEach(it=>addv(nd,itemV(it)));return nd}
 function describe(D0,D1,T){
@@ -2400,7 +2407,7 @@ const UW={k:.3,a:.4,c:.7,fol:.8};
 const uval=x=>Math.min(x.v/T0()[x.k],1)*(UW[x.k]||1);let _T0=null;const T0=()=>_T0||(_T0=targets());
 function upGains(V0,V1,T){_T0=T;return UPK.map(([k,u])=>{const i=K.indexOf(k);return{k,u,v:V1[i]-V0[i]}}).filter(x=>x.v>0&&x.v/T[x.k]>=.05).sort((a,b)=>uval(b)-uval(a))}
 function computeSwaps(){
- const T=targets(),TN=needT(T),D=dayV(),base=score(D,TN),ing=[],meal=[],add=[],up=[];
+ const T=targets(),TN=needT(T),D=dayV(),ing=[],meal=[],add=[],up=[];
  mealKeys(S.plan).forEach(s=>{
   const items=S.plan[s].it;
   items.forEach(([id,g],idx)=>{
@@ -2414,7 +2421,7 @@ function computeSwaps(){
     else ng=g;
     ng=r5(ng);
     const ni=items.map((x,j)=>j===idx?[nid,ng]:x);
-    const D1=swapSlot(s,ni,D),d=score(D1,TN)-base,info=describe(D,D1,T);
+    const D1=swapSlot(s,ni,D),d=ugain(D,D1,T,TN),info=describe(D,D1,T);
     if((d>.02&&!info.losses.some(x=>x.hurt)||d>.08)&&info.dp>-Math.max(5,itemV([id,g])[1]*.1))ing.push({s,d,D1,from:[id,g],to:[nid,ng],apply:()=>{S.plan[s].it[idx]=[nid,ng];edited(s)},info});
    });
    (UPG[id]||[]).forEach(nid=>{
@@ -2432,7 +2439,7 @@ function computeSwaps(){
   allDishes(type).filter(r=>r.n!==S.plan[s].t&&!dishBad(r)).forEach(r=>{
    const rk=r.it.reduce((a,it)=>a+itemV(it)[0],0),fac=Math.min(1.6,Math.max(.6,cur/rk));
    const ni=r.it.map(([id,g])=>[id,r5(g*fac)]);
-   const D1=swapSlot(s,ni,D),d=score(D1,TN)-base,info=describe(D,D1,T);
+   const D1=swapSlot(s,ni,D),d=ugain(D,D1,T,TN),info=describe(D,D1,T);
    if((d>.02&&!info.losses.some(x=>x.hurt)||d>.08))meal.push({s,d,D1,meal:r,fac,apply:()=>{S.plan[s]={t:r.n,it:ni}},info});
   });
  });
@@ -2442,7 +2449,7 @@ function computeSwaps(){
    if(isDis(id)||S.plan[s].it.some(x=>x[0]===id))return;
    const f=FM[id],g=A.gr||(A.half?Math.round(f.por/2):f.por);
    const D1=D.slice();addv(D1,itemV([id,g]));
-   const d=score(D1,TN)-base-.03;
+   const d=ugain(D,D1,T,TN)-.03;
    if(d>.02&&!describe(D,D1,T).losses.length)add.push({s,d,g:A.g,to:[id,g],info:describe(D,D1,T),apply:()=>{addFood(s,id,g)}});
   });
  });
@@ -2485,29 +2492,29 @@ const SHARE={b:.25,l:.3,d:.3,s:.15};
 function partT(TN,f){const o=Object.assign({},TN);K.forEach(k=>{if(typeof TN[k]==='number')o[k]=TN[k]*f});o.ul=TN.ul;return o}
 function filledShare(extra){let f=0;mealKeys(S.plan).forEach(k=>{if(S.plan[k].it.length)f+=SHARE[typeOf(S.plan,k)]*(k.length>1?.6:1)});return Math.min(1,f+(extra||0))}
 function recentDish(id){for(let i=1;i<=2;i++){const p=S.days[shift(S.date,-i)];if(p&&mealKeys(p).some(k=>p[k].did===id))return true}return false}
-/* what an idea helps with: only nutrients below target in the selected view, lowest first, shown as the share of a day's need the idea brings */
-function fillsOf(D0,add,TN,T){T=T||targets();const V0=viewVec(D0,1);return SK.map(k=>{const i=K.indexOf(k),gap=1-V0[i]/T[k],v=Math.min(add[i]/T[k],1);return{k,v,gap,w:v*(.3+gap)}}).filter(x=>x.gap>0&&x.v>=.08).sort((a,b)=>b.w-a.w).slice(0,3)}
+/* what an idea helps with: nutrients below target in the selected view that it brings at least 8 % of a day's need of, lowest nutrient first */
+function fillsOf(D0,add,TN,T){T=T||targets();const V0=viewVec(D0,1);return SK.map(k=>{const i=K.indexOf(k),gap=1-V0[i]/T[k],v=Math.min(add[i]/T[k],1);return{k,v,gap}}).filter(x=>x.gap>0&&x.v>=.08).sort((a,b)=>b.gap-a.gap).slice(0,3)}
 function computeSugg(){
  const T=targets(),TN=needT(T),D=dayV(),out={meals:[],snacks:[]};
  let Dg=D.slice(),fg=filledShare();
  ['b','l','d'].forEach(ty=>{const k=slotOfType(ty);if(!S.plan[k]||S.plan[k].it.length)return;
-  const f=Math.min(1,fg+SHARE[ty]),Tf=partT(TN,f),base=score(Dg,Tf);
+  const f=Math.min(1,fg+SHARE[ty]),Tf=partT(TN,f);
   const c=allDishes(TY[ty].t).filter(d=>!dishBad(d)).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=Dg.slice();addv(D1,add);
-   return{d,add,D1,sc:score(D1,Tf)-base-(recentDish(d.id)?.4:0)+(d.fav?.1:0)+(d.own?.05:0)+(hasD(d)?.06:0)}}).sort((a,b)=>b.sc-a.sc);
+   return{d,add,D1,sc:ugain(Dg,D1,T,Tf)-(recentDish(d.id)?.4:0)+(d.fav?.1:0)+(d.own?.05:0)+(hasD(d)?.06:0)}}).sort((a,b)=>b.sc-a.sc);
   const top=c.slice(0,12);if(!top.length)return;
   out.meals.push({slot:k,ty,opts:top.map(x=>({d:x.d,add:x.add,fills:fillsOf(Dg,x.add,TN)}))});
   Dg=top[0].D1;fg=f});
- const f=Math.min(1,filledShare(.15)),Tf=partT(TN,f),base=score(D,Tf),cand=[];
- F.filter(x=>!x.hide&&['Fruit','Nuts and seeds','Plant milk and yogurt'].includes(x.cat)&&x.src!=='usda'&&!isDis(x.id)&&x.id!=='brazil').forEach(x=>{const add=itemV([x.id,x.por]),D1=D.slice();addv(D1,add);const h=hasF(x.id);cand.push({food:x,add,cat:x.cat,has:h,sc:score(D1,Tf)-base+(h?.06:0)+(S.favFoods.includes(x.id)?.06:0)})});
- allDishes('s').filter(d=>!dishBad(d)).forEach(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D.slice();addv(D1,add);const h=hasD(d);cand.push({d,add,cat:'dish',has:h,sc:score(D1,Tf)-base-(recentDish(d.id)?.2:0)+(h?.06:0)+(d.fav?.1:0)})});
+ const f=Math.min(1,filledShare(.15)),Tf=partT(TN,f),cand=[];
+ F.filter(x=>!x.hide&&['Fruit','Nuts and seeds','Plant milk and yogurt'].includes(x.cat)&&x.src!=='usda'&&!isDis(x.id)&&x.id!=='brazil').forEach(x=>{const add=itemV([x.id,x.por]),D1=D.slice();addv(D1,add);const h=hasF(x.id);cand.push({food:x,add,cat:x.cat,has:h,sc:ugain(D,D1,T,Tf)+(h?.06:0)+(S.favFoods.includes(x.id)?.06:0)})});
+ allDishes('s').filter(d=>!dishBad(d)).forEach(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D.slice();addv(D1,add);const h=hasD(d);cand.push({d,add,cat:'dish',has:h,sc:ugain(D,D1,T,Tf)-(recentDish(d.id)?.2:0)+(h?.06:0)+(d.fav?.1:0)})});
  cand.sort((a,b)=>b.sc-a.sc);const per={};
  for(const x of cand){if(x.sc<=.02)break;if((per[x.cat]||0)>=3)continue;per[x.cat]=(per[x.cat]||0)+1;x.fills=fillsOf(D,x.add,TN);if(x.fills.length)out.snacks.push(x);if(out.snacks.length>=8)break}
  return out}
 /* focus: nutrients picked in the ideas list; each idea must bring at least 15 % of a day's need of every picked one, and ranks by how much it brings, with overall balance as a tie breaker */
 function slotIdeas(slot,n,focus){const T=targets(),TN=needT(T),ty=typeOf(S.plan,slot),D=dayV(),D0=D.slice();addv(D0,slotV(slot),-1);
- const f=Math.min(1,filledShare()-(S.plan[slot].it.length?SHARE[ty]:0)+SHARE[ty]),Tf=partT(TN,f),base=score(D0,Tf),fk=(focus||[]).filter(k=>K.includes(k));
+ const f=Math.min(1,filledShare()-(S.plan[slot].it.length?SHARE[ty]:0)+SHARE[ty]),Tf=partT(TN,f),fk=(focus||[]).filter(k=>K.includes(k));
  return allDishes(TY[ty].t).filter(d=>!dishBad(d)).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D0.slice();addv(D1,add);
-  let sc=score(D1,Tf)-base-(recentDish(d.id)?.4:0)+(d.fav?.1:0)+(d.own?.05:0)+(hasD(d)?.06:0);
+  let sc=ugain(D0,D1,T,Tf)-(recentDish(d.id)?.4:0)+(d.fav?.1:0)+(d.own?.05:0)+(hasD(d)?.06:0);
   if(fk.length){const g=fk.map(k=>add[K.indexOf(k)]/T[k]);if(Math.min(...g)<.15)return null;sc=sc*.3+g.reduce((a,b)=>a+Math.min(b,1),0)*2}
   return{d,add,has:hasD(d),sc}}).filter(Boolean).sort((a,b)=>b.sc-a.sc).slice(0,n||8).map(x=>Object.assign(x,{D0}))}
 /* nutrients below target in the selected view, lowest first: the focus choices */
