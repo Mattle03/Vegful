@@ -1738,7 +1738,7 @@ function renderToday(T,D){
     return `<div class="tidea"><span class="thumb em">${o.ic}</span><span class="sgt"><span class="cap">Idea ${L.length>1?(i+1)+' of '+L.length:''}</span><b>${esc(o.nm)}</b><span class="cap num">${ks.map(x=>`${NUT[x.k].n} ${Math.round(pctK(x.k,V0,TT))} → ${Math.round(pctK(x.k,V1,TT))} %`).join(' · ')}</span>${o.did?`<button class="linkbtn rlink" type="button" data-rcp="${o.did}" data-rslot="${s.id}">Recipe</button>`:''}</span><button class="btn sm acc" type="button" ${o.attr}>Add</button></div>`};
    return `<div class="tideas${L.length>1?' multi':''}">${L.map(card).join('')}</div>`};
  const meal=s=>{const sl=S.plan[s.id],v=slotVraw(s.id),empty=!sl.it.length,pl=!empty&&sl.pl;s=Object.assign({},s,{t:TY[s.ty].t});
-  if(empty&&sl.skip)return `<article class="meal planned" style="--c:${s.c}"><div class="meal-top"><span class="micon em">${ICON[s.ty]||ICON[s.id]}</span><div class="mt"><div class="mslot">${s.n}</div><div class="mname">Not me</div></div><button class="btn sm ghost" type="button" data-unskip="${s.id}">Undo</button></div></article>`;
+  if(empty&&sl.skip)return `<article class="meal planned" style="--c:${s.c}"><div class="meal-top"><span class="micon em">${ICON[s.ty]||ICON[s.id]}</span><div class="mt"><div class="mslot">${s.n}</div><div class="mname">Skipped</div></div><button class="btn sm ghost" type="button" data-unskip="${s.id}">Undo</button></div></article>`;
   const ph=sl.did&&PH[sl.did];
   return `<article class="meal${empty?'':' tap'}${pl?' planned':''}" style="--c:${s.c}"${empty?'':` data-edit="${s.id}" role="button" tabindex="0" aria-label="Edit ${s.n}"`}>${ph?`<img class="mphoto" src="${ph}" alt="">`:''}<div class="meal-top"><span class="micon em">${empty?(ICON[s.ty]||ICON[s.id]):slotIcon(sl,s.ty)}</span><div class="mt">${empty&&s.ty==='s'?`<div class="mname">${s.n}</div>`:`<div class="mslot">${s.n}${pl?'<span class="ptag">Planned</span>':''}</div>`}<div class="mname"${empty&&s.ty==='s'?' hidden':''}>${esc(empty?'Nothing planned':(sl.t||sl.it.map(([id],i)=>{const n=FM[id].n.split(',')[0];return i?n.toLowerCase():n}).slice(0,2).join(' and ')))}</div></div>${empty?'':`<div class="mk num">${HK()?`${Math.round(v[1])} g<span>protein</span>`:`${EN(v[0])}<span>${Math.round(v[1])} g protein</span>`}</div>`}</div>
    ${empty?'':`<p class="mfoods">${sl.it.map(([id,g])=>esc(FM[id].n.split(',')[0])+' '+g+' g').join(', ')}</p>`}
@@ -2654,7 +2654,7 @@ function openShop(){if($('pk').open)closePicker();S.view='scan';S.shopSeg='list'
 
 /* ---------- plan ahead: several days on one screen ----------
    Empty meals show one suggestion that adapts to everything already planned in the block (ideas run with the plan counted).
-   Nothing is filled in by itself: Take plans it, Other shows the next one, Not me leaves a meal out (someone else cooks).
+   Nothing is filled in by itself: Take plans it, Other shows the next one, Skip leaves a meal out (eating out, someone else cooks).
    Batch recipes offer their leftover portions on the following days. */
 let PA=null;
 function paDates(){const R=S.planR||{r:'3'},out=[];let a,b;
@@ -2681,14 +2681,14 @@ function closePlan(){PA=null;const d=$('plan');d.close?d.close():d.removeAttribu
 function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),R=S.planR||{r:'3'},T=targets(),SG=paSuggest(ds),sum=paSummary(ds),y=b.scrollTop;
  const dl=d=>kdate(d).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
  const cell=(d,k)=>{const p=S.days[d],sl=p[k],ty=typeOf(p,k),key=d+k,nm=TY[ty].n;
-  if(sl.skip)return `<div class="pacell skip"><span class="lbl">${nm}</span><span class="cap">Not me</span><button class="linkbtn" type="button" data-paun="${key}">Undo</button></div>`;
+  if(sl.skip)return `<div class="pacell skip"><span class="lbl">${nm}</span><span class="cap">Skipped, not planned</span><button class="linkbtn" type="button" data-paun="${key}">Undo</button></div>`;
   if(sl.it.length){const v=slotVraw0(p,k),mv=PA.mv===key;return `<div class="pacell${sl.pl?' planned':''}"><span class="lbl">${nm}</span><b>${esc(sl.t||sl.it.map(([id])=>FM[id]?FM[id].n.split(',')[0]:'').slice(0,2).join(' and '))}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein</span>
    <div class="paact"><button class="btn sm ghost" type="button" data-pamv="${key}" aria-expanded="${mv}">Move</button><button class="btn sm ghost" type="button" data-parm="${key}">Remove</button></div>
    ${mv?`<div class="chips wrap">${ds.filter(x=>x!==d).map(x=>`<button class="chip" type="button" data-pato="${key}|${x}">${dl(x)}</button>`).join('')}</div>`:''}</div>`}
-  const x=SG[key];if(!x)return `<div class="pacell open"><span class="lbl">${nm}</span><span class="cap">No idea fits</span><div class="paact"><button class="btn sm ghost" type="button" data-pask="${key}">Not me</button></div></div>`;
+  const x=SG[key];if(!x)return `<div class="pacell open"><span class="lbl">${nm}</span><span class="cap">No idea fits</span><div class="paact"><button class="btn sm ghost" type="button" data-pask="${key}">Skip</button></div></div>`;
   const tg=topTags(x.add,T,2);
   return `<div class="pacell open"><span class="lbl">${nm}</span><b>${esc(x.d.n)}${x.lo?' <span class="ptag">Leftover</span>':''}</b><span class="cap num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein${tg.length?' · '+tg.map(t=>NUT[t.k].n+' '+Math.round(t.p)+' %').join(' · '):''}</span>
-   <div class="paact"><button class="btn sm acc" type="button" data-patk="${key}">Take</button><button class="btn sm ghost" type="button" data-paot="${key}">Other</button><button class="btn sm ghost" type="button" data-pask="${key}">Not me</button></div></div>`};
+   <div class="paact"><button class="btn sm acc" type="button" data-patk="${key}">Take</button><button class="btn sm ghost" type="button" data-paot="${key}">Other</button><button class="btn sm ghost" type="button" data-pask="${key}">Skip</button></div></div>`};
  const nList=(()=>{try{return shopList().rows.filter(r=>!r.chk).length}catch(e){return 0}})();
  b.innerHTML=`<div class="seg sm" id="pa-r">${[['we','Weekend'],['3','3 days'],['7','7 days'],['c','Dates']].map(([r,l])=>`<button type="button" data-par="${r}" aria-pressed="${R.r===r}">${l}</button>`).join('')}</div>
   ${R.r==='c'?`<div class="rvf" style="grid-template-columns:1fr 1fr;margin-top:10px"><label>From<input type="date" id="pa-f" value="${R.from||shift(TODAY,1)}" min="${TODAY}"></label><label>To<input type="date" id="pa-t" value="${R.to||shift(TODAY,3)}" min="${TODAY}"></label></div>`:''}
