@@ -608,6 +608,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .tabbar button[aria-current="true"]{color:var(--ink)}
 .tabbar button[aria-current="true"] span.i{background:var(--accent-soft);color:var(--accent)}
 .tabbar button.tabscan span.i{width:54px;height:54px;border-radius:27px;margin-top:-26px;background:var(--coral);color:var(--coral-ink);box-shadow:0 4px 12px color-mix(in srgb,var(--coral) 40%,transparent)}
+.tabbar button.tabscan span.i{position:relative}.tbadge{position:absolute;top:-3px;right:-5px;min-width:20px;height:20px;padding:0 5px;box-sizing:border-box;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:800;display:grid;place-items:center;border:2px solid var(--bar);line-height:1}
+.shrow{display:flex;align-items:center;gap:10px;padding:8px 0;border-top:1px solid var(--line);min-height:44px;cursor:pointer}.shrow input{width:22px;height:22px;flex:none;accent-color:var(--accent)}.shrow .ficon{width:28px;height:28px;font-size:16px;flex:none}
+.shn{flex:1;min-width:0;font-size:15px}.shn b{font-weight:800}.shrow.done .shn{color:var(--muted);text-decoration:line-through}
 .tabbar button.tabscan svg{width:25px;height:25px;stroke-width:2.2}
 .tabbar button.tabscan[aria-current="true"] span.i{background:var(--coral);color:var(--coral-ink);outline:3px solid color-mix(in srgb,var(--coral) 35%,transparent);outline-offset:2px}
 .foot{font-size:13px;color:var(--muted);margin:22px 4px 0;line-height:1.5}
@@ -729,7 +732,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 <nav class="tabbar" aria-label="Sections"><div class="in">
   <button data-v="today" type="button"><span class="i"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg></span>Today</button>
   <button data-v="nutr" type="button"><span class="i"><svg viewBox="0 0 24 24"><path d="M4 7h11M4 12h16M4 17h8"/></svg></span>Nutrients</button>
-  <button data-v="scan" type="button" class="tabscan"><span class="i"><svg viewBox="0 0 24 24"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3M7 8v8M10.5 8v8M14 8v8M17 8v8"/></svg></span>Scan</button>
+  <button data-v="scan" type="button" class="tabscan"><span class="i"><svg viewBox="0 0 24 24"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M7.5 10h9l-.7 6.4a1 1 0 0 1-1 .9H9.2a1 1 0 0 1-1-.9z"/><path d="M10 10V9a2 2 0 0 1 4 0v1"/></svg></span>Scan/Shop</button>
   <button data-v="lib" type="button"><span class="i"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h4v18H6a2 2 0 0 1-2-2z"/><path d="M10 3h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-8"/><path d="M14 8h3M14 12h3"/></svg></span>Library</button>
   <button data-v="profile" type="button"><span class="i"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></span>Profile</button>
 </div></nav>
@@ -1735,7 +1738,7 @@ function renderToday(T,D){
    ${empty?'':`<p class="mfoods">${sl.it.map(([id,g])=>esc(FM[id].n.split(',')[0])+' '+g+' g').join(', ')}</p>`}
    ${pl&&S.date<=TODAY?`<div class="mact"><button class="btn primary sm" type="button" data-ate="${s.id}">Ate this</button></div>`:''}
    ${empty?`${idea(s)}<div class="mact"><button class="btn primary" type="button" data-start="${s.id}">${s.t==='s'?'Add a snack':'Add '+s.n.toLowerCase()}</button><button class="btn" type="button" data-pick="${s.id}">More ideas</button></div>`:''}</article>`};
- $('v-today').innerHTML=`<div class="vhead"><div><h1>${title}</h1><p class="cap">${date}</p></div><div class="datenav"><button class="iconbtn" type="button" id="d-cal" aria-label="History calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button class="iconbtn" type="button" id="d-prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>${isT?'':`<button class="btn sm" type="button" id="d-today">Today</button>`}<button class="iconbtn" type="button" id="d-next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>${dueLine()}
+ $('v-today').innerHTML=`<div class="vhead"><div><h1>${title}</h1><p class="cap">${date}</p></div><div class="datenav"><button class="iconbtn" type="button" id="d-cal" aria-label="History calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button class="iconbtn" type="button" id="d-prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>${isT?'':`<button class="btn sm" type="button" id="d-today">Today</button>`}<button class="iconbtn" type="button" id="d-next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>${dueLine()}${shopLine()}
   ${emptyDay?`<div class="card newday"><h2>${isT?'New day':S.date>TODAY?'Nothing planned yet':'Nothing logged'}</h2><p class="cap" style="margin:4px 0 12px">${S.date>TODAY?'Plan this day ahead: the ideas below fit what you still need.':'Add what you eat: pick foods one by one, or a dish.'}</p>${actPill(isT,1)}${wsc!==null?`<button class="weekline" type="button" id="go-week" style="margin:0 0 10px"><span>Last 7 days</span><b>${wsc}% covered</b>${CHEV}</button>`:''}${prev?`<button class="btn wide" type="button" id="d-copy">Same as ${prev===shift(S.date,-1)?'yesterday':kdate(prev).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'})}</button>`:''}</div>`:''}
 ${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero${WON()?' hw':''}"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}. Open Nutrients"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
    <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div>${WON()?bottleHTML():''}</div>${waterRow()}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div>${actPill(isT)}</div>`}
@@ -1753,6 +1756,7 @@ ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="m
  bindFg(v);bindSupCard(v);bindWater(v);bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
  v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>openPicker(b.dataset.pick,'recipe'));
  v.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>startMeal(b.dataset.start));
+ if($('go-shop'))$('go-shop').onclick=openShop;
  v.querySelectorAll('[data-ate]').forEach(b=>b.onclick=e=>{e.stopPropagation();const sl=S.plan[b.dataset.ate];if(sl){delete sl.pl;VCV++;save();toast('Counted as eaten');render()}});
  v.querySelectorAll('[data-edit]').forEach(b=>{b.onclick=()=>openMeal(b.dataset.edit);b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openMeal(b.dataset.edit)}}});
  v.querySelectorAll('[data-rcp]').forEach(b=>b.onclick=e=>{e.stopPropagation();openRecipe(b.dataset.rcp,b.dataset.rslot)});
@@ -2165,16 +2169,20 @@ async function tabLookup(code){
  try{const ctl=new AbortController();const t=setTimeout(()=>ctl.abort(),9000);
   const r=await fetch(`https://world.openfoodfacts.org/api/v2/product/${code}.json?fields=${OFF_FIELDS}`,{signal:ctl.signal});clearTimeout(t);const j=await r.json();
   if(j&&j.status===1&&j.product){const P=Object.assign(fromOFF(code,j.product),{x:offExtra(j.product)});ST.prod=P;
+   try{shopTick(P)}catch(e){}
    S.scanHist=[{code,n:P.n,img:P.img,vegan:P.x.maybe&&P.vegan==='unknown'?'maybe':P.vegan,t:Date.now(),P},...(S.scanHist||[]).filter(h=>h.code!==code)].slice(0,15);save()}
   else ST.prod={code,n:'',lab:{},vegan:'unknown',found:false,x:{}};
  }catch(e){ST.prod={code,n:'',lab:{},vegan:'unknown',found:false,off:1,x:{}}}
  ST.state='res';ST.drawn='';renderScanTab();
 }
 function renderScanTab(){
- const v=$('v-scan'),key=ST.state+':'+(ST.prod?ST.prod.code:'');
+ const v=$('v-scan'),key=ST.state+':'+(ST.prod?ST.prod.code:'')+':'+(S.shopSeg||'scan');
+ if(!v.dataset.shb){v.dataset.shb=1;v.addEventListener('click',e=>{const b=e.target.closest('[data-shs]');if(!b)return;S.shopSeg=b.dataset.shs;ST.drawn='';save();renderScanTab();scrollTo({top:0})})}
  if(ST.drawn===key){if(ST.state==='cam'&&!SCAN.tab)startCamera('st-video');return}
  ST.drawn=key;
- const head=`<div class="vhead"><div><h1>Scan</h1><p class="cap">Check a product in the shop: vegan or not, protein, fiber, sugar.</p></div></div>`;
+ const nOpen=shopOpen(),segH=`<div class="seg" id="sh-seg" style="margin-bottom:14px"><button type="button" data-shs="scan" aria-pressed="${S.shopSeg!=='list'}">Scan</button><button type="button" data-shs="list" aria-pressed="${S.shopSeg==='list'}">Shopping list${nOpen?' · '+nOpen:''}</button></div>`;
+ if(S.shopSeg==='list'){stopCamera();SCAN.tab=false;ST.drawn='';renderShopList(v,`<div class="vhead"><div><h1>Scan/Shop</h1><p class="cap">Everything your planned meals need, in shop amounts.</p></div></div>`+segH);return}
+ const head=`<div class="vhead"><div><h1>Scan/Shop</h1><p class="cap">Check a product in the shop: vegan or not, protein, fiber, sugar.</p></div></div>`+segH;
  const H=S.scanHist||[];
  const vInfo=x=>x==='vegan'?['var(--ok)','Vegan']:x==='no'?['var(--low)','Not vegan']:x==='maybe'?['var(--mid)','Maybe vegan']:['var(--mid)','Vegan status unknown'];
  const hist=H.length?`<div class="card"><h2 style="margin-bottom:6px">Recently scanned</h2>${H.map((h,i)=>{const c=vInfo(h.vegan);return `<button class="histrow" type="button" data-h="${i}">${h.img?`<img src="${esc(h.img)}" alt="">`:`<span class="thumb em">${EMO['1f37d']}</span>`}<span style="flex:1;min-width:0"><span class="hn">${esc(h.n)}</span><span class="vdot" style="color:${c[0]}">● ${c[1]}</span></span>${CHEV}</button>`}).join('')}</div>`:'';
@@ -2289,9 +2297,11 @@ function renderPicker(){
    (more?'<p class="empty2">Showing the first 80. Type more to narrow it down.</p>':'')+(fm==='all'&&!q&&PK.cat==='All'?'<p class="empty2">Type to search over 1,100 more foods from the USDA database.</p>':'');
  }
  if(!isD)html+=`<button class="linkbtn" type="button" id="pk-meas">${INFO} How much is a spoon, a cup or a handful?</button>`;
+ if(!PK.part&&!PK.pick&&shRow(q))html=shRow(q)+html;
  if(!PK.part&&!PK.pick){const gr=gbRows(q);if(gr)html=gr+html.replace('<p class="empty2">No match.</p>','')}
  $('pk-list').innerHTML=html;if($('pk-meas'))$('pk-meas').onclick=openMeasures;
  $('pk-list').querySelectorAll('[data-rcp]').forEach(b=>b.onclick=()=>openRecipe(b.dataset.rcp,PK.slot));
+ $('pk-list').querySelectorAll('[data-gshop]').forEach(b=>tapBind(b,openShop));
  $('pk-list').querySelectorAll('[data-gbld]').forEach(b=>tapBind(b,()=>{const sl=PK.slot,k=b.dataset.gbld;closePicker();openGran(null,sl,k)}));
  $('pk-list').querySelectorAll('[data-fx]').forEach(b=>b.onclick=()=>{const k=b.dataset.fx;PK.focus=!k?[]:PK.focus.includes(k)?PK.focus.filter(x=>x!==k):[...PK.focus,k];renderPicker()});
  if($('pk-scan'))$('pk-scan').onclick=()=>{const pk=PK.pick;closePicker();openScan(PK.slot,'scan');if(pk)SC.pick=pk;renderScan()};
@@ -2555,6 +2565,85 @@ function openGranRecipe(g){if(typeof g==='string'){const c=S.custom.find(x=>x.id
   <h3 class="rh">Steps</h3><ol class="rsteps">${granSteps(g).map(x=>`<li>${esc(x)}</li>`).join('')}</ol>`;
  if(!dl.open){dl.showModal?dl.showModal():dl.setAttribute('open','')}$('sheet-body').scrollTop=0}
 
+/* ---------- shopping list: built from planned meals, in shop amounts, by shop area ----------
+   S.shop = {days, chk:{key:{q,t}}, need:{id:1}, extra:[{id,g}|{t}]}. Builder recipes and mixes open into their ingredients.
+   A tick remembers how much was needed; when the plan needs more later, the item comes back. Ticks older than 2 weeks drop. */
+function shopInit(){if(!S.shop||typeof S.shop!=='object')S.shop={};['chk','need'].forEach(k=>{if(!S.shop[k]||typeof S.shop[k]!=='object')S.shop[k]={}});if(!Array.isArray(S.shop.extra))S.shop.extra=[];if(![3,7,14].includes(S.shop.days))S.shop.days=7}
+shopInit();
+/* what you buy it in: grams per pack and the word for it; pieces for loose produce */
+const PACK={kidney:[240,'can','cans'],blackbeans:[240,'can','cans'],chickpeas:[240,'can','cans'],whitebeans:[240,'can','cans'],coco:[400,'can','cans'],u11693:[400,'can','cans'],
+ passata:[500,'pack','packs'],tofu:[200,'block','blocks'],tempeh:[200,'pack','packs'],seitan:[200,'pack','packs'],soymilk:[1000,'carton (1 l)','cartons (1 l)'],oatmilk:[1000,'carton (1 l)','cartons (1 l)'],
+ soyyog:[500,'pot (500 g)','pots (500 g)'],oats:[500,'pack (500 g)','packs (500 g)'],basismusli:[500,'pack (500 g)','packs (500 g)'],lentils:[500,'pack (500 g)','packs (500 g)'],redlentils:[500,'pack (500 g)','packs (500 g)'],
+ rice:[1000,'pack (1 kg)','packs (1 kg)'],brownrice:[1000,'pack (1 kg)','packs (1 kg)'],wwpasta:[500,'pack (500 g)','packs (500 g)'],tvp:[200,'pack (200 g)','packs (200 g)'],u20080:[1000,'pack (1 kg)','packs (1 kg)'],
+ bread:[500,'loaf','loaves'],tortilla:[370,'pack of 6 wraps','packs of 6 wraps'],berries:[300,'bag (300 g)','bags (300 g)'],vegmix:[450,'bag (450 g)','bags (450 g)'],peas:[450,'bag (450 g)','bags (450 g)'],edamame:[400,'bag (400 g)','bags (400 g)'],
+ spinach:[200,'bag (200 g)','bags (200 g)'],kale:[200,'bag (200 g)','bags (200 g)'],corn:[140,'can','cans'],hummus:[200,'pot','pots'],mince:[180,'pack','packs'],pb:[350,'jar','jars'],tahini:[300,'jar','jars'],darkchoc:[100,'bar','bars'],
+ u16122:[500,'tub (500 g)','tubs (500 g)'],maple:[250,'bottle (250 ml)','bottles (250 ml)'],agave:[350,'bottle','bottles'],u04047:[400,'jar','jars']};
+const PIECE={u11282:[150,'onion','onions'],u11215:[50,'bulb of garlic','bulbs of garlic'],pepper:[160,'pepper','peppers'],carrots:[80,'carrot','carrots'],potato:[150,'potato','potatoes'],sweetpotato:[250,'sweet potato','sweet potatoes'],
+ banana:[120,'banana','bananas'],apple:[180,'apple','apples'],orange:[150,'orange','oranges'],kiwi:[75,'kiwi','kiwis'],avocado:[140,'avocado','avocados'],mango:[300,'mango','mangoes'],broccoli:[400,'head of broccoli','heads of broccoli'],
+ cauliflower:[600,'cauliflower','cauliflowers'],u11216:[50,'piece of ginger','pieces of ginger'],u09152:[45,'lemon','lemons'],u09160:[30,'lime','limes'],tomatoes:[100,'tomato','tomatoes'],u11529:[100,'tomato','tomatoes']};
+/* likely at home already: only listed when you say you need it */
+const AT_HOME=id=>{const f=FM[id];if(!f)return false;const r=gRole(id);return ['salt','spice','flav','yeast'].includes(r)||id==='water'||(r==='oil'&&!PACK[id])};
+function shopArea(id){const f=FM[id];if(!f)return 'Other';const n=f.n.toLowerCase(),c=f.cat;
+ if(/frozen/.test(n)||['berries','vegmix','peas','edamame'].includes(id))return 'Frozen';
+ if(['tofu','tempeh','seitan','soyyog','alproyog0','mince','hummus','falafel'].includes(id)||/yogurt|tofu|tempeh/.test(n))return 'Chilled';
+ if(c==='Plant milk and yogurt')return 'Plant milk';
+ if(/canned|can\b|passata|tomato sauce|coconut milk|tomatoes, crushed/.test(n)||['passata','coco','pb','tahini','corn'].includes(id))return 'Cans and jars';
+ if(c==='Vegetables'||(c==='Fruit'&&gFresh(id))||['u09152','u09160','u11216','u11215','u11282'].includes(id))return 'Fresh produce';
+ if(['bread','tortilla','pita'].includes(id))return 'Bread';
+ if(['salt','spice','flav','yeast','oil','sweet'].includes(gRole(id))||id==='cocoa'||id==='darkchoc')return 'Baking, spices and oil';
+ if(c==='My foods')return 'Your products';return 'Dry goods'}
+const AREAS=['Fresh produce','Bread','Chilled','Plant milk','Frozen','Cans and jars','Dry goods','Baking, spices and oil','Your products','Other'];
+const shopDates=()=>{const n=S.shop.days,out=[];for(let i=0;i<n;i++)out.push(shift(TODAY,i));return out};
+/* grams per food from the planned meals in range; recipes and mixes open into what you buy */
+function shopNeed(){shopInit();const g={},meals=[],batch={};
+ /* a builder recipe is cooked as a whole batch: enough batches for all its planned portions */
+ const put=(id,q,d)=>{const f=FM[id];if(!f||!(q>0))return;if(d<3&&f.gb&&f.parts&&f.parts.length){batch[id]=(batch[id]||0)+q;return}
+  if(d<3&&f.parts&&f.parts.length&&String(id).startsWith('m_')){const tot=mixTot(f);if(tot)f.parts.forEach(([p,pg])=>put(p,q*pg/tot,d+1));return}g[id]=(g[id]||0)+q};
+ shopDates().forEach(d=>{const p=S.days[d];if(!p)return;mealKeys(p).forEach(k=>{if(!p[k].pl||!p[k].it.length)return;meals.push(d+k);p[k].it.forEach(([id,q])=>put(id,+q,0))})});
+ S.shop.extra.forEach(x=>{if(x.id)put(x.id,+x.g||(FM[x.id]||{}).por||100,0)});
+ Object.entries(batch).forEach(([id,q])=>{const f=FM[id],n=Math.max(1,Math.ceil(q/(f.yg||mixTot(f))-.05));f.parts.forEach(([p,pg])=>put(p,pg*n,1))});
+ delete g.water;return {g,meals}}
+const shopName=id=>{const f=FM[id];if(!f)return '';if(f.cat==='My foods')return f.n;return (GNM[id]&&f.src==='usda'?GNM[id]:f.n.split(',')[0]).replace(/^./,c=>c.toUpperCase())};
+function shopAmt(id,q){const f=FM[id],P=PACK[id]||(f&&f.pack?[+f.pack,'pack ('+f.pack+' g)','packs ('+f.pack+' g)']:null),C=PIECE[id];
+ if(P){const n=Math.max(1,Math.ceil(q/P[0]-.15));return n+' '+(n===1?P[1]:P[2])}
+ if(C){const n=Math.max(1,Math.ceil(q/C[0]-.2));return n+' '+(n===1?C[1]:C[2])}
+ return q>=1000?fmt(Math.round(q/100)/10)+' kg':(q>=100?Math.round(q/50)*50:Math.max(5,Math.round(q/5)*5))+(gRole(id)==='liq'?' ml':' g')}
+function shopList(){const {g,meals}=shopNeed(),rows=[],home=[];
+ Object.entries(g).forEach(([id,q])=>{const r={key:id,id,q,amt:shopAmt(id,q),area:shopArea(id),n:PIECE[id]?'':shopName(id),hn:shopName(id)};if(AT_HOME(id)&&!S.shop.need[id])home.push(r);else rows.push(r)});
+ S.shop.extra.forEach((x,i)=>{if(x.t)rows.push({key:'t'+i,t:1,n:x.t,amt:'',area:'Other',xi:i})});
+ const now=Date.now();Object.keys(S.shop.chk).forEach(k=>{const c=S.shop.chk[k];if(!c||typeof c!=='object'||now-c.t>14*864e5)delete S.shop.chk[k]});
+ rows.forEach(r=>{const c=S.shop.chk[r.key];r.chk=!!c&&(r.t||r.q<=c.q*1.05+1)});return {rows,home,meals}}
+const shopOpen=()=>shopList().rows.filter(r=>!r.chk).length;
+function shopText(){const L=shopList();return 'Shopping list\n'+AREAS.map(a=>{const R=L.rows.filter(r=>r.area===a&&!r.chk);return R.length?`\n${a}\n`+R.map(r=>`• ${[r.amt,r.t||r.id&&FM[r.id].cat==='My foods'?r.n:r.n.toLowerCase()].filter(Boolean).join(' ')}`).join('\n'):''}).join('')}
+function renderShopList(v,head){const L=shopList(),open=L.rows.filter(r=>!r.chk).length;
+ const item=r=>`<label class="shrow${r.chk?' done':''}"><input type="checkbox" data-shk="${esc(r.key)}"${r.chk?' checked':''}><span class="ficon em">${r.t?EMO['1f37d']:fIcon(r.id)}</span><span class="shn"><b>${r.amt?esc(r.amt):''}</b> ${esc(r.t||!r.id||FM[r.id].cat==='My foods'?r.n:r.n.toLowerCase())}</span>${r.xi!=null?`<button class="rm" type="button" data-shx="${r.xi}" aria-label="Remove ${esc(r.n||r.hn)}">${XIC}</button>`:''}</label>`;
+ v.innerHTML=head+`<div class="seg sm" id="sh-days" style="margin-bottom:12px">${[3,7,14].map(n=>`<button type="button" data-shd="${n}" aria-pressed="${S.shop.days===n}">${n===3?'Next 3 days':n===7?'Next 7 days':'Next 2 weeks'}</button>`).join('')}</div>
+  <div class="card"><div class="card-head"><div><h2>Shopping list</h2><p class="cap num">${L.meals.length?`${L.meals.length} planned meal${L.meals.length>1?'s':''} · ${open} to buy`:'No planned meals in these days yet.'}</p></div>${L.rows.length?'<button class="btn sm" type="button" id="sh-share">Share</button>':''}</div>
+  ${L.meals.length||L.rows.length?'':`<p class="cap" style="margin:8px 0 0">Go to a coming day on Today and pick meals. Their ingredients show up here.</p>`}
+  ${AREAS.map(a=>{const R=L.rows.filter(r=>r.area===a);return R.length?`<h3 class="rh">${a}</h3>${R.sort((x,y)=>x.chk-y.chk).map(item).join('')}`:''}).join('')}
+  <div class="btnrow" style="margin-top:12px"><button class="btn" type="button" id="sh-add">Add food</button><input type="text" id="sh-t" placeholder="Something else" style="flex:1;min-width:120px"><button class="btn" type="button" id="sh-tadd">Add</button></div>
+</div>
+  ${L.home.length?`<div class="card"><h2 style="font-size:17px">Probably at home</h2><p class="cap" style="margin:2px 0 8px">Tap what you need to buy.</p><div class="chips wrap">${L.home.map(r=>`<button class="chip" type="button" data-shn="${r.id}">${esc(r.hn)}</button>`).join('')}</div></div>`:''}`;
+ v.querySelectorAll('[data-shk]').forEach(x=>x.onchange=()=>{const k=x.dataset.shk,r=shopList().rows.find(y=>y.key===k);if(x.checked)S.shop.chk[k]={q:r&&r.q||0,t:Date.now()};else delete S.shop.chk[k];save();renderShopList(v,head);shopBadge()});
+ v.querySelectorAll('[data-shd]').forEach(b=>b.onclick=()=>{S.shop.days=+b.dataset.shd;save();renderShopList(v,head);shopBadge()});
+ v.querySelectorAll('[data-shn]').forEach(b=>b.onclick=()=>{S.shop.need[b.dataset.shn]=1;save();renderShopList(v,head);shopBadge()});
+ v.querySelectorAll('[data-shx]').forEach(b=>b.onclick=e=>{e.preventDefault();S.shop.extra.splice(+b.dataset.shx,1);Object.keys(S.shop.chk).filter(k=>k[0]==='t').forEach(k=>delete S.shop.chk[k]);save();renderShopList(v,head);shopBadge()});
+ $('sh-add').onclick=()=>granPick(id=>{S.shop.extra.push({id,g:(FM[id]||{}).por||100});save();renderShopList(v,head);shopBadge()});
+ const ta=()=>{const t=$('sh-t').value.trim();if(!t)return;S.shop.extra.push({t});save();renderShopList(v,head);shopBadge()};$('sh-tadd').onclick=ta;$('sh-t').onkeydown=e=>{if(e.key==='Enter')ta()};
+ if($('sh-share'))$('sh-share').onclick=async()=>{const t=shopText();try{if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e&&e.name==='AbortError')return}
+  try{await navigator.clipboard.writeText(t);toast('List copied')}catch(e){toast('Could not copy the list')}}}
+/* scanning a product on the list ticks it off */
+function shopTick(P){if(!P)return;const L=shopList(),saved=F.find(f=>f.bc===P.code),ids=[saved&&saved.id,P.base].filter(Boolean);const r=L.rows.find(x=>!x.chk&&ids.includes(x.id));
+ if(r){S.shop.chk[r.key]={q:r.q,t:Date.now()};save();shopBadge();toast(`Ticked off ${r.hn.toLowerCase()}`)}}
+function shopBadge(){const b=document.querySelector('.tabbar .tabscan .i');if(!b)return;let n=0;try{n=shopOpen()}catch(e){}let el=b.querySelector('.tbadge');if(!n){if(el)el.remove();return}
+ if(!el){el=document.createElement('span');el.className='tbadge';b.appendChild(el)}el.textContent=n>99?'99+':n;el.setAttribute('aria-label',n+' items to buy')}
+/* search words that open the list */
+const SHQ=/shop|grocer|einkauf|boodschap|supermar/;
+const shRow=q=>SHQ.test(q||'')?`<div class="opt"><button class="optmain" type="button" data-gshop="1"><span class="thumb em">${EMO['1f37d']}</span><span class="otx"><span class="t">Shopping list</span><span class="s">Everything your planned meals need</span></span></button></div>`:'';
+function shopLine(){if(S.date!==TODAY)return '';let n=0,m=0;try{const L=shopList();n=L.rows.filter(r=>!r.chk).length;m=L.meals.length}catch(e){}if(!n)return '';
+ return `<button class="weekline" type="button" id="go-shop" style="margin:0 0 12px"><span>${m} planned meal${m>1?'s':''} · shopping list</span><b class="num">${n} to buy</b>${CHEV}</button>`}
+function openShop(){if($('pk').open)closePicker();S.view='scan';S.shopSeg='list';render();scrollTo({top:0})}
+
 /* ---------- food guide ---------- */
 function renderFoods(T){
  const k=S.gn||'b12',i=K.indexOf(k);
@@ -2609,8 +2698,8 @@ function renderLibDishes(){
   ${open?`<div class="ldbody"><div class="btnrow"><button class="btn sm" type="button" data-gedit="${c.id}">Edit</button><button class="btn sm" type="button" data-grcp="${c.id}">Recipe</button>${(gTpl(c.gb).t==='b'?['b']:gTpl(c.gb).t==='s'?['s']:['l','d']).map(t=>`<button class="btn sm" type="button" data-gbf="${c.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}</div></div>`:''}</div>`};
  $('lib-mine').innerHTML=mine.length||gv.length||(!q&&lt!=='fav')?`<div class="card" style="padding-top:4px"><div class="row" style="margin:10px 0 2px"><h2 style="margin:0">Your dishes</h2><button class="btn sm" type="button" id="lib-gran">Recipe builder</button></div>${mine.length||gv.length?'':'<p class="cap" style="margin:4px 0 12px">Dishes you build or change are saved here when you leave Edit.</p>'}${gv.map(grow).join('')}${mine.map(row).join('')}</div>`:'';
  $('lib-allh').textContent=mine.length||gv.length?'All dishes':'Dishes';
- $('lib-list').innerHTML=gbRows(q)+(gbRows(q)&&!rest.length?'':rest.length?rest.map(row).join(''):`<p class="cap">${lt==='fav'&&!q?(mine.length?'No other favourites.':'No favourites yet. Tap a dish, then Add to favourites. The star in the add menu works too.'):'No match.'}</p>`);
- const v=$('lib-dishes');v.querySelectorAll('[data-gbld]').forEach(b=>b.onclick=()=>openGran(null,null,b.dataset.gbld));
+ $('lib-list').innerHTML=shRow(q)+gbRows(q)+(gbRows(q)&&!rest.length?'':rest.length?rest.map(row).join(''):`<p class="cap">${lt==='fav'&&!q?(mine.length?'No other favourites.':'No favourites yet. Tap a dish, then Add to favourites. The star in the add menu works too.'):'No match.'}</p>`);
+ const v=$('lib-dishes');v.querySelectorAll('[data-gshop]').forEach(b=>b.onclick=openShop);v.querySelectorAll('[data-gbld]').forEach(b=>b.onclick=()=>openGran(null,null,b.dataset.gbld));
  v.querySelectorAll('[data-lx]').forEach(b=>b.onclick=()=>{LX=LX===b.dataset.lx?null:b.dataset.lx;renderLibDishes()});
  v.querySelectorAll('[data-lrcp]').forEach(b=>b.onclick=()=>openRecipe(b.dataset.lrcp));
  if($('lib-gran'))$('lib-gran').onclick=()=>openGran(null);
@@ -3262,6 +3351,7 @@ function render0(){
  if($('pk').open)renderPicker();
  if($('food').open)renderFood();if($('gran').open)renderGran();
  if($('sheet').open)renderDetail(T,$('sheet-body'));
+ try{shopBadge()}catch(e){}
  $('onb').hidden=!!S.onb;document.body.style.overflow=S.onb?'':'hidden';if(!S.onb)renderOnb();
  if(fid&&fid.startsWith('q-')){const el=$(fid);if(el)el.focus()}
 }
