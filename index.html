@@ -692,7 +692,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .tidea.again{background:var(--accent-soft)}
 .tidea.again .cap{color:var(--ink)}
 .ktip,.kthead{position:relative}.ktip h3,.kthead h2{padding-right:40px}.ktip>.srcd,.kthead>.srcd{position:static;display:block}.ktip>.srcd>summary,.kthead>.srcd>summary{position:absolute;top:8px;right:8px}.kthead>.srcd>summary{top:0;right:0}.ktip .srcpop,.kthead .srcpop{max-width:none;margin:8px 0 0}
-.gmore{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.gmore{display:flex}.gmore .btn{white-space:nowrap}
 .lfacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}.lfacts>div{background:var(--surface2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}.lfacts b{font-size:17px}
 .llinks{display:flex;flex-direction:column;gap:10px}.llinks a{color:var(--accent);font-weight:700;text-decoration:none}
 .tidea .tcap{display:flex;align-items:center;gap:10px;min-width:0}
@@ -742,7 +742,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
         <label class="lbl" for="g-nut">Best vegan sources of</label>
         <select id="g-nut"></select>
         <p class="info muted" id="g-info"></p>
-        <div class="gmore"><button class="btn sm" type="button" id="g-read">Read more</button><span id="g-src"></span></div>
+        <div class="gmore"><button class="btn sm" type="button" id="g-read">Read more and sources</button></div>
         <div class="chips" id="g-cats"></div>
       </div>
       <div class="card"><div class="rank" id="g-body"></div></div>
@@ -3061,8 +3061,7 @@ function renderFoods(T){
  const k=S.gn||'b12',i=K.indexOf(k);
  const sel=$('g-nut');if(!sel.options.length){sel.innerHTML=K.filter(x=>x!=='kcal').map(x=>`<option value="${x}">${NUT[x].n}</option>`).join('');sel.onchange=()=>{S.gn=sel.value;render()}}
  sel.value=k;
- $('g-info').textContent=NUT[k].i;$('g-read').textContent='Read more about '+NUT[k].n;$('g-read').onclick=()=>openLearn(k);
- $('g-src').innerHTML=srcLinks([k],'Per typical portion. Values from food tables; brands differ.');
+ $('g-info').textContent=NUT[k].i;$('g-read').onclick=()=>openLearn(k);
  $('g-cats').innerHTML=['All',...CATS].map(c=>`<button class="chip" type="button" data-c="${c}" aria-pressed="${(S.gc||'All')===c}">${c}</button>`).join('');
  $('g-cats').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{S.gc=b.dataset.c;render()});
  const rows=F.filter(f=>!f.hide&&(f.src!=='usda'||f.common||S.gall)&&((S.gc||'All')==='All'||f.cat===S.gc)).map(f=>({f,v:f.v[i]*f.por/100})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
@@ -3082,7 +3081,7 @@ function openLearn(k){const N=NUT[k],T=targets(),i=K.indexOf(k),dl=$('sheet');S.
   ${top.length?`<div><h3 style="margin-bottom:6px">Best everyday sources</h3><div class="contrib">${top.map(x=>`<div class="crow"><span>${esc(x.f.n.split(',')[0])} <span class="cap">${x.f.pl?x.f.pl+', ':''}${x.f.por} g</span></span><span class="v num">${fmt(x.v)} ${N.u}</span></div>`).join('')}</div></div>`:''}
   ${how?`<div><h3 style="margin-bottom:6px">If you take it</h3><ul class="sinfo-l" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px">${how.map(h=>`<li>${h}</li>`).join('')}</ul></div>`:''}
   ${tips.length?`<div><h3 style="margin-bottom:6px">Tips</h3><div class="ktips">${tips.map(t=>`<div class="ktip"><h3>${t[1]}</h3><span class="muted">${t[2]}</span>${srcPop(t[3])}</div>`).join('')}</div></div>`:''}
-  <div><h3 style="margin-bottom:6px">Read further</h3><div class="llinks">${links.map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join('')}</div></div>
+  <div><h3 style="margin-bottom:6px">Sources and further reading</h3><p class="cap" style="margin:0 0 8px">Target from ${ref[0]}. Food amounts per typical portion from food tables; brands differ.</p><div class="llinks">${links.map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join('')}</div></div>
   <button class="btn primary wide" type="button" id="l-how">How am I doing on ${N.n}</button>`;
  $('l-how').onclick=()=>selectNut(k);
  if(!dl.open){dl.showModal?dl.showModal():dl.setAttribute('open','')}$('sheet-body').scrollTop=0}
