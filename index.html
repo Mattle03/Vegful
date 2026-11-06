@@ -691,6 +691,10 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .orow[aria-pressed="true"]{border:2px solid var(--accent);border-radius:14px}
 .tidea.again{background:var(--accent-soft)}
 .tidea.again .cap{color:var(--ink)}
+.ktip,.kthead{position:relative}.ktip h3,.kthead h2{padding-right:40px}.ktip>.srcd,.kthead>.srcd{position:static;display:block}.ktip>.srcd>summary,.kthead>.srcd>summary{position:absolute;top:8px;right:8px}.kthead>.srcd>summary{top:0;right:0}.ktip .srcpop,.kthead .srcpop{max-width:none;margin:8px 0 0}
+.gmore{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.lfacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}.lfacts>div{background:var(--surface2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}.lfacts b{font-size:17px}
+.llinks{display:flex;flex-direction:column;gap:10px}.llinks a{color:var(--accent);font-weight:700;text-decoration:none}
 .tidea .tcap{display:flex;align-items:center;gap:10px;min-width:0}
 .tidea .tcap .cap{white-space:nowrap}
 .tidea .tplus{width:44px;min-height:44px;padding:0;flex:none}
@@ -738,6 +742,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
         <label class="lbl" for="g-nut">Best vegan sources of</label>
         <select id="g-nut"></select>
         <p class="info muted" id="g-info"></p>
+        <div class="gmore"><button class="btn sm" type="button" id="g-read">Read more</button><span id="g-src"></span></div>
         <div class="chips" id="g-cats"></div>
       </div>
       <div class="card"><div class="rank" id="g-body"></div></div>
@@ -1961,7 +1966,7 @@ function spark(k,T){const mx0=S.range===0&&(WIN[k]||7)>1,R=rangeStats(S.range>1?
   <text x="0" y="${H+14}" font-size="11" fill="var(--muted)">${kdate(R.dates[0]).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</text><text x="${W}" y="${H+14}" font-size="11" fill="var(--muted)" text-anchor="end">Today</text></svg>
   <p class="cap">${mx0?'Each bar is where you stood that day, with recent days counting most and older days fading out. Dashed line is your target. Grey marks: no entries yet.':'Dashed line is your daily target. Grey marks are days without entries.'}</p></div>`}
 function renderDetail(T,root){
- if(!S.sel&&root.id==='sheet-body'&&['Plant variety','Recipe','Supplement'].includes($('sheet-grp').textContent))return;
+ if(!S.sel&&root.id==='sheet-body'&&['Plant variety','Recipe','Supplement','Learn'].includes($('sheet-grp').textContent))return;
  const k=S.sel||'b12',i=K.indexOf(k),N=NUT[k],MXd=S.range===0?mixStats():null,R=S.range>1?rangeStats(S.range,S.date):null,D=MXd?MXd.avg:R&&R.L.length?R.avg:dayV(),s=nstat(k,D,T),d2=(MXd&&(WIN[k]||7)>1)||!!(R&&R.L.length);
  $('sheet-grp').textContent=N.g;
  const contrib=[];
@@ -2010,29 +2015,63 @@ $('sheet').addEventListener('click',e=>{if(e.target===$('sheet'))closeSheet()});
 $('meal').addEventListener('click',e=>{if(e.target===$('meal'))closeMeal()});
 
 /* ---------- tips ---------- */
+/* where each tip comes from; ODS fact sheets via NIH, studies via their DOI */
+const SREF={
+ nihFe:['NIH fact sheet: Iron','https://ods.od.nih.gov/factsheets/Iron-HealthProfessional/'],
+ nihZn:['NIH fact sheet: Zinc','https://ods.od.nih.gov/factsheets/Zinc-HealthProfessional/'],
+ nihI:['NIH fact sheet: Iodine','https://ods.od.nih.gov/factsheets/Iodine-HealthProfessional/'],
+ nihSe:['NIH fact sheet: Selenium','https://ods.od.nih.gov/factsheets/Selenium-HealthProfessional/'],
+ nihA:['NIH fact sheet: Vitamin A','https://ods.od.nih.gov/factsheets/VitaminA-HealthProfessional/'],
+ nihB12:['NIH fact sheet: Vitamin B12','https://ods.od.nih.gov/factsheets/VitaminB12-HealthProfessional/'],
+ nihO3:['NIH fact sheet: Omega 3 fats','https://ods.od.nih.gov/factsheets/Omega3FattyAcids-HealthProfessional/'],
+ siegen:['Siegenberg et al. 1991, Am J Clin Nutr: vitamin C against phytate and polyphenols','https://doi.org/10.1093/ajcn/53.2.537'],
+ hurrell:['Hurrell et al. 1999, Br J Nutr: tea and cocoa block plant iron','https://doi.org/10.1017/S0007114599000537'],
+ morck:['Morck et al. 1983, Am J Clin Nutr: coffee and iron absorption','https://doi.org/10.1093/ajcn/37.3.416'],
+ fuzi:['Ahmad Fuzi et al. 2017, Am J Clin Nutr: tea one hour after the meal','https://doi.org/10.3945/ajcn.117.161364'],
+ austria:['Austria et al. 2008, J Am Coll Nutr: whole, ground flax and flax oil','https://doi.org/10.1080/07315724.2008.10719693'],
+ brown:['Brown et al. 2004, Am J Clin Nutr: carotenoids and dressing fat','https://doi.org/10.1093/ajcn/80.2.396'],
+ dawson:['Dawson-Hughes et al. 2015, J Acad Nutr Diet: fat and vitamin D3 uptake','https://doi.org/10.1016/j.jand.2014.09.014'],
+ euorg:['EU Regulation 2018/1584: vitamins and minerals in organic food','https://eur-lex.europa.eu/eli/reg_impl/2018/1584/oj'],
+ heaney:['Heaney and Rafferty 2006, J Am Diet Assoc: calcium settling in soy drinks','https://doi.org/10.1016/j.jada.2006.08.008'],
+ li:['Li et al. 2017, J Food Compos Anal: fresh, stored and frozen produce','https://doi.org/10.1016/j.jfca.2017.02.002'],
+ tofuCa:['USDA: firm tofu with calcium sulfate, 683 mg calcium per 100 g','https://fdc.nal.usda.gov/food-details/172475/nutrients'],
+ tofuNi:['USDA: firm tofu with nigari, 201 mg calcium per 100 g','https://fdc.nal.usda.gov/food-details/172448/nutrients'],
+ vsCa:['The Vegan Society: calcium','https://www.vegansociety.com/resources/nutrition-and-health/nutrients/calcium'],
+ zeng:['Zeng 2013, Nutrition and Food Science: vitamin C after boiling, microwaving, steaming','https://doi.org/10.1108/NFS-11-2012-0123'],
+ beans:['Today’s Dietitian: draining and rinsing canned beans','https://www.todaysdietitian.com/reducing-sodium-in-canned-beans-easier-than-1-2-3/'],
+ fsis:['USDA FSIS: leftovers and food safety','https://www.fsis.usda.gov/food-safety/safe-food-handling-and-preparation/food-safety-basics/leftovers-and-food-safety'],
+ mariotti:['Mariotti and Gardner 2019, Nutrients: protein in vegetarian diets','https://doi.org/10.3390/nu11112661'],
+ mamerow:['Mamerow et al. 2014, J Nutr: protein spread over meals','https://doi.org/10.3945/jn.113.185280'],
+ mayo:['Mayo Clinic: dietary fiber','https://www.mayoclinic.org/healthy-lifestyle/nutrition-and-healthy-eating/in-depth/fiber/art-20043983'],
+ vsB12:['The Vegan Society: what every vegan should know about B12','https://www.vegansociety.com/resources/nutrition-and-health/nutrients/vitamin-b12/what-every-vegan-should-know-about-vitamin-b12'],
+ dge:['German Nutrition Society 2016: position on vegan diets','https://doi.org/10.4455/eu.2016.021'],
+ food:FOODL
+};
+const srcPop=(keys,note)=>`<details class="srcd"><summary aria-label="Sources">${INFO}</summary><div class="srcpop">${note?`<p>${note}</p>`:''}${keys.map(k=>SREF[k]).filter(Boolean).map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join('')}</div></details>`;
+/* kitchen tips: group, title, text, sources, nutrients it is about */
 const KT=[
- ['Absorption','Vitamin C with iron','Bell pepper, kiwi, citrus or broccoli in the same meal can double plant iron uptake.'],
- ['Absorption','Tea and coffee timing','Their polyphenols block iron. Keep them about an hour away from meals.'],
- ['Absorption','Soak, sprout, ferment','Lowers phytate so more zinc and iron get absorbed: sourdough bread, tempeh, soaked or sprouted legumes.'],
- ['Absorption','Grind your flax','Whole flaxseed passes through undigested. Grind it and keep it in the fridge.'],
- ['Absorption','A little fat with vegetables','Beta carotene and vitamin K are fat soluble. A spoon of oil or some nuts with the meal helps.'],
- ['Absorption','Vitamin D with food','Take it with your biggest meal; it absorbs better with fat.'],
- ['Shopping','Organic plant milk is often unfortified','In the EU, organic rules ban added vitamins and minerals. Check labels for B12, calcium and vitamin D.'],
- ['Shopping','Shake the carton','Added calcium settles at the bottom of plant milk.'],
- ['Shopping','Frozen vegetables are fine','Frozen right after harvest, they keep as many nutrients as fresh, often more than veg stored for a week.'],
- ['Shopping','Pick calcium tofu','Tofu set with calcium sulfate (E516) has several times more calcium than nigari tofu.'],
- ['Shopping','Iodized salt','Check the label. Sea salt, Himalayan and flaky salts usually contain no iodine.'],
- ['Cooking','Steam, do not boil','Boiling washes vitamin C and folate into the water. Steam or microwave, or use the water in sauces.'],
- ['Cooking','Rapeseed (canola) oil','The best omega 3 to omega 6 ratio of common cooking oils. Use olive oil for flavor; go easy on sunflower and corn oil.'],
- ['Cooking','Rinse canned beans','Cuts the salt by about a third. Canned beans are as nutritious as dried.'],
- ['Cooking','Beans in everything','A can of beans or lentils in a pasta sauce adds about 15 g protein and 12 g fiber.'],
- ['Cooking','Batch cook','A pot of dal or chili keeps 3 to 4 days in the fridge and months in the freezer.'],
- ['Habits','Legumes every day','Two to three portions of beans, lentils, peas or soy. Grains are low in lysine; legumes fill that gap.'],
- ['Habits','Spread protein','20 to 30 g per meal works better for muscle than one big protein meal.'],
- ['Habits','More fiber, more water','Raise fiber step by step and drink enough to avoid bloating.'],
- ['Supplements','B12: small daily or big weekly','Both work: about 25 to 100 µg daily or 1000 to 2000 µg once or twice a week. Cyanocobalamin is the most studied form.'],
- ['Supplements','More is not better','Iodine, selenium, zinc and vitamin A are harmful in high doses. Stay near the targets.'],
- ['Supplements','Test once a year','B12 (holoTC or MMA), ferritin, vitamin D and TSH show if your plan works.']
+ ['Absorption','Vitamin C with iron','Bell pepper, kiwi, citrus or broccoli in the same meal raise plant iron uptake and offset part of the blocking effect of phytate and tea.',['nihFe','siegen'],['fe','c']],
+ ['Absorption','Tea and coffee after meals','Tea blocked 79 to 94 % of plant iron from a meal in one study; coffee and cocoa block it too. Tea an hour after the meal halved that effect.',['hurrell','morck','fuzi'],['fe']],
+ ['Absorption','Soak and ferment','Phytate in grains and legumes binds zinc and iron. Soaking legumes for a few hours and fermented foods like sourdough and tempeh help.',['nihZn','nihFe'],['zn','fe']],
+ ['Absorption','Grind your flax','In a trial, whole flaxseed did not raise omega 3 in the blood; ground flax did. Keep ground flax in the fridge.',['austria'],['ala']],
+ ['Absorption','A little fat with vegetables','Beta carotene needs fat: salads with a full fat dressing gave far more carotenoid uptake than fat free ones. A spoon of oil or some nuts is enough.',['brown','nihA'],['a']],
+ ['Absorption','Vitamin D with food','Taken with a meal that contains fat, vitamin D3 reached about a third higher blood levels than with a fat free meal.',['dawson'],['d']],
+ ['Shopping','Organic plant milk is often unfortified','EU organic rules allow added vitamins and minerals only where the law requires them. Check labels for B12, calcium and vitamin D.',['euorg'],['b12','ca','d']],
+ ['Shopping','Shake the carton','Added calcium can settle at the bottom of plant milk; in tests even firm shaking did not mix all of it back.',['heaney'],['ca']],
+ ['Shopping','Frozen vegetables are fine','Frozen right after harvest, they keep about as many vitamins as fresh, and often more than produce kept 5 days in the fridge.',['li'],['c','fol']],
+ ['Shopping','Pick calcium tofu','Tofu set with calcium sulfate (E516) has about three times the calcium of tofu set with nigari. Check the ingredient list.',['tofuCa','tofuNi','vsCa'],['ca']],
+ ['Shopping','Iodized salt','Sea salt, kosher, Himalayan and flaky salts are usually not iodized and give almost no iodine. Check the label.',['nihI'],['iod']],
+ ['Cooking','Steam, do not boil','Boiling broccoli for 5 minutes lost about 55 % of its vitamin C, microwaving 28 %, steaming 14 %.',['zeng'],['c']],
+ ['Cooking','Rapeseed (canola) oil','About two parts omega 6 to one part omega 3, the best balance of the common cooking oils. Use olive oil for flavor; go easy on sunflower and corn oil.',['nihO3','food'],['ala']],
+ ['Cooking','Rinse canned beans','Draining cuts the salt by about a third; draining and rinsing by about 40 %.',['beans'],[]],
+ ['Cooking','Beans in everything','A drained can of beans (about 240 g) adds about 18 g protein and 15 g fiber to a pasta sauce or soup.',['food'],['p','fib']],
+ ['Cooking','Batch cook','Leftovers keep 3 to 4 days in the fridge and 3 to 4 months in the freezer.',['fsis'],[]],
+ ['Habits','Legumes every day','Grains are low in the amino acid lysine; beans, lentils, peas and soy are rich in it, so have some every day.',['mariotti'],['p']],
+ ['Habits','Spread protein','About 30 g at each meal built more muscle protein over the day than the same amount eaten mostly at dinner.',['mamerow'],['p']],
+ ['Habits','More fiber, more water','Raise fiber over a few weeks and drink plenty of water to avoid gas and bloating.',['mayo'],['fib']],
+ ['Supplements','B12: small daily or big weekly','Both work: at least 10 µg a day, or at least 2000 µg once a week. The gut takes up only a small share of each dose.',['vsB12','nihB12'],['b12']],
+ ['Supplements','More is not better','Iodine, selenium, zinc and vitamin A are harmful in high doses. Stay near the targets.',['nihI','nihSe','nihZn','nihA'],['iod','se','zn','a']],
+ ['Supplements','Get tested regularly','The German Nutrition Society advises vegans to have B12 checked regularly by a doctor. B12 (MMA or holoTC), ferritin, vitamin D and TSH show if your plan works.',['dge','nihB12'],['b12','fe','d','iod']]
 ];
 function planTips(T,D){
  const out=[],ids=new Set(),P=S.plan;
@@ -3022,25 +3061,42 @@ function renderFoods(T){
  const k=S.gn||'b12',i=K.indexOf(k);
  const sel=$('g-nut');if(!sel.options.length){sel.innerHTML=K.filter(x=>x!=='kcal').map(x=>`<option value="${x}">${NUT[x].n}</option>`).join('');sel.onchange=()=>{S.gn=sel.value;render()}}
  sel.value=k;
- $('g-info').textContent=NUT[k].i;
+ $('g-info').textContent=NUT[k].i;$('g-read').textContent='Read more about '+NUT[k].n;$('g-read').onclick=()=>openLearn(k);
+ $('g-src').innerHTML=srcLinks([k],'Per typical portion. Values from food tables; brands differ.');
  $('g-cats').innerHTML=['All',...CATS].map(c=>`<button class="chip" type="button" data-c="${c}" aria-pressed="${(S.gc||'All')===c}">${c}</button>`).join('');
  $('g-cats').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{S.gc=b.dataset.c;render()});
- const rows=F.filter(f=>(S.gc||'All')==='All'||f.cat===S.gc).map(f=>({f,v:f.v[i]*f.por/100})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
+ const rows=F.filter(f=>!f.hide&&(f.src!=='usda'||f.common||S.gall)&&((S.gc||'All')==='All'||f.cat===S.gc)).map(f=>({f,v:f.v[i]*f.por/100})).filter(x=>x.v>0).sort((a,b)=>b.v-a.v);
  const mx=Math.max(100,...rows.map(r=>r.v/T[k]*100));
  $('g-body').innerHTML=rows.length?rows.map(r=>{const p=r.v/T[k]*100;return `<div class="rrow"><span class="rleft"><span class="ficon em">${fIcon(r.f.id)}</span><span><span style="font-weight:600">${esc(r.f.n)}</span><br><span class="cap">${r.f.pl?r.f.pl+', ':''}${r.f.por} g</span></span></span><span style="font-weight:700">${Math.round(p)} %</span><span class="bar"><i style="width:${p/mx*100}%"></i></span></div>`}).join('')
   :`<p class="cap">No plant food in this group provides ${NUT[k].n}.${k==='b12'||k==='d'?' A supplement is the reliable source.':''}</p>`;
+ $('g-body').insertAdjacentHTML('beforeend',S.gall?'':'<button class="btn wide ghost" type="button" id="g-all" style="margin-top:8px">Include less common foods</button>');
+ if($('g-all'))$('g-all').onclick=()=>{S.gall=1;render()};
 }
+/* read more about one nutrient: what it does, your target, how long it lasts, the best everyday sources, tips and where to read further */
+function openLearn(k){const N=NUT[k],T=targets(),i=K.indexOf(k),dl=$('sheet');S.sel=null;$('sheet-grp').textContent='Learn';
+ const top=F.filter(f=>!f.hide&&(f.src!=='usda'||f.common)&&f.v[i]>0).map(f=>({f,v:f.v[i]*f.por/100})).sort((a,b)=>b.v-a.v).filter((x,j,a)=>a.findIndex(y=>fkeys(y.f.id)[0]===fkeys(x.f.id)[0])===j).slice(0,6);
+ const tips=KT.filter(t=>t[4].includes(k)),how=HOW[k],ref=REFL[S.prof.ref||'efsa'];
+ const links=[ref,...(ODS[k]?[[`NIH fact sheet: ${N.n}`,`https://ods.od.nih.gov/factsheets/${ODS[k]}-HealthProfessional/`]]:[]),FOODL];
+ $('sheet-body').innerHTML=`<div><h2 style="font-size:26px">${N.n}</h2><p class="info" style="margin-top:8px">${N.i}</p></div>
+  <div class="lfacts"><div><span class="cap">Your target</span><b class="num">${k==='kcal'?EN(T.kcal):fmt(T[k])+' '+N.u}</b><span class="cap">${ref[0].replace(/ dietary reference values| reference values| nutrient recommendations/,'')}</span></div>${T.ul[k]?`<div><span class="cap">Upper safe limit</span><b class="num">${fmt(T.ul[k])} ${N.u}</b><span class="cap">from all sources</span></div>`:''}<div><span class="cap">Body stores</span><b>${{1:'None',3:'Days',7:'About a week',14:'A few weeks',30:'Months'}[WIN[k]||7]}</b><span class="cap">${(WINWHY[WIN[k]||7]||'').split(';')[0].split(',')[0]}</span></div></div>
+  ${top.length?`<div><h3 style="margin-bottom:6px">Best everyday sources</h3><div class="contrib">${top.map(x=>`<div class="crow"><span>${esc(x.f.n.split(',')[0])} <span class="cap">${x.f.pl?x.f.pl+', ':''}${x.f.por} g</span></span><span class="v num">${fmt(x.v)} ${N.u}</span></div>`).join('')}</div></div>`:''}
+  ${how?`<div><h3 style="margin-bottom:6px">If you take it</h3><ul class="sinfo-l" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px">${how.map(h=>`<li>${h}</li>`).join('')}</ul></div>`:''}
+  ${tips.length?`<div><h3 style="margin-bottom:6px">Tips</h3><div class="ktips">${tips.map(t=>`<div class="ktip"><h3>${t[1]}</h3><span class="muted">${t[2]}</span>${srcPop(t[3])}</div>`).join('')}</div></div>`:''}
+  <div><h3 style="margin-bottom:6px">Read further</h3><div class="llinks">${links.map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join('')}</div></div>
+  <button class="btn primary wide" type="button" id="l-how">How am I doing on ${N.n}</button>`;
+ $('l-how').onclick=()=>selectNut(k);
+ if(!dl.open){dl.showModal?dl.showModal():dl.setAttribute('open','')}$('sheet-body').scrollTop=0}
 function renderKitchen(){
  const T=targets(),lib=[];
  Object.entries(UPG).forEach(([id,arr])=>arr.forEach(nid=>{const f0=FM[id],g=f0.por,ng=upGrams(id,g,nid);const V0=itemV([id,g]),V1=itemV([nid,ng]);const gs=upGains(V0,V1,T).slice(0,3);if(gs.length)lib.push({id,nid,g,ng,gs,dk:V1[0]-V0[0],sc:gs.reduce((a,x)=>a+uval(x),0)})}));
  const byCat={};lib.forEach(x=>{const c=FM[x.id].cat;(byCat[c]=byCat[c]||[]).push(x)});
- const libHtml=`<div><h2 style="margin:6px 2px 4px">Smarter swaps</h2><p class="cap" style="margin:0 2px 10px">Per typical portion, about the same amount of food energy. The Ideas tab shows the ones that fit your day.</p>
+ const libHtml=`<div><div class="kthead"><h2 style="margin:6px 2px 4px">Smarter swaps</h2>${srcPop(['food'],'Values per typical portion from the app\'s food table.')}</div><p class="cap" style="margin:0 2px 10px">Per typical portion, about the same amount of food energy. The Ideas tab shows the ones that fit your day.</p>
   <div class="chips" id="kt-cats" style="margin-bottom:10px">${['All',...Object.keys(byCat)].map(c=>`<button class="chip" type="button" data-kc="${c}" aria-pressed="${(S.kc||'All')===c}">${c}</button>`).join('')}</div>
   <div class="swaps">${lib.filter(x=>(S.kc||'All')==='All'||FM[x.id].cat===S.kc).sort((a,b)=>b.sc-a.sc).map(x=>`<div class="sw"><div class="sw-top"><span class="ficon em" style="width:32px;height:32px">${fIcon(x.id)}</span><span class="arr" style="color:var(--coral);font-weight:800">→</span><span class="ficon em" style="width:32px;height:32px">${fIcon(x.nid)}</span><span class="muted num" style="font-size:13px">${x.g} g → ${x.ng} g${!HK()&&Math.abs(x.dk)>=40?` · ${x.dk>0?'+':'−'}${EN(Math.abs(x.dk))}`:''}</span></div>
    <div class="sw-title">${esc(FM[x.id].n.split(',')[0])}<span class="arr">→</span>${esc(FM[x.nid].n.split(',')[0])}</div><p class="sw-why">${UPGWHY[x.nid]||''}</p>
    <div class="deltas">${x.gs.map(a=>`<span class="up">+${a.v>=10?Math.round(a.v):a.v.toFixed(1)} ${a.u}</span>`).join('')}</div></div>`).join('')}</div></div>`;
  const groups=[...new Set(KT.map(t=>t[0]))];
- $('it-kitchen').innerHTML=libHtml+groups.map(g=>`<div><h2 style="margin:6px 2px 10px">${g}</h2><div class="ktips">${KT.filter(t=>t[0]===g).map(t=>`<div class="ktip"><h3>${t[1]}</h3><span class="muted">${t[2]}</span></div>`).join('')}</div></div>`).join('');
+ $('it-kitchen').innerHTML=libHtml+groups.map(g=>`<div><h2 style="margin:6px 2px 10px">${g}</h2><div class="ktips">${KT.filter(t=>t[0]===g).map(t=>`<div class="ktip"><h3>${t[1]}</h3><span class="muted">${t[2]}</span>${srcPop(t[3])}</div>`).join('')}</div></div>`).join('');
  $('it-kitchen').querySelectorAll('[data-kc]').forEach(b=>b.onclick=()=>{S.kc=b.dataset.kc;render()});
 }
 document.querySelectorAll('#nsub-seg [data-ns]').forEach(b=>b.onclick=()=>{S.nsub=b.dataset.ns;render();scrollTo({top:0})});
