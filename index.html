@@ -149,6 +149,8 @@ button.ring{border:0;background:none;padding:0;cursor:pointer;color:inherit;font
 .pill{font-size:14px;font-weight:700;border-radius:999px;padding:4px 10px}
 .chev{width:18px;height:18px;fill:none;stroke:var(--muted);stroke-width:2;flex:none}
 .meals{display:flex;flex-direction:column;gap:12px}
+.meal.planned{background:transparent;box-shadow:none;outline:2px dashed color-mix(in srgb,var(--muted) 45%,transparent);outline-offset:-2px}
+.ptag{display:inline-block;margin-left:8px;padding:1px 8px;border-radius:999px;background:var(--surface2);color:var(--muted);font-size:11px;font-weight:700;vertical-align:1px}
 .meal{background:var(--surface);border-radius:var(--r);padding:16px 16px 16px 20px;display:flex;flex-direction:column;gap:12px;position:relative;box-shadow:0 1px 2px rgba(20,30,25,.06),0 4px 14px rgba(20,30,25,.05)}.meal::before{content:'';position:absolute;left:0;top:18px;bottom:18px;width:5px;border-radius:0 5px 5px 0;background:var(--c)}
 .meal .mname{font-size:18px}.secthead{display:flex;align-items:baseline;justify-content:space-between;gap:10px;margin:6px 2px -6px}.secthead h2{font-size:22px}
 .meal-top{display:flex;gap:12px;align-items:center}
@@ -1111,8 +1113,14 @@ if(!S.rmix){S.range=0;S.rmix=1}
 function copyMeals(src,dst){mealKeys(dst).forEach(k=>delete dst[k]);mealKeys(src).forEach(k=>{dst[k]=JSON.parse(JSON.stringify(src[k]))});['b','l','d','s'].forEach(k=>{if(!dst[k])dst[k]={t:'',it:[]}});return dst}
 function setDate(k){S.date=k;if(!S.days[k])S.days[k]=emptyPlan();S.plan=S.days[k];rebuildSlots()}
 setDate(S.date);
-const logged=p=>p&&mealKeys(p).some(k=>p[k].it.length);
-const planV=p=>{const v=supV(p);mealKeys(p).forEach(k=>p[k].it.forEach(it=>addv(v,itemV(it))));return v};
+/* planned meals: a meal saved on a coming day is planned (pl) until you confirm it. Planned meals count only while projecting:
+   when you look at a coming day, and when ideas are ranked, so they adapt to what you plan */
+let PROJ=false;
+const isPl=(p,k)=>!!(p&&p[k]&&p[k].pl);
+const eatK=p=>mealKeys(p).filter(k=>PROJ||!p[k].pl);
+function withProj(fn){const o=PROJ;PROJ=true;try{return fn()}finally{PROJ=o}}
+const logged=p=>p&&eatK(p).some(k=>p[k].it.length);
+const planV=p=>{const v=supV(p);eatK(p).forEach(k=>p[k].it.forEach(it=>addv(v,itemV(it))));return v};
 /* weekly basis: what today still needs so the 7 day average reaches the target */
 /* how long the body holds on to each nutrient, in days: the window it is averaged over in Mixed */
 const WIN={kcal:1,p:3,fib:3,pot:3,zn:7,k:7,c:14,mg:14,ala:14,epa:14,b12:30,d:30,a:30,fe:30,ca:30,iod:30,se:30,fol:30};
@@ -1126,7 +1134,7 @@ function mixW(k,a){const W=WIN[k]||7;if(W<=1)return a===0?1:0;const H=2*W;if(a<0
 const mixSpan=k=>{const W=WIN[k]||7;return W<=1?1:2*W};
 /* one day's numbers, kept for the length of one calculation only so edits never see stale values */
 function mixMemo(){const M=new Map();return d=>{if(M.has(d))return M.get(d);const p=S.days[d];if(!logged(p)){M.set(d,null);return null}
- const sl=TSL.map(()=>z());addv(sl[4],supV(p));mealKeys(p).forEach(k=>{const j='blds'.indexOf(typeOf(p,k));p[k].it.forEach(it=>addv(sl[j<0?3:j],itemV(it)))});
+ const sl=TSL.map(()=>z());addv(sl[4],supV(p));eatK(p).forEach(k=>{const j='blds'.indexOf(typeOf(p,k));p[k].it.forEach(it=>addv(sl[j<0?3:j],itemV(it)))});
  const v=z();sl.forEach(x=>addv(v,x));const o={v,sl};M.set(d,o);return o}}
 const mixDates=end=>{const ds=[];for(let a=0;a<MIXH;a++)ds.push(shift(end,-a));return ds};
 function mixOne(k,end,V){const i=K.indexOf(k),H=mixSpan(k);let sw=0,sum=0;for(let a=0;a<H;a++){const x=V(shift(end,-a));if(!x)continue;const w=mixW(k,a);sw+=w;sum+=w*x.v[i]}return sw?sum/sw:null}
@@ -1146,7 +1154,7 @@ const vWin=k=>S.range===0?(WIN[k]||7):S.range===1?1:S.range;
 let _VC=null;
 /* weight of a day a days back in the selected view: faded in Mixed, equal inside the period for 7 and 30 days */
 const vW=(k,a)=>S.range===0?mixW(k,a):a<vWin(k)?1:0;
-function vPrev(){const key=S.date+'|'+S.range+'|'+VCV;if(_VC&&_VC.key===key)return _VC;const prev=[];
+function vPrev(){const key=S.date+'|'+S.range+'|'+VCV+'|'+PROJ;if(_VC&&_VC.key===key)return _VC;const prev=[];
  for(let i=1;i<MIXH;i++){const p=S.days[shift(S.date,-i)];prev.push(logged(p)?planV(p):null)}
  const w={};K.forEach((k,i)=>{let m=0,sum=0;for(let a=1;a<MIXH;a++){const v=prev[a-1];if(!v)continue;const q=vW(k,a);if(q){m+=q;sum+=q*v[i]}}w[k]=[m,sum]});
  return _VC={key,w}}
@@ -1160,7 +1168,7 @@ function needT(T){const N=Object.assign({},T),P=vPrev();
  return N}
 function rangeStats(n,end){end=end||TODAY;const dates=[];for(let i=n-1;i>=0;i--)dates.push(shift(end,-i));
  const L=dates.filter(d=>logged(S.days[d]));const avg=z(),slots=TSL.map(()=>z());
- L.forEach(d=>{const p=S.days[d];addv(avg,planV(p),1/L.length);addv(slots[4],supV(p),1/L.length);mealKeys(p).forEach(k=>{const j='blds'.indexOf(typeOf(p,k));p[k].it.forEach(it=>addv(slots[j],itemV(it),1/L.length))})});
+ L.forEach(d=>{const p=S.days[d];addv(avg,planV(p),1/L.length);addv(slots[4],supV(p),1/L.length);eatK(p).forEach(k=>{const j='blds'.indexOf(typeOf(p,k));p[k].it.forEach(it=>addv(slots[j],itemV(it),1/L.length))})});
  return {dates,L,avg,slots,series:k=>dates.map(d=>logged(S.days[d])?planV(S.days[d])[K.indexOf(k)]:null)}}
 try{navigator.storage&&navigator.storage.persist&&navigator.storage.persist().catch(()=>{})}catch(e){}
 /* dishes: S.dishes holds your edited versions of built in dishes and your own dishes; S.meta holds favourite and last used */
@@ -1289,7 +1297,7 @@ function openRecipe(id,slot){if(String(id).startsWith('g_'))return openGranRecip
  if(!dl.open){dl.showModal?dl.showModal():dl.setAttribute('open','')}$('sheet-body').scrollTop=0}
 function allDishes(t){const ids=[...REC.map(r=>r.id),...Object.keys(S.dishes).filter(id=>!REC.find(r=>r.id===id)),...(S.custom||[]).filter(c=>c.gb&&!c.hide).map(c=>c.id)];return ids.map(dish).filter(d=>d&&(!t||d.t===t))}
 function meta(id){return S.meta[id]||(S.meta[id]={})}
-function edited(slot){const sl=S.plan[slot];if(sl)sl.dirty=1}
+function edited(slot){const sl=S.plan[slot];if(sl){sl.dirty=1;if(S.date<=TODAY)delete sl.pl}}
 /* older versions saved edits of built in dishes in place; turn those into your own meals */
 Object.keys(S.dishes).forEach(id=>{if(REC.find(r=>r.id===id)){const nid='u_'+id;if(!S.dishes[nid])S.dishes[nid]=Object.assign({},S.dishes[id]);if(S.meta[id])S.meta[nid]=Object.assign({},S.meta[id]);delete S.dishes[id]}});
 function saveMeal(slot,name){const sl=S.plan[slot],t=TY[typeOf(S.plan,slot)].t;let id=sl.did&&String(sl.did).startsWith('u_')?sl.did:'u_'+Date.now().toString(36);
@@ -1307,7 +1315,8 @@ const defState=(id,slot)=>{slot=S.plan&&S.plan[slot]?typeOf(S.plan,slot):slot;re
 const isCooked=(id,st)=>(COOK.has(id)||(FM[id]&&FM[id].cook))&&(st?st==='c':defState(id,'l')==='c');
 const itemV=([id,g,st])=>{if(!FM[id])return z();const v=FM[id].v.map(x=>x*g/100);if(isCooked(id,st))RETI.forEach(([i,f])=>v[i]*=f);return v};
 function normPlan(p){mealKeys(p).forEach(k=>p[k].it.forEach(it=>{if(COOK.has(it[0])&&!it[2])it[2]=defState(it[0],typeOf(p,k))}))}
-const slotV=s=>s==='x'?supV(S.plan):(S.plan[s].it.reduce((a,it)=>addv(a,itemV(it)),z()));
+const slotVraw=s=>s==='x'?supV(S.plan):S.plan[s].it.reduce((a,it)=>addv(a,itemV(it)),z());
+const slotV=s=>s==='x'?supV(S.plan):!PROJ&&isPl(S.plan,s)?z():(S.plan[s].it.reduce((a,it)=>addv(a,itemV(it)),z()));
 const ONE={c:{n:'Vitamin C',cov:['c'],h:'Tablets are usually 80 to 1000 mg. The body takes up most of the first 200 mg and passes the rest out within hours, so one tablet covers the day.'},
  epa:{n:'Omega 3 (EPA and DHA)',cov:['epa'],h:'Algae oil capsules usually hold 250 to 500 mg EPA and DHA together. One covers the day.'},
  dha:{n:'Omega 3 (DHA only)',cov:['epa'],h:'Many algae oils hold only DHA, usually 200 to 300 mg. The body turns some DHA back into EPA, so one capsule covers the day.'},
@@ -1508,11 +1517,11 @@ function fsOf(id,depth){if(id in _FSC)return _FSC[id];const f=FM[id];let v=0;
   if(/juice|nectar|smoothie/.test(n)&&!/lemon|lime/.test(n))v=kc*.9/4;
   else if(/syrup|molasses|jam|jelly|marmalade|candied|sweetened|with sugar|with added sugar/.test(n)&&!/unsweetened|without (added )?sugar/.test(n))v=kc*.4/4}
  return _FSC[id]=Math.round(v*10)/10}
-const fsDay=p=>{let g=0;if(!p)return 0;mealKeys(p).forEach(k=>p[k].it.forEach(([id,q])=>{g+=fsOf(id)*(+q||0)/100}));return g};
+const fsDay=p=>{let g=0;if(!p)return 0;eatK(p).forEach(k=>p[k].it.forEach(([id,q])=>{g+=fsOf(id)*(+q||0)/100}));return g};
 const fsLim=T=>Math.round((T||targets()).kcal*.10/4),fsIdeal=T=>Math.round((T||targets()).kcal*.05/4);
 function fsView(){const T=targets();if(S.range===1)return {g:fsDay(S.plan),n:1,lab:S.date===TODAY?'today':'this day'};
  const w=S.range===0?7:S.range;let sum=0,n=0;for(let i=0;i<w;i++){const p=S.days[shift(S.date,-i)];if(p&&logged(p)){sum+=fsDay(p);n++}}return {g:n?sum/n:0,n,lab:'a day, last '+w+' days'}}
-function fsSources(dates){const m={};dates.forEach(d=>{const p=S.days[d];if(!p)return;mealKeys(p).forEach(k=>p[k].it.forEach(([id,q])=>{const g=fsOf(id)*(+q||0)/100;if(g>=1)m[id]=(m[id]||0)+g}))});return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([id])=>FM[id]?FM[id].n.split(',')[0]:'')}
+function fsSources(dates){const m={};dates.forEach(d=>{const p=S.days[d];if(!p)return;eatK(p).forEach(k=>p[k].it.forEach(([id,q])=>{const g=fsOf(id)*(+q||0)/100;if(g>=1)m[id]=(m[id]||0)+g}))});return Object.entries(m).sort((a,b)=>b[1]-a[1]).slice(0,3).map(([id])=>FM[id]?FM[id].n.split(',')[0]:'')}
 function fsCard(){const T=targets(),v=fsView(),L=fsLim(T),I=fsIdeal(T),p=Math.min(150,v.g/L*100),col=v.g>L?'var(--low)':v.g>I?'var(--mid)':'var(--ok)';
  const dates=S.range===1?[S.date]:Array.from({length:S.range===0?7:S.range},(_,i)=>shift(S.date,-i)),src=fsSources(dates);
  return `<div class="card fscard"><div class="card-head"><div><h2>Free sugar</h2><p class="cap">Added sugar, syrups and juice. Sugar in whole fruit and vegetables does not count.</p></div></div>
@@ -1534,7 +1543,7 @@ const WON=()=>S.prof.water==='1';
 const BTL=()=>Math.max(100,Math.min(3000,+S.prof.btl||750));
 const wTarget=()=>{const base=S.prof.sex==='f'?1600:2000,a=actEff();return a>=2.1?base+600:a>=1.8?base+300:base};
 const DRINK=/juice|milk|beverage|drink|smoothie|kombucha|tea|coffee/i;
-function wFood(p){let ml=0;mealKeys(p).forEach(k=>p[k].it.forEach(([id,g])=>{const f=FM[id];if(!f||f.cat==='Oils and other')return;if(['soymilk','oatmilk'].includes(id)||(DRINK.test(f.n)&&!/powder|dry|yogurt|chocolate|condensed|concentrate/i.test(f.n)&&f.cat!=='Nuts and seeds'))ml+=+g||0}));return Math.round(ml)}
+function wFood(p){let ml=0;eatK(p).forEach(k=>p[k].it.forEach(([id,g])=>{const f=FM[id];if(!f||f.cat==='Oils and other')return;if(['soymilk','oatmilk'].includes(id)||(DRINK.test(f.n)&&!/powder|dry|yogurt|chocolate|condensed|concentrate/i.test(f.n)&&f.cat!=='Nuts and seeds'))ml+=+g||0}));return Math.round(ml)}
 const wTotal=p=>(+p.w||0)+wFood(p);
 function wLevel(){const p=S.plan;if(S.date!==TODAY)return Math.min(1,wTotal(p)/wTarget());if(!p.wt)return 1;
  const h=(Date.now()-p.wt)/36e5,pace=wTarget()/16;return Math.max(0,Math.min(1,1-h*pace/BTL()))}
@@ -1633,9 +1642,9 @@ function slotIcon(sl,sid){if(sl.did){const d=dish(sl.did);if(d)return dIcon(d)}c
 /* ---------- fruit, vegetables, plant variety ---------- */
 const PLANTS={"alprosoy":["soy"],"alprosoy0":["soy"],"biosoyca":["soy"],"biosoy":["soy"],"alproyog0":["soy"],"notmlk":["oat"],"oatlycal":["oat"],"oatlybar":["oat"],"biooat":["oat"],"oats": ["oat"], "granola": ["oat", "hazelnut"], "bread": ["wheat", "rye"], "rice": ["rice"], "brownrice": ["rice"], "wwpasta": ["wheat"], "hppasta": ["lentil"], "noodles": ["wheat"], "quinoa": ["quinoa"], "buckwheat": ["buckwheat"], "tortilla": ["wheat"], "potato": ["potato"], "sweetpotato": ["sweet potato"], "tofu": ["soy"], "tempeh": ["soy"], "tvp": ["soy"], "seitan": ["wheat"], "mince": ["soy"], "redlentils": ["lentil"], "lentils": ["lentil"], "chickpeas": ["chickpea"], "blackbeans": ["black bean"], "kidney": ["kidney bean"], "whitebeans": ["white bean"], "edamame": ["soy"], "peas": ["pea"], "hummus": ["chickpea", "sesame"], "soymilk": ["soy"], "soyyog": ["soy"], "oatmilk": ["oat"], "walnuts": ["walnut"], "almonds": ["almond"], "cashews": ["cashew"], "brazil": ["brazil nut"], "pumpkin": ["pumpkin seed"], "sunflower": ["sunflower seed"], "flax": ["flax"], "chia": ["chia"], "hemp": ["hemp"], "tahini": ["sesame"], "pb": ["peanut"], "broccoli": ["broccoli"], "spinach": ["spinach"], "kale": ["kale"], "brussels": ["brussels sprout"], "greenbeans": ["green bean"], "carrots": ["carrot"], "pepper": ["bell pepper"], "tomatoes": ["tomato"], "passata": ["tomato"], "mushrooms": ["mushroom"], "cauliflower": ["cauliflower"], "sauerkraut": ["cabbage"], "beetroot": ["beetroot"], "corn": ["corn"], "vegmix": ["carrot", "pea", "green bean", "corn"], "avocado": ["avocado"], "orange": ["orange"], "kiwi": ["kiwi"], "strawberries": ["strawberry"], "berries": ["blueberry", "raspberry"], "mango": ["mango"], "banana": ["banana"], "apple": ["apple"], "apricots": ["apricot"], "dates": ["date"], "coco": ["coconut"], "applejuice": ["apple"], "beetjuice": ["beet"], "grapejuice": ["grape"], "multijuice": ["orange"], "miso": ["soy"], "soysauce": ["soy"], "nori": ["nori"], "falafel": ["chickpea", "parsley", "onion"], "pita": ["wheat"], "ricecakes": ["rice"], "popcorn": ["corn"], "darkchoc": ["cocoa"], "pesto": ["basil", "pine nut"], "ricenoodles": ["rice"]};
 const VEGX=new Set(['peas']);const DRIED={apricots:2.5,dates:2.5};
-function fv(p){let veg=0,fruit=0;mealKeys(p).forEach(k=>p[k].it.forEach(([id,g])=>{const f=FM[id];if(!f)return;if(f.cat==='Vegetables'||VEGX.has(id))veg+=+g;else if(f.cat==='Fruit')fruit+=g*(DRIED[id]||1)}));return{veg,fruit}}
+function fv(p){let veg=0,fruit=0;eatK(p).forEach(k=>p[k].it.forEach(([id,g])=>{const f=FM[id];if(!f)return;if(f.cat==='Vegetables'||VEGX.has(id))veg+=+g;else if(f.cat==='Fruit')fruit+=g*(DRIED[id]||1)}));return{veg,fruit}}
 const FVT={veg:400,fruit:250};
-function plantSet(dates){const set=new Set();dates.forEach(d=>{const p=S.days[d];if(!p)return;mealKeys(p).forEach(k=>p[k].it.forEach(([id,g])=>{if(g<=0)return;(PLANTS[id]||(FM[id]&&FM[id].pk?[FM[id].pk]:FM[id]&&FM[id].ing?FM[id].ing.filter(x=>x[1]>=2&&FM[x[0]]&&FM[x[0]].cat!=='Oils and other').flatMap(([q])=>PLANTS[q]||(FM[q]&&FM[q].pk?[FM[q].pk]:[])):FM[id]&&FM[id].parts?FM[id].parts.flatMap(p=>PLANTS[p[0]]||(FM[p[0]]&&FM[p[0]].pk?[FM[p[0]].pk]:[])):String(id).startsWith('c_')?[FM[id]?FM[id].n.toLowerCase():id]:[])).forEach(x=>set.add(x))}))});return set}
+function plantSet(dates){const set=new Set();dates.forEach(d=>{const p=S.days[d];if(!p)return;eatK(p).forEach(k=>p[k].it.forEach(([id,g])=>{if(g<=0)return;(PLANTS[id]||(FM[id]&&FM[id].pk?[FM[id].pk]:FM[id]&&FM[id].ing?FM[id].ing.filter(x=>x[1]>=2&&FM[x[0]]&&FM[x[0]].cat!=='Oils and other').flatMap(([q])=>PLANTS[q]||(FM[q]&&FM[q].pk?[FM[q].pk]:[])):FM[id]&&FM[id].parts?FM[id].parts.flatMap(p=>PLANTS[p[0]]||(FM[p[0]]&&FM[p[0]].pk?[FM[p[0]].pk]:[])):String(id).startsWith('c_')?[FM[id]?FM[id].n.toLowerCase():id]:[])).forEach(x=>set.add(x))}))});return set}
 function fvCard(p,avgN){const R=rangeStats(7),pl=plantSet(R.dates),x=avgN?avgN:fv(p);
  const bar=(lab,v,t,c)=>`<div class="macro"><div class="row"><span>${lab}</span><b>${Math.round(v)}<span class="muted" style="font-weight:500"> / ${t} g</span></b></div><div class="meter"><i style="width:${Math.min(v/t*100,100)}%;background:${v>=t?'var(--ok)':c}"></i></div></div>`;
  return `<div class="card fvcard"><div class="card-head" style="margin-bottom:10px"><h2>Fruit and vegetables</h2>${srcLinks(['pot'],'Guide values: about 400 g vegetables and 250 g fruit a day (DGE). Plant variety: the American Gut Project found 30 or more different plants a week linked to more diverse gut bacteria.')}</div>
@@ -1720,10 +1729,11 @@ function renderToday(T,D){
    const V0=viewVec(D,1);const card=(o,i)=>{const D1=D.slice();addv(D1,o.add);const fo=fillsOf(D,o.add,TN),fl=fo.filter(x=>pctK(x.k,V0,TT)<100),ks=(fl.length?fl:fo).slice(0,2),V1=viewVec(D1);
     return `<div class="tidea"><span class="thumb em">${o.ic}</span><span class="sgt"><span class="cap">Idea ${L.length>1?(i+1)+' of '+L.length:''}</span><b>${esc(o.nm)}</b><span class="cap num">${ks.map(x=>`${NUT[x.k].n} ${Math.round(pctK(x.k,V0,TT))} → ${Math.round(pctK(x.k,V1,TT))} %`).join(' · ')}</span>${o.did?`<button class="linkbtn rlink" type="button" data-rcp="${o.did}" data-rslot="${s.id}">Recipe</button>`:''}</span><button class="btn sm acc" type="button" ${o.attr}>Add</button></div>`};
    return `<div class="tideas${L.length>1?' multi':''}">${L.map(card).join('')}</div>`};
- const meal=s=>{const sl=S.plan[s.id],v=slotV(s.id),empty=!sl.it.length;s=Object.assign({},s,{t:TY[s.ty].t});
+ const meal=s=>{const sl=S.plan[s.id],v=slotVraw(s.id),empty=!sl.it.length,pl=!empty&&sl.pl;s=Object.assign({},s,{t:TY[s.ty].t});
   const ph=sl.did&&PH[sl.did];
-  return `<article class="meal${empty?'':' tap'}" style="--c:${s.c}"${empty?'':` data-edit="${s.id}" role="button" tabindex="0" aria-label="Edit ${s.n}"`}>${ph?`<img class="mphoto" src="${ph}" alt="">`:''}<div class="meal-top"><span class="micon em">${empty?(ICON[s.ty]||ICON[s.id]):slotIcon(sl,s.ty)}</span><div class="mt">${empty&&s.ty==='s'?`<div class="mname">${s.n}</div>`:`<div class="mslot">${s.n}</div>`}<div class="mname"${empty&&s.ty==='s'?' hidden':''}>${esc(empty?'Nothing planned':(sl.t||sl.it.map(([id],i)=>{const n=FM[id].n.split(',')[0];return i?n.toLowerCase():n}).slice(0,2).join(' and ')))}</div></div>${empty?'':`<div class="mk num">${HK()?`${Math.round(v[1])} g<span>protein</span>`:`${EN(v[0])}<span>${Math.round(v[1])} g protein</span>`}</div>`}</div>
+  return `<article class="meal${empty?'':' tap'}${pl?' planned':''}" style="--c:${s.c}"${empty?'':` data-edit="${s.id}" role="button" tabindex="0" aria-label="Edit ${s.n}"`}>${ph?`<img class="mphoto" src="${ph}" alt="">`:''}<div class="meal-top"><span class="micon em">${empty?(ICON[s.ty]||ICON[s.id]):slotIcon(sl,s.ty)}</span><div class="mt">${empty&&s.ty==='s'?`<div class="mname">${s.n}</div>`:`<div class="mslot">${s.n}${pl?'<span class="ptag">Planned</span>':''}</div>`}<div class="mname"${empty&&s.ty==='s'?' hidden':''}>${esc(empty?'Nothing planned':(sl.t||sl.it.map(([id],i)=>{const n=FM[id].n.split(',')[0];return i?n.toLowerCase():n}).slice(0,2).join(' and ')))}</div></div>${empty?'':`<div class="mk num">${HK()?`${Math.round(v[1])} g<span>protein</span>`:`${EN(v[0])}<span>${Math.round(v[1])} g protein</span>`}</div>`}</div>
    ${empty?'':`<p class="mfoods">${sl.it.map(([id,g])=>esc(FM[id].n.split(',')[0])+' '+g+' g').join(', ')}</p>`}
+   ${pl&&S.date<=TODAY?`<div class="mact"><button class="btn primary sm" type="button" data-ate="${s.id}">Ate this</button></div>`:''}
    ${empty?`${idea(s)}<div class="mact"><button class="btn primary" type="button" data-start="${s.id}">${s.t==='s'?'Add a snack':'Add '+s.n.toLowerCase()}</button><button class="btn" type="button" data-pick="${s.id}">More ideas</button></div>`:''}</article>`};
  $('v-today').innerHTML=`<div class="vhead"><div><h1>${title}</h1><p class="cap">${date}</p></div><div class="datenav"><button class="iconbtn" type="button" id="d-cal" aria-label="History calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button class="iconbtn" type="button" id="d-prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button>${isT?'':`<button class="btn sm" type="button" id="d-today">Today</button>`}<button class="iconbtn" type="button" id="d-next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>${dueLine()}
   ${emptyDay?`<div class="card newday"><h2>${isT?'New day':S.date>TODAY?'Nothing planned yet':'Nothing logged'}</h2><p class="cap" style="margin:4px 0 12px">${S.date>TODAY?'Plan this day ahead: the ideas below fit what you still need.':'Add what you eat: pick foods one by one, or a dish.'}</p>${actPill(isT,1)}${wsc!==null?`<button class="weekline" type="button" id="go-week" style="margin:0 0 10px"><span>Last 7 days</span><b>${wsc}% covered</b>${CHEV}</button>`:''}${prev?`<button class="btn wide" type="button" id="d-copy">Same as ${prev===shift(S.date,-1)?'yesterday':kdate(prev).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'})}</button>`:''}</div>`:''}
@@ -1743,6 +1753,7 @@ ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="m
  bindFg(v);bindSupCard(v);bindWater(v);bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
  v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>openPicker(b.dataset.pick,'recipe'));
  v.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>startMeal(b.dataset.start));
+ v.querySelectorAll('[data-ate]').forEach(b=>b.onclick=e=>{e.stopPropagation();const sl=S.plan[b.dataset.ate];if(sl){delete sl.pl;VCV++;save();toast('Counted as eaten');render()}});
  v.querySelectorAll('[data-edit]').forEach(b=>{b.onclick=()=>openMeal(b.dataset.edit);b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openMeal(b.dataset.edit)}}});
  v.querySelectorAll('[data-rcp]').forEach(b=>b.onclick=e=>{e.stopPropagation();openRecipe(b.dataset.rcp,b.dataset.rslot)});
  v.querySelectorAll('[data-tdi]').forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.tdi.split(':'),d=dish(id);useDish(k,d);toast(`Added ${d.n}`);render()});
@@ -1775,7 +1786,7 @@ function autoSave(k,force){const sl=k&&S.plan[k];if(!sl||k==='x'||!sl.it.length)
 function closeMeal(){const k=MS;MS=null;autoSave(k);const d=$('meal');d.close?d.close():d.removeAttribute('open');render()}
 $('meal').addEventListener('close',()=>{if(!$('meal').open&&MS){const k=MS;MS=null;autoSave(k);render()}});
 function renderMeal(){
- if(!MS)return;const s=SLOTS.find(x=>x.id===MS)||SLOTS[0],sl=S.plan[MS],v=slotV(MS);
+ if(!MS)return;const s=SLOTS.find(x=>x.id===MS)||SLOTS[0],sl=S.plan[MS],v=slotVraw(MS);
  $('m-slot').textContent=s.n;$('m-title').textContent=sl.t||(sl.it.length?'Your meal':'Empty');
  $('m-sum').textContent=`${ENs(v[0])}${Math.round(v[1])} g protein · ${Math.round(v[2])} g fiber`;
  const d=sl.did?dish(sl.did):null,fb=$('m-fav'),mine=d&&d.own,ty=typeOf(S.plan,MS);
@@ -1922,7 +1933,7 @@ const KT=[
 ];
 function planTips(T,D){
  const out=[],ids=new Set(),P=S.plan;
- mealKeys(P).map(k=>P[k]).forEach(sl=>sl.it.forEach(([id,g])=>{if(g>0)ids.add(id)}));
+ eatK(P).map(k=>P[k]).forEach(sl=>sl.it.forEach(([id,g])=>{if(g>0)ids.add(id)}));
  const has=a=>a.some(x=>ids.has(x)),pc=k=>D[K.indexOf(k)]/T[k]*100,ki=k=>K.indexOf(k);
  const add=(slot,id)=>{const fn=()=>{addFood(slotOfType(slot),id);render()};fn.fid=id;return fn};
  if(!supHas('b12'))out.push({w:1,t:'<b>No B12 source you can rely on.</b> Every vegan needs a supplement or enough fortified food. A tablet, drop or spray is the simplest.',a:[['I already take B12',()=>{setQuick('b12',1);render()}]]});
@@ -1938,7 +1949,7 @@ function planTips(T,D){
  if(!has(['broccoli','spinach','kale','brussels']))out.push({w:0,t:'<b>No dark green vegetable.</b> One portion a day adds calcium, folate, vitamin K and iron.',a:[['Add broccoli to dinner',add('d','broccoli')],['Add kale to lunch',add('l','kale')]]});
  const fruit=[...ids].filter(id=>FM[id].cat==='Fruit').length;
  if(fruit<2)out.push({w:0,t:`<b>${fruit?'One fruit':'No fruit'} today.</b> Aim for two portions; kiwi, citrus and berries add the most vitamin C.`,a:[['Add kiwis',add('s','kiwi')]]});
- let lp=0;mealKeys(P).map(k=>P[k]).forEach(sl=>sl.it.forEach(it=>{const f=FM[it[0]];if(f.cat==='Legumes and soy'||['soymilk','soyyog','alprosoy','alprosoy0','biosoy','biosoyca','alproyog0'].includes(f.id))lp+=itemV(it)[1]}));
+ let lp=0;eatK(P).map(k=>P[k]).forEach(sl=>sl.it.forEach(it=>{const f=FM[it[0]];if(f.cat==='Legumes and soy'||['soymilk','soyyog','alprosoy','alprosoy0','biosoy','biosoyca','alproyog0'].includes(f.id))lp+=itemV(it)[1]}));
  if(D[1]>0&&lp/D[1]<.35)out.push({w:0,t:'<b>Few legumes or soy today.</b> Grains are low in lysine, an essential amino acid. Two to three portions of legumes or soy a day cover it.'});
  if(ids.has('tofu'))out.push({w:0,t:'<b>Tofu calcium varies a lot.</b> Tofu set with calcium sulfate (E516) has several times more than nigari tofu. Check the label.'});
  if(D[2]>60)out.push({w:0,t:'<b>Lots of fiber.</b> Fine if you are used to it; drink enough water.'});
@@ -1976,7 +1987,7 @@ function fgItem(id,g,acc,depth){const f=FM[id];if(!f||!(g>0))return;depth=depth|
  if(depth<3&&f.ing&&f.ing.length){f.ing.forEach(([q,pc])=>fgItem(q,g*(+pc||0)/100,acc,depth+1));return}
  const mul=/dried|dehydrated|raisin|prune/.test((f.n||'').toLowerCase())||['dates','apricots'].includes(id)?3:1;
  fgOf(id).forEach(k=>acc[k]=(acc[k]||0)+g*mul)}
-function fgDay(p){const acc={};mealKeys(p).forEach(k=>p[k].it.forEach(([id,g])=>fgItem(id,+g,acc)));const has=new Set();FGK.forEach(k=>{if((acc[k]||0)>=FG[k].min)has.add(k)});return has}
+function fgDay(p){const acc={};eatK(p).forEach(k=>p[k].it.forEach(([id,g])=>fgItem(id,+g,acc)));const has=new Set();FGK.forEach(k=>{if((acc[k]||0)>=FG[k].min)has.add(k)});return has}
 /* newest logged days first; today only counts when it already has the group */
 function fgStatus(end){end=end||S.date;const need=kcalNeed(),ki2=K.indexOf('kcal'),days=[];
  for(let i=0;i<28&&days.length<10;i++){const d=shift(end,-i),p=S.days[d];if(!p||!logged(p))continue;const full=planV(p)[ki2]>=need*.5;days.push({d,has:fgDay(p),full,i})}
@@ -2812,7 +2823,8 @@ const UPK=[['fib','g fiber'],['p','g protein'],['fe','mg iron'],['zn','mg zinc']
 const UW={k:.3,a:.4,c:.7,fol:.8};
 const uval=x=>Math.min(x.v/T0()[x.k],1)*(UW[x.k]||1);let _T0=null;const T0=()=>_T0||(_T0=targets());
 function upGains(V0,V1,T){_T0=T;return UPK.map(([k,u])=>{const i=K.indexOf(k);return{k,u,v:V1[i]-V0[i]}}).filter(x=>x.v>0&&x.v/T[x.k]>=.05).sort((a,b)=>uval(b)-uval(a))}
-function computeSwaps(){
+function computeSwaps(){return withProj(computeSwaps0)}
+function computeSwaps0(){
  const T=targets(),TN=needT(T),D=dayV(),ing=[],meal=[],add=[],up=[];
  mealKeys(S.plan).forEach(s=>{
   const items=S.plan[s].it;
@@ -2906,7 +2918,8 @@ function filledShare(extra){let f=0;mealKeys(S.plan).forEach(k=>{if(S.plan[k].it
 function recentDish(id){for(let i=1;i<=2;i++){const p=S.days[shift(S.date,-i)];if(p&&mealKeys(p).some(k=>p[k].did===id))return true}return false}
 /* what an idea helps with: nutrients below target in the selected view that it brings at least 8 % of a day's need of, lowest nutrient first */
 function fillsOf(D0,add,TN,T){T=T||targets();const V0=viewVec(D0,1);return SK.map(k=>{const i=K.indexOf(k),gap=1-V0[i]/T[k],v=Math.min(add[i]/T[k],1);return{k,v,gap}}).filter(x=>x.gap>0&&x.v>=.08).sort((a,b)=>b.gap-a.gap).slice(0,3)}
-function computeSugg(){
+function computeSugg(){return withProj(computeSugg0)}
+function computeSugg0(){
  const T=targets(),TN=needT(T),D=dayV(),out={meals:[],snacks:[]};
  let Dg=D.slice(),fg=filledShare();
  ['b','l','d'].forEach(ty=>{const k=slotOfType(ty);if(!S.plan[k]||S.plan[k].it.length)return;
@@ -2923,7 +2936,8 @@ function computeSugg(){
  for(const x of cand){if(x.sc<=.02)break;if((per[x.cat]||0)>=3)continue;per[x.cat]=(per[x.cat]||0)+1;x.fills=fillsOf(D,x.add,TN);if(x.fills.length)out.snacks.push(x);if(out.snacks.length>=8)break}
  return out}
 /* focus: nutrients picked in the ideas list; each idea must bring at least 15 % of a day's need of every picked one, and ranks by how much it brings, with overall balance as a tie breaker */
-function slotIdeas(slot,n,focus){const T=targets(),TN=needT(T),ty=typeOf(S.plan,slot),D=dayV(),D0=D.slice();addv(D0,slotV(slot),-1);
+function slotIdeas(slot,n,focus){return withProj(()=>slotIdeas0(slot,n,focus))}
+function slotIdeas0(slot,n,focus){const T=targets(),TN=needT(T),ty=typeOf(S.plan,slot),D=dayV(),D0=D.slice();addv(D0,slotV(slot),-1);
  const f=Math.min(1,filledShare()-(S.plan[slot].it.length?SHARE[ty]:0)+SHARE[ty]),Tf=partT(TN,f),fk=(focus||[]).filter(k=>K.includes(k));
  return allDishes(TY[ty].t).map(dishFit).filter(Boolean).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D0.slice();addv(D1,add);
   let sc=ugain(D0,D1,T,Tf)-(recentDish(d.id)?.4:0)+(d.fav?.1:0)+(d.own?.05:0)+(hasD(d)?.06:0);
@@ -3009,7 +3023,7 @@ function repDayOps(R,T,W,P,FONT){const m=document.createElement('canvas').getCon
   if(!p||!logged(p)){ops.push({gap:30,t:dd+' · nothing logged',s:26,w:600,c:'muted',h:34});return}
   const v=planV(p),sc=withAct(p.act||S.prof.act,()=>dayScore(v,targets()));
   ops.push({gap:44,rule:1,t:dd,act:{v:actIdx(p.act||S.prof.act),u:actIdx(S.prof.act),n:['Sitting','Walking','Active','Very active','Extra active'][actIdx(p.act||S.prof.act)]},s:30,w:800,h:40,right:`${HK()?'':Math.round(v[0]).toLocaleString('en')+' kcal · '}${Math.round(v[1])} g protein · ${sc}% covered`});
-  mealKeys(p).forEach(k=>{const sl=p[k];if(!sl.it.length)return;const lab=TY[typeOf(p,k)].n+(sl.t?' · '+sl.t:'');
+  eatK(p).forEach(k=>{const sl=p[k];if(!sl.it.length)return;const lab=TY[typeOf(p,k)].n+(sl.t?' · '+sl.t:'');
    ops.push({gap:12,t:lab,s:24,w:700,c:'acc',h:30});
    wrap(sl.it.map(([id,g])=>nm(id)+' '+Math.round(g)+' g').join(', '),26,500,W-2*P).forEach(l=>ops.push({gap:0,t:l,s:26,w:500,h:34}))});
   const su=(S.sups||[]).filter(x=>sNuts(x).some(k=>sDay(x,k,d,T)>0)).map(x=>sName(x)+(x.freq!=='d'&&(x.takes||[]).includes(d)?' (taken)':''));
@@ -3108,7 +3122,7 @@ function renderHistory0(T){
    <div class="hlegend"><span>Less</span><i class="hc l-1"></i><i class="hc l0"></i><i class="hc l1"></i><i class="hc l2"></i><i class="hc l3"></i><i class="hc l4"></i><span>More covered</span></div>
    <p class="cap" style="margin-top:6px">Each square is one day, colored by where you stood that day: each nutrient over the time your body stores it, like Mixed. A single weak day barely shows; several in a row do. Swipe left for earlier days, back to your first logged day. Tap a day to see it.</p></div>
   <div class="card"><div class="card-head"><div><h2>${kdate(sel).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</h2><p class="cap">${sl<0?'Nothing logged':histScore(sel,T,HV)+' % covered, mixed · this day alone '+dayScore(planV(sp),T)+' %'}</p></div><button class="btn sm primary" type="button" id="h-open">Open day</button></div>
-   ${sl<0?'':`<div class="hmeals">${mealKeys(sp).filter(k=>sp[k].it.length).map(k=>{const ty=typeOf(sp,k);return `<div class="hmeal"><span class="dotst" style="background:${TY[ty].c}"></span><span><b>${TY[ty].n}</b> ${esc(sp[k].t||sp[k].it.map(([id])=>FM[id]?FM[id].n.split(',')[0]:id).slice(0,3).join(', '))}</span></div>`}).join('')}</div>`}</div>`;
+   ${sl<0?'':`<div class="hmeals">${eatK(sp).filter(k=>sp[k].it.length).map(k=>{const ty=typeOf(sp,k);return `<div class="hmeal"><span class="dotst" style="background:${TY[ty].c}"></span><span><b>${TY[ty].n}</b> ${esc(sp[k].t||sp[k].it.map(([id])=>FM[id]?FM[id].n.split(',')[0]:id).slice(0,3).join(', '))}</span></div>`}).join('')}</div>`}</div>`;
  const sc=$('hscroll');sc.scrollLeft=sc.scrollWidth;
  v.querySelectorAll('[data-hd]').forEach(b=>b.onclick=()=>{S.hsel=b.dataset.hd;const x=sc.scrollLeft;renderHistory(T);$('hscroll').scrollLeft=x});
  $('h-open').onclick=()=>{setDate(S.hsel);S.view='today';render();scrollTo({top:0})};
@@ -3223,7 +3237,8 @@ function dayReturn(){const t=dkey(new Date());if(t===TODAY)return;const was=S.da
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')dayReturn()});
 addEventListener('pageshow',e=>{if(e.persisted)dayReturn()});setInterval(dayTick,60000);
 applyTheme();
-function render(){
+function render(){const o=PROJ;PROJ=S.date>TODAY;if(PROJ&&S.plan)mealKeys(S.plan).forEach(k=>{if(S.plan[k].it.length)S.plan[k].pl=1});try{return render0()}finally{PROJ=o}}
+function render0(){
  _VC=null;supMigrate();
  const v0=S.view;
  if(S.plan)mealKeys(S.plan).forEach(k=>{if(k.length>1&&!S.plan[k].it.length&&k!==MS&&!($('pk').open&&PK&&PK.slot===k))delete S.plan[k]});
