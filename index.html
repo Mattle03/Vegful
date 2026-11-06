@@ -691,6 +691,13 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .orow[aria-pressed="true"]{border:2px solid var(--accent);border-radius:14px}
 .tidea.again{background:var(--accent-soft)}
 .tidea.again .cap{color:var(--ink)}
+.tidea .tcap{display:flex;align-items:center;gap:10px;min-width:0}
+.tidea .tcap .cap{white-space:nowrap}
+.tidea .tplus{width:44px;min-height:44px;padding:0;flex:none}
+.tideas.multi .tidea{flex-basis:90%;gap:8px}
+.tideas .tidea .thumb{width:36px;height:36px;padding:6px}
+.tidea .tcap .rlink{margin:-8px 0;padding:8px 2px;min-height:0;font-size:13px}
+.tidea .sgt b,.tidea .sgt>.cap{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
 </style>
 </head>
 <body>
@@ -1807,8 +1814,8 @@ function renderToday(T,D){
    else{const m=SGt.meals.find(m=>m.slot===s.id);if(m)L=m.opts.filter(q=>!usedI.has(q.d.id)&&!(ag&&ag.did===q.d.id)).slice(0,6).map(q=>{usedI.add(q.d.id);return q}).map(q=>({nm:q.d.n+(q.d.minus?', '+minusTxt(q.d):''),add:q.add,ic:dIcon(q.d),attr:`data-tdi="${s.id}:${q.d.id}"`,did:q.d.id}))}
    if(!L.length&&!ag)return '';
    const V0=viewVec(D,1);const card=(o,i)=>{const D1=D.slice();addv(D1,o.add);const fo=fillsOf(D,o.add,TN),fl=fo.filter(x=>pctK(x.k,V0,TT)<100),ks=(fl.length?fl:fo).slice(0,2),V1=viewVec(D1);
-    return `<div class="tidea"><span class="thumb em">${o.ic}</span><span class="sgt"><span class="cap">Idea ${L.length>1?(i+1)+' of '+L.length:''}</span><b>${esc(o.nm)}</b><span class="cap num">${ks.map(x=>`${NUT[x.k].n} ${Math.round(pctK(x.k,V0,TT))} → ${Math.round(pctK(x.k,V1,TT))} %`).join(' · ')}</span>${o.did?`<button class="linkbtn rlink" type="button" data-rcp="${o.did}" data-rslot="${s.id}">Recipe</button>`:''}</span><button class="btn sm acc" type="button" ${o.attr}>Add</button></div>`};
-   const agc=ag?`<div class="tidea again"><span class="thumb em">${slotIcon({did:ag.did,it:ag.it},s.ty)}</span><span class="sgt"><span class="cap">Again · ${whenTxt(ag.d)}</span><b>${esc(ag.n)}</b><span class="cap num">${ENs(ag.v[0])}${Math.round(ag.v[1])} g protein</span></span><button class="btn sm acc" type="button" data-tag="${s.id}">Add</button></div>`:'';
+    return `<div class="tidea"><span class="thumb em">${o.ic}</span><span class="sgt"><span class="tcap"><span class="cap">Idea ${L.length>1?(i+1)+' of '+L.length:''}</span>${o.did?`<button class="linkbtn rlink" type="button" data-rcp="${o.did}" data-rslot="${s.id}">Recipe</button>`:''}</span><b>${esc(o.nm)}</b><span class="cap num">${ks.map(x=>`${NUT[x.k].n} +${Math.max(1,Math.round(pctK(x.k,V1,TT)-pctK(x.k,V0,TT)))} %`).join(' · ')}</span></span><button class="btn sm acc tplus" type="button" ${o.attr} aria-label="Add ${esc(o.nm)}">${PLUS}</button></div>`};
+   const agc=ag?`<div class="tidea again"><span class="thumb em">${slotIcon({did:ag.did,it:ag.it},s.ty)}</span><span class="sgt"><span class="cap">Again · ${whenTxt(ag.d)}</span><b>${esc(ag.n)}</b><span class="cap num">${ENs(ag.v[0])}${Math.round(ag.v[1])} g protein</span></span><button class="btn sm acc tplus" type="button" data-tag="${s.id}" aria-label="Add ${esc(ag.n)} again">${PLUS}</button></div>`:'';
    return `<div class="tideas${L.length+(ag?1:0)>1?' multi':''}">${agc}${L.map(card).join('')}</div>`};
  const meal=s=>{const sl=S.plan[s.id],v=slotVraw(s.id),empty=!sl.it.length,pl=!empty&&sl.pl;s=Object.assign({},s,{t:TY[s.ty].t});
   if(empty&&sl.skip)return `<article class="meal planned" style="--c:${s.c}"><div class="meal-top"><span class="micon em">${ICON[s.ty]||ICON[s.id]}</span><div class="mt"><div class="mslot">${s.n}</div><div class="mname">Skipped</div></div><button class="btn sm ghost" type="button" data-unskip="${s.id}">Undo</button></div></article>`;
