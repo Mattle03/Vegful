@@ -3349,8 +3349,8 @@ function ibar(k,p0,p1,a0,a1,T){const up=p1>=p0,day=S.range===1,per=S.range===0?w
  const wk=day?'':`<span class="il">${per}</span>${bar2(Math.min(p0,p1),Math.max(p0,p1),up)}<span class="iv num"><b style="color:${vc}">${pc2(p1)} %</b></span>`;
  const td=a0==null?'':`<span class="il">today</span>${bar2(Math.min(t0,t1),Math.max(t0,t1),a1>=a0,'thin')}<span class="iv num"><b>${fmt(a1)}</b>/${fmt(T[k])} ${u}</span>`;
  return `<div class="imp" role="group" aria-label="${NUT[k].n}"><span class="in">${NUT[k].n}</span>${wk}${td}</div>`}
-function isum(D0,D1,T){D0=viewVec(D0,1);D1=viewVec(D1);const s0=dayScore(D0,T),s1=dayScore(D1,T),low=ALLK.filter(k=>pctK(k,D1,T)<90);
- return `<p class="isum">All nutrients: ${s0} → <b>${s1} %</b> covered. ${low.length?`Still low: ${low.length>5?low.length+' nutrients':low.map(k=>NUT[k].n).join(', ')}.`:'Nothing left low.'}</p>`}
+function isum(D0,D1,T){D0=viewVec(D0,1);D1=viewVec(D1);const s0=dayScore(D0,T),s1=dayScore(D1,T),low=ALLK.filter(k=>pctK(k,D1,T)<90),raw=D=>ALLK.reduce((a,k)=>a+Math.min(D[K.indexOf(k)]/T[k],1),0)/ALLK.length*100,dr=raw(D1)-raw(D0);
+ return `<p class="isum">All nutrients: ${s0===s1?`<b>${s1} %</b> covered${Math.abs(dr)>=.05?`, ${dr>0?'up':'down'} less than 1 point`:''}`:`${s0} → <b>${s1} %</b> covered`}. ${low.length?`Still low: ${low.length>5?low.length+' nutrients':low.map(k=>NUT[k].n).join(', ')}.`:'Nothing left low.'}</p>`}
 function impactFor(D0,add,T,TN,focus){const D1=D0.slice();addv(D1,add);const V0=viewVec(D0,1),V1=viewVec(D1);const fo=fillsOf(D0,add,TN,T),fl=fo.filter(x=>pctK(x.k,V0,T)<100);let ks=(fl.length?fl:fo).map(x=>x.k);
  if(focus&&focus.length)ks=[...focus,...ks.filter(k=>!focus.includes(k))].slice(0,Math.max(3,focus.length));
  if(!ks.length)ks=K.filter(k=>k!=='kcal'&&!NUT[k].opt).map(k=>({k,v:add[K.indexOf(k)]/T[k]})).sort((a,b)=>b.v-a.v).slice(0,2).map(x=>x.k);
