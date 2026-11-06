@@ -517,6 +517,11 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .plantchips span{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 10px;font-size:14px;font-weight:600}
 .fvcard .weekline{margin-top:14px}
 .nmbtn{border:0;background:transparent;text-align:left;padding:0;display:flex;flex-direction:column;gap:2px}
+.pacal{margin-bottom:4px}.pacw,.pacg{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:4px}.pacw span{text-align:center;font-size:12px;font-weight:700;color:var(--muted);padding-bottom:2px}
+.pacd{position:relative;height:42px;border:0;border-radius:12px;background:var(--surface2);color:var(--ink);font:inherit;font-weight:700;font-size:15px;cursor:pointer}
+.pacd.past{background:transparent;color:var(--muted);opacity:.45;cursor:default}.pacd.in{background:var(--accent-soft);color:var(--ink)}.pacd.end{background:var(--accent);color:var(--accent-ink)}
+.pacd.today:not(.end){box-shadow:inset 0 0 0 2px var(--accent)}.pacd i{position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:currentColor;opacity:.7}
+.pacs{margin:8px 0 0;text-align:center}
 .pasum{display:flex;align-items:baseline;gap:10px;margin:12px 0;padding:12px 14px;border-radius:14px;background:var(--surface2);font-size:14px}.pasum b{font-size:22px;white-space:nowrap}
 .paday{display:grid;grid-template-columns:1fr;gap:8px}.pacell{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
 .pacell.open{background:var(--surface2);border-style:dashed}.pacell.planned{outline:2px dashed color-mix(in srgb,var(--muted) 45%,transparent);outline-offset:-2px;border-color:transparent}.pacell.skip{flex-direction:row;align-items:center;gap:10px;opacity:.75}
@@ -2657,11 +2662,18 @@ function openShop(){if($('pk').open)closePicker();S.view='scan';S.shopSeg='list'
    Nothing is filled in by itself: Take plans it, Other shows the next one, Skip leaves a meal out (eating out, someone else cooks).
    Batch recipes offer their leftover portions on the following days. */
 let PA=null;
-function paDates(){const R=S.planR||{r:'3'},out=[];let a,b;
- if(R.r==='we'){const d=kdate(TODAY).getDay();a=d===6||d===0?TODAY:shift(TODAY,6-d);b=d===0?TODAY:shift(a,1)}
- else if(R.r==='c'&&R.from&&R.to&&R.from<=R.to){a=R.from<TODAY?TODAY:R.from;b=R.to;if(dayDiff(a,b)>13)b=shift(a,13)}
- else{const n=R.r==='7'?7:3;a=shift(TODAY,1);b=shift(TODAY,n)}
- for(let d=a;d<=b;d=shift(d,1))out.push(d);return out}
+/* the days you plan: picked on a small calendar, at most two weeks, never in the past */
+function paRange(){let R=S.planR;if(!R||!R.from||!R.to){R=S.planR={from:shift(TODAY,1),to:shift(TODAY,3)}}
+ let a=R.from<TODAY?TODAY:R.from,b=R.to<a?a:R.to;if(dayDiff(a,b)>13)b=shift(a,13);return [a,b]}
+function paDates(){const [a,b]=paRange(),out=[];for(let d=a;d<=b;d=shift(d,1))out.push(d);return out}
+/* three weeks from this Monday; tap a start day, then an end day */
+function paCal(){const [a,b]=paRange(),wd=(kdate(TODAY).getDay()+6)%7,start=shift(TODAY,-wd),cells=[];
+ for(let i=0;i<21;i++){const d=shift(start,i),p=S.days[d],past=d<TODAY,inR=d>=a&&d<=b&&!PA.wait,pl=!!p&&mealKeys(p).some(k=>p[k].it.length),dt=kdate(d);
+  const cls=['pacd',past?'past':'',inR?'in':'',(!PA.wait&&(d===a||d===b))||(PA.wait&&d===a)?'end':'',d===TODAY?'today':''].filter(Boolean).join(' ');
+  cells.push(`<button type="button" class="${cls}" data-pacd="${d}"${past?' disabled':''} aria-label="${dt.toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}"><span>${dt.getDate()}</span>${pl?'<i></i>':''}</button>`)}
+ const n=dayDiff(a,b)+1,f=d=>kdate(d).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+ return `<div class="pacal"><div class="pacw">${['M','T','W','T','F','S','S'].map(x=>`<span>${x}</span>`).join('')}</div><div class="pacg">${cells.join('')}</div>
+  <p class="cap num pacs">${PA.wait?'Now tap the last day':`${f(a)}${n>1?' to '+f(b):''} · ${n} day${n>1?'s':''}`}</p></div>`}
 const paMeals=['b','l','d','s'];
 function paDay(d){if(!S.days[d])S.days[d]=emptyPlan();const p=S.days[d];paMeals.forEach(k=>{if(!p[k])p[k]={t:'',it:[]}});return p}
 /* portions of batch recipes planned in the block that are still free: id -> {left, from} */
@@ -2676,9 +2688,9 @@ function paSuggest(ds){const used=new Set(),out={},keep=S.date,left=paLeft(ds);P
 function paSummary(ds){return withProj(()=>{const L=ds.filter(d=>logged(S.days[d]));if(!L.length)return null;const T=targets(),avg=z();L.forEach(d=>addv(avg,planV(S.days[d]),1/L.length));
  const lows=SK.filter(k=>!NUT[k].opt&&k!=='kcal').map(k=>({k,p:avg[K.indexOf(k)]/T[k]*100})).filter(x=>x.p<70).sort((a,b)=>a.p-b.p).slice(0,2);
  return {n:L.length,sc:Math.round(dayScore(avg,T)),lows}})}
-function openPlan(){if($('pk').open)closePicker();PA={sh:{},mv:null};const d=$('plan');renderPlan();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('pl-body').scrollTop=0}
+function openPlan(){if($('pk').open)closePicker();PA={sh:{},mv:null,wait:false};const d=$('plan');renderPlan();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('pl-body').scrollTop=0}
 function closePlan(){PA=null;const d=$('plan');d.close?d.close():d.removeAttribute('open');render()}
-function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),R=S.planR||{r:'3'},T=targets(),SG=paSuggest(ds),sum=paSummary(ds),y=b.scrollTop;
+function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),T=targets(),SG=paSuggest(ds),sum=paSummary(ds),y=b.scrollTop;
  const dl=d=>kdate(d).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
  const cell=(d,k)=>{const p=S.days[d],sl=p[k],ty=typeOf(p,k),key=d+k,nm=TY[ty].n;
   if(sl.skip)return `<div class="pacell skip"><span class="lbl">${nm}</span><span class="cap">Skipped, not planned</span><button class="linkbtn" type="button" data-paun="${key}">Undo</button></div>`;
@@ -2690,16 +2702,15 @@ function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),R=S.planR|
   return `<div class="pacell open"><span class="lbl">${nm}</span><b>${esc(x.d.n)}${x.lo?' <span class="ptag">Leftover</span>':''}</b><span class="cap num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein${tg.length?' · '+tg.map(t=>NUT[t.k].n+' '+Math.round(t.p)+' %').join(' · '):''}</span>
    <div class="paact"><button class="btn sm acc" type="button" data-patk="${key}">Take</button><button class="btn sm ghost" type="button" data-paot="${key}">Other</button><button class="btn sm ghost" type="button" data-pask="${key}">Skip</button></div></div>`};
  const nList=(()=>{try{return shopList().rows.filter(r=>!r.chk).length}catch(e){return 0}})();
- b.innerHTML=`<div class="seg sm" id="pa-r">${[['we','Weekend'],['3','3 days'],['7','7 days'],['c','Dates']].map(([r,l])=>`<button type="button" data-par="${r}" aria-pressed="${R.r===r}">${l}</button>`).join('')}</div>
-  ${R.r==='c'?`<div class="rvf" style="grid-template-columns:1fr 1fr;margin-top:10px"><label>From<input type="date" id="pa-f" value="${R.from||shift(TODAY,1)}" min="${TODAY}"></label><label>To<input type="date" id="pa-t" value="${R.to||shift(TODAY,3)}" min="${TODAY}"></label></div>`:''}
+ b.innerHTML=`${paCal()}
   <div class="pasum">${sum?`<b class="num">${sum.sc} %</b><span>covered by what's planned so far${sum.lows.length?'. Low on '+gList(sum.lows.map(x=>NUT[x.k].n)):''}</span>`:'<span>Take a suggestion or pick a meal; the others adapt to it.</span>'}</div>
   ${Object.keys(SG).length>1?'<button class="btn wide" type="button" id="pa-shuf">Reshuffle open meals</button>':''}
   ${ds.map(d=>`<h3 class="rh">${dl(d)}</h3><div class="paday">${paMeals.map(k=>cell(d,k)).join('')}</div>`).join('')}
   <button class="btn primary wide" type="button" id="pa-shop" style="margin-top:16px">Shopping list${nList?' · '+nList+' to buy':''}</button>`;
  b.scrollTop=y;
  const at=key=>[key.slice(0,10),key.slice(10)];
- b.querySelectorAll('[data-par]').forEach(x=>x.onclick=()=>{S.planR=Object.assign({},S.planR||{},{r:x.dataset.par});PA.sh={};save();renderPlan()});
- if($('pa-f'))$('pa-f').onchange=e=>{S.planR.from=e.target.value;save();renderPlan()};if($('pa-t'))$('pa-t').onchange=e=>{S.planR.to=e.target.value;save();renderPlan()};
+ b.querySelectorAll('[data-pacd]').forEach(x=>x.onclick=()=>{const d=x.dataset.pacd;paRange();
+  if(!PA.wait){S.planR={from:d,to:d};PA.wait=true}else{const f=S.planR.from;S.planR=d<f?{from:d,to:f}:{from:f,to:d};PA.wait=false}PA.sh={};save();renderPlan()});
  b.querySelectorAll('[data-patk]').forEach(x=>x.onclick=()=>{const key=x.dataset.patk,[d,k]=at(key),s=SG[key];if(!s)return;const keep=S.date;setDate(d);useDish(k,s.d);S.plan[k].pl=1;setDate(keep);save();renderPlan()});
  b.querySelectorAll('[data-paot]').forEach(x=>x.onclick=()=>{const key=x.dataset.paot;PA.sh[key]=(PA.sh[key]||0)+1;renderPlan()});
  b.querySelectorAll('[data-pask]').forEach(x=>x.onclick=()=>{const [d,k]=at(x.dataset.pask);paDay(d)[k].skip=1;save();renderPlan()});
