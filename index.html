@@ -517,6 +517,10 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .plantchips span{background:var(--accent-soft);color:var(--accent);border-radius:999px;padding:4px 10px;font-size:14px;font-weight:600}
 .fvcard .weekline{margin-top:14px}
 .nmbtn{border:0;background:transparent;text-align:left;padding:0;display:flex;flex-direction:column;gap:2px}
+.pasum{display:flex;align-items:baseline;gap:10px;margin:12px 0;padding:12px 14px;border-radius:14px;background:var(--surface2);font-size:14px}.pasum b{font-size:22px;white-space:nowrap}
+.paday{display:grid;grid-template-columns:1fr;gap:8px}.pacell{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.pacell.open{background:var(--surface2);border-style:dashed}.pacell.planned{outline:2px dashed color-mix(in srgb,var(--muted) 45%,transparent);outline-offset:-2px;border-color:transparent}.pacell.skip{flex-direction:row;align-items:center;gap:10px;opacity:.75}
+.pacell b{font-size:15px}.paact{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.pacell .chips{margin-top:6px}
 .grrow{display:grid;grid-template-columns:30px minmax(0,1fr) 64px 66px 36px;gap:6px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
 .grrow .ficon{width:30px;height:30px;font-size:17px}.grrow input{padding:8px 6px;text-align:right;min-width:0}.grrow select{padding:8px 4px;min-width:0}
 .grn{display:flex;flex-direction:column;justify-content:center;min-width:0;min-height:44px;gap:1px;border:0;background:none;padding:0;font:inherit;color:var(--ink);text-align:left;cursor:pointer}
@@ -755,6 +759,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
   <div class="pk-list" id="pk-list"></div>
 </div></dialog>
 
+<dialog id="plan"><div class="pk"><div class="pk-head"><div class="row"><h2>Plan ahead</h2><button class="btn sm" id="pl-close" type="button">Done</button></div></div><div class="pk-list detail" id="pl-body" style="padding:14px 16px 24px"></div></div></dialog>
 <dialog id="gran"><div class="pk"><div class="pk-head"><div class="row"><h2 id="gr-title">Granola builder</h2><button class="btn sm" id="gr-close" type="button">Close</button></div></div><div class="pk-list detail" id="gr-body" style="padding:14px 16px 24px"></div></div></dialog>
 <dialog id="food"><div class="pk"><div class="pk-head"><div class="row"><h2 id="fd-title">Food</h2><button class="btn sm" id="fd-close" type="button">Done</button></div></div><div class="pk-list detail" id="fd-body" style="padding:14px 16px 20px"></div></div></dialog>
 
@@ -1733,6 +1738,7 @@ function renderToday(T,D){
     return `<div class="tidea"><span class="thumb em">${o.ic}</span><span class="sgt"><span class="cap">Idea ${L.length>1?(i+1)+' of '+L.length:''}</span><b>${esc(o.nm)}</b><span class="cap num">${ks.map(x=>`${NUT[x.k].n} ${Math.round(pctK(x.k,V0,TT))} → ${Math.round(pctK(x.k,V1,TT))} %`).join(' · ')}</span>${o.did?`<button class="linkbtn rlink" type="button" data-rcp="${o.did}" data-rslot="${s.id}">Recipe</button>`:''}</span><button class="btn sm acc" type="button" ${o.attr}>Add</button></div>`};
    return `<div class="tideas${L.length>1?' multi':''}">${L.map(card).join('')}</div>`};
  const meal=s=>{const sl=S.plan[s.id],v=slotVraw(s.id),empty=!sl.it.length,pl=!empty&&sl.pl;s=Object.assign({},s,{t:TY[s.ty].t});
+  if(empty&&sl.skip)return `<article class="meal planned" style="--c:${s.c}"><div class="meal-top"><span class="micon em">${ICON[s.ty]||ICON[s.id]}</span><div class="mt"><div class="mslot">${s.n}</div><div class="mname">Not me</div></div><button class="btn sm ghost" type="button" data-unskip="${s.id}">Undo</button></div></article>`;
   const ph=sl.did&&PH[sl.did];
   return `<article class="meal${empty?'':' tap'}${pl?' planned':''}" style="--c:${s.c}"${empty?'':` data-edit="${s.id}" role="button" tabindex="0" aria-label="Edit ${s.n}"`}>${ph?`<img class="mphoto" src="${ph}" alt="">`:''}<div class="meal-top"><span class="micon em">${empty?(ICON[s.ty]||ICON[s.id]):slotIcon(sl,s.ty)}</span><div class="mt">${empty&&s.ty==='s'?`<div class="mname">${s.n}</div>`:`<div class="mslot">${s.n}${pl?'<span class="ptag">Planned</span>':''}</div>`}<div class="mname"${empty&&s.ty==='s'?' hidden':''}>${esc(empty?'Nothing planned':(sl.t||sl.it.map(([id],i)=>{const n=FM[id].n.split(',')[0];return i?n.toLowerCase():n}).slice(0,2).join(' and ')))}</div></div>${empty?'':`<div class="mk num">${HK()?`${Math.round(v[1])} g<span>protein</span>`:`${EN(v[0])}<span>${Math.round(v[1])} g protein</span>`}</div>`}</div>
    ${empty?'':`<p class="mfoods">${sl.it.map(([id,g])=>esc(FM[id].n.split(',')[0])+' '+g+' g').join(', ')}</p>`}
@@ -1742,7 +1748,7 @@ function renderToday(T,D){
   ${emptyDay?`<div class="card newday"><h2>${isT?'New day':S.date>TODAY?'Nothing planned yet':'Nothing logged'}</h2><p class="cap" style="margin:4px 0 12px">${S.date>TODAY?'Plan this day ahead: the ideas below fit what you still need.':'Add what you eat: pick foods one by one, or a dish.'}</p>${actPill(isT,1)}${wsc!==null?`<button class="weekline" type="button" id="go-week" style="margin:0 0 10px"><span>Last 7 days</span><b>${wsc}% covered</b>${CHEV}</button>`:''}${prev?`<button class="btn wide" type="button" id="d-copy">Same as ${prev===shift(S.date,-1)?'yesterday':kdate(prev).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'})}</button>`:''}</div>`:''}
 ${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero${WON()?' hw':''}"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}. Open Nutrients"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
    <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div>${WON()?bottleHTML():''}</div>${waterRow()}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div>${actPill(isT)}</div>`}
-  <div class="secthead"><h2>Meals</h2>${emptyDay?'':`<span class="cap num">${HK()?'':Math.round(D[0]).toLocaleString('en')+' kcal · '}${Math.round(D[1])} g protein so far</span>`}</div>
+  <div class="secthead"><h2>Meals</h2><button class="btn sm" type="button" id="go-plan">Plan ahead</button>${emptyDay?'':`<span class="cap num">${HK()?'':Math.round(D[0]).toLocaleString('en')+' kcal · '}${Math.round(D[1])} g protein so far</span>`}</div>
   <div class="meals">${SLOTS.filter(s=>s.id!=='x').map(meal).join('')}</div>
   <div class="addmeal"><span class="lbl">Add a meal</span><div class="chips">${[...'blds'].map(t=>`<button class="chip" type="button" data-addmeal="${t}">+ ${TY[t].n}</button>`).join('')}</div></div>
 ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="margin-bottom:4px"><div><h2>${iss.length===1?'1 thing to look at':iss.length+' things to look at'}</h2><p class="cap">${S.range===0?'Each nutrient over the time your body stores it':S.range===1?(isT?'Today':'This day'):'Last '+S.range+' days'}</p></div><button class="btn sm ghost" type="button" id="go-ideas">Improve</button></div>
@@ -1756,7 +1762,8 @@ ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="m
  bindFg(v);bindSupCard(v);bindWater(v);bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
  v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>openPicker(b.dataset.pick,'recipe'));
  v.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>startMeal(b.dataset.start));
- if($('go-shop'))$('go-shop').onclick=openShop;
+ v.querySelectorAll('[data-unskip]').forEach(b=>b.onclick=()=>{delete S.plan[b.dataset.unskip].skip;save();render()});
+ if($('go-shop'))$('go-shop').onclick=openShop;if($('go-plan'))$('go-plan').onclick=openPlan;
  v.querySelectorAll('[data-ate]').forEach(b=>b.onclick=e=>{e.stopPropagation();const sl=S.plan[b.dataset.ate];if(sl){delete sl.pl;VCV++;save();toast('Counted as eaten');render()}});
  v.querySelectorAll('[data-edit]').forEach(b=>{b.onclick=()=>openMeal(b.dataset.edit);b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openMeal(b.dataset.edit)}}});
  v.querySelectorAll('[data-rcp]').forEach(b=>b.onclick=e=>{e.stopPropagation();openRecipe(b.dataset.rcp,b.dataset.rslot)});
@@ -2297,11 +2304,11 @@ function renderPicker(){
    (more?'<p class="empty2">Showing the first 80. Type more to narrow it down.</p>':'')+(fm==='all'&&!q&&PK.cat==='All'?'<p class="empty2">Type to search over 1,100 more foods from the USDA database.</p>':'');
  }
  if(!isD)html+=`<button class="linkbtn" type="button" id="pk-meas">${INFO} How much is a spoon, a cup or a handful?</button>`;
- if(!PK.part&&!PK.pick&&shRow(q))html=shRow(q)+html;
+ if(!PK.part&&!PK.pick&&shRow(q))html=shRow(q)+html;if(!PK.part&&!PK.pick&&paRow(q))html=paRow(q)+html;
  if(!PK.part&&!PK.pick){const gr=gbRows(q);if(gr)html=gr+html.replace('<p class="empty2">No match.</p>','')}
  $('pk-list').innerHTML=html;if($('pk-meas'))$('pk-meas').onclick=openMeasures;
  $('pk-list').querySelectorAll('[data-rcp]').forEach(b=>b.onclick=()=>openRecipe(b.dataset.rcp,PK.slot));
- $('pk-list').querySelectorAll('[data-gshop]').forEach(b=>tapBind(b,openShop));
+ $('pk-list').querySelectorAll('[data-gshop]').forEach(b=>tapBind(b,openShop));$('pk-list').querySelectorAll('[data-gplan]').forEach(b=>tapBind(b,openPlan));
  $('pk-list').querySelectorAll('[data-gbld]').forEach(b=>tapBind(b,()=>{const sl=PK.slot,k=b.dataset.gbld;closePicker();openGran(null,sl,k)}));
  $('pk-list').querySelectorAll('[data-fx]').forEach(b=>b.onclick=()=>{const k=b.dataset.fx;PK.focus=!k?[]:PK.focus.includes(k)?PK.focus.filter(x=>x!==k):[...PK.focus,k];renderPicker()});
  if($('pk-scan'))$('pk-scan').onclick=()=>{const pk=PK.pick;closePicker();openScan(PK.slot,'scan');if(pk)SC.pick=pk;renderScan()};
@@ -2619,7 +2626,7 @@ function renderShopList(v,head){const L=shopList(),open=L.rows.filter(r=>!r.chk)
  const item=r=>`<label class="shrow${r.chk?' done':''}"><input type="checkbox" data-shk="${esc(r.key)}"${r.chk?' checked':''}><span class="ficon em">${r.t?EMO['1f37d']:fIcon(r.id)}</span><span class="shn"><b>${r.amt?esc(r.amt):''}</b> ${esc(r.t||!r.id||FM[r.id].cat==='My foods'?r.n:r.n.toLowerCase())}</span>${r.xi!=null?`<button class="rm" type="button" data-shx="${r.xi}" aria-label="Remove ${esc(r.n||r.hn)}">${XIC}</button>`:''}</label>`;
  v.innerHTML=head+`<div class="seg sm" id="sh-days" style="margin-bottom:12px">${[3,7,14].map(n=>`<button type="button" data-shd="${n}" aria-pressed="${S.shop.days===n}">${n===3?'Next 3 days':n===7?'Next 7 days':'Next 2 weeks'}</button>`).join('')}</div>
   <div class="card"><div class="card-head"><div><h2>Shopping list</h2><p class="cap num">${L.meals.length?`${L.meals.length} planned meal${L.meals.length>1?'s':''} · ${open} to buy`:'No planned meals in these days yet.'}</p></div>${L.rows.length?'<button class="btn sm" type="button" id="sh-share">Share</button>':''}</div>
-  ${L.meals.length||L.rows.length?'':`<p class="cap" style="margin:8px 0 0">Go to a coming day on Today and pick meals. Their ingredients show up here.</p>`}
+  ${L.meals.length||L.rows.length?'':`<p class="cap" style="margin:8px 0 10px">Plan some meals and their ingredients show up here.</p><button class="btn primary" type="button" id="sh-plan">Plan ahead</button>`}
   ${AREAS.map(a=>{const R=L.rows.filter(r=>r.area===a);return R.length?`<h3 class="rh">${a}</h3>${R.sort((x,y)=>x.chk-y.chk).map(item).join('')}`:''}).join('')}
   <div class="btnrow" style="margin-top:12px"><button class="btn" type="button" id="sh-add">Add food</button><input type="text" id="sh-t" placeholder="Something else" style="flex:1;min-width:120px"><button class="btn" type="button" id="sh-tadd">Add</button></div>
 </div>
@@ -2628,6 +2635,7 @@ function renderShopList(v,head){const L=shopList(),open=L.rows.filter(r=>!r.chk)
  v.querySelectorAll('[data-shd]').forEach(b=>b.onclick=()=>{S.shop.days=+b.dataset.shd;save();renderShopList(v,head);shopBadge()});
  v.querySelectorAll('[data-shn]').forEach(b=>b.onclick=()=>{S.shop.need[b.dataset.shn]=1;save();renderShopList(v,head);shopBadge()});
  v.querySelectorAll('[data-shx]').forEach(b=>b.onclick=e=>{e.preventDefault();S.shop.extra.splice(+b.dataset.shx,1);Object.keys(S.shop.chk).filter(k=>k[0]==='t').forEach(k=>delete S.shop.chk[k]);save();renderShopList(v,head);shopBadge()});
+ if($('sh-plan'))$('sh-plan').onclick=openPlan;
  $('sh-add').onclick=()=>granPick(id=>{S.shop.extra.push({id,g:(FM[id]||{}).por||100});save();renderShopList(v,head);shopBadge()});
  const ta=()=>{const t=$('sh-t').value.trim();if(!t)return;S.shop.extra.push({t});save();renderShopList(v,head);shopBadge()};$('sh-tadd').onclick=ta;$('sh-t').onkeydown=e=>{if(e.key==='Enter')ta()};
  if($('sh-share'))$('sh-share').onclick=async()=>{const t=shopText();try{if(navigator.share){await navigator.share({text:t});return}}catch(e){if(e&&e.name==='AbortError')return}
@@ -2643,6 +2651,70 @@ const shRow=q=>SHQ.test(q||'')?`<div class="opt"><button class="optmain" type="b
 function shopLine(){if(S.date!==TODAY)return '';let n=0,m=0;try{const L=shopList();n=L.rows.filter(r=>!r.chk).length;m=L.meals.length}catch(e){}if(!n)return '';
  return `<button class="weekline" type="button" id="go-shop" style="margin:0 0 12px"><span>${m} planned meal${m>1?'s':''} · shopping list</span><b class="num">${n} to buy</b>${CHEV}</button>`}
 function openShop(){if($('pk').open)closePicker();S.view='scan';S.shopSeg='list';render();scrollTo({top:0})}
+
+/* ---------- plan ahead: several days on one screen ----------
+   Empty meals show one suggestion that adapts to everything already planned in the block (ideas run with the plan counted).
+   Nothing is filled in by itself: Take plans it, Other shows the next one, Not me leaves a meal out (someone else cooks).
+   Batch recipes offer their leftover portions on the following days. */
+let PA=null;
+function paDates(){const R=S.planR||{r:'3'},out=[];let a,b;
+ if(R.r==='we'){const d=kdate(TODAY).getDay();a=d===6||d===0?TODAY:shift(TODAY,6-d);b=d===0?TODAY:shift(a,1)}
+ else if(R.r==='c'&&R.from&&R.to&&R.from<=R.to){a=R.from<TODAY?TODAY:R.from;b=R.to;if(dayDiff(a,b)>13)b=shift(a,13)}
+ else{const n=R.r==='7'?7:3;a=shift(TODAY,1);b=shift(TODAY,n)}
+ for(let d=a;d<=b;d=shift(d,1))out.push(d);return out}
+const paMeals=['b','l','d','s'];
+function paDay(d){if(!S.days[d])S.days[d]=emptyPlan();const p=S.days[d];paMeals.forEach(k=>{if(!p[k])p[k]={t:'',it:[]}});return p}
+/* portions of batch recipes planned in the block that are still free: id -> {left, from} */
+function paLeft(ds){const use={},first={};ds.concat([shift(ds[0],-1),shift(ds[0],-2)]).forEach(d=>{const p=S.days[d];if(!p)return;mealKeys(p).forEach(k=>p[k].it.forEach(([id,g])=>{const f=FM[id];if(!f||!f.gb)return;use[id]=(use[id]||0)+(+g)/(f.por||1);if(!first[id]||d<first[id])first[id]=d}))});
+ const o={};Object.keys(use).forEach(id=>{const f=FM[id],serv=f.gb.serv||1,n=use[id],left=Math.ceil(n/serv-.05)*serv-Math.round(n);if(left>0)o[id]={left,from:first[id]}});return o}
+/* one suggestion per open meal; earlier suggestions in the same view are not repeated */
+function paSuggest(ds){const used=new Set(),out={},keep=S.date,left=paLeft(ds);PA.sh=PA.sh||{};
+ try{ds.forEach(d=>{const p=paDay(d);setDate(d);paMeals.forEach(k=>{const sl=p[k];if(sl.it.length||sl.skip)return;const ty=typeOf(p,k),key=d+k;
+  const lo=Object.entries(left).filter(([id,x])=>x.left>0&&x.from<d&&dayDiff(x.from,d)<=4&&gTpl(FM[id].gb).t===TY[ty].t).map(([id])=>({d:granDish(id),lo:1,add:itemV([id,FM[id].por])}));
+  let L=lo.concat(slotIdeas(k,12)).filter(x=>x.d&&!used.has(x.d.id));const i=(PA.sh[key]||0)%Math.max(1,L.length),x=L[i];
+  if(x){used.add(x.d.id);out[key]=x}})})}finally{setDate(keep)}return out}
+function paSummary(ds){return withProj(()=>{const L=ds.filter(d=>logged(S.days[d]));if(!L.length)return null;const T=targets(),avg=z();L.forEach(d=>addv(avg,planV(S.days[d]),1/L.length));
+ const lows=SK.filter(k=>!NUT[k].opt&&k!=='kcal').map(k=>({k,p:avg[K.indexOf(k)]/T[k]*100})).filter(x=>x.p<70).sort((a,b)=>a.p-b.p).slice(0,2);
+ return {n:L.length,sc:Math.round(dayScore(avg,T)),lows}})}
+function openPlan(){if($('pk').open)closePicker();PA={sh:{},mv:null};const d=$('plan');renderPlan();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('pl-body').scrollTop=0}
+function closePlan(){PA=null;const d=$('plan');d.close?d.close():d.removeAttribute('open');render()}
+function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),R=S.planR||{r:'3'},T=targets(),SG=paSuggest(ds),sum=paSummary(ds),y=b.scrollTop;
+ const dl=d=>kdate(d).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
+ const cell=(d,k)=>{const p=S.days[d],sl=p[k],ty=typeOf(p,k),key=d+k,nm=TY[ty].n;
+  if(sl.skip)return `<div class="pacell skip"><span class="lbl">${nm}</span><span class="cap">Not me</span><button class="linkbtn" type="button" data-paun="${key}">Undo</button></div>`;
+  if(sl.it.length){const v=slotVraw0(p,k),mv=PA.mv===key;return `<div class="pacell${sl.pl?' planned':''}"><span class="lbl">${nm}</span><b>${esc(sl.t||sl.it.map(([id])=>FM[id]?FM[id].n.split(',')[0]:'').slice(0,2).join(' and '))}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein</span>
+   <div class="paact"><button class="btn sm ghost" type="button" data-pamv="${key}" aria-expanded="${mv}">Move</button><button class="btn sm ghost" type="button" data-parm="${key}">Remove</button></div>
+   ${mv?`<div class="chips wrap">${ds.filter(x=>x!==d).map(x=>`<button class="chip" type="button" data-pato="${key}|${x}">${dl(x)}</button>`).join('')}</div>`:''}</div>`}
+  const x=SG[key];if(!x)return `<div class="pacell open"><span class="lbl">${nm}</span><span class="cap">No idea fits</span><div class="paact"><button class="btn sm ghost" type="button" data-pask="${key}">Not me</button></div></div>`;
+  const tg=topTags(x.add,T,2);
+  return `<div class="pacell open"><span class="lbl">${nm}</span><b>${esc(x.d.n)}${x.lo?' <span class="ptag">Leftover</span>':''}</b><span class="cap num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein${tg.length?' · '+tg.map(t=>NUT[t.k].n+' '+Math.round(t.p)+' %').join(' · '):''}</span>
+   <div class="paact"><button class="btn sm acc" type="button" data-patk="${key}">Take</button><button class="btn sm ghost" type="button" data-paot="${key}">Other</button><button class="btn sm ghost" type="button" data-pask="${key}">Not me</button></div></div>`};
+ const nList=(()=>{try{return shopList().rows.filter(r=>!r.chk).length}catch(e){return 0}})();
+ b.innerHTML=`<div class="seg sm" id="pa-r">${[['we','Weekend'],['3','3 days'],['7','7 days'],['c','Dates']].map(([r,l])=>`<button type="button" data-par="${r}" aria-pressed="${R.r===r}">${l}</button>`).join('')}</div>
+  ${R.r==='c'?`<div class="rvf" style="grid-template-columns:1fr 1fr;margin-top:10px"><label>From<input type="date" id="pa-f" value="${R.from||shift(TODAY,1)}" min="${TODAY}"></label><label>To<input type="date" id="pa-t" value="${R.to||shift(TODAY,3)}" min="${TODAY}"></label></div>`:''}
+  <div class="pasum">${sum?`<b class="num">${sum.sc} %</b><span>covered by what's planned so far${sum.lows.length?'. Low on '+gList(sum.lows.map(x=>NUT[x.k].n)):''}</span>`:'<span>Take a suggestion or pick a meal; the others adapt to it.</span>'}</div>
+  ${Object.keys(SG).length>1?'<button class="btn wide" type="button" id="pa-shuf">Reshuffle open meals</button>':''}
+  ${ds.map(d=>`<h3 class="rh">${dl(d)}</h3><div class="paday">${paMeals.map(k=>cell(d,k)).join('')}</div>`).join('')}
+  <button class="btn primary wide" type="button" id="pa-shop" style="margin-top:16px">Shopping list${nList?' · '+nList+' to buy':''}</button>`;
+ b.scrollTop=y;
+ const at=key=>[key.slice(0,10),key.slice(10)];
+ b.querySelectorAll('[data-par]').forEach(x=>x.onclick=()=>{S.planR=Object.assign({},S.planR||{},{r:x.dataset.par});PA.sh={};save();renderPlan()});
+ if($('pa-f'))$('pa-f').onchange=e=>{S.planR.from=e.target.value;save();renderPlan()};if($('pa-t'))$('pa-t').onchange=e=>{S.planR.to=e.target.value;save();renderPlan()};
+ b.querySelectorAll('[data-patk]').forEach(x=>x.onclick=()=>{const key=x.dataset.patk,[d,k]=at(key),s=SG[key];if(!s)return;const keep=S.date;setDate(d);useDish(k,s.d);S.plan[k].pl=1;setDate(keep);save();renderPlan()});
+ b.querySelectorAll('[data-paot]').forEach(x=>x.onclick=()=>{const key=x.dataset.paot;PA.sh[key]=(PA.sh[key]||0)+1;renderPlan()});
+ b.querySelectorAll('[data-pask]').forEach(x=>x.onclick=()=>{const [d,k]=at(x.dataset.pask);paDay(d)[k].skip=1;save();renderPlan()});
+ b.querySelectorAll('[data-paun]').forEach(x=>x.onclick=()=>{const [d,k]=at(x.dataset.paun);delete paDay(d)[k].skip;save();renderPlan()});
+ b.querySelectorAll('[data-parm]').forEach(x=>x.onclick=()=>{const [d,k]=at(x.dataset.parm),p=paDay(d),ty=typeOf(p,k);p[k]=Object.assign({t:'',it:[]},ty!==k?{ty}:{});save();renderPlan()});
+ b.querySelectorAll('[data-pamv]').forEach(x=>x.onclick=()=>{PA.mv=PA.mv===x.dataset.pamv?null:x.dataset.pamv;renderPlan()});
+ b.querySelectorAll('[data-pato]').forEach(x=>x.onclick=()=>{const [key,to]=x.dataset.pato.split('|'),[d,k]=at(key),src=paDay(d),dst=paDay(to),tmp=dst[k];dst[k]=Object.assign(src[k],{pl:1});src[k]=tmp&&tmp.it.length?Object.assign(tmp,{pl:1}):{t:'',it:[]};PA.mv=null;save();renderPlan()});
+ if($('pa-shuf'))$('pa-shuf').onclick=()=>{Object.keys(SG).forEach(k=>PA.sh[k]=(PA.sh[k]||0)+1);renderPlan()};
+ $('pa-shop').onclick=()=>{const end=ds[ds.length-1],n=dayDiff(TODAY,end)+1;shopInit();S.shop.days=n<=3?3:n<=7?7:14;save();const d=$('plan');d.close?d.close():d.removeAttribute('open');PA=null;openShop()}}
+/* a meal's values on any day, planned or not */
+function slotVraw0(p,k){return p[k].it.reduce((a,it)=>addv(a,itemV(it)),z())}
+$('pl-close').onclick=closePlan;
+/* search words that open the planner */
+const PAQ=/^plan|meal ?prep|wochenplan|planen|vorplan|weekplan|week plan|plan ahead/;
+const paRow=q=>PAQ.test(q||'')?`<div class="opt"><button class="optmain" type="button" data-gplan="1"><span class="thumb em">${EMO['1f37d']}</span><span class="otx"><span class="t">Plan ahead</span><span class="s">Plan several days at once, with ideas that adapt</span></span></button></div>`:'';
 
 /* ---------- food guide ---------- */
 function renderFoods(T){
@@ -2698,8 +2770,8 @@ function renderLibDishes(){
   ${open?`<div class="ldbody"><div class="btnrow"><button class="btn sm" type="button" data-gedit="${c.id}">Edit</button><button class="btn sm" type="button" data-grcp="${c.id}">Recipe</button>${(gTpl(c.gb).t==='b'?['b']:gTpl(c.gb).t==='s'?['s']:['l','d']).map(t=>`<button class="btn sm" type="button" data-gbf="${c.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}</div></div>`:''}</div>`};
  $('lib-mine').innerHTML=mine.length||gv.length||(!q&&lt!=='fav')?`<div class="card" style="padding-top:4px"><div class="row" style="margin:10px 0 2px"><h2 style="margin:0">Your dishes</h2><button class="btn sm" type="button" id="lib-gran">Recipe builder</button></div>${mine.length||gv.length?'':'<p class="cap" style="margin:4px 0 12px">Dishes you build or change are saved here when you leave Edit.</p>'}${gv.map(grow).join('')}${mine.map(row).join('')}</div>`:'';
  $('lib-allh').textContent=mine.length||gv.length?'All dishes':'Dishes';
- $('lib-list').innerHTML=shRow(q)+gbRows(q)+(gbRows(q)&&!rest.length?'':rest.length?rest.map(row).join(''):`<p class="cap">${lt==='fav'&&!q?(mine.length?'No other favourites.':'No favourites yet. Tap a dish, then Add to favourites. The star in the add menu works too.'):'No match.'}</p>`);
- const v=$('lib-dishes');v.querySelectorAll('[data-gshop]').forEach(b=>b.onclick=openShop);v.querySelectorAll('[data-gbld]').forEach(b=>b.onclick=()=>openGran(null,null,b.dataset.gbld));
+ $('lib-list').innerHTML=paRow(q)+shRow(q)+gbRows(q)+(gbRows(q)&&!rest.length?'':rest.length?rest.map(row).join(''):`<p class="cap">${lt==='fav'&&!q?(mine.length?'No other favourites.':'No favourites yet. Tap a dish, then Add to favourites. The star in the add menu works too.'):'No match.'}</p>`);
+ const v=$('lib-dishes');v.querySelectorAll('[data-gshop]').forEach(b=>b.onclick=openShop);v.querySelectorAll('[data-gplan]').forEach(b=>b.onclick=openPlan);v.querySelectorAll('[data-gbld]').forEach(b=>b.onclick=()=>openGran(null,null,b.dataset.gbld));
  v.querySelectorAll('[data-lx]').forEach(b=>b.onclick=()=>{LX=LX===b.dataset.lx?null:b.dataset.lx;renderLibDishes()});
  v.querySelectorAll('[data-lrcp]').forEach(b=>b.onclick=()=>openRecipe(b.dataset.lrcp));
  if($('lib-gran'))$('lib-gran').onclick=()=>openGran(null);
