@@ -523,8 +523,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .pacd.today:not(.end){box-shadow:inset 0 0 0 2px var(--accent)}.pacd i{position:absolute;left:50%;bottom:5px;width:5px;height:5px;margin-left:-2.5px;border-radius:50%;background:currentColor;opacity:.7}
 .pacs{margin:8px 0 0;text-align:center}
 .pasum{display:flex;align-items:baseline;gap:10px;margin:12px 0;padding:12px 14px;border-radius:14px;background:var(--surface2);font-size:14px}.pasum b{font-size:22px;white-space:nowrap}
-.paday{display:grid;grid-template-columns:1fr;gap:8px}.pacell{display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
-.pacell.open{background:var(--surface2);border-style:dashed}.pacell.planned{outline:2px dashed color-mix(in srgb,var(--muted) 45%,transparent);outline-offset:-2px;border-color:transparent}.pacell.skip{flex-direction:row;align-items:center;gap:10px;opacity:.75}
+.paday{display:grid;grid-template-columns:minmax(0,1fr);gap:8px}.pacell{min-width:0;overflow:hidden;display:flex;flex-direction:column;gap:2px;padding:10px 12px;border-radius:14px;background:var(--surface);border:1px solid var(--line)}
+.pacell.open{background:var(--surface);border-style:dashed}.pacell .tideas{margin-top:4px;min-width:0}.pacell .tidea{margin:0;min-width:0}.pacell .tidea .sgt{min-width:0;flex:1}.pacell.planned{outline:2px dashed color-mix(in srgb,var(--muted) 45%,transparent);outline-offset:-2px;border-color:transparent}.pacell.skip{flex-direction:row;align-items:center;gap:10px;opacity:.75}
 .pacell b{font-size:15px}.paact{display:flex;flex-wrap:wrap;gap:6px;margin-top:6px}.pacell .chips{margin-top:6px}
 .grrow{display:grid;grid-template-columns:30px minmax(0,1fr) 64px 66px 36px;gap:6px;align-items:center;padding:8px 0;border-top:1px solid var(--line)}
 .grrow .ficon{width:30px;height:30px;font-size:17px}.grrow input{padding:8px 6px;text-align:right;min-width:0}.grrow select{padding:8px 4px;min-width:0}
@@ -2659,7 +2659,7 @@ function openShop(){if($('pk').open)closePicker();S.view='scan';S.shopSeg='list'
 
 /* ---------- plan ahead: several days on one screen ----------
    Empty meals show one suggestion that adapts to everything already planned in the block (ideas run with the plan counted).
-   Nothing is filled in by itself: Take plans it, Other shows the next one, Skip leaves a meal out (eating out, someone else cooks).
+   Nothing is filled in by itself: swipe through the ideas, Take plans one, Skip leaves a meal out (eating out, someone else cooks).
    Batch recipes offer their leftover portions on the following days. */
 let PA=null;
 /* the days you plan: picked on a small calendar, at most two weeks, never in the past */
@@ -2683,8 +2683,9 @@ function paLeft(ds){const use={},first={};ds.concat([shift(ds[0],-1),shift(ds[0]
 function paSuggest(ds){const used=new Set(),out={},keep=S.date,left=paLeft(ds);PA.sh=PA.sh||{};
  try{ds.forEach(d=>{const p=paDay(d);setDate(d);paMeals.forEach(k=>{const sl=p[k];if(sl.it.length||sl.skip)return;const ty=typeOf(p,k),key=d+k;
   const lo=Object.entries(left).filter(([id,x])=>x.left>0&&x.from<d&&dayDiff(x.from,d)<=4&&gTpl(FM[id].gb).t===TY[ty].t).map(([id])=>({d:granDish(id),lo:1,add:itemV([id,FM[id].por])}));
-  let L=lo.concat(slotIdeas(k,12)).filter(x=>x.d&&!used.has(x.d.id));const i=(PA.sh[key]||0)%Math.max(1,L.length),x=L[i];
-  if(x){used.add(x.d.id);out[key]=x}})})}finally{setDate(keep)}return out}
+  let L=lo.concat(slotIdeas(k,14)).filter(x=>x.d);const fresh=L.filter(x=>!used.has(x.d.id));L=fresh.concat(L.filter(x=>used.has(x.d.id)));
+  const r=(PA.sh[key]||0)%Math.max(1,fresh.length||1);L=L.slice(r).concat(L.slice(0,r)).filter((x,i,a)=>a.findIndex(y=>y.d.id===x.d.id)===i).slice(0,6);
+  if(L.length){used.add(L[0].d.id);out[key]=L}})})}finally{setDate(keep)}return out}
 function paSummary(ds){return withProj(()=>{const L=ds.filter(d=>logged(S.days[d]));if(!L.length)return null;const T=targets(),avg=z();L.forEach(d=>addv(avg,planV(S.days[d]),1/L.length));
  const lows=SK.filter(k=>!NUT[k].opt&&k!=='kcal').map(k=>({k,p:avg[K.indexOf(k)]/T[k]*100})).filter(x=>x.p<70).sort((a,b)=>a.p-b.p).slice(0,2);
  return {n:L.length,sc:Math.round(dayScore(avg,T)),lows}})}
@@ -2697,10 +2698,9 @@ function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),T=targets(
   if(sl.it.length){const v=slotVraw0(p,k),mv=PA.mv===key;return `<div class="pacell${sl.pl?' planned':''}"><span class="lbl">${nm}</span><b>${esc(sl.t||sl.it.map(([id])=>FM[id]?FM[id].n.split(',')[0]:'').slice(0,2).join(' and '))}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein</span>
    <div class="paact"><button class="btn sm ghost" type="button" data-pamv="${key}" aria-expanded="${mv}">Move</button><button class="btn sm ghost" type="button" data-parm="${key}">Remove</button></div>
    ${mv?`<div class="chips wrap">${ds.filter(x=>x!==d).map(x=>`<button class="chip" type="button" data-pato="${key}|${x}">${dl(x)}</button>`).join('')}</div>`:''}</div>`}
-  const x=SG[key];if(!x)return `<div class="pacell open"><span class="lbl">${nm}</span><span class="cap">No idea fits</span><div class="paact"><button class="btn sm ghost" type="button" data-pask="${key}">Skip</button></div></div>`;
-  const tg=topTags(x.add,T,2);
-  return `<div class="pacell open"><span class="lbl">${nm}</span><b>${esc(x.d.n)}${x.lo?' <span class="ptag">Leftover</span>':''}</b><span class="cap num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein${tg.length?' · '+tg.map(t=>NUT[t.k].n+' '+Math.round(t.p)+' %').join(' · '):''}</span>
-   <div class="paact"><button class="btn sm acc" type="button" data-patk="${key}">Take</button><button class="btn sm ghost" type="button" data-paot="${key}">Other</button><button class="btn sm ghost" type="button" data-pask="${key}">Skip</button></div></div>`};
+  const L=SG[key];if(!L)return `<div class="pacell open"><span class="lbl">${nm}</span><span class="cap">No idea fits</span><div class="paact"><button class="btn sm ghost" type="button" data-pask="${key}">Skip</button></div></div>`;
+  const card=(x,i)=>{const tg=topTags(x.add,T,2);return `<div class="tidea"><span class="thumb em">${PH[x.d.id]?`<img src="${PH[x.d.id]}" alt="">`:dIcon(x.d)}</span><span class="sgt"><span class="cap">${x.lo?'Leftover':'Idea '+(L.length>1?(i+1)+' of '+L.length:'')}</span><b>${esc(x.d.n)}</b><span class="cap num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein${tg.length?' · '+tg.map(t=>NUT[t.k].n+' '+Math.round(t.p)+' %').join(' · '):''}</span></span><button class="btn sm acc" type="button" data-patk="${key}|${i}">Take</button></div>`};
+  return `<div class="pacell open"><div class="row" style="align-items:center"><span class="lbl">${nm}</span><button class="linkbtn" type="button" data-pask="${key}" style="min-height:32px;padding:4px">Skip</button></div><div class="tideas${L.length>1?' multi':''}" data-pasc="${key}">${L.map(card).join('')}</div></div>`};
  const nList=(()=>{try{return shopList().rows.filter(r=>!r.chk).length}catch(e){return 0}})();
  b.innerHTML=`${paCal()}
   <div class="pasum">${sum?`<b class="num">${sum.sc} %</b><span>covered by what's planned so far${sum.lows.length?'. Low on '+gList(sum.lows.map(x=>NUT[x.k].n)):''}</span>`:'<span>Take a suggestion or pick a meal; the others adapt to it.</span>'}</div>
@@ -2711,14 +2711,14 @@ function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),T=targets(
  const at=key=>[key.slice(0,10),key.slice(10)];
  b.querySelectorAll('[data-pacd]').forEach(x=>x.onclick=()=>{const d=x.dataset.pacd;paRange();
   if(!PA.wait){S.planR={from:d,to:d};PA.wait=true}else{const f=S.planR.from;S.planR=d<f?{from:d,to:f}:{from:f,to:d};PA.wait=false}PA.sh={};save();renderPlan()});
- b.querySelectorAll('[data-patk]').forEach(x=>x.onclick=()=>{const key=x.dataset.patk,[d,k]=at(key),s=SG[key];if(!s)return;const keep=S.date;setDate(d);useDish(k,s.d);S.plan[k].pl=1;setDate(keep);save();renderPlan()});
- b.querySelectorAll('[data-paot]').forEach(x=>x.onclick=()=>{const key=x.dataset.paot;PA.sh[key]=(PA.sh[key]||0)+1;renderPlan()});
+ b.querySelectorAll('[data-pasc]').forEach(x=>{const k=x.dataset.pasc;if(PA.sc&&PA.sc[k])x.scrollLeft=PA.sc[k];x.addEventListener('scroll',()=>{PA.sc=PA.sc||{};PA.sc[k]=x.scrollLeft},{passive:true})});
+ b.querySelectorAll('[data-patk]').forEach(x=>x.onclick=()=>{const [key,ix]=x.dataset.patk.split('|'),[d,k]=at(key),s=(SG[key]||[])[+ix||0];if(!s)return;const keep=S.date;setDate(d);useDish(k,s.d);S.plan[k].pl=1;setDate(keep);save();renderPlan()});
  b.querySelectorAll('[data-pask]').forEach(x=>x.onclick=()=>{const [d,k]=at(x.dataset.pask);paDay(d)[k].skip=1;save();renderPlan()});
  b.querySelectorAll('[data-paun]').forEach(x=>x.onclick=()=>{const [d,k]=at(x.dataset.paun);delete paDay(d)[k].skip;save();renderPlan()});
  b.querySelectorAll('[data-parm]').forEach(x=>x.onclick=()=>{const [d,k]=at(x.dataset.parm),p=paDay(d),ty=typeOf(p,k);p[k]=Object.assign({t:'',it:[]},ty!==k?{ty}:{});save();renderPlan()});
  b.querySelectorAll('[data-pamv]').forEach(x=>x.onclick=()=>{PA.mv=PA.mv===x.dataset.pamv?null:x.dataset.pamv;renderPlan()});
  b.querySelectorAll('[data-pato]').forEach(x=>x.onclick=()=>{const [key,to]=x.dataset.pato.split('|'),[d,k]=at(key),src=paDay(d),dst=paDay(to),tmp=dst[k];dst[k]=Object.assign(src[k],{pl:1});src[k]=tmp&&tmp.it.length?Object.assign(tmp,{pl:1}):{t:'',it:[]};PA.mv=null;save();renderPlan()});
- if($('pa-shuf'))$('pa-shuf').onclick=()=>{Object.keys(SG).forEach(k=>PA.sh[k]=(PA.sh[k]||0)+1);renderPlan()};
+ if($('pa-shuf'))$('pa-shuf').onclick=()=>{Object.keys(SG).forEach(k=>PA.sh[k]=(PA.sh[k]||0)+1);PA.sc={};renderPlan()};
  $('pa-shop').onclick=()=>{const end=ds[ds.length-1],n=dayDiff(TODAY,end)+1;shopInit();S.shop.days=n<=3?3:n<=7?7:14;save();const d=$('plan');d.close?d.close():d.removeAttribute('open');PA=null;openShop()}}
 /* a meal's values on any day, planned or not */
 function slotVraw0(p,k){return p[k].it.reduce((a,it)=>addv(a,itemV(it)),z())}
