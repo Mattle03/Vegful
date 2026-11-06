@@ -741,7 +741,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 <dialog id="pk"><div class="pk">
   <div class="pk-head">
     <div class="row"><h2 id="pk-title">Add</h2><button class="btn sm" id="pk-close" type="button">Done</button></div>
-    <div class="seg" id="pk-kind"><button data-k="food">Foods</button><button data-k="dish">Dishes</button></div>
+    <div class="seg" id="pk-kind"><button data-k="dish">Dishes</button><button data-k="food">Foods</button></div>
     <div class="seg" id="pk-mode"></div>
     <p class="cap" id="pk-hint"></p>
     <input type="search" id="pk-q" placeholder="Search lentils, kiwi, tofu">
@@ -1166,7 +1166,10 @@ Object.values(S.dishes).forEach(d=>{d.it=(d.it||[]).filter(x=>FM[x[0]])});
 ['b','l','d'].forEach(k=>{const sl=S.plan[k];if(sl&&!sl.did&&sl.t){const r=REC.find(x=>x.n===sl.t);if(r)sl.did=r.id}});
 const cp=it=>it.map(x=>x[2]?[x[0],x[1],x[2]]:[x[0],x[1]]);
 const sameIt=(a,b)=>a.length===b.length&&a.every((x,i)=>x[0]===b[i][0]&&+x[1]===+b[i][1]&&(x[2]||defState(x[0],'l'))===(b[i][2]||defState(b[i][0],'l')));
-function dish(id){const base=REC.find(r=>r.id===id),own=S.dishes[id];if(!base&&!own)return null;
+/* each saved granola also works as a breakfast dish: one serving */
+function granDish(id){const f=FM[id];if(!f||!f.gb||f.hide)return null;const m=S.meta[id]||{};return {id,n:f.n,t:'b',min:0,it:[[id,f.por]],own:true,gran:true,fav:!!m.fav,used:m.used||0}}
+const hasRcp=id=>!!RSTEPS[id]||String(id).startsWith('g_');
+function dish(id){if(String(id).startsWith('g_'))return granDish(id);const base=REC.find(r=>r.id===id),own=S.dishes[id];if(!base&&!own)return null;
  return Object.assign({},base||{},own||{},{id,it:cp((own||base).it),edited:!!(base&&own),own:!base,fav:!!(S.meta[id]&&S.meta[id].fav),used:(S.meta[id]&&S.meta[id].used)||0})}
 /* short recipes for the built in dishes: amounts are in the ingredient list above the steps, grains, pasta and dry lentils are weighed dry, canned beans drained */
 const RSTEPS={
@@ -1269,7 +1272,7 @@ beanburger:['Mash the drained black beans with the oats, a pinch of cumin and sa
 's-granola':['Spoon the soy yogurt into a bowl and top with granola and blueberries.'],
 's-oni':['Cook the rice and let it cool a little. Cook and shell the edamame.','Mix the edamame into the rice with a pinch of salt.','With wet hands, press the rice into triangles and wrap each with a strip of nori.']
 };
-function openRecipe(id,slot){const d=dishFit(dish(id))||dish(id);if(!d)return;const st=RSTEPS[id],dl=$('sheet');S.sel=null;$('sheet-grp').textContent='Recipe';
+function openRecipe(id,slot){if(String(id).startsWith('g_'))return openGranRecipe(id);const d=dishFit(dish(id))||dish(id);if(!d)return;const st=RSTEPS[id],dl=$('sheet');S.sel=null;$('sheet-grp').textContent='Recipe';
  const q=encodeURIComponent('vegan '+d.n+' recipe'),ty=slot?typeOf(S.plan,slot):null;
  $('sheet-body').innerHTML=`<h2 style="font-size:24px;margin:0 0 2px">${esc(d.n)}</h2><p class="cap" style="margin:0">${d.min?d.min+' min · ':''}one portion</p>
   <h3 class="rh">Ingredients</h3><ul class="ringr">${d.it.map(([fid,g])=>`<li><span class="ficon em">${fIcon(fid)}</span><span class="rn">${esc(FM[fid]?FM[fid].n:'Food')}</span><span class="num">${g} g</span></li>`).join('')}</ul>
@@ -1277,7 +1280,7 @@ function openRecipe(id,slot){const d=dishFit(dish(id))||dish(id);if(!d)return;co
   <div class="btnrow" style="margin-top:14px">${slot?`<button class="btn primary" type="button" id="rc-add">Add to ${TY[ty].n.toLowerCase()}</button>`:''}<a class="btn" href="https://duckduckgo.com/?q=${q}" target="_blank" rel="noopener">${st?'More recipes online':'Find a recipe online'}</a></div>`;
  if($('rc-add'))$('rc-add').onclick=()=>{useDish(slot,d);toast(`Added ${d.n}`);closeSheet();if($('pk').open)closePicker();render()};
  if(!dl.open){dl.showModal?dl.showModal():dl.setAttribute('open','')}$('sheet-body').scrollTop=0}
-function allDishes(t){const ids=[...REC.map(r=>r.id),...Object.keys(S.dishes).filter(id=>!REC.find(r=>r.id===id))];return ids.map(dish).filter(d=>d&&(!t||d.t===t))}
+function allDishes(t){const ids=[...REC.map(r=>r.id),...Object.keys(S.dishes).filter(id=>!REC.find(r=>r.id===id)),...(S.custom||[]).filter(c=>c.gb&&!c.hide).map(c=>c.id)];return ids.map(dish).filter(d=>d&&(!t||d.t===t))}
 function meta(id){return S.meta[id]||(S.meta[id]={})}
 function edited(slot){const sl=S.plan[slot];if(sl)sl.dirty=1}
 /* older versions saved edits of built in dishes in place; turn those into your own meals */
@@ -1609,7 +1612,7 @@ const fIconOld=id=>EMO[FI[id]]||(FM[id]&&FM[id].ico&&EMO[FM[id].ico])||(FM[id]&&
 const STAPLE=new Set(['alprosoy','alprosoy0','notmlk','oatlycal','oatlybar','biosoyca','biosoy','biooat','alproyog0','rice','brownrice','noodles','ricenoodles','wwpasta','hppasta','bread','pita','tortilla','salt','soysauce','passata','coco','miso','nori','u11282','u11215','u11216','u12023','u09160','u09152','u11165','u11297','lemon','soymilk','oatmilk']);
 function keyIng(d){const pr=d.it.filter(([id,g])=>FM[id]&&FM[id].cat==='Legumes and soy'&&g>=40&&!STAPLE.has(id)).sort((a,b)=>b[1]-a[1]);if(pr.length)return pr[0][0];let best=null;d.it.forEach(([id,g])=>{const f=FM[id];if(STAPLE.has(id)||!f||f.cat==='Oils and other')return;if(!best||g>best[1])best=[id,g]});return best&&best[0]}
 const DIX={'s-balls':'x-dates','s-mix':'x-brazil'};
-const dIcon=d=>{if(d.own&&!DI[d.id]){const m=mixIcon(d.it);if(m)return m}const main=EMO[DIX[d.id]]||EMO[DI[d.id]];const k=keyIng(d);
+const dIcon=d=>{if(d.gran)return EMO['1f963'];if(d.own&&!DI[d.id]){const m=mixIcon(d.it);if(m)return m}const main=EMO[DIX[d.id]]||EMO[DI[d.id]];const k=keyIng(d);
  if(!main){const f=k||(d.it[0]&&d.it[0][0]);return f?fIcon(f):EMO['1f37d']}
  if(d.t==='s'||!k)return main;const b=fIcon(k);return b===main?main:`<span class="dico">${main}<span class="dbadge">${b}</span></span>`};
 const PH={};let PDB=null;
@@ -1704,7 +1707,7 @@ function renderToday(T,D){
  const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?EN(T.kcal).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const sc=Math.max(100,Math.min(p,200));return `<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?HC(p>=85?100:p):HC(p)}"></i>${p>100?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
  const SGt=computeSugg(),TT=targets(),TN=needT(TT);
  let sni=0;const usedI=new Set();const idea=s=>{let L=[];
-   if(s.ty==='s'){const ix=sni++,n=SGt.snacks.length;for(let j=0;j<n;j++){const q=(ix+j)%n,x=SGt.snacks[q];L.push({nm:x.food?x.food.n.split(',')[0]+' '+x.food.por+' g':x.d.n,add:x.add,ic:x.food?fIcon(x.food.id):dIcon(x.d),attr:`data-tsn="${s.id}:${q}"`,did:x.d&&RSTEPS[x.d.id]?x.d.id:null})}}
+   if(s.ty==='s'){const ix=sni++,n=SGt.snacks.length;for(let j=0;j<n;j++){const q=(ix+j)%n,x=SGt.snacks[q];L.push({nm:x.food?x.food.n.split(',')[0]+' '+x.food.por+' g':x.d.n,add:x.add,ic:x.food?fIcon(x.food.id):dIcon(x.d),attr:`data-tsn="${s.id}:${q}"`,did:x.d&&hasRcp(x.d.id)?x.d.id:null})}}
    else{const m=SGt.meals.find(m=>m.slot===s.id);if(m)L=m.opts.filter(q=>!usedI.has(q.d.id)).slice(0,6).map(q=>{usedI.add(q.d.id);return q}).map(q=>({nm:q.d.n+(q.d.minus?', '+minusTxt(q.d):''),add:q.add,ic:dIcon(q.d),attr:`data-tdi="${s.id}:${q.d.id}"`,did:q.d.id}))}
    if(!L.length)return '';
    const V0=viewVec(D,1);const card=(o,i)=>{const D1=D.slice();addv(D1,o.add);const fo=fillsOf(D,o.add,TN),fl=fo.filter(x=>pctK(x.k,V0,TT)<100),ks=(fl.length?fl:fo).slice(0,2),V1=viewVec(D1);
@@ -1783,7 +1786,7 @@ function renderMeal(){
    ${UNITS[id]?`<div class="packbtns">${UNITS[id].flatMap(([n,ug])=>(NOPL.has(n)?[1,2]:ug>=150?[.5,1,2]:[1,2,3]).map(x=>`<button type="button" data-unit="${i}:${Math.round(x*ug*10)/10}" aria-pressed="${Math.abs(g-x*ug)<.6}">${uLabel(n,x)}</button>`)).join('')}</div>`:''}
    ${f.pack?`<div class="packbtns">${[[.25,'¼ pack'],[1/3,'⅓ pack'],[.5,'½ pack'],[1,'Whole pack']].map(([x,l])=>`<button type="button" data-pack="${i}:${x}">${l}</button>`).join('')}</div>`:''}</div>`}).join('')
   :'<p class="cap" style="padding:20px 4px">Nothing in this meal yet.</p>';
- if(d)$('m-items').insertAdjacentHTML('afterbegin',`<button class="linkbtn" type="button" id="m-rcp">${RSTEPS[d.id]?'Recipe for this dish':'Find a recipe for this dish'}</button>`);
+ if(d)$('m-items').insertAdjacentHTML('afterbegin',`<button class="linkbtn" type="button" id="m-rcp">${hasRcp(d.id)?'Recipe for this dish':'Find a recipe for this dish'}</button>`);
  $('m-items').insertAdjacentHTML('beforeend',`<button class="linkbtn" type="button" id="m-meas">${INFO} How much is a spoon, a cup or a handful?</button>`);
  $('m-foot').innerHTML=`<button class="btn" type="button" id="m-add">Add food</button>
   <button class="btn" type="button" id="m-change">${s.t==='s'?'Snack ideas':'Choose a dish'}</button><button class="btn" type="button" id="m-clear" style="color:var(--low)">${s.extra?'Remove meal':'Clear'}</button>
@@ -2212,7 +2215,7 @@ let PK={slot:'s',kind:'dish',f:'recent',cat:'All',q:'',part:null};
 function openPicker(slot,mode,part){const t=SLOTS.find(x=>x.id===slot).t;const kind=mode==='food'||mode==='part'?'food':'dish';
  const hasRecent=kind==='dish'?allDishes(t).some(d=>d.used):S.recentFoods.length>0;
  PK={slot,kind,f:kind==='dish'?'ideas':(hasRecent&&mode!=='all'?'recent':'all'),cat:'All',q:'',part:part||null,focus:[]};$('pk-q').value='';renderPicker();const d=$('pk');if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('pk-list').scrollTop=0}
-function startMeal(k){openMeal(k);openPicker(k,'food')}
+function startMeal(k){openMeal(k);openPicker(k,'recipe')}
 function closePicker(){const d=$('pk');d.close?d.close():d.removeAttribute('open')}
 $('pk-close').onclick=closePicker;
 $('pk').addEventListener('click',e=>{if(e.target===$('pk'))closePicker()});
@@ -2246,7 +2249,7 @@ function renderPicker(){
   const mq=x=>!q||x.n.toLowerCase().includes(q)||x.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q));
   let ds=allDishes(s.t).filter(mq);
   if(fm==='ideas'){PK.focus=PK.focus||[];const LO=lowList(T);PK.focus=PK.focus.filter(k=>LO.some(x=>x.k===k));const I=slotIdeas(PK.slot,PK.focus.length?12:8,PK.focus).filter(x=>mq(x.d)),TN=needT(T);
-   html=(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!PK.focus.length}">All</button>${LO.map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${PK.focus.includes(x.k)}">${NUT[x.k].n} <span class="num">${Math.round(x.p)} %</span></button>`).join('')}</div>`:'')+I.map(x=>{const ph=PH[x.d.id];return `<div class="opt ideaopt"><button class="optmain" type="button" data-r="${x.d.id}"><span class="thumb em">${ph?`<img src="${ph}" alt="">`:dIcon(x.d)}</span><span class="otx"><span class="t">${esc(x.d.n)}${x.d.min?`<span class="min">${x.d.min} min</span>`:''}${x.d.minus?`<span class="min">${minusTxt(x.d)}</span>`:''}${x.has?'<span class="havetag">Familiar</span>':''}</span><span class="s num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein</span></span></button>${impactFor(x.D0,x.add,T,TN,PK.focus)}<button class="linkbtn rlink" type="button" data-rcp="${x.d.id}">${RSTEPS[x.d.id]?'Recipe':'Find a recipe'}</button></div>`}).join('')||`<p class="empty2">${PK.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No match.'}</p>`;
+   html=(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!PK.focus.length}">All</button>${LO.map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${PK.focus.includes(x.k)}">${NUT[x.k].n} <span class="num">${Math.round(x.p)} %</span></button>`).join('')}</div>`:'')+I.map(x=>{const ph=PH[x.d.id];return `<div class="opt ideaopt"><button class="optmain" type="button" data-r="${x.d.id}"><span class="thumb em">${ph?`<img src="${ph}" alt="">`:dIcon(x.d)}</span><span class="otx"><span class="t">${esc(x.d.n)}${x.d.min?`<span class="min">${x.d.min} min</span>`:''}${x.d.minus?`<span class="min">${minusTxt(x.d)}</span>`:''}${x.has?'<span class="havetag">Familiar</span>':''}</span><span class="s num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein</span></span></button>${impactFor(x.D0,x.add,T,TN,PK.focus)}<button class="linkbtn rlink" type="button" data-rcp="${x.d.id}">${hasRcp(x.d.id)?'Recipe':'Find a recipe'}</button></div>`}).join('')||`<p class="empty2">${PK.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No match.'}</p>`;
    ds=null}
   else if(fm==='recent')ds=ds.filter(d=>d.used).sort((a,b)=>b.used-a.used).slice(0,12);
   else if(fm==='fav')ds=ds.filter(d=>d.fav);
@@ -2488,10 +2491,10 @@ function renderLibDishes(){
  $('lib-t').innerHTML=[['all','All'],['fav','★ Favourites'],['b','Breakfast'],['m','Lunch and dinner'],['s','Snacks']].map(([k,l])=>`<button class="chip" type="button" data-lt="${k}" aria-pressed="${lt===k}">${l}</button>`).join('');
  $('lib-t').querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{S.libt=b.dataset.lt;renderLibDishes()});
  const ds=allDishes(lt==='all'||lt==='fav'?null:lt).filter(d=>lt!=='fav'||d.fav).filter(d=>!q||d.n.toLowerCase().includes(q)||d.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q)));
- const mine=ds.filter(d=>d.own||d.edited).sort((a,b)=>(b.used-a.used)||a.n.localeCompare(b.n)),rest=ds.filter(d=>!d.own&&!d.edited).sort((a,b)=>a.n.localeCompare(b.n));
+ const mine=ds.filter(d=>(d.own||d.edited)&&!d.gran).sort((a,b)=>(b.used-a.used)||a.n.localeCompare(b.n)),rest=ds.filter(d=>!d.own&&!d.edited).sort((a,b)=>a.n.localeCompare(b.n));
  const row=d=>{const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),open=LX===d.id,slots=d.t==='b'?['b']:d.t==='s'?['s']:['l','d'];
   return `<div class="ldish"><button class="ldhead" type="button" data-lx="${d.id}" aria-expanded="${open}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.fav?' <span class="favst" aria-label="Favourite">★</span>':''}${d.edited?'<span class="mine">changed</span>':''}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein${d.min?' · '+d.min+' min':''}</span></span>${CHEV}</button>
-   ${open?`<div class="ldbody"><p class="cap">${(dishFit(d)||d).it.map(([id,g])=>esc(FM[id]?FM[id].n.split(',')[0]:'Food')+' '+g+' g').join(', ')}${dishFit(d)&&dishFit(d).minus?' · '+minusTxt(dishFit(d)):''}</p><div class="btnrow"><button class="btn sm" type="button" data-lrcp="${d.id}">${RSTEPS[d.id]?'Recipe':'Find a recipe'}</button>${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}<button class="btn sm" type="button" data-lfav="${d.id}" aria-pressed="${d.fav}">${d.fav?'★ Favourite':'☆ Add to favourites'}</button>${d.own||d.edited?`<button class="btn sm ghost" type="button" data-ldel="${d.id}">${d.edited?'Reset to original':'Delete'}</button>`:''}</div></div>`:''}</div>`};
+   ${open?`<div class="ldbody"><p class="cap">${(dishFit(d)||d).it.map(([id,g])=>esc(FM[id]?FM[id].n.split(',')[0]:'Food')+' '+g+' g').join(', ')}${dishFit(d)&&dishFit(d).minus?' · '+minusTxt(dishFit(d)):''}</p><div class="btnrow"><button class="btn sm" type="button" data-lrcp="${d.id}">${hasRcp(d.id)?'Recipe':'Find a recipe'}</button>${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}<button class="btn sm" type="button" data-lfav="${d.id}" aria-pressed="${d.fav}">${d.fav?'★ Favourite':'☆ Add to favourites'}</button>${d.own||d.edited?`<button class="btn sm ghost" type="button" data-ldel="${d.id}">${d.edited?'Reset to original':'Delete'}</button>`:''}</div></div>`:''}</div>`};
  /* your granolas: saved from the granola builder, eaten by the serving */
  const gv=lt==='all'||lt==='b'?granVersions().filter(c=>!q||c.n.toLowerCase().includes(q)||c.parts.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q))):[];
  const grow=c=>{const f=FM[c.id],v=itemV([c.id,f.por]),open=LX===c.id;return `<div class="ldish"><button class="ldhead" type="button" data-lx="${c.id}" aria-expanded="${open}"><span class="thumb em">${fIcon(c.id)}</span><span class="sgt"><b>${esc(c.n)}</b><span class="cap num">${f.por} g · ${ENs(v[0])}${Math.round(v[1])} g protein</span></span>${CHEV}</button>
