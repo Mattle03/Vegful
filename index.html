@@ -2690,17 +2690,18 @@ function paSummary(ds){return withProj(()=>{const L=ds.filter(d=>logged(S.days[d
  const lows=SK.filter(k=>!NUT[k].opt&&k!=='kcal').map(k=>({k,p:avg[K.indexOf(k)]/T[k]*100})).filter(x=>x.p<70).sort((a,b)=>a.p-b.p).slice(0,2);
  return {n:L.length,sc:Math.round(dayScore(avg,T)),lows}})}
 function openPlan(){if($('pk').open)closePicker();PA={sh:{},mv:null,wait:false};const d=$('plan');renderPlan();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('pl-body').scrollTop=0}
-function closePlan(){PA=null;const d=$('plan');d.close?d.close():d.removeAttribute('open');render()}
+function closePlan(){if(PA&&PA.ret){setDate(PA.ret)}PA=null;const d=$('plan');d.close?d.close():d.removeAttribute('open');render()}
 function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),T=targets(),SG=paSuggest(ds),sum=paSummary(ds),y=b.scrollTop;
  const dl=d=>kdate(d).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
  const cell=(d,k)=>{const p=S.days[d],sl=p[k],ty=typeOf(p,k),key=d+k,nm=TY[ty].n;
   if(sl.skip)return `<div class="pacell skip"><span class="lbl">${nm}</span><span class="cap">Skipped, not planned</span><button class="linkbtn" type="button" data-paun="${key}">Undo</button></div>`;
   if(sl.it.length){const v=slotVraw0(p,k),mv=PA.mv===key;return `<div class="pacell${sl.pl?' planned':''}"><span class="lbl">${nm}</span><b>${esc(sl.t||sl.it.map(([id])=>FM[id]?FM[id].n.split(',')[0]:'').slice(0,2).join(' and '))}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein</span>
-   <div class="paact"><button class="btn sm ghost" type="button" data-pamv="${key}" aria-expanded="${mv}">Move</button><button class="btn sm ghost" type="button" data-parm="${key}">Remove</button></div>
+   <div class="paact"><button class="btn sm ghost" type="button" data-paed="${key}">Change</button><button class="btn sm ghost" type="button" data-pamv="${key}" aria-expanded="${mv}">Move</button><button class="btn sm ghost" type="button" data-parm="${key}">Remove</button></div>
    ${mv?`<div class="chips wrap">${ds.filter(x=>x!==d).map(x=>`<button class="chip" type="button" data-pato="${key}|${x}">${dl(x)}</button>`).join('')}</div>`:''}</div>`}
-  const L=SG[key];if(!L)return `<div class="pacell open"><span class="lbl">${nm}</span><span class="cap">No idea fits</span><div class="paact"><button class="btn sm ghost" type="button" data-pask="${key}">Skip</button></div></div>`;
+  const L=SG[key];if(!L)return `<div class="pacell open"><span class="lbl">${nm}</span><span class="cap">No idea fits</span><div class="paact"><button class="btn sm ghost" type="button" data-papk="${key}">Pick a dish</button><button class="btn sm ghost" type="button" data-paown="${key}">Make my own</button><button class="btn sm ghost" type="button" data-pask="${key}">Skip</button></div></div>`;
   const card=(x,i)=>{const tg=topTags(x.add,T,2);return `<div class="tidea"><span class="thumb em">${PH[x.d.id]?`<img src="${PH[x.d.id]}" alt="">`:dIcon(x.d)}</span><span class="sgt"><span class="cap">${x.lo?'Leftover':'Idea '+(L.length>1?(i+1)+' of '+L.length:'')}</span><b>${esc(x.d.n)}</b><span class="cap num">${ENs(x.add[0])}${Math.round(x.add[1])} g protein${tg.length?' · '+tg.map(t=>NUT[t.k].n+' '+Math.round(t.p)+' %').join(' · '):''}</span></span><button class="btn sm acc" type="button" data-patk="${key}|${i}">Take</button></div>`};
-  return `<div class="pacell open"><div class="row" style="align-items:center"><span class="lbl">${nm}</span><button class="linkbtn" type="button" data-pask="${key}" style="min-height:32px;padding:4px">Skip</button></div><div class="tideas${L.length>1?' multi':''}" data-pasc="${key}">${L.map(card).join('')}</div></div>`};
+  return `<div class="pacell open"><div class="row" style="align-items:center"><span class="lbl">${nm}</span><button class="linkbtn" type="button" data-pask="${key}" style="min-height:32px;padding:4px">Skip</button></div><div class="tideas${L.length>1?' multi':''}" data-pasc="${key}">${L.map(card).join('')}</div>
+   <div class="paact"><button class="btn sm ghost" type="button" data-papk="${key}">Pick a dish</button><button class="btn sm ghost" type="button" data-paown="${key}">Make my own</button></div></div>`};
  const nList=(()=>{try{return shopList().rows.filter(r=>!r.chk).length}catch(e){return 0}})();
  b.innerHTML=`${paCal()}
   <div class="pasum">${sum?`<b class="num">${sum.sc} %</b><span>covered by what's planned so far${sum.lows.length?'. Low on '+gList(sum.lows.map(x=>NUT[x.k].n)):''}</span>`:'<span>Take a suggestion or pick a meal; the others adapt to it.</span>'}</div>
@@ -2713,6 +2714,10 @@ function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),T=targets(
   if(!PA.wait){S.planR={from:d,to:d};PA.wait=true}else{const f=S.planR.from;S.planR=d<f?{from:d,to:f}:{from:f,to:d};PA.wait=false}PA.sh={};save();renderPlan()});
  b.querySelectorAll('[data-pasc]').forEach(x=>{const k=x.dataset.pasc;if(PA.sc&&PA.sc[k])x.scrollLeft=PA.sc[k];x.addEventListener('scroll',()=>{PA.sc=PA.sc||{};PA.sc[k]=x.scrollLeft},{passive:true})});
  b.querySelectorAll('[data-patk]').forEach(x=>x.onclick=()=>{const [key,ix]=x.dataset.patk.split('|'),[d,k]=at(key),s=(SG[key]||[])[+ix||0];if(!s)return;const keep=S.date;setDate(d);useDish(k,s.d);S.plan[k].pl=1;setDate(keep);save();renderPlan()});
+ const onDay=(key,fn)=>{const [d,k]=at(key);if(!PA.ret)PA.ret=S.date;paDay(d);setDate(d);fn(k)};
+ b.querySelectorAll('[data-papk]').forEach(x=>x.onclick=()=>onDay(x.dataset.papk,k=>openPicker(k,'recipe')));
+ b.querySelectorAll('[data-paown]').forEach(x=>x.onclick=()=>onDay(x.dataset.paown,k=>{openMeal(k);openPicker(k,'food')}));
+ b.querySelectorAll('[data-paed]').forEach(x=>x.onclick=()=>onDay(x.dataset.paed,k=>openMeal(k)));
  b.querySelectorAll('[data-pask]').forEach(x=>x.onclick=()=>{const [d,k]=at(x.dataset.pask);paDay(d)[k].skip=1;save();renderPlan()});
  b.querySelectorAll('[data-paun]').forEach(x=>x.onclick=()=>{const [d,k]=at(x.dataset.paun);delete paDay(d)[k].skip;save();renderPlan()});
  b.querySelectorAll('[data-parm]').forEach(x=>x.onclick=()=>{const [d,k]=at(x.dataset.parm),p=paDay(d),ty=typeOf(p,k);p[k]=Object.assign({t:'',it:[]},ty!==k?{ty}:{});save();renderPlan()});
@@ -2723,6 +2728,9 @@ function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),T=targets(
 /* a meal's values on any day, planned or not */
 function slotVraw0(p,k){return p[k].it.reduce((a,it)=>addv(a,itemV(it)),z())}
 $('pl-close').onclick=closePlan;
+/* back from the picker or the meal editor: return to the day you were on and refresh the plan */
+function paBack(){setTimeout(()=>{if(!PA||!PA.ret||$('pk').open||$('meal').open)return;const r=PA.ret;PA.ret=null;render();setDate(r);render();renderPlan()},0)}
+$('pk').addEventListener('close',paBack);$('meal').addEventListener('close',paBack);
 /* search words that open the planner */
 const PAQ=/^plan|meal ?prep|wochenplan|planen|vorplan|weekplan|week plan|plan ahead/;
 const paRow=q=>PAQ.test(q||'')?`<div class="opt"><button class="optmain" type="button" data-gplan="1"><span class="thumb em">${EMO['1f37d']}</span><span class="otx"><span class="t">Plan ahead</span><span class="s">Plan several days at once, with ideas that adapt</span></span></button></div>`:'';
