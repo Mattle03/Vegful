@@ -3156,7 +3156,7 @@ const NTOP={};function nutTop(k){if(k in NTOP)return NTOP[k];const i=K.indexOf(k
 function nutDD(k){const btn=$('g-nut'),L=$('g-list'),ic=x=>{const id=nutTop(x);return id?fIcon(id):EMO['1fad9']};
  btn.innerHTML=`<span class="ficon em">${ic(k)}</span><span class="ddn"><b>${NUT[k].n}</b></span><svg class="ddchev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
  const G=[...new Set(K.filter(x=>x!=='kcal').map(x=>NUT[x].g))];
- L.innerHTML=G.map(g=>`<div class="ddg">${g}</div>`+K.filter(x=>x!=='kcal'&&NUT[x].g===g).map(x=>{const id=nutTop(x);return `<button class="ddopt" type="button" role="option" data-gn="${x}" aria-selected="${x===k}"><span class="ficon em">${ic(x)}</span><span class="ddn"><b>${NUT[x].n}</b><span class="cap">${id?'For example '+esc(FM[id].n.split(',')[0].toLowerCase()):'Algae oil'}</span></span></button>`}).join('')).join('');
+ L.innerHTML=G.map(g=>`<div class="ddg">${g}</div>`+K.filter(x=>x!=='kcal'&&NUT[x].g===g).map(x=>{const id=nutTop(x);return `<button class="ddopt" type="button" role="option" data-gn="${x}" aria-selected="${x===k}"><span class="ficon em">${ic(x)}</span><span class="ddn"><b>${NUT[x].n}</b></span></button>`}).join('')).join('');
  const close=()=>{L.hidden=true;btn.setAttribute('aria-expanded','false');document.removeEventListener('click',out,true)},out=e=>{if(!$('g-dd').contains(e.target))close()};
  btn.onclick=()=>{if(!L.hidden){close();return}L.hidden=false;btn.setAttribute('aria-expanded','true');document.addEventListener('click',out,true);const sel=L.querySelector('[aria-selected="true"]');if(sel)L.scrollTop=sel.offsetTop-L.clientHeight/2+20;if(sel)sel.focus({preventScroll:true})};
  L.onkeydown=e=>{if(e.key==='Escape'){close();btn.focus()}};
