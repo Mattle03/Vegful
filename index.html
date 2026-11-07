@@ -691,6 +691,20 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .orow[aria-pressed="true"]{border:2px solid var(--accent);border-radius:14px}
 .tidea.again{background:var(--accent-soft)}
 .tidea.again .cap{color:var(--ink)}
+.pncard .adsearch{margin-bottom:6px}.pnrow{border-bottom:1px solid var(--line);padding:4px 0}.pnrow.out .pnn b{color:var(--muted)}
+.pntop{display:flex;align-items:center;gap:10px}.pnn{flex:1;min-width:0;display:flex;flex-direction:column;border:0;background:none;padding:8px 0;font:inherit;color:var(--ink);text-align:left;min-height:52px;justify-content:center}.pnn b{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pnstep{display:flex;gap:6px;flex:none}.pnstep button{width:44px;height:44px;border-radius:12px;border:0;background:var(--surface2);font-size:22px;font-weight:600;color:var(--ink)}.pnstep button:disabled{opacity:.4}
+.pned{display:flex;flex-direction:column;gap:8px;padding:4px 0 12px 42px}.pnedrow{display:flex;align-items:center;gap:8px}.pnedrow input{max-width:140px}
+.pnlow{margin-bottom:6px}.pnscan{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:10px;padding:10px 12px;border-radius:14px;background:var(--surface2)}
+.dd{position:relative}.ddbtn{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;border:1px solid transparent;border-radius:14px;background:var(--surface2);padding:8px 14px;font:inherit;color:var(--ink);text-align:left}.ddbtn[aria-expanded="true"]{border-color:var(--accent)}
+.ddbtn .ficon,.ddopt .ficon{width:30px;height:30px;flex:none}.ddn{flex:1;min-width:0;display:flex;flex-direction:column}.ddn b{font-size:16px;font-weight:700}.ddchev{width:20px;height:20px;fill:none;stroke:var(--muted);stroke-width:2;stroke-linecap:round;flex:none;transition:transform .2s}.ddbtn[aria-expanded="true"] .ddchev{transform:rotate(180deg)}
+.ddlist{position:absolute;left:0;right:0;top:calc(100% + 6px);z-index:30;background:var(--surface);border:1px solid var(--line);border-radius:16px;box-shadow:0 12px 32px rgba(0,0,0,.22);max-height:min(60vh,440px);overflow:auto;padding:6px;overscroll-behavior:contain}
+.ddg{font-size:12px;font-weight:800;color:var(--muted);padding:10px 10px 4px}.ddopt{display:flex;align-items:center;gap:12px;width:100%;border:0;background:none;border-radius:12px;padding:8px 10px;font:inherit;color:var(--ink);text-align:left;min-height:52px}.ddopt[aria-selected="true"]{background:var(--accent-soft)}.ddopt[aria-selected="true"] b{color:var(--accent)}.ddopt .cap{font-size:12.5px}
+.pmenu{padding:6px 8px}.prow2{display:flex;align-items:center;gap:14px;width:100%;border:0;background:none;padding:12px 8px;text-align:left;font:inherit;color:var(--ink);border-top:1px solid var(--line);min-height:64px}.prow2:first-child{border-top:0}
+.pico{width:40px;height:40px;border-radius:12px;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}.pico svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.ptx{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}.ptx b{font-size:16px}.ptx .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pback{display:flex;align-items:center;gap:10px;min-width:0}.pback h1{font-size:26px}
+.psec:not(.keeph)>h2:first-child{display:none}.psec .padv{margin-top:16px}
 .ktip,.kthead{position:relative}.ktip h3,.kthead h2{padding-right:40px}.ktip>.srcd,.kthead>.srcd{position:static;display:block}.ktip>.srcd>summary,.kthead>.srcd>summary{position:absolute;top:8px;right:8px}.kthead>.srcd>summary{top:0;right:0}.ktip .srcpop,.kthead .srcpop{max-width:none;margin:8px 0 0}
 .gmore{display:grid;grid-template-columns:1fr 1fr;gap:8px}.gmore .btn{white-space:nowrap}
 .lfacts{display:grid;grid-template-columns:repeat(auto-fit,minmax(96px,1fr));gap:8px}.lfacts>div{background:var(--surface2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column;gap:2px}.lfacts b{font-size:17px}
@@ -739,8 +753,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
     <div class="chips" id="learn-seg" hidden><button class="chip" type="button" data-ln="guide">Best sources by nutrient</button><button class="chip" type="button" data-ln="kitchen">Kitchen tips</button></div>
     <div id="it-foods" class="view" hidden>
       <div class="card" style="display:flex;flex-direction:column;gap:12px">
-        <label class="lbl" for="g-nut">Best vegan sources of</label>
-        <select id="g-nut"></select>
+        <span class="lbl" id="g-nut-l">Best vegan sources of</span>
+        <div class="dd" id="g-dd"><button class="ddbtn" type="button" id="g-nut" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="g-nut-l g-nut"></button><div class="ddlist" id="g-list" role="listbox" aria-labelledby="g-nut-l" hidden></div></div>
         <p class="info muted" id="g-info"></p>
         <div class="gmore"><button class="btn sm" type="button" id="g-read">Read more</button><button class="btn sm" type="button" id="g-how">How am I doing</button></div>
         <div class="chips" id="g-cats"></div>
@@ -751,8 +765,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
   </section>
 
   <section id="v-profile" class="view" hidden>
-    <div class="vhead"><div><h1>Profile</h1><p class="cap">Your data stays on this phone</p></div></div>
-    <div class="card">
+    <div class="vhead" id="p-head"><div><h1>Profile</h1><p class="cap">Your data stays on this phone</p></div></div>
+    <div class="card pmenu" id="p-menu"></div>
+    <div class="card psec" data-ps="you" hidden>
       <h2 style="margin-bottom:14px">About you</h2>
       <div class="form">
         <label>Sex<select id="p-sex"><option value="m">Male</option><option value="f">Female</option></select></label>
@@ -763,17 +778,20 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
         <div class="full" id="p-pgs"></div>
       </div>
       <label class="suprow" for="p-hk" style="margin-top:14px"><span class="supname">Show calories</span><span class="switch"><input type="checkbox" id="p-hk"><i></i></span><small>Turn off to hide energy numbers everywhere. The app still checks in the background that a day is not far too light.</small></label>
-      <div id="prof-targets" class="targets"></div>
-      <details class="adv"><summary>Advanced</summary>
+    </div>
+    <div class="card psec" data-ps="targets" hidden>
+      <h2>Targets</h2>
+      <div id="prof-targets" class="targets" style="margin-top:0"></div>
+      <div class="padv">
         <div class="form" style="margin-top:8px">
           <label data-kc="1">Energy goal, kcal<input id="p-kcal" type="number" min="1000" max="6000" step="50" placeholder="auto" inputmode="numeric"></label>
           <label data-kc="1">Energy unit<select id="p-unit"><option value="kcal">kcal</option><option value="kj">kJ</option></select></label>
           <label class="full">Reference values<select id="p-ref"><option value="efsa">EFSA, European Union (default)</option><option value="dge">DGE, Germany, Austria, Switzerland</option><option value="nih">NIH, USA and Canada</option></select></label>
         </div>
         <p class="cap" style="margin-top:8px">Switch reference values only if your doctor or dietitian works with another set.</p>
-      </details>
+      </div>
     </div>
-    <div class="card">
+    <div class="card psec" data-ps="look" hidden>
       <h2>Look</h2>
       <div class="lbl" style="margin:12px 0 6px">Mode</div>
       <div class="seg sm" id="p-mode"><button type="button" data-mode="auto">Automatic</button><button type="button" data-mode="light">Light</button><button type="button" data-mode="dark">Dark</button></div>
@@ -782,37 +800,37 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
       <div class="lbl" style="margin:16px 0 6px">Animations</div>
       <div class="seg sm" id="p-anim"><button type="button" data-anim="auto">Automatic</button><button type="button" data-anim="on">On</button><button type="button" data-anim="off">Off</button></div>
     </div>
-    <div class="card">
+    <div class="card psec keeph" data-ps="sup" hidden style="order:2">
       <h2>Reminders</h2>
       <p class="cap" style="margin:4px 0 10px">Adds a repeating event to your phone's calendar for a supplement you take daily, weekly or every few days. Your calendar reminds you even when the app is closed.</p>
       <div id="p-rem"></div>
     </div>
-    <div class="card">
+    <div class="card psec" data-ps="track" hidden>
       <h2>Tracking</h2>
       <label class="suprow" for="p-water" style="margin-top:10px"><span class="supname">Water bottle</span><span class="switch"><input type="checkbox" id="p-water"><i></i></span><small>Shows a bottle on Today. Hold it to log a filled bottle; it empties at the pace you should drink.</small></label>
       <label class="suprow" for="p-wlog" style="margin-top:10px"><span class="supname">Weight log</span><span class="switch"><input type="checkbox" id="p-wlog"><i></i></span><small>Log your weight when you like. Each value counts from that day on and keeps your energy and protein targets current. Shows a trend graph.</small></label>
       <label class="full" id="p-btl-row" hidden style="margin-top:14px;display:grid;gap:6px">Bottle size in ml<input id="p-btl" type="number" min="100" max="3000" step="50" inputmode="numeric"></label>
     </div>
-    <div class="card">
+    <div class="card psec" data-ps="sup" hidden>
       <h2>Supplements</h2>
       <p class="cap" style="margin:6px 0 14px">Switch on what you take regularly. Each one counts that nutrient as fully covered.</p>
       <div id="prof-sup" class="suplist"></div>
       <div id="prof-cov" style="margin-top:14px"></div>
     </div>
-    <div class="card">
+    <div class="card psec" data-ps="dis" hidden>
       <h2>Foods I don't eat</h2>
       <p class="cap" style="margin:6px 0 10px">Ideas, swaps and dish lists leave these out.</p>
       <div id="prof-dis" class="chips wrap"></div>
       <input type="search" id="dis-q" placeholder="Add a food, e.g. banana" style="margin-top:10px" autocomplete="off">
       <div id="dis-res"></div>
     </div>
-    <div class="card">
+    <div class="card psec" data-ps="data" hidden>
       <div class="row" style="margin-bottom:12px;justify-content:flex-start"><span class="brandmark sm"><span id="logo-prof"></span></span><div><h2>Vegful</h2><p class="cap">Complete your nutrition</p></div></div>
       <p class="cap" style="margin-bottom:10px">Your days are stored on this phone. Make a backup now and then, or to move to a new phone.</p>
       <div class="btnrow" style="margin-bottom:10px"><button class="btn" type="button" id="bk-save">Save backup file</button><button class="btn" type="button" id="bk-copy">Copy backup</button><label class="btn" for="bk-file">Restore</label><input type="file" id="bk-file" accept=".json,application/json,text/plain" hidden></div><p class="cap" id="bk-msg" style="margin-bottom:10px"></p>
       <div class="btnrow"><button class="btn" type="button" id="re-onb">Run setup again</button><button class="btn" type="button" id="reset-day">Load example day</button></div>
     </div>
-    <p class="foot">Targets: EFSA reference values for adults, adjusted for vegan eating (zinc high phytate value, omega 3 ALA doubled). <span data-kc="1">Energy: Mifflin St Jeor. </span>Food values are typical averages; check labels. Product data from <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (Open Database License). Food icons: <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener">Twemoji</a>, CC BY 4.0. Cooked vegetables use typical cooking losses (vitamin C about 35 %, folate about 25 %). A planning aid, not medical advice.</p>
+    <p class="foot psec" data-ps="targets" hidden>Targets: EFSA reference values for adults, adjusted for vegan eating (zinc high phytate value, omega 3 ALA doubled). <span data-kc="1">Energy: Mifflin St Jeor. </span>Food values are typical averages; check labels. Product data from <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (Open Database License). Food icons: <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener">Twemoji</a>, CC BY 4.0. Cooked vegetables use typical cooking losses (vitamin C about 35 %, folate about 25 %). A planning aid, not medical advice.</p>
   </section>
 </div>
 
@@ -2315,10 +2333,11 @@ async function tabLookup(code){
 }
 function renderScanTab(){
  const v=$('v-scan'),key=ST.state+':'+(ST.prod?ST.prod.code:'')+':'+(S.shopSeg||'scan');
- if(!v.dataset.shb){v.dataset.shb=1;v.addEventListener('click',e=>{const b=e.target.closest('[data-shs]');if(!b)return;S.shopSeg=b.dataset.shs;ST.drawn='';save();renderScanTab();scrollTo({top:0})})}
+ if(!v.dataset.shb){v.dataset.shb=1;v.addEventListener('click',e=>{const b=e.target.closest('[data-shs]');if(!b)return;S.shopSeg=b.dataset.shs;S.panScan=0;ST.drawn='';save();renderScanTab();scrollTo({top:0})})}
  if(ST.drawn===key){if(ST.state==='cam'&&!SCAN.tab)startCamera('st-video');return}
  ST.drawn=key;
- const nOpen=shopOpen(),segH=`<div class="seg" id="sh-seg" style="margin-bottom:14px"><button type="button" data-shs="scan" aria-pressed="${S.shopSeg!=='list'}">Scan</button><button type="button" data-shs="list" aria-pressed="${S.shopSeg==='list'}">Shopping list${nOpen?' · '+nOpen:''}</button></div>`;
+ const nOpen=shopOpen(),segH=`<div class="seg" id="sh-seg" style="margin-bottom:14px"><button type="button" data-shs="scan" aria-pressed="${S.shopSeg!=='list'&&S.shopSeg!=='pantry'}">Scan</button><button type="button" data-shs="list" aria-pressed="${S.shopSeg==='list'}">List${nOpen?' · '+nOpen:''}</button><button type="button" data-shs="pantry" aria-pressed="${S.shopSeg==='pantry'}">Pantry</button></div>`;
+ if(S.shopSeg==='pantry'){stopCamera();SCAN.tab=false;ST.drawn='';renderPantry(v,`<div class="vhead"><div><h1>Scan/Shop</h1><p class="cap">What you have at home. Logged meals use it up.</p></div></div>`+segH);return}
  if(S.shopSeg==='list'){stopCamera();SCAN.tab=false;ST.drawn='';renderShopList(v,`<div class="vhead"><div><h1>Scan/Shop</h1><p class="cap">Everything your planned meals need, in shop amounts.</p></div></div>`+segH);return}
  const head=`<div class="vhead"><div><h1>Scan/Shop</h1><p class="cap">Check a product in the shop: vegan or not, protein, fiber, sugar.</p></div></div>`+segH;
  const H=S.scanHist||[];
@@ -2349,6 +2368,8 @@ function renderScanTab(){
   <div class="vbig" style="color:${c[0]};background:color-mix(in srgb,${c[0]} 14%,transparent)">${c[1]}<span>${vg==='vegan'?'According to the label or ingredient list':vg==='no'?'Contains an animal ingredient according to the ingredient list':'Check the ingredient list below'}</span></div>
   ${x.ns&&NS[x.ns]?`<div class="nsrow"><span>Nutri-Score</span><b style="background:${NS[x.ns]}">${x.ns.toUpperCase()}</b></div>`:''}
   <div class="btnrow2" style="margin-top:14px">${saved?`<button class="btn" type="button" disabled>In My foods</button>`:'<button class="btn primary" type="button" id="st-save">Save to My foods</button>'}${next}</div>
+  ${(()=>{const pid=saved?saved.id:P.src==='base'&&P.base&&FM[P.base]?P.base:null;if(!pid)return S.panScan?'<p class="cap" style="margin:10px 0 0">Save it to My foods first to keep it in your pantry.</p>':'';const h=panAll()[pid],pg=+P.pack>0?+P.pack:panDef(pid);
+   return `<div class="pnscan"><span class="cap num">${h>0?'In your pantry: '+panAmt(pid,h):'Not in your pantry'}</span><button class="btn${S.panScan?' primary':''}" type="button" id="st-pan" data-pid="${pid}" data-pg="${pg}">Add ${panAmt(pid,pg)} to pantry</button></div>${S.panScan?'<button class="btn wide ghost" type="button" id="st-panback" style="margin-top:6px">Back to pantry</button>':''}`})()}
   <div class="lbl" style="margin:14px 0 4px">Per 100 g</div>
   <div class="ntab">${row('Energy',L.kcal,'kcal')}${row('Protein',L.p,'g')}${row('Carbohydrates',x.carb,'g')}${row('of which sugars',x.sug,'g',1)}${row('Fat',x.fat,'g')}${row('of which saturated',x.sat,'g',1)}${row('Fiber',L.fib,'g')}${row('Salt',x.salt,'g')}</div>
   ${ppk!=null?`<p class="cap" style="margin-top:8px"><b>${fmt(ppk)} g protein per 100 kcal.</b> Tofu has about 10, lentils about 7, oats about 4.</p>`:''}
@@ -2361,6 +2382,8 @@ function renderScanTab(){
 function bindST(P){
  const nx=()=>{ST={state:'cam',prod:null,drawn:''};renderScanTab();scrollTo({top:0})};
  if($('st-next'))$('st-next').onclick=nx;
+ if($('st-pan'))$('st-pan').onclick=e=>{const b=e.currentTarget,id=b.dataset.pid,g=+b.dataset.pg;panAdd(id,g);save();toast(`Added to your pantry: ${gRowName(id).split(',')[0].toLowerCase()}, ${panAmt(id,g)}`);ST.drawn='';renderScanTab()};
+ if($('st-panback'))$('st-panback').onclick=()=>{stopCamera();S.shopSeg='pantry';S.panScan=0;ST.drawn='';save();renderScanTab();scrollTo({top:0})};
  const rv=()=>{SC={slot:null,stage:'review',prod:{code:P.code,fs:P.fs,n:P.n||'',lab:Object.assign({},P.lab||{}),vegan:P.vegan,base:P.base||'',pack:P.pack||'',por:P.por||'',img:P.img||'',found:!!P.found,ing:P.ing||[],share:P.share||0,src:P.src||'base',unk:P.unk||[]},msg:''};const d=$('scan');renderScan();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}};
  if($('st-save'))$('st-save').onclick=rv;if($('st-label'))$('st-label').onclick=rv;
 }
@@ -2748,23 +2771,25 @@ function shopAmt(id,q){const f=FM[id],P=PACK[id]||(f&&f.pack?[+f.pack,'pack ('+f
  if(P){const n=Math.max(1,Math.ceil(q/P[0]-.15));return n+' '+(n===1?P[1]:P[2])}
  if(C){const n=Math.max(1,Math.ceil(q/C[0]-.2));return n+' '+(n===1?C[1]:C[2])}
  return q>=1000?fmt(Math.round(q/100)/10)+' kg':(q>=100?Math.round(q/50)*50:Math.max(5,Math.round(q/5)*5))+(gRole(id)==='liq'?' ml':' g')}
-function shopList(){const {g,meals}=shopNeed(),rows=[],home=[];
- Object.entries(g).forEach(([id,q])=>{const r={key:id,id,q,amt:shopAmt(id,q),area:shopArea(id),n:PIECE[id]?'':shopName(id),hn:shopName(id)};if(AT_HOME(id)&&!S.shop.need[id])home.push(r);else rows.push(r)});
+function shopList(){const {g,meals}=shopNeed(),rows=[],home=[],stock=[],have=panAll();
+ Object.entries(g).forEach(([id,q])=>{const r={key:id,id,q,area:shopArea(id),n:PIECE[id]?'':shopName(id),hn:shopName(id)},h=shopHave(r,have);if(h>=q*.98){r.amt=panAmt(id,h);stock.push(r);return}if(h>0){r.q=q-h;r.have=h}r.amt=shopAmt(id,r.q);if(AT_HOME(id)&&!S.shop.need[id])home.push(r);else rows.push(r)});
  S.shop.extra.forEach((x,i)=>{if(x.t)rows.push({key:'t'+i,t:1,n:x.t,amt:'',area:'Other',xi:i})});
  const now=Date.now();Object.keys(S.shop.chk).forEach(k=>{const c=S.shop.chk[k];if(!c||typeof c!=='object'||now-c.t>14*864e5)delete S.shop.chk[k]});
- rows.forEach(r=>{const c=S.shop.chk[r.key];r.chk=!!c&&(r.t||r.q<=c.q*1.05+1)});return {rows,home,meals}}
+ rows.forEach(r=>{const c=S.shop.chk[r.key];r.chk=!!c&&(r.t||r.q<=c.q*1.05+1)});return {rows,home,meals,stock}}
 const shopOpen=()=>shopList().rows.filter(r=>!r.chk).length;
 function shopText(){const L=shopList();return 'Shopping list\n'+AREAS.map(a=>{const R=L.rows.filter(r=>r.area===a&&!r.chk);return R.length?`\n${a}\n`+R.map(r=>`• ${[r.amt,r.t||r.id&&FM[r.id].cat==='My foods'?r.n:r.n.toLowerCase()].filter(Boolean).join(' ')}`).join('\n'):''}).join('')}
 function renderShopList(v,head){const L=shopList(),open=L.rows.filter(r=>!r.chk).length;
- const item=r=>`<label class="shrow${r.chk?' done':''}"><input type="checkbox" data-shk="${esc(r.key)}"${r.chk?' checked':''}><span class="ficon em">${r.t?EMO['1f37d']:fIcon(r.id)}</span><span class="shn"><b>${r.amt?esc(r.amt):''}</b> ${esc(r.t||!r.id||FM[r.id].cat==='My foods'?r.n:r.n.toLowerCase())}</span>${r.xi!=null?`<button class="rm" type="button" data-shx="${r.xi}" aria-label="Remove ${esc(r.n||r.hn)}">${XIC}</button>`:''}</label>`;
+ const item=r=>`<label class="shrow${r.chk?' done':''}"><input type="checkbox" data-shk="${esc(r.key)}"${r.chk?' checked':''}><span class="ficon em">${r.t?EMO['1f37d']:fIcon(r.id)}</span><span class="shn"><b>${r.amt?esc(r.amt):''}</b> ${esc(r.t||!r.id||FM[r.id].cat==='My foods'?r.n:r.n.toLowerCase())}${r.have&&!r.chk?` <span class="cap">· ${panAmt(r.id,r.have)} at home</span>`:''}</span>${r.xi!=null?`<button class="rm" type="button" data-shx="${r.xi}" aria-label="Remove ${esc(r.n||r.hn)}">${XIC}</button>`:''}</label>`;
  v.innerHTML=head+`<div class="seg sm" id="sh-days" style="margin-bottom:12px">${[3,7,14].map(n=>`<button type="button" data-shd="${n}" aria-pressed="${S.shop.days===n}">${n===3?'Next 3 days':n===7?'Next 7 days':'Next 2 weeks'}</button>`).join('')}</div>
   <div class="card"><div class="card-head"><div><h2>Shopping list</h2><p class="cap num">${L.meals.length?`${L.meals.length} planned meal${L.meals.length>1?'s':''} · ${open} to buy`:'No planned meals in these days yet.'}</p></div>${L.rows.length?'<button class="btn sm" type="button" id="sh-share">Share</button>':''}</div>
   ${L.meals.length||L.rows.length?'':`<p class="cap" style="margin:8px 0 10px">Plan some meals and their ingredients show up here.</p><button class="btn primary" type="button" id="sh-plan">Plan ahead</button>`}
   ${AREAS.map(a=>{const R=L.rows.filter(r=>r.area===a);return R.length?`<h3 class="rh">${a}</h3>${R.sort((x,y)=>x.chk-y.chk).map(item).join('')}`:''}).join('')}
   <div class="btnrow" style="margin-top:12px"><button class="btn" type="button" id="sh-add">Add food</button><input type="text" id="sh-t" placeholder="Something else" style="flex:1;min-width:120px"><button class="btn" type="button" id="sh-tadd">Add</button></div>
 </div>
+  ${L.stock.length?`<div class="card"><h2 style="font-size:17px">In your pantry</h2><p class="cap" style="margin:2px 0 8px">Enough at home for these days.</p>${L.stock.map(r=>`<div class="shrow"><span class="ficon em">${fIcon(r.id)}</span><span class="shn">${esc(r.hn)} <span class="cap">· ${esc(r.amt)} at home</span></span></div>`).join('')}</div>`:''}
   ${L.home.length?`<div class="card"><h2 style="font-size:17px">Probably at home</h2><p class="cap" style="margin:2px 0 8px">Tap what you need to buy.</p><div class="chips wrap">${L.home.map(r=>`<button class="chip" type="button" data-shn="${r.id}">${esc(r.hn)}</button>`).join('')}</div></div>`:''}`;
- v.querySelectorAll('[data-shk]').forEach(x=>x.onchange=()=>{const k=x.dataset.shk,r=shopList().rows.find(y=>y.key===k);if(x.checked)S.shop.chk[k]={q:r&&r.q||0,t:Date.now()};else delete S.shop.chk[k];save();renderShopList(v,head);shopBadge()});
+ v.querySelectorAll('[data-shk]').forEach(x=>x.onchange=()=>{const k=x.dataset.shk,r=shopList().rows.find(y=>y.key===k);
+  if(x.checked){const pg=r&&r.id?shopBuyG(r.id,r.q):0;S.shop.chk[k]={q:r&&r.q||0,t:Date.now(),pg};if(pg)panAdd(r.id,pg)}else{const c=S.shop.chk[k];if(c&&c.pg&&r&&r.id)panAdd(r.id,-c.pg);delete S.shop.chk[k]}save();renderShopList(v,head);shopBadge()});
  v.querySelectorAll('[data-shd]').forEach(b=>b.onclick=()=>{S.shop.days=+b.dataset.shd;save();renderShopList(v,head);shopBadge()});
  v.querySelectorAll('[data-shn]').forEach(b=>b.onclick=()=>{S.shop.need[b.dataset.shn]=1;save();renderShopList(v,head);shopBadge()});
  v.querySelectorAll('[data-shx]').forEach(b=>b.onclick=e=>{e.preventDefault();S.shop.extra.splice(+b.dataset.shx,1);Object.keys(S.shop.chk).filter(k=>k[0]==='t').forEach(k=>delete S.shop.chk[k]);save();renderShopList(v,head);shopBadge()});
@@ -2775,7 +2800,7 @@ function renderShopList(v,head){const L=shopList(),open=L.rows.filter(r=>!r.chk)
   try{await navigator.clipboard.writeText(t);toast('List copied')}catch(e){toast('Could not copy the list')}}}
 /* scanning a product on the list ticks it off */
 function shopTick(P){if(!P)return;const L=shopList(),saved=F.find(f=>f.bc===P.code),ids=[saved&&saved.id,P.base].filter(Boolean);const r=L.rows.find(x=>!x.chk&&ids.includes(x.id));
- if(r){S.shop.chk[r.key]={q:r.q,t:Date.now()};save();shopBadge();toast(`Ticked off ${r.hn.toLowerCase()}`)}}
+ if(r){const pg=shopBuyG(r.id,r.q);S.shop.chk[r.key]={q:r.q,t:Date.now(),pg};panAdd(r.id,pg);save();shopBadge();toast(`Ticked off ${r.hn.toLowerCase()}, now in your pantry`)}}
 function shopBadge(){const b=document.querySelector('.tabbar .tabscan .i');if(!b)return;let n=0;try{n=shopOpen()}catch(e){}let el=b.querySelector('.tbadge');if(!n){if(el)el.remove();return}
  if(!el){el=document.createElement('span');el.className='tbadge';b.appendChild(el)}el.textContent=n>99?'99+':n;el.setAttribute('aria-label',n+' items to buy')}
 /* search words that open the list */
@@ -2940,6 +2965,73 @@ function adFoot(s,sl){const f=$('ad-foot'),v=AD.view;
  $('ad-plate').onclick=()=>adView('plate',{open:sl.it.length===1?0:null});$('ad-done').onclick=closeAdd}
 
 /* rows: one line each, a + puts it on the plate */
+/* ---------- pantry: what you have at home ----------
+   S.pantry = {id:{g, d, u0, top}}: g grams stocked on day d, u0 grams of it already eaten that day, top the last full amount.
+   What is left follows your logged meals from then on (planned, skipped and eaten out meals do not count), so editing a meal corrects the stock.
+   The shopping list buys only what the pantry is missing; ticking an item off stocks what you bought. */
+function panInit(){if(!S.pantry||typeof S.pantry!=='object'||Array.isArray(S.pantry))S.pantry={}}
+panInit();
+function usedOn(d){const p=S.days[d],o={};if(!p)return o;
+ const put=(id,q,dp)=>{const f=FM[id];if(!f||!(q>0))return;o[id]=(o[id]||0)+q;if(dp<3&&!S.pantry[id]&&f.parts&&f.parts.length&&(f.gb||String(id).startsWith('m_'))){const tot=mixTot(f);if(tot)f.parts.forEach(([pp,pg])=>put(pp,q*pg/tot,dp+1))}};
+ mealKeys(p).forEach(k=>{const sl=p[k];if(sl.pl||sl.skip||sl.est)return;sl.it.forEach(([id,q])=>put(id,+q,0))});return o}
+/* grams left per food */
+function panAll(){panInit();const ids=Object.keys(S.pantry).filter(id=>FM[id]);if(!ids.length)return {};const from=ids.map(id=>S.pantry[id].d||TODAY).sort()[0],use={};
+ for(let d=from;d<=TODAY;d=shift(d,1)){const u=usedOn(d);Object.keys(u).forEach(id=>{const e=S.pantry[id];if(e&&d>=(e.d||TODAY))use[id]=(use[id]||0)+u[id]})}
+ const o={};ids.forEach(id=>{const e=S.pantry[id];o[id]=Math.max(0,Math.round(e.g-((use[id]||0)-(e.u0||0))))});return o}
+function panSet(id,g){panInit();if(!FM[id])return;const old=S.pantry[id]||{},v=Math.max(0,Math.round(g));S.pantry[id]={g:v,d:TODAY,u0:Math.round(usedOn(TODAY)[id]||0),top:Math.max(v,old.top||0)}}
+function panAdd(id,g){const cur=panAll()[id]||0,v=Math.max(0,cur+g);panSet(id,v);if(g>0)S.pantry[id].top=v}
+/* the unit a food comes in: pack, piece or plain grams */
+function panUnit(id){const f=FM[id];if(PIECE[id])return {g:PIECE[id][0],w:[PIECE[id][1],PIECE[id][2]],pc:1};const P=PACK[id]||(f&&f.pack?[+f.pack,'pack','packs']:null);if(P)return {g:P[0],w:[P[1].replace(/ \(.*\)/,''),P[2].replace(/ \(.*\)/,'')]};return null}
+const panDef=id=>{const u=panUnit(id),f=FM[id];return u?u.g:f&&f.por>=40?500:100};
+const panStep=id=>{const u=panUnit(id),f=FM[id];return u?(u.pc?u.g:Math.min(u.g,f.por>=100?100:50)):f&&f.por>=40?100:10};
+function panAmt(id,g){const u=panUnit(id),liq=gRole(id)==='liq',m=g>=1000?String(Math.round(g/100)/10)+(liq?' l':' kg'):Math.round(g)+(liq?' ml':' g');
+ if(u&&u.pc){const n=Math.round(g/u.g*2)/2;return n>0?`${fmtQ(n)} ${n>1?u.w[1]:u.w[0]}`:m}return m}
+const panLow=(id,g)=>{const e=S.pantry[id];return g<=0||(e&&e.top&&g<e.top*.25&&g<panStep(id)*2)};
+/* what a shopping list row buys, in grams: whole packs or pieces */
+function shopBuyG(id,q){const u=panUnit(id);if(u){const n=Math.max(1,Math.ceil(q/u.g-(u.pc?.2:.15)));return n*u.g}return Math.round(q)}
+/* the shop list asks only for what the pantry does not cover */
+function shopHave(r,have){const c=S.shop.chk[r.key];return Math.max(0,(have[r.id]||0)-(c&&c.pg||0))}
+
+let PN={q:'',open:null};
+function renderPantry(v,head){panInit();const have=panAll(),ids=Object.keys(have).sort((a,b)=>gRowName(a).localeCompare(gRowName(b)));
+ v.innerHTML=head+`<div class="card pncard"><div class="adsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input type="search" id="pn-q" placeholder="Search or add" aria-label="Search or add to your pantry" autocomplete="off"><button class="adscan" type="button" id="pn-scan" aria-label="Scan a product into the pantry">${SCANI}</button></div><div id="pn-list"></div></div>`;
+ $('pn-q').value=PN.q;$('pn-q').oninput=e=>{PN.q=e.target.value;PN.open=null;panList()};
+ $('pn-scan').onclick=()=>{S.shopSeg='scan';S.panScan=1;ST={state:'cam',prod:null,drawn:''};save();renderScanTab();scrollTo({top:0})};
+ panList()}
+function panList(){const el=$('pn-list');if(!el)return;const have=panAll(),q=PN.q.toLowerCase().trim(),ids=Object.keys(have).filter(id=>!q||fmatch(FM[id],q));
+ const row=id=>{const g=have[id],f=FM[id],low=panLow(id,g),open=PN.open===id;
+  return `<div class="pnrow${g<=0?' out':''}"><div class="pntop"><span class="ficon em">${fIcon(id)}</span><button class="pnn" type="button" data-pne="${id}" aria-expanded="${open}"><b>${esc(gRowName(id).split(',')[0])}</b><span class="cap num">${g>0?panAmt(id,g):'Used up'}${g>0&&low?' · running low':''}</span></button>
+   <div class="pnstep"><button type="button" data-pnd="${id}:-1" aria-label="Less ${esc(f.n)}"${g<=0?' disabled':''}>−</button><button type="button" data-pnd="${id}:1" aria-label="More ${esc(f.n)}">+</button></div></div>
+   ${open?`<div class="pned"><label class="lbl" for="pn-g">Amount at home</label><div class="pnedrow"><input type="number" id="pn-g" inputmode="numeric" min="0" step="${panStep(id)}" value="${g}"><span class="cap">${gRole(id)==='liq'?'ml':'g'}</span></div>
+    ${panUnit(id)?`<div class="packbtns">${[1,2,3].map(n=>`<button type="button" data-pnset="${id}:${n*panUnit(id).g}">${n} ${n>1?panUnit(id).w[1]:panUnit(id).w[0]}</button>`).join('')}</div>`:''}
+    <div class="btnrow"><button class="btn sm" type="button" data-pnl="${id}">Add to shopping list</button><button class="btn sm" type="button" data-pnx="${id}" style="color:var(--low)">Remove</button></div></div>`:''}</div>`};
+ let h='';
+ if(!Object.keys(have).length&&!q)h=`<p class="cap" style="margin:14px 2px 4px">Nothing here yet. Search above, scan a product, or tick items off your shopping list: they land here. Meals you log use them up.</p>`;
+ else{const lowL=ids.filter(id=>panLow(id,have[id]));
+  if(!q&&lowL.length)h+=`<h3 class="rh">Running low</h3><div class="chips wrap pnlow">${lowL.map(id=>`<button class="chip" type="button" data-pnl="${id}">${esc(gRowName(id).split(',')[0])} · add to list</button>`).join('')}</div>`;
+  h+=AREAS.map(a=>{const R=ids.filter(id=>shopArea(id)===a);return R.length?`<h3 class="rh">${a}</h3>${R.map(row).join('')}`:''}).join('');
+  if(q&&!ids.length)h+=`<p class="cap" style="margin:12px 2px 0">Not in your pantry.</p>`}
+ if(q){const fs=F.filter(f=>!f.hide&&!f.gb&&!have[f.id]&&have[f.id]!==0&&fmatch(f,q)).sort((a,b)=>fscore(a,q)-fscore(b,q)||((a.src==='usda'&&!a.common)-(b.src==='usda'&&!b.common))||a.n.length-b.n.length).slice(0,12);
+  if(fs.length)h+=`<h3 class="rh">Add to pantry</h3>`+fs.map(f=>`<div class="adr"><button class="adm" type="button" data-pna="${f.id}"><span class="thumb em">${fIcon(f.id)}</span><span class="otx"><span class="t">${esc(f.n)}</span><span class="s num">${panAmt(f.id,panDef(f.id))}</span></span></button><button class="adplus" type="button" data-pna="${f.id}" aria-label="Add ${esc(f.n)} to pantry">${PLUS}</button></div>`).join('')}
+ else if(Object.keys(have).some(id=>have[id]>0)){const n=panDishes().length;if(n)h+=`<button class="btn wide" type="button" id="pn-cook" style="margin-top:14px">${n} dish${n>1?'es':''} you can make</button>`}
+ if(!q&&Object.values(have).some(g=>g<=0))h+=`<button class="btn wide ghost" type="button" id="pn-clr" style="margin-top:6px">Remove used up items</button>`;
+ el.innerHTML=h;
+ const re=()=>{save();panList()};
+ el.querySelectorAll('[data-pne]').forEach(b=>b.onclick=()=>{PN.open=PN.open===b.dataset.pne?null:b.dataset.pne;panList();const i=$('pn-g');if(i)i.focus()});
+ el.querySelectorAll('[data-pnd]').forEach(b=>b.onclick=()=>{const [id,d]=b.dataset.pnd.split(':');panAdd(id,panStep(id)*d);re()});
+ el.querySelectorAll('[data-pnset]').forEach(b=>b.onclick=()=>{const [id,g]=b.dataset.pnset.split(':');panSet(id,+g);re()});
+ if($('pn-g'))$('pn-g').onchange=e=>{panSet(PN.open,+e.target.value||0);re()};
+ el.querySelectorAll('[data-pnx]').forEach(b=>b.onclick=()=>{if(b.dataset.sure!=='1'){b.dataset.sure='1';b.textContent='Tap again to remove';return}delete S.pantry[b.dataset.pnx];PN.open=null;re()});
+ el.querySelectorAll('[data-pnl]').forEach(b=>b.onclick=()=>{const id=b.dataset.pnl;shopInit();if(!S.shop.extra.some(x=>x.id===id))S.shop.extra.push({id,g:panDef(id)});save();shopBadge();toast(`${gRowName(id).split(',')[0]} is on your shopping list`);panList()});
+ el.querySelectorAll('[data-pna]').forEach(x=>tapBind(x,()=>{const id=x.dataset.pna;panAdd(id,panDef(id));PN.q='';$('pn-q').value='';save();toast(`Added ${gRowName(id).split(',')[0].toLowerCase()}, ${panAmt(id,panDef(id))}`);panList()}));
+ if($('pn-cook'))$('pn-cook').onclick=()=>{const k=panSlot();openAdd(k);AD.more='pantry';renderAdd()};
+ if($('pn-clr'))$('pn-clr').onclick=()=>{const h2=panAll();Object.keys(h2).forEach(id=>{if(h2[id]<=0)delete S.pantry[id]});re()}}
+/* the next meal of today that is still empty */
+function panSlot(){const h=new Date().getHours(),want=h<10?'b':h<15?'l':h<21?'d':'s';const s=SLOTS.find(x=>x.id===want&&!S.plan[x.id].it.length)||SLOTS.find(x=>!S.plan[x.id].it.length)||SLOTS.find(x=>x.id==='d')||SLOTS[0];return s.id}
+/* dishes you can make from what is at home; staples like salt and spices count as at home */
+function panDishes(t){const have=panAll();return allDishes(t).map(d=>dishFit(d)).filter(Boolean).map(d=>{const need=d.it.filter(([id])=>FM[id]&&!AT_HOME(id)),ok=need.filter(([id,g])=>(have[id]||0)>=g*.8);return {d,n:need.length,ok:ok.length,miss:need.filter(x=>!ok.includes(x)).map(([id])=>FM[id].n.split(',')[0].toLowerCase())}})
+ .filter(x=>x.n&&x.ok/x.n>=.6).sort((a,b)=>(b.ok/b.n)-(a.ok/a.n)||b.ok-a.ok)}
+
 function adRow(o){return `<div class="adr"><button class="adm" type="button" ${o.main}><span class="thumb em">${o.ic}</span><span class="otx"><span class="t">${esc(o.n)}${o.lab||''}</span><span class="s num">${o.sub}</span></span></button>${o.plus?`<button class="adplus${o.on?' on':''}" type="button" ${o.plus} aria-label="${o.on?'On the plate: ':'Put on plate: '}${esc(o.n)}">${o.on?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>':PLUS}</button>`:''}</div>`}
 function foodItem(f,T){const on=S.plan[AD.slot].it.some(x=>x[0]===f.id),g=lastG(f.id),v=itemV([f.id,g]),had=S.lastAmt&&S.lastAmt[f.id];
  return adRow({main:`data-adpf="${f.id}"`,plus:`data-adpf="${f.id}"`,on,ic:fIcon(f.id),n:f.n,lab:f.cat==='My foods'?lab(f.parts?'Your mix':'Your product','pr'):'',sub:`${had?'Last time ':''}${amtTxt(f.id,g)} · ${ENs(v[0])}${fmt(v[1])} g protein`})}
@@ -2964,11 +3056,12 @@ function adMain(b,s){const T=targets(),q=AD.q.toLowerCase().trim(),D0=dayMinus(A
   if(s.t==='s'){const SG=computeSugg();AD.sn=SG.snacks;if(SG.snacks.length)h+=`<h3 class="adh" id="ad-ideas">Ideas</h3>`+SG.snacks.slice(0,8).map((x,i)=>x.food?adRow({main:`data-adsn="${i}"`,plus:`data-adsn="${i}"`,ic:fIcon(x.food.id),n:x.food.n.split(',')[0],sub:`${amtTxt(x.food.id,x.food.por)} · ${ENs(x.add[0])}${Math.round(x.add[1])} g protein${(g=>g?' · '+g:'')(gainTxt(D0,x.add))}`}):dishItem(x.d,D0)).join('')}
   else{h+=`<h3 class="adh" id="ad-ideas">Ideas</h3>`+(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!AD.focus.length}">All</button>${LO.slice(0,8).map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${AD.focus.includes(x.k)}">${NUT[x.k].n}</button>`).join('')}</div>`:'')+
    (I.map(x=>dishItem(x.d,D0).replace(lab('Dish','dsh'),'')).join('')||`<p class="empty2">${AD.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No idea fits.'}</p>`)}
-  h+=`<h3 class="adh">More</h3><div class="chips wrap admore">${[['recent','Recent foods'],['fav','Favourites'],['mine','Your dishes'],['prod','Your products'],['dishes','All dishes'],['foods','All foods']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}<button class="chip" type="button" id="ad-out">Ate out</button></div>`}
+  h+=`<h3 class="adh">More</h3><div class="chips wrap admore">${[...(Object.keys(S.pantry||{}).length?[['pantry','From my pantry']]:[]),['recent','Recent foods'],['fav','Favourites'],['mine','Your dishes'],['prod','Your products'],['dishes','All dishes'],['foods','All foods']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}<button class="chip" type="button" id="ad-out">Ate out</button></div>`}
  b.innerHTML=h;adBind(b,s)}
 
-function adMore(b,s,T,D0){const m=AD.more,ttl={recent:'Recent foods',fav:'Favourites',mine:'Your dishes',prod:'Your products',dishes:'All dishes',foods:'All foods'}[m];let h=`<div class="admhead"><button class="chip" type="button" data-admore="">${BACKI}Back</button><h3>${ttl}</h3></div>`;
- if(m==='recent')h+=S.recentFoods.map(id=>FM[id]).filter(Boolean).map(f=>foodItem(f,T)).join('')||'<p class="empty2">Foods you add show up here.</p>';
+function adMore(b,s,T,D0){const m=AD.more,ttl={pantry:'From my pantry',recent:'Recent foods',fav:'Favourites',mine:'Your dishes',prod:'Your products',dishes:'All dishes',foods:'All foods'}[m];let h=`<div class="admhead"><button class="chip" type="button" data-admore="">${BACKI}Back</button><h3>${ttl}</h3></div>`;
+ if(m==='pantry'){const L=panDishes(s.t);h+=L.map(x=>{const add=x.d.it.reduce((a,it)=>addv(a,itemV(it)),z());return adRow({main:`data-add="${x.d.id}"`,plus:`data-adpd="${x.d.id}"`,ic:PH[x.d.id]?`<img src="${PH[x.d.id]}" alt="">`:dIcon(x.d),n:x.d.n,sub:`${x.ok===x.n?'Everything at home':x.ok+' of '+x.n+' at home · no '+x.miss.slice(0,2).join(', ')} · ${ENs(add[0])}${Math.round(add[1])} g protein`})}).join('')||'<p class="empty2">Nothing fits what is at home yet. Fill your pantry from Scan/Shop.</p>'}
+ else if(m==='recent')h+=S.recentFoods.map(id=>FM[id]).filter(Boolean).map(f=>foodItem(f,T)).join('')||'<p class="empty2">Foods you add show up here.</p>';
  else if(m==='fav'){const dd=allDishes().filter(d=>d.fav).map(d=>dishFit(d)||d),ff=S.favFoods.map(id=>FM[id]).filter(Boolean);h+=dd.map(d=>dishItem(d,D0)).join('')+ff.map(f=>foodItem(f,T)).join('')||'<p class="empty2">Tap the star on a dish to keep it here.</p>'}
  else if(m==='mine')h+=allDishes().filter(d=>d.own).sort((a,b)=>(b.t===s.t)-(a.t===s.t)||(b.used||0)-(a.used||0)).map(d=>dishItem(dishFit(d)||d,D0)).join('')||'<p class="empty2">Save a meal from its plate to keep it here.</p>';
  else if(m==='prod')h+=`<div class="btnrow2" style="margin:4px 0 8px"><button class="btn" type="button" id="ad-label">Enter from a label</button><button class="btn" type="button" id="ad-mix">New mix</button></div>`+(F.filter(f=>f.cat==='My foods'&&!f.hide&&!f.gb).map(f=>foodItem(f,T)).join('')||'<p class="empty2">Scan a product or enter one from its label.</p>');
@@ -3057,10 +3150,20 @@ function adOutList(){const q=AD.oq.toLowerCase().trim(),s=SLOTS.find(x=>x.id===A
   $('ad-osum').innerHTML=`<div class="ptot" style="margin-top:14px"><b class="num">About ${ENs(v[0])}${Math.round(v[1])} g protein</b><span class="cap num">${lab('Estimate','est')}${g}</span></div>`}else $('ad-osum').innerHTML=''}
 
 /* ---------- food guide ---------- */
+/* a common food rich in each nutrient, for the picker icon; the app's own foods first */
+const NTOP={};function nutTop(k){if(k in NTOP)return NTOP[k];const i=K.indexOf(k),rank=L=>L.filter(f=>!f.hide&&f.v[i]>0).map(f=>({f,v:f.v[i]*f.por/100})).sort((a,b)=>b.v-a.v)[0];
+ const x=rank(F.filter(f=>f.src!=='usda'&&f.cat!=='My foods'&&!/^(salt|oatly)/.test(f.id)))||rank(F.filter(f=>f.common));return NTOP[k]=x?x.f.id:null}
+function nutDD(k){const btn=$('g-nut'),L=$('g-list'),ic=x=>{const id=nutTop(x);return id?fIcon(id):EMO['1fad9']};
+ btn.innerHTML=`<span class="ficon em">${ic(k)}</span><span class="ddn"><b>${NUT[k].n}</b></span><svg class="ddchev" viewBox="0 0 24 24" aria-hidden="true"><path d="M6 9l6 6 6-6"/></svg>`;
+ const G=[...new Set(K.filter(x=>x!=='kcal').map(x=>NUT[x].g))];
+ L.innerHTML=G.map(g=>`<div class="ddg">${g}</div>`+K.filter(x=>x!=='kcal'&&NUT[x].g===g).map(x=>{const id=nutTop(x);return `<button class="ddopt" type="button" role="option" data-gn="${x}" aria-selected="${x===k}"><span class="ficon em">${ic(x)}</span><span class="ddn"><b>${NUT[x].n}</b><span class="cap">${id?'For example '+esc(FM[id].n.split(',')[0].toLowerCase()):'Algae oil'}</span></span></button>`}).join('')).join('');
+ const close=()=>{L.hidden=true;btn.setAttribute('aria-expanded','false');document.removeEventListener('click',out,true)},out=e=>{if(!$('g-dd').contains(e.target))close()};
+ btn.onclick=()=>{if(!L.hidden){close();return}L.hidden=false;btn.setAttribute('aria-expanded','true');document.addEventListener('click',out,true);const sel=L.querySelector('[aria-selected="true"]');if(sel)L.scrollTop=sel.offsetTop-L.clientHeight/2+20;if(sel)sel.focus({preventScroll:true})};
+ L.onkeydown=e=>{if(e.key==='Escape'){close();btn.focus()}};
+ L.querySelectorAll('[data-gn]').forEach(b=>b.onclick=()=>{S.gn=b.dataset.gn;close();render();btn.focus()})}
 function renderFoods(T){
  const k=S.gn||'b12',i=K.indexOf(k);
- const sel=$('g-nut');if(!sel.options.length){sel.innerHTML=K.filter(x=>x!=='kcal').map(x=>`<option value="${x}">${NUT[x].n}</option>`).join('');sel.onchange=()=>{S.gn=sel.value;render()}}
- sel.value=k;
+ nutDD(k);
  $('g-info').textContent=NUT[k].i;$('g-read').onclick=()=>openLearn(k);$('g-how').onclick=()=>selectNut(k);
  $('g-cats').innerHTML=['All',...CATS].map(c=>`<button class="chip" type="button" data-c="${c}" aria-pressed="${(S.gc||'All')===c}">${c}</button>`).join('');
  $('g-cats').querySelectorAll('[data-c]').forEach(b=>b.onclick=()=>{S.gc=b.dataset.c;render()});
@@ -3143,7 +3246,24 @@ Object.entries(PF).forEach(([k,id])=>{const el=$(id);el.onchange=()=>{S.prof[k]=
 function supRows(prefix){return SUP.map(u=>`<label class="suprow" for="${prefix}${u.id}"><span class="supname">${u.n}</span><span class="switch"><input type="checkbox" id="${prefix}${u.id}" data-sup="${u.id}" ${supOn(u)?'checked':''}><i></i></span><small>${u.h}</small></label>`).join('')}
 function bindSup(root){root.querySelectorAll('[data-sup]').forEach(cb=>cb.onchange=()=>{setQuick(cb.dataset.sup,cb.checked);render()})}
 function targetBoxes(T){return `${HK()?'':`<div><span>Energy</span><b>${EN(T.kcal)}</b></div>`}<div><span>Protein</span><b>${Math.round(T.p)} g</b></div><div><span>Fiber</span><b>${Math.round(T.fib)} g</b></div>`}
+/* profile: a menu of sections; each opens on its own with a back button */
+let PS=null;
+const PSECS=[['you','About you','<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'],['targets','Targets','<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/>'],['sup','Supplements','<rect x="3.5" y="9" width="17" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M9.2 9.2l5.6 5.6"/>'],['dis','Foods I don\'t eat','<circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/>'],['track','Tracking','<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/>'],['look','Look','<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'],['data','Backup and setup','<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>']];
+function psSum(k){const P=S.prof,T=targets();
+ if(k==='you')return `${P.sex==='f'?'Female':'Male'}, ${P.age} · ${P.ht} cm · ${P.wt} kg`;
+ if(k==='targets')return `${{efsa:'EFSA',dge:'DGE',nih:'NIH'}[P.ref||'efsa']} reference values${HK()?'':' · '+EN(T.kcal)}`;
+ if(k==='sup'){const L=(S.sups||[]).filter(x=>sCurrent(x)&&!(x.end&&x.end<=TODAY)).map(sName);return L.length?L.join(', '):'None yet'}
+ if(k==='dis'){const n=DL().filter(id=>FM[id]).length;return n?n+' food'+(n>1?'s':''):'None'}
+ if(k==='track'){const L=[WON()&&'Water bottle',WLON()&&'Weight log'].filter(Boolean);return L.length?L.join(', '):'Off'}
+ if(k==='look')return `${{auto:'Automatic',light:'Light',dark:'Dark'}[P.mode||'auto']} · ${(ACC.find(a=>a[0]===(P.acc||'green'))||ACC[0])[1]}`;
+ return 'Save or restore your data, run setup again'}
 function renderProfileView(){
+ const sec=PSECS.find(x=>x[0]===PS);
+ $('p-head').innerHTML=sec?`<div class="pback"><button class="adback" type="button" id="p-back" aria-label="Back to profile">${BACKI}</button><h1>${sec[1]}</h1></div>`:`<div><h1>Profile</h1><p class="cap">Your data stays on this phone</p></div>`;
+ if($('p-back'))$('p-back').onclick=()=>{PS=null;render();scrollTo({top:0})};
+ $('p-menu').hidden=!!sec;document.querySelectorAll('#v-profile .psec').forEach(el=>el.hidden=!sec||el.dataset.ps!==PS);
+ if(!sec){$('p-menu').innerHTML=PSECS.map(([k,t,ic])=>`<button class="prow2" type="button" data-psec="${k}"><span class="pico"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg></span><span class="ptx"><b>${t}</b><span class="cap">${esc(psSum(k))}</span></span>${CHEV}</button>`).join('');
+  $('p-menu').querySelectorAll('[data-psec]').forEach(b=>b.onclick=()=>{PS=b.dataset.psec;render();scrollTo({top:0})})}
  if($('logo-prof'))$('logo-prof').innerHTML=LOGO;
  document.querySelectorAll('#p-anim [data-anim]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.anim||'auto')===b.dataset.anim);b.onclick=()=>{S.prof.anim=b.dataset.anim;applyTheme();render()}});
  document.querySelectorAll('#p-mode [data-mode]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.mode||'auto')===b.dataset.mode);b.onclick=()=>{S.prof.mode=b.dataset.mode;applyTheme();render()}});
@@ -3643,7 +3763,7 @@ function renderHistory0(T){
  $('h-open').onclick=()=>{setDate(S.hsel);S.view='today';render();scrollTo({top:0})};
 }
 /* ---------- navigation + render ---------- */
-function go(v){S.view=v;render();scrollTo({top:0})}
+function go(v){if(v==='profile'&&S.view==='profile')PS=null;else if(v!==S.view)PS=null;S.view=v;render();scrollTo({top:0})}
 document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.onclick=()=>go(b.dataset.v));
 /* ---------- reminders for weekly and every N days supplements: a due line on Today, a punch card, and a repeating calendar event ---------- */
 const sInterval=s=>s.freq==='w'||s.freq==='n';
