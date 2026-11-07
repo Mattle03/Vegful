@@ -691,6 +691,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .orow[aria-pressed="true"]{border:2px solid var(--accent);border-radius:14px}
 .tidea.again{background:var(--accent-soft)}
 .tidea.again .cap{color:var(--ink)}
+.herocard .macros{cursor:pointer}
 .pncard .adsearch{margin-bottom:6px}.pnrow{border-bottom:1px solid var(--line);padding:4px 0}.pnrow.out .pnn b{color:var(--muted)}
 .pntop{display:flex;align-items:center;gap:10px}.pnn{flex:1;min-width:0;display:flex;flex-direction:column;border:0;background:none;padding:8px 0;font:inherit;color:var(--ink);text-align:left;min-height:52px;justify-content:center}.pnn b{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
 .pnstep{display:flex;gap:6px;flex:none}.pnstep button{width:44px;height:44px;border-radius:12px;border:0;background:var(--surface2);font-size:22px;font-weight:600;color:var(--ink)}.pnstep button:disabled{opacity:.4}
@@ -1215,6 +1216,11 @@ function compV(f){const tot=mixTot(f);const v=K.map(()=>0);if(!tot)return v;f.pa
 function applyEdits(){F.forEach(f=>{const e=S.fedit[f.id];if(e&&e.por)f.por=e.por;if(f.parts0)f.parts=(e&&e.parts?e.parts:f.parts0).map(p=>p.slice());if(!f.parts){if(!f.v0)f.v0=f.v.slice();f.v=f.v0.slice();if(e&&e.vals)Object.entries(e.vals).forEach(([k,x])=>{const i=K.indexOf(k);if(i>=0&&x!==''&&isFinite(+x))f.v[i]=+x})}});
  for(let r=0;r<2;r++)F.forEach(f=>{if(f.parts)f.v=compV(f)})}
 applyEdits();
+/* for ideas and rankings: salt in a recipe is to taste, so its iodine does not make a dish a source */
+const SIOD=new WeakMap();
+function saltIod(f,dp){if(!f)return 0;if(f.id==='salt')return f.v[K.indexOf('iod')]||0;if(!f.parts||dp>3)return 0;if(SIOD.has(f.v))return SIOD.get(f.v);const tot=mixTot(f),ri=RET.iod||1;
+ const x=tot?f.parts.reduce((a,[id,g,st])=>a+saltIod(FM[id],(dp||0)+1)*(+g||0)/tot*(st==='c'?ri:1),0):0;SIOD.set(f.v,x);return x}
+function itemR(it){const v=itemV(it),f=FM[it[0]];if(!f)return v;const i=K.indexOf('iod'),full=f.v[i];if(full>0){const s=saltIod(f,0);if(s>0)v[i]*=Math.max(0,1-s/full)}return v}
 /* days: S.days[date] holds each day's meals; S.plan always points at the selected day */
 const dkey=d=>{const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())};
 const kdate=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)};
@@ -1893,6 +1899,7 @@ ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="m
  document.querySelectorAll('[data-plants]').forEach(b=>b.onclick=openPlants);
  if($('go-week'))$('go-week').onclick=()=>{S.range=7;S.nsub='over';go('nutr')};
  if($('t-ring'))$('t-ring').onclick=()=>{S.nsub='over';go('nutr')};
+ const hm=document.querySelector('#v-today .herocard .macros');if(hm)hm.onclick=()=>{S.nsub='over';go('nutr')};
  $('d-cal').onclick=()=>{S.nsub='hist';S.hsel=S.date;go('nutr')};
  v.querySelectorAll('#t-range [data-r]').forEach(b=>b.onclick=()=>{S.range=+b.dataset.r;render()});
 }
@@ -3035,7 +3042,7 @@ function panDishes(t){const have=panAll();return allDishes(t).map(d=>dishFit(d))
 function adRow(o){return `<div class="adr"><button class="adm" type="button" ${o.main}><span class="thumb em">${o.ic}</span><span class="otx"><span class="t">${esc(o.n)}${o.lab||''}</span><span class="s num">${o.sub}</span></span></button>${o.plus?`<button class="adplus${o.on?' on':''}" type="button" ${o.plus} aria-label="${o.on?'On the plate: ':'Put on plate: '}${esc(o.n)}">${o.on?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>':PLUS}</button>`:''}</div>`}
 function foodItem(f,T){const on=S.plan[AD.slot].it.some(x=>x[0]===f.id),g=lastG(f.id),v=itemV([f.id,g]),had=S.lastAmt&&S.lastAmt[f.id];
  return adRow({main:`data-adpf="${f.id}"`,plus:`data-adpf="${f.id}"`,on,ic:fIcon(f.id),n:f.n,lab:f.cat==='My foods'?lab(f.parts?'Your mix':'Your product','pr'):'',sub:`${had?'Last time ':''}${amtTxt(f.id,g)} · ${ENs(v[0])}${fmt(v[1])} g protein`})}
-function dishItem(d,D0){const ph=PH[d.id],add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),g=gainTxt(D0,add);
+function dishItem(d,D0){const ph=PH[d.id],add=d.it.reduce((a,it)=>addv(a,itemR(it)),z()),g=gainTxt(D0,add);
  return adRow({main:`data-add="${d.id}"`,plus:`data-adpd="${d.id}"`,ic:ph?`<img src="${ph}" alt="">`:dIcon(d),n:d.n+(d.minus?', '+minusTxt(d):''),lab:d.own?lab('Your dish','own'):lab('Dish','dsh'),sub:`${ENs(add[0])}${Math.round(add[1])} g protein${g?' · '+g:''}`})}
 
 function adMain(b,s){const T=targets(),q=AD.q.toLowerCase().trim(),D0=dayMinus(AD.slot);let h='';
@@ -3130,7 +3137,7 @@ function adPlate(b,s,sl,mine){const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.
  if($('ad-delph'))$('ad-delph').onclick=e=>{if(e.target.dataset.sure!=='1'){e.target.dataset.sure='1';e.target.textContent='Tap again to remove';return}delPhoto(mine.id);render()}}
 
 /* a dish before it goes on the plate: what it does for you, and what is in it */
-function adDish(b,s){const d0=dish(AD.dish);if(!d0){adView('main');return}const d=dishFit(d0)||d0,T=targets(),TN=needT(T),D0=dayMinus(AD.slot),add=d.it.reduce((a,it)=>addv(a,itemV(it)),z());
+function adDish(b,s){const d0=dish(AD.dish);if(!d0){adView('main');return}const d=dishFit(d0)||d0,T=targets(),TN=needT(T),D0=dayMinus(AD.slot),add=d.it.reduce((a,it)=>addv(a,itemR(it)),z());
  b.innerHTML=`<p class="cap num" style="margin:2px 0 4px">${d.min?d.min+' min · ':''}${ENs(add[0])}${Math.round(add[1])} g protein${d.minus?' · '+minusTxt(d):''}</p>${impactFor(D0,add,T,TN,AD.focus)}
   <h3 class="adh">In this dish</h3><div class="dlist">${d.it.map(([id,g])=>`<div class="drow"><span>${esc(FM[id].n.split(',')[0])}</span><span class="cap num">${amtTxt(id,g)}</span></div>`).join('')}</div>`}
 
@@ -3559,14 +3566,14 @@ function computeSugg0(){
  let Dg=D.slice(),fg=filledShare();
  ['b','l','d'].forEach(ty=>{const k=slotOfType(ty);if(!S.plan[k]||S.plan[k].it.length)return;
   const f=Math.min(1,fg+SHARE[ty]),Tf=partT(TN,f);
-  const c=allDishes(TY[ty].t).map(dishFit).filter(Boolean).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=Dg.slice();addv(D1,add);
+  const c=allDishes(TY[ty].t).map(dishFit).filter(Boolean).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemR(it)),z()),D1=Dg.slice();addv(D1,add);
    return{d,add,D1,sc:ugain(Dg,D1,T,Tf)-(recentDish(d.id)?.4:0)+(d.fav?.1:0)+(d.own?.05:0)+(hasD(d)?.06:0)}}).sort((a,b)=>b.sc-a.sc);
   const top=c.slice(0,12);if(!top.length)return;
   out.meals.push({slot:k,ty,opts:top.map(x=>({d:x.d,add:x.add,fills:fillsOf(Dg,x.add,TN)}))});
   Dg=top[0].D1;fg=f});
  const f=Math.min(1,filledShare(.15)),Tf=partT(TN,f),cand=[];
- F.filter(x=>!x.hide&&['Fruit','Nuts and seeds','Plant milk and yogurt'].includes(x.cat)&&x.src!=='usda'&&!isDis(x.id)&&x.id!=='brazil').forEach(x=>{const add=itemV([x.id,x.por]),D1=D.slice();addv(D1,add);const h=hasF(x.id);cand.push({food:x,add,cat:x.cat,has:h,sc:ugain(D,D1,T,Tf)+(h?.06:0)+(S.favFoods.includes(x.id)?.06:0)})});
- allDishes('s').map(dishFit).filter(Boolean).forEach(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D.slice();addv(D1,add);const h=hasD(d);cand.push({d,add,cat:'dish',has:h,sc:ugain(D,D1,T,Tf)-(recentDish(d.id)?.2:0)+(h?.06:0)+(d.fav?.1:0)})});
+ F.filter(x=>!x.hide&&['Fruit','Nuts and seeds','Plant milk and yogurt'].includes(x.cat)&&x.src!=='usda'&&!isDis(x.id)&&x.id!=='brazil').forEach(x=>{const add=itemR([x.id,x.por]),D1=D.slice();addv(D1,add);const h=hasF(x.id);cand.push({food:x,add,cat:x.cat,has:h,sc:ugain(D,D1,T,Tf)+(h?.06:0)+(S.favFoods.includes(x.id)?.06:0)})});
+ allDishes('s').map(dishFit).filter(Boolean).forEach(d=>{const add=d.it.reduce((a,it)=>addv(a,itemR(it)),z()),D1=D.slice();addv(D1,add);const h=hasD(d);cand.push({d,add,cat:'dish',has:h,sc:ugain(D,D1,T,Tf)-(recentDish(d.id)?.2:0)+(h?.06:0)+(d.fav?.1:0)})});
  cand.sort((a,b)=>b.sc-a.sc);const per={};
  for(const x of cand){if(x.sc<=.02)break;if((per[x.cat]||0)>=3)continue;per[x.cat]=(per[x.cat]||0)+1;x.fills=fillsOf(D,x.add,TN);if(x.fills.length)out.snacks.push(x);if(out.snacks.length>=8)break}
  return out}
@@ -3574,7 +3581,7 @@ function computeSugg0(){
 function slotIdeas(slot,n,focus){return withProj(()=>slotIdeas0(slot,n,focus))}
 function slotIdeas0(slot,n,focus){const T=targets(),TN=needT(T),ty=typeOf(S.plan,slot),D=dayV(),D0=D.slice();addv(D0,slotV(slot),-1);
  const f=Math.min(1,filledShare()-(S.plan[slot].it.length?SHARE[ty]:0)+SHARE[ty]),Tf=partT(TN,f),fk=(focus||[]).filter(k=>K.includes(k));
- return allDishes(TY[ty].t).map(dishFit).filter(Boolean).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),D1=D0.slice();addv(D1,add);
+ return allDishes(TY[ty].t).map(dishFit).filter(Boolean).map(d=>{const add=d.it.reduce((a,it)=>addv(a,itemR(it)),z()),D1=D0.slice();addv(D1,add);
   let sc=ugain(D0,D1,T,Tf)-(recentDish(d.id)?.4:0)+(d.fav?.1:0)+(d.own?.05:0)+(hasD(d)?.06:0);
   if(fk.length){const g=fk.map(k=>add[K.indexOf(k)]/T[k]);if(Math.min(...g)<.15)return null;sc=sc*.3+g.reduce((a,b)=>a+Math.min(b,1),0)*2}
   return{d,add,has:hasD(d),sc}}).filter(Boolean).sort((a,b)=>b.sc-a.sc).slice(0,n||8).map(x=>Object.assign(x,{D0}))}
