@@ -1052,6 +1052,23 @@ html.still #gd-pour *,html.still .gplot.wet *{animation:none!important}
 .gstand.iso .gbn{top:4%;right:4%}
 .tmas.mini{position:absolute;right:-46%;bottom:2%;width:72%;height:auto;aspect-ratio:3/2}
 .gsign b{font-size:9.5px;padding:2px 5px}
+.gplot.empty{background:none;border:0}
+.gplot.empty.can::after{content:"";position:absolute;left:14%;right:14%;bottom:2%;height:28%;border-radius:50%;background:color-mix(in srgb,var(--accent) 35%,transparent);box-shadow:0 0 0 2px var(--accent);animation:gcan 1.1s ease-in-out infinite}
+@keyframes gcan{0%,100%{opacity:.55}50%{opacity:1}}
+.gseeds{display:flex;align-items:center;gap:8px;margin-top:10px;padding:8px 8px 8px 10px;border-radius:16px;background:var(--surface)}
+.gsrow{flex:1;min-width:0;display:flex;gap:6px;overflow-x:auto;scrollbar-width:none;padding:2px}
+.gsrow::-webkit-scrollbar{display:none}
+.gpack{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;width:62px;padding:6px 2px 4px;border-radius:12px;border:2px solid transparent;background:color-mix(in srgb,#E8D2A6 55%,var(--surface2));color:var(--ink);font:inherit;touch-action:none;-webkit-user-select:none;user-select:none}
+.gpack.on{border-color:var(--accent)}
+.gpki{display:block;width:30px;height:30px}
+.gpki svg,.gpki img{width:100%;height:100%}
+.gpkn{font-size:10.5px;font-weight:700;max-width:58px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gsghost{position:fixed;left:0;top:0;z-index:20;pointer-events:none;width:44px;height:44px;border-radius:12px;background:color-mix(in srgb,#E8D2A6 80%,#fff);box-shadow:0 6px 14px rgba(0,0,0,.25);display:grid;place-items:center}
+.gseedchip{position:fixed;z-index:30;pointer-events:none;display:flex;align-items:center;gap:6px;padding:6px 12px 6px 6px;border-radius:20px;background:var(--surface);color:var(--ink);font-weight:800;font-size:14px;box-shadow:0 6px 18px rgba(0,0,0,.22)}
+.gseedchip .gpki{width:26px;height:26px}
+.tabbar [data-v="garden"]{position:relative}
+.tbadge{position:absolute;top:2px;left:56%;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;background:var(--coral);color:var(--coral-ink);font-size:11px;font-weight:800;display:grid;place-items:center}
+html.still .gplot.empty.can::after{animation:none}
 </style>
 </head>
 <body>
@@ -3384,9 +3401,12 @@ function gSeed(){const g=S.garden,first={},o=PROJ;PROJ=false;try{
  Object.keys(first).map(k=>{const I=kindInfo(k);return {k,b:gBedOf(k),d:first[k],gp:Math.min(I.need,dayDiff(first[k],TODAY)),need:I.need,tier:I.tier,s:first[k]}}).sort((a,b)=>b.gp-a.gp||a.k.localeCompare(b.k))
   .forEach(p=>{const pos=gFreePos(p.b);if(pos<0)g.tray.push({k:p.k,b:p.b,s:p.s});else{p.pos=pos;g.plants.push(p)}});g.tick=TODAY}finally{PROJ=o}}
 function gFreePos(b){const used=new Set(S.garden.plants.filter(p=>p.b===b).map(p=>p.pos));for(let i=0;i<gPlots(b);i++)if(!used.has(i))return i;return -1}
-function gSow(k,s){const g=S.garden,I=kindInfo(k),bd=gBedOf(k),pos=gFreePos(bd);if(pos<0)g.tray.push({k,b:bd,s});else g.plants.push({k,b:bd,d:TODAY,gp:0,need:I.need,tier:I.tier,s,pos})}
+function gSow(k,s){S.garden.tray.push({k,b:gBedOf(k),s})}
 /* a freed plot takes the oldest seed waiting for that bed */
-function gRefill(){const g=S.garden;for(let i=0;i<g.tray.length;){const t=g.tray[i],pos=gFreePos(t.b);if(pos>=0){g.tray.splice(i,1);const I=kindInfo(t.k);g.plants.push({k:t.k,b:t.b,d:TODAY,gp:0,need:I.need,tier:I.tier,s:t.s,pos})}else i++}}
+function gRefill(){}
+/* planting by hand: a seed goes into a free plot of its own section */
+function gPlant(k,pos){const g=S.garden,i=g.tray.findIndex(t=>t.k===k);if(i<0)return 0;const t=g.tray[i],b=gBedOf(t.k);if(pos==null)pos=gFreePos(b);if(pos<0||pos>=gPlots(b)||g.plants.some(p=>p.b===b&&p.pos===pos))return 0;const I=kindInfo(t.k);g.tray.splice(i,1);g.plants.push({k:t.k,b,d:TODAY,gp:0,need:I.need,tier:I.tier,s:t.s,pos});return 1}
+function gPlantAll(){let n=0;S.garden.tray.slice().forEach(t=>{n+=gPlant(t.k)});return n}
 const gMode=()=>!WON()?'auto':S.garden.water==='auto'?'auto':'bottle';
 const gWaterOn=d=>{const p=S.days[d];return p?Math.min(1,wTotal(p)/wTarget()):0};
 const gGrowth=x=>gMode()==='auto'?1:gWaterOn(x);
@@ -3542,17 +3562,17 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
   <div class="gscene bg-${esc(bg)}" id="gd-scene"><div class="gsky" aria-hidden="true"><span class="gsun"></span><span class="gcloud"></span><span class="gcloud c2"></span></div>
 
    ${gSkyline(bg)}
-   <div class="gfwrap" id="gd-fw"><div class="gfarm${G.ed?' editing':''}" style="aspect-ratio:${ISO.w}/${ISO.h};min-width:${Math.round(ISO.w*.8)}px;--wet:${(mode==='bottle'?wf:1).toFixed(2)}">${isoLand()}${gSigns(G.ed)}${gStreet(L,nb)}${g.plants.map(gPlot).join('')}${gDecs()}${G.ed?gEditLayer():''}</div></div>
+   <div class="gfwrap" id="gd-fw"><div class="gfarm${G.ed?' editing':''}" style="aspect-ratio:${ISO.w}/${ISO.h};min-width:${Math.round(ISO.w*.72)}px;--wet:${(mode==='bottle'?wf:1).toFixed(2)}">${isoLand()}${gSigns(G.ed)}${gStreet(L,nb)}${G.ed?'':gEmpties()}${g.plants.map(gPlot).join('')}${gDecs()}${G.ed?gEditLayer():''}</div></div>
    <div class="grain" aria-hidden="true">${drops}</div></div>
   ${G.ed?gEditBar():''}
   ${sel?`<p class="gtip" role="status"><b>${esc(kindInfo(sel.k).name)}</b> · ${gEta(sel)}</p>`:''}
   ${R.length>=2&&!G.ed?`<button class="btn primary wide" type="button" id="gd-all">Harvest all · ${R.length}</button>`:''}
-  ${g.tray.length?`<p class="cap gtray">${g.tray.length} seed${g.tray.length>1?'s':''} waiting</p>`:''}
-  ${!g.plants.length&&!g.tray.length?'<p class="gempty">Eat a plant to sow a seed</p>':''}
+  ${G.ed?'':gSeedBar()}
+  ${!g.plants.length&&!g.tray.length?'<p class="gempty">Log a plant food to get its seed</p>':''}
   ${mode==='auto'&&g.plants.length?'<p class="cap gtray">Grows overnight</p>':''}
   <div class="gacts">${G.ed?'':'<button class="btn" type="button" id="gd-edit">Edit layout</button>'}<button class="btn ghost" type="button" id="gd-share">Share my garden</button></div>`;
  b.scrollTop=y;
- gReapBind(b);{const fw=$('gd-fw');if(fw){const mx=fw.scrollWidth-fw.clientWidth;fw.scrollLeft=G.sl!=null?Math.min(G.sl,mx):mx*.3;fw.onscroll=()=>{G.sl=fw.scrollLeft}}}
+ gReapBind(b);gSeedBind(b);{const fw=$('gd-fw');if(fw){const mx=fw.scrollWidth-fw.clientWidth;fw.scrollLeft=G.sl!=null?Math.min(G.sl,mx):mx*.3;fw.onscroll=()=>{G.sl=fw.scrollLeft}}}
  if($('gd-all'))$('gd-all').onclick=()=>{const Q=[...document.querySelectorAll('#gd-body .gplot.st3')].sort((x,y)=>(+x.style.zIndex)-(+y.style.zIndex));if(!Q.length)return;$('gd-all').disabled=true;const st=GSTILL();
   Q.forEach((x,i)=>{if(st)gReapAt(x);else setTimeout(()=>gReapAt(x),i*70)});gReapEnd(st?0:Q.length*70+480,Q.length)};
  b.querySelectorAll('[data-gv]').forEach(x=>x.onclick=()=>gView(x.dataset.gv));b.querySelectorAll('[data-ul]').forEach(x=>x.onclick=()=>{G.ul=x.dataset.ul;gView('unlock')});b.querySelectorAll('[data-sb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.sb;gView('sec')});
@@ -3661,6 +3681,33 @@ const GBOARDI='<svg viewBox="0 0 48 52" aria-hidden="true"><path d="M12 30v18M36
 const GSHEDI='<svg viewBox="0 0 56 52" aria-hidden="true"><path d="M6 20L28 6l22 14v26H6z" fill="#B9844D"/><path d="M3 21L28 5l25 16" fill="none" stroke="#7C5329" stroke-width="3.6" stroke-linejoin="round"/><rect x="17" y="26" width="22" height="20" fill="#7C5329"/><path d="M17 26l22 20M39 26L17 46" stroke="#5E3F22" stroke-width="2"/><path d="M30 38h18l-2 10H32z" fill="#D9A15E"/><circle cx="35" cy="36" r="3.4" fill="#E64B4B"/><circle cx="41" cy="35" r="3.4" fill="#6DBB63"/><circle cx="46" cy="37" r="3" fill="#F6A33C"/></svg>';
 const GLOCKI='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="11" width="14" height="10" rx="2"/><path d="M8 11V8a4 4 0 0 1 8 0v3"/></svg>';
 function gStand(v,ic,lab,badge,id){return `<button class="gstand" type="button" data-gv="${v}"${id?` id="${id}"`:''} aria-label="${({shop:'Garden shop',album:'Notice board',water:'Rain barrel',basket:'Shed',market:'Market'})[v]}"><span class="gsti">${ic}</span><span class="gstl num">${lab}</span>${badge?`<span class="gbn num">${badge}</span>`:''}</button>`}
+
+/* the seed bar: tap a packet then a plot, or press a packet and swipe across empty plots */
+function gEmpties(){const g=S.garden,L=gLand();let h='';gBeds().forEach(([b])=>{for(let pos=0;pos<gPlots(b);pos++){if(g.plants.some(p=>p.b===b&&p.pos===pos))continue;const {c,r,x,y}=isoC(b,pos),ok=G.seed?gBedOf(G.seed)===b:g.tray.some(t=>gBedOf(t.k)===b);
+ h+=`<button class="gplot empty${ok&&G.seed?' can':''}" type="button" data-eb="${b}" data-ep="${pos}" style="left:${pct(x-29,ISO.w)};top:${pct(y+7-70,ISO.h)};width:${pct(58,ISO.w)};height:${pct(70,ISO.h)};z-index:${Math.round((c+r)*10)+4}" aria-label="Empty plot in ${GSECN[b]}"></button>`}});return h}
+function gSeedBar(){const g=S.garden;if(!g.tray.length)return '';const seen={};g.tray.forEach(t=>{seen[t.k]=(seen[t.k]||0)+1});
+ return `<div class="gseeds"><div class="gsrow">${Object.keys(seen).map(k=>{const I=kindInfo(k);return `<button class="gpack${G.seed===k?' on':''}" type="button" data-seed="${esc(k)}" aria-pressed="${G.seed===k}" aria-label="${esc(I.name)} seed, ${GSECN[gBedOf(k)]}"><span class="gpki">${I.icon}</span><span class="gpkn">${esc(I.name)}</span></button>`}).join('')}</div><button class="btn sm" type="button" id="gd-plantall">Plant all</button></div>`}
+function gSeedBind(b){const g=S.garden;
+ b.querySelectorAll('[data-eb]').forEach(x=>x.addEventListener('click',()=>{if(x.dataset.done)return;const bd=x.dataset.eb,pos=+x.dataset.ep,k=G.seed&&gBedOf(G.seed)===bd?G.seed:(g.tray.find(t=>gBedOf(t.k)===bd)||{}).k;if(!k){toast(`No ${GSECN[bd].toLowerCase()} seeds yet`);return}
+  if(gPlant(k,pos)){if(G.seed===k&&!g.tray.some(t=>t.k===k))G.seed=null;gPop(x);save();renderGarden();render()}}));
+ b.querySelectorAll('[data-seed]').forEach(x=>{let st=null;
+  x.addEventListener('pointerdown',e=>{st={id:e.pointerId,x:e.clientX,y:e.clientY,mv:0,k:x.dataset.seed,n:0};try{x.setPointerCapture(e.pointerId)}catch(_){}});
+  x.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;if(!st.mv&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>10){st.mv=1;G.seed=st.k;document.querySelectorAll('#gd-body [data-eb]').forEach(q=>q.classList.toggle('can',gBedOf(st.k)===q.dataset.eb));gSeedGhost(st.k,1)}
+   if(!st.mv)return;gSeedGhost(st.k,1,e.clientX,e.clientY);const el=document.elementFromPoint(e.clientX,e.clientY),q=el&&el.closest?el.closest('#gd-scene [data-eb]'):null;
+   if(q&&!q.dataset.done&&q.dataset.eb===gBedOf(st.k)){if(gPlant(st.k,+q.dataset.ep)){q.dataset.done='1';st.n++;gPop(q);q.innerHTML=GSPROUTMINI;const nx=g.tray.find(t=>gBedOf(t.k)===q.dataset.eb);if(nx){st.k=nx.k;G.seed=nx.k}else st.k=null}}});
+  const end=e=>{if(!st)return;const mv=st.mv,n=st.n;st=null;gSeedGhost(null,0);if(!mv){G.seed=G.seed===x.dataset.seed?null:x.dataset.seed;renderGarden();return}if(n){save();toast(`Planted ${n}`)}G.seed=null;renderGarden();render()};
+  x.addEventListener('pointerup',end);x.addEventListener('pointercancel',end)});
+ if($('gd-plantall'))$('gd-plantall').onclick=()=>{const n=gPlantAll();save();renderGarden();render();toast(n?`Planted ${n}`:'No free plots, harvest or unlock more')}}
+const GSPROUTMINI='<svg viewBox="0 0 40 40" aria-hidden="true" style="width:60%;margin:auto auto 6%"><path d="M4 39c4-6 28-6 32 0z" fill="var(--g-mound)"/><circle cx="16" cy="33" r="1.4" fill="var(--g-seed)"/><circle cx="23" cy="32" r="1.4" fill="var(--g-seed)"/></svg>';
+function gSeedGhost(k,on,x,y){let el=$('gd-sg');if(!on||!k){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='gd-sg';el.className='gsghost';el.setAttribute('aria-hidden','true');$('v-garden').appendChild(el)}el.innerHTML=`<span class="gpki">${kindInfo(k).icon}</span>`;if(x!=null)el.style.transform=`translate(${x-22}px,${y-56}px)`}
+function gPop(el){if(GSTILL()||!el.animate)return;el.animate([{transform:'scale(1)'},{transform:'scale(1.25)'},{transform:'scale(1)'}],{duration:260,easing:'ease-out'})}
+/* logging something shows the seeds it gives: chips fly to the Garden tab */
+let GSEEN=null;
+function gSeedFly(){if(!S.garden||!GON())return;const now=S.garden.tray.map(t=>t.k),prev=GSEEN;GSEEN=new Set(now);if(!prev)return;const add=now.filter(k=>!prev.has(k));if(!add.length||S.view==='garden')return;
+ const tab=document.querySelector('.tabbar [data-v="garden"]');add.slice(0,4).forEach((k,i)=>{const I=kindInfo(k),c=document.createElement('div');c.className='gseedchip';c.innerHTML=`<span class="gpki">${I.icon}</span>+ ${esc(I.name)} seed`;document.body.appendChild(c);
+  const tr=tab?tab.getBoundingClientRect():{left:innerWidth*.7,top:innerHeight-60,width:40,height:40},x0=innerWidth/2-80,y0=innerHeight*.55-i*44;c.style.left=x0+'px';c.style.top=y0+'px';
+  if(GSTILL()||!c.animate){setTimeout(()=>c.remove(),1400);return}
+  c.animate([{transform:'translateY(16px) scale(.8)',opacity:0},{transform:'translateY(0) scale(1)',opacity:1,offset:.18},{transform:'translateY(-6px) scale(1)',opacity:1,offset:.55},{transform:`translate(${tr.left+tr.width/2-x0-60}px,${tr.top-y0}px) scale(.3)`,opacity:.2}],{duration:1500,delay:i*160,easing:'ease-in-out',fill:'both'}).onfinish=()=>{c.remove();if(tab&&tab.animate)tab.animate([{transform:'scale(1)'},{transform:'scale(1.15)'},{transform:'scale(1)'}],{duration:260})}})}
 /* the stands' sheets: market, shed, shop, notice board, barrel, unlocking land, a section */
 function gSheetClose(){if(!G)return;G.view='main';G.buy=null;G.ul=null;G.sb=null;const d=$('gsheet');if(d.open)d.close();renderGarden()}
 function gPanel(v,b){const g=S.garden;
@@ -4804,6 +4851,8 @@ function render0(){
  const T=targets(),D=dayV(),v=S.view;
  ['today','nutr','scan','lib','garden','profile'].forEach(x=>{$('v-'+x).hidden=x!==v});
  document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.setAttribute('aria-current',b.dataset.v===v||(b.dataset.v==='nutr'&&v==='lib')));
+ {const gt=document.querySelector('.tabbar [data-v="garden"]');if(gt){let bd=gt.querySelector('.tbadge');const n=GON()&&S.garden?S.garden.tray.length:0;if(n){if(!bd){bd=document.createElement('span');bd.className='tbadge num';gt.appendChild(bd)}bd.textContent=n}else if(bd)bd.remove()}}
+ setTimeout(gSeedFly,0);
  document.querySelectorAll('[data-vsw]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.vsw===v);b.onclick=()=>go(b.dataset.vsw)});
  if(v!=='garden'){G=null;if($('gsheet').open)$('gsheet').close()}
  if(v==='today')renderToday(T,D);
