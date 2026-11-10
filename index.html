@@ -813,7 +813,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .gpart{position:fixed;width:9px;height:6px;border-radius:50% 50% 50% 0;z-index:10;pointer-events:none}
 .gpart.spark{width:8px;height:8px;border-radius:0;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
 .gplus1{position:fixed;z-index:11;font-weight:800;font-size:13px;color:var(--accent);pointer-events:none}
-#gd-sickle{position:fixed;left:0;top:0;width:44px;height:44px;z-index:12;pointer-events:none;animation:gswing .35s ease-in-out infinite alternate}
+#gd-sickle{position:fixed;left:0;top:0;width:80px;height:80px;z-index:12;pointer-events:none;animation:gswing .35s ease-in-out infinite alternate}
 #gd-sickle svg{width:100%;height:100%}
 @keyframes gswing{from{rotate:-14deg}to{rotate:16deg}}
 .grain{position:absolute;inset:0;pointer-events:none}
@@ -1112,7 +1112,7 @@ html.still .gplot.empty.can::after{animation:none}
 .hbot .gseeds{margin:0;box-shadow:0 3px 14px rgba(0,0,0,.16)}
 .hbot .gedbar{margin:0;max-height:46vh;overflow:auto;box-shadow:0 3px 14px rgba(0,0,0,.16)}
 .gbld{position:absolute;border:0;background:none;padding:0;display:block;font:inherit;color:var(--ink);-webkit-tap-highlight-color:transparent}
-.gbld .gsti{position:relative;display:block;width:100%;height:auto;aspect-ratio:120/112}
+.gbld .gsti{position:relative;display:block;width:100%;height:auto;aspect-ratio:120/128}
 .gbld[data-bld="board"] .gsti,.gbld[data-bld="barrel"] .gsti{aspect-ratio:1}
 .gbld .gsti>svg{width:100%;height:100%;display:block}
 .gbld .gstl{position:absolute;left:50%;bottom:-4px;transform:translateX(-50%);white-space:nowrap;font-size:12px;padding:1px 8px}
@@ -1120,6 +1120,24 @@ html.still .gplot.empty.can::after{animation:none}
 .gbld:active .gsti{transform:scale(.96)}
 .gbld.ed{pointer-events:none;opacity:.9}
 .gbld .tmas.mini{right:-30%;bottom:4%;width:52%}
+:root{--g-pad:#C9B48E;--g-padd:#9C8662;--g-padin:#DCCBA8;--g-parch:#F7EDD6;--g-parchl:#DCC69C;--g-w1:#D9A15E;--g-w2:#B07740;--g-wd:#6E4A2A;--g-wt:#FFF6E6;--g-leafb1:#7CC46F;--g-leafb2:#4E9E4A;--g-leafd:#2F6B34}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--g-pad:#5A4E3C;--g-padd:#3A3226;--g-padin:#6B5E48;--g-parch:#3B3327;--g-parchl:#5E4E36;--g-w1:#A8743F;--g-w2:#7C5329;--g-wd:#3F2A16;--g-wt:#FFF0DC;--g-leafb1:#5AAA55;--g-leafb2:#3E8442;--g-leafd:#1F4A22}}
+:root[data-theme="dark"]{--g-pad:#5A4E3C;--g-padd:#3A3226;--g-padin:#6B5E48;--g-parch:#3B3327;--g-parchl:#5E4E36;--g-w1:#A8743F;--g-w2:#7C5329;--g-wd:#3F2A16;--g-wt:#FFF0DC;--g-leafb1:#5AAA55;--g-leafb2:#3E8442;--g-leafd:#1F4A22}
+#v-garden .gfab,#v-garden .gharv,#v-garden #gd-plantall,#v-garden #ged-turn,#v-garden #ged-big{background:linear-gradient(var(--g-w1),var(--g-w2));border:2.5px solid var(--g-wd);color:var(--g-wt);box-shadow:0 3px 0 var(--g-wd),0 6px 12px rgba(0,0,0,.18);text-shadow:0 1px 0 rgba(0,0,0,.25)}
+#v-garden .gfab:active,#v-garden .gharv:active,#v-garden #gd-plantall:active{transform:translateY(2px);box-shadow:0 1px 0 var(--g-wd)}
+#v-garden #ged-done{background:linear-gradient(var(--g-leafb1),var(--g-leafb2));border:2.5px solid var(--g-leafd);color:#fff;box-shadow:0 3px 0 var(--g-leafd);text-shadow:0 1px 0 rgba(0,0,0,.25)}
+#v-garden .gdhead .gname,#v-garden .gcoins,.hweek,.gtip.ghud,.hbot .gseeds,.hbot .gedbar,.ggift.ghud{background:var(--g-parch);border:2px solid var(--g-parchl)}
+.gharv{width:84px;height:84px}
+.gharv svg{width:52px;height:52px;filter:drop-shadow(0 2px 0 rgba(0,0,0,.25))}
+.gharv.out{opacity:.45}
+.gharv.nudge{animation:gnudge .5s ease-in-out 2}
+@keyframes gnudge{0%,100%{transform:rotate(0)}30%{transform:rotate(-12deg) scale(1.08)}70%{transform:rotate(10deg) scale(1.08)}}
+.gpick{display:grid;grid-template-columns:repeat(auto-fill,minmax(84px,1fr));gap:8px}
+.gpack.big{width:auto;position:relative;padding:10px 4px 8px}
+.gpack.big .gpki{width:40px;height:40px}
+.gpack.big .gbn{top:4px;right:4px}
+.gpkhint{text-align:center;margin:0}
+.gplot.empty.can::after{height:80%;bottom:6%}
 </style>
 </head>
 <body>
@@ -3331,7 +3349,7 @@ function againList(slot,n){const ty=typeOf(S.plan,slot),seen=new Set([mealSig(S.
 /* put foods on a meal: an empty meal takes the name, a filled one keeps its foods and adds these */
 function putOn(slot,items,t,did,extra){const ty=typeOf(S.plan,slot),sl=S.plan[slot];
  if(!sl.it.length)S.plan[slot]=Object.assign({t:t||'',it:cp(items)},did?{did}:{},ty!==slot?{ty}:{},extra||{});
- else{items.forEach(([id,g,st])=>{const o=sl.it.find(x=>x[0]===id&&(x[2]||'')===(st||''));if(o)o[1]=Math.round(o[1]+g);else sl.it.push(st?[id,g,st]:[id,g])});
+ else{if(sl.did||did)sl.nos=[...new Set([...(sl.nos||[]),...(sl.did?sl.it.map(x=>x[0]):[]),...(did?items.map(x=>x[0]):[])])];items.forEach(([id,g,st])=>{const o=sl.it.find(x=>x[0]===id&&(x[2]||'')===(st||''));if(o)o[1]=Math.round(o[1]+g);else sl.it.push(st?[id,g,st]:[id,g])});
   sl.t=sl.t&&t?sl.t+' and '+t.charAt(0).toLowerCase()+t.slice(1):'';delete sl.did;if(extra)Object.assign(sl,extra)}
  if(did)meta(did).used=Date.now();edited(slot)}
 function setSz(slot,f){const sl=S.plan[slot],c=sl.sz||1;if(f===c)return;
@@ -3423,6 +3441,8 @@ const COINI='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12"
 const BASKI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10h17l-1.7 8.6a2 2 0 0 1-2 1.6H7.2a2 2 0 0 1-2-1.6z"/><path d="M8 10l3-5.5M16 10l-3-5.5M9 14v3M12 14v3M15 14v3"/></svg>';
 const gCanSvg=wf=>{const h=Math.round(18*Math.max(0,Math.min(1,wf))*10)/10;return `<svg viewBox="0 0 48 40" aria-hidden="true"><path d="M30 16l13-8 2 3-12 10" fill="none" stroke="var(--g-can)" stroke-width="3" stroke-linejoin="round"/><path d="M13 12a6 5 0 0 1 12 0" fill="none" stroke="var(--g-can)" stroke-width="3"/><rect x="6" y="12" width="26" height="24" rx="5" fill="var(--g-can)"/><rect x="9" y="15" width="20" height="18" rx="3" fill="var(--g-canin)"/>${h?`<rect x="9" y="${33-h}" width="20" height="${h}" rx="3" fill="var(--water)"/>`:''}</svg>`};
 
+function seedSet(dates){const set=new Set();dates.forEach(d=>{const p=S.days[d];if(!p)return;eatK(p).forEach(k=>{const sl=p[k];if(!sl||sl.did||sl.est)return;const no=new Set(sl.nos||[]);
+ sl.it.forEach(([id,g])=>{if(g<=0||no.has(id)||String(id).startsWith('c_'))return;const f=FM[id];if(!(PLANTS[id]||(f&&f.pk&&!f.ing&&!f.parts)))return;plantKinds(id).forEach(x=>set.add(x))})})});return set}
 function plantKinds(id){const f=FM[id],pk=q=>PLANTS[q]||(FM[q]&&FM[q].pk?[FM[q].pk]:[]);
  if(PLANTS[id])return PLANTS[id];if(f&&f.pk)return [f.pk];
  if(f&&f.ing)return f.ing.filter(x=>x[1]>=2&&FM[x[0]]&&FM[x[0]].cat!=='Oils and other').flatMap(([q])=>pk(q));
@@ -3448,7 +3468,7 @@ function gInit(){let g=S.garden;const fresh=!g||typeof g!=='object'||Array.isArr
  g.plants=g.plants.filter(p=>!p.gone);
  if(fresh)gSeed()}
 function gSeed(){const g=S.garden,first={},o=PROJ;PROJ=false;try{
- for(let i=GCFG.seenDays-1;i>=0;i--){const d=shift(TODAY,-i),ks=[...plantSet([d])];if(ks.length)g.seen[d]=ks.slice();ks.forEach(k=>{if(!first[k])first[k]=d})}
+ for(let i=GCFG.seenDays-1;i>=0;i--){const d=shift(TODAY,-i),ks=[...seedSet([d])];if(ks.length)g.seen[d]=ks.slice();ks.forEach(k=>{if(!first[k])first[k]=d})}
  Object.keys(first).map(k=>{const I=kindInfo(k);return {k,b:gBedOf(k),d:first[k],gp:Math.min(I.need,dayDiff(first[k],TODAY)),need:I.need,tier:I.tier,s:first[k]}}).sort((a,b)=>b.gp-a.gp||a.k.localeCompare(b.k))
   .forEach(p=>{const pos=gFreePos(p.b);if(pos<0)g.tray.push({k:p.k,b:p.b,s:p.s});else{p.pos=pos;g.plants.push(p)}});g.tick=TODAY}finally{PROJ=o}}
 function gFreePos(b){const used=new Set(S.garden.plants.filter(p=>p.b===b).map(p=>p.pos));for(let i=0;i<gPlots(b);i++)if(!used.has(i))return i;return -1}
@@ -3458,7 +3478,7 @@ function gRefill(){}
 /* planting by hand: a seed goes into a free plot of its own section */
 function gPlant(k,pos){const g=S.garden,i=g.tray.findIndex(t=>t.k===k);if(i<0)return 0;const t=g.tray[i],b=gBedOf(t.k);if(pos==null)pos=gFreePos(b);if(pos<0||pos>=gPlots(b)||g.plants.some(p=>p.b===b&&p.pos===pos))return 0;const I=kindInfo(t.k);g.tray.splice(i,1);g.plants.push({k:t.k,b,d:TODAY,gp:0,need:I.need,tier:I.tier,s:t.s,pos});return 1}
 function gPlantAll(){let n=0;S.garden.tray.slice().forEach(t=>{n+=gPlant(t.k)});return n}
-const gMode=()=>!WON()?'auto':S.garden.water==='auto'?'auto':'bottle';
+const gMode=()=>'auto';
 const gWaterOn=d=>{const p=S.days[d];return p?Math.min(1,wTotal(p)/wTarget()):0};
 const gGrowth=x=>gMode()==='auto'?1:gWaterOn(x);
 /* growth for every finished day since the last tick, at most 14 days back; a tick in the future applies nothing */
@@ -3468,7 +3488,7 @@ function gardenTick(){const g=S.garden;if(g.tick===TODAY)return;if(!g.tick||g.ti
  g.tick=TODAY}finally{PROJ=o}}
 /* sowing: a kind eaten in the last 7 days is credited once per day; it sows a seed when none of its kind grows or waits */
 function gardenSync(){const g=S.garden,o=PROJ;PROJ=false;try{
- for(let i=GCFG.seenDays-1;i>=0;i--){const d=shift(TODAY,-i),ks=[...plantSet([d])];let sn=g.seen[d];
+ for(let i=GCFG.seenDays-1;i>=0;i--){const d=shift(TODAY,-i),ks=[...seedSet([d])];let sn=g.seen[d];
   if(!i&&sn)sn.slice().forEach(k=>{if(ks.includes(k))return;sn.splice(sn.indexOf(k),1);
    const pi=g.plants.findIndex(p=>p.k===k&&p.s===TODAY&&p.d===TODAY&&!(p.gp>0));if(pi>=0){g.plants.splice(pi,1);gRefill()}else{const ti=g.tray.findIndex(t=>t.k===k&&t.s===TODAY);if(ti>=0)g.tray.splice(ti,1)}});
   ks.forEach(k=>{sn=g.seen[d]||(g.seen[d]=[]);if(sn.includes(k))return;sn.push(k);if(g.plants.some(p=>p.k===k)||g.tray.some(t=>t.k===k))return;gSow(k,d)});
@@ -3538,7 +3558,7 @@ function isoLand(){isoGeom();const L=gLand(),C=L.C,R=L.R,d=ISO.dep,T=isoP(-.5,-.
   h+=`<polygon points="${PTS(q.map(p=>[p[0],p[1]+4]))}" fill="var(--g-side1)" opacity=".55"/><polygon points="${PTS(q)}" fill="var(--g-${b}top)" stroke="var(--g-${b}edge)" stroke-width="2" stroke-linejoin="round"/>`;
   for(let pos=0;pos<4*s.rows;pos++){const {x,y,c,r}=isoC(b,pos);h+=b==='f'||b==='b'?`<ellipse cx="${x}" cy="${y+2}" rx="27" ry="12" fill="var(--g-${b==='f'?'tuft':'bin'})"/>`:`<polygon points="${isoDia(c,r,.82)}" fill="var(--g-${b}in)"/><path d="M${x-19} ${y+1}l19 -9.5M${x-8} ${y+7}l19 -9.5" stroke="var(--g-furrow)" stroke-width="2" stroke-linecap="round"/>`}});
  gParcels().forEach(p=>{const q=[isoP(p.c-.5,p.r-.5),isoP(p.c+p.w-.5,p.r-.5),isoP(p.c+p.w-.5,p.r+p.h-.5),isoP(p.c-.5,p.r+p.h-.5)];h+=`<polygon points="${PTS(q)}" fill="var(--g-lock)" stroke="var(--g-lockline)" stroke-width="2.5" stroke-dasharray="8 6" stroke-linejoin="round"/>`});
- h+=gNature();
+ h=gMeadow()+h+gNature();
  return `<svg class="gland" viewBox="0 0 ${ISO.w} ${ISO.h}" aria-hidden="true">${h}</svg>`}
 function gSigns(ed){const L=gLand();return (ed?Object.keys(L.sec):[]).map(b=>{const s=L.sec[b],[w,hh]=secWH(s),[x,y]=isoP(s.c-.55,s.r+hh/2-.5);return `<button class="gsign" type="button" data-sb="${b}" style="left:${pct(x-18,ISO.w)};top:${pct(y-6,ISO.h)}"><b>${GSECN[b]}</b></button>`}).join('')+gParcels().map(p=>{const [x,y]=isoP(p.c+(p.id==='land'?.5:p.w/2-.5),p.r+(p.id==='sec:b'?p.h-1.2:p.id==='land'?p.h/2-.5:.3)),pr=gUpPrice(p.id);return `<button class="glock" type="button" data-ul="${p.id}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}" aria-label="Unlock ${p.n} for ${pr} coins">${GLOCKI}<span class="num">${COINI}${pr}</span></button>`}).join('')}
 function gDecs(){const L=gLand();return Object.keys(L.dec).map(t=>{const [c,r]=tileXY(t),[x,y]=isoP(c,r),id=L.dec[t];return `<span class="gspot" style="left:${pct(x-27,ISO.w)};top:${pct(y+10-54,ISO.h)};width:${pct(54,ISO.w)};z-index:${Math.round((c+r)*10)+6}" aria-label="${(GDEC.find(d=>d[0]===id)||[0,''])[1]}">${gDec(id)}</span>`}).join('')}
@@ -3595,11 +3615,13 @@ function gSkyline(bg){if(bg==='roof')return '<svg class="ghills" viewBox="0 0 40
 const gNext=wk=>{const x=GCFG.week.find(([t])=>wk<t);return x?x[0]:null};
 function gDone(msg){if(GNEWB){const b=GBADGE.find(x=>x[0]===GNEWB);GNEWB=null;if(b){toast(`Badge: ${b[1]}`);return}}if(msg)toast(msg)}
 /* ---------- the world: a meadow you look into; drag to move, pinch or buttons to zoom ---------- */
-const GBLD={shed:{n:'Shed',w:2,v:'basket'},market:{n:'Market',w:2,v:'market'},shop:{n:'Shop',w:2,v:'shop'},board:{n:'Board',w:1,v:'album'},barrel:{n:'Rain barrel',w:1,v:'water'}};
-const GBLD0={shed:[-4,0],barrel:[-3,3],market:[-4,5],shop:[1,-4],board:[4,-2]};
-function gBld(){const L=gLand();if(!L.bld||typeof L.bld!=='object')L.bld={};Object.keys(GBLD).forEach(k=>{if(!Array.isArray(L.bld[k]))L.bld[k]=GBLD0[k].slice()});return L.bld}
+const GBLD={shed:{n:'Shed',w:2,v:'basket'},market:{n:'Market',w:2,v:'market'},shop:{n:'Shop',w:2,v:'shop'},board:{n:'Board',w:1,v:'album'}};
+const GBLD0={shed:[-4,0],market:[-4,5],shop:[1,-4],board:[4,-2]};
+function gBld(){const L=gLand();if(!L.bld||typeof L.bld!=='object')L.bld={};Object.keys(L.bld).forEach(k=>{if(!GBLD[k])delete L.bld[k]});Object.keys(GBLD).forEach(k=>{if(!Array.isArray(L.bld[k]))L.bld[k]=GBLD0[k].slice()});return L.bld}
 const bldTiles=(k,o)=>{const [c,r]=o||gBld()[k],w=GBLD[k].w,t=[];for(let y=0;y<w;y++)for(let x=0;x<w;x++)t.push((c+x)+','+(r+y));return t};
 const gH=(c,r)=>{let h=(c*73856093)^(r*19349663);h=(h^(h>>>13))*1274126177;return ((h^(h>>>16))>>>0)%1000};
+function gMeadow(){let h='';const B=gBld();for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++)if((c+r)&1)h+=`<polygon points="${isoDia(c,r,1)}" fill="var(--g-grass2)" opacity=".5"/>`;
+ Object.keys(B).forEach(k=>{const [c,r]=B[k],w=GBLD[k].w,e=.42,q=[isoP(c-.5-e,r-.5-e),isoP(c+w-.5+e,r-.5-e),isoP(c+w-.5+e,r+w-.5+e),isoP(c-.5-e,r+w-.5+e)];h+=`<polygon points="${PTS(q.map(p=>[p[0],p[1]+5]))}" fill="var(--g-padd)"/><polygon points="${PTS(q)}" fill="var(--g-pad)"/>`;for(let y=-1;y<=w;y++)for(let x=-1;x<=w;x++){if(x>=0&&y>=0&&x<w&&y<w)continue;const [X,Y]=isoP(c+x+(x<0?.55:x>=w?-.55:0),r+y+(y<0?.55:y>=w?-.55:0));h+=`<ellipse cx="${X.toFixed(1)}" cy="${Y.toFixed(1)}" rx="10" ry="5" fill="var(--g-padin)"/>`}});return h}
 function gNature(){const occ=gOcc(),B=gBld(),near=(c,r)=>(c>=-1&&r>=-1&&c<=ISO.C+1&&r<=ISO.R+1)||Object.keys(B).some(k=>c>=B[k][0]-1&&r>=B[k][1]-1&&c<=B[k][0]+GBLD[k].w&&r<=B[k][1]+GBLD[k].w);let h='';
  for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++){const t=c+','+r;if(near(c,r)||occ[t])continue;const k=gH(c,r),[x,y]=isoP(c,r);
   if(k<70)h+=`<g><ellipse cx="${x}" cy="${y+6}" rx="22" ry="8" fill="rgba(0,0,0,.13)"/><path d="M${x} ${y+4}v-22" stroke="var(--g-trunk)" stroke-width="7" stroke-linecap="round"/><circle cx="${x}" cy="${y-34}" r="26" fill="var(--g-crown)"/><circle cx="${x-9}" cy="${y-42}" r="11" fill="var(--g-leaf2)" opacity=".45"/><circle cx="${x+12}" cy="${y-24}" r="9" fill="var(--g-leaf2)" opacity=".35"/></g>`;
@@ -3609,12 +3631,12 @@ function gNature(){const occ=gOcc(),B=gBld(),near=(c,r)=>(c>=-1&&r>=-1&&c<=ISO.C
   else if(k<330)h+=`<path d="M${x-6} ${y+2}l2 -7 2 7M${x+5} ${y-3}l2 -7 2 7" stroke="var(--g-tuft2)" stroke-width="1.6" fill="none"/>`}
  return h}
 /* bigger, more detailed buildings in isometric view */
-const GB_SHED='<svg viewBox="0 0 120 112" aria-hidden="true"><ellipse cx="60" cy="100" rx="58" ry="14" fill="rgba(0,0,0,.16)"/><polygon points="6,76 60,103 60,58 6,31" fill="#C8473D"/><polygon points="60,103 114,76 114,31 60,58" fill="#A23B32"/><path d="M6 76L60 103L114 76M60 58v45" stroke="#F4EEE6" stroke-width="2.6" fill="none"/><polygon points="20,80 44,92 44,66 20,54" fill="#7E2C25"/><path d="M20 54l24 38M44 66L20 80M20 54l24 12v26L20 80z" stroke="#F4EEE6" stroke-width="2.4" fill="none"/><polygon points="74,62 98,50 98,40 74,52" fill="#4A2B22"/><path d="M74 62l24-12v-10L74 52z" stroke="#F4EEE6" stroke-width="2" fill="none"/><polygon points="0,33 60,62 60,12 30,0" fill="#5A3A2E"/><polygon points="60,62 120,33 90,-2 60,12" fill="#47302A"/><path d="M30 0L90 -2" stroke="#3A2620" stroke-width="3"/><path d="M8 37l52 25M14 30l46 23M22 22l38 19" stroke="#47302A" stroke-width="1.4" opacity=".6"/><polygon points="88,96 104,88 104,80 88,88" fill="#E3C27A"/><polygon points="88,88 104,80 98,77 82,85" fill="#F0D68F"/></svg>';
-const GB_SHOP='<svg viewBox="0 0 120 112" aria-hidden="true"><ellipse cx="60" cy="100" rx="58" ry="14" fill="rgba(0,0,0,.16)"/><polygon points="8,76 60,102 60,60 8,34" fill="#F1E3C6"/><polygon points="60,102 112,76 112,34 60,60" fill="#DCC9A4"/><polygon points="26,84 42,92 42,68 26,60" fill="#6E4E37"/><circle cx="39" cy="80" r="1.6" fill="#F6CB5A"/><polygon points="72,78 100,64 100,46 72,60" fill="#BFE3EE"/><path d="M86 71V53M72 69l28-14" stroke="#FFFFFF" stroke-width="2"/><polygon points="70,82 102,66 102,72 70,88" fill="#8A5E33"/><circle cx="76" cy="80" r="4" fill="#F28AA8"/><circle cx="84" cy="76" r="4" fill="#F6CB5A"/><circle cx="92" cy="72" r="4" fill="#E86A5C"/><circle cx="98" cy="69" r="3.6" fill="#B9A0E6"/><polygon points="18,58 50,74 50,66 18,50" fill="#4E9E52"/><path d="M24 53v8M32 57v8M40 61v8M46 64v7" stroke="#F4FBEE" stroke-width="3.4"/><polygon points="2,37 60,66 60,16 31,2" fill="#4E9E52"/><polygon points="60,66 118,37 89,2 60,16" fill="#3E8442"/><path d="M31 2L89 2" stroke="#2F6B34" stroke-width="3"/><rect x="74" y="0" width="7" height="14" fill="#B07740"/></svg>';
-const GB_MARKET='<svg viewBox="0 0 120 112" aria-hidden="true"><ellipse cx="60" cy="100" rx="58" ry="14" fill="rgba(0,0,0,.16)"/><path d="M12 78V34M60 104V60M108 78V34" stroke="#8A5E33" stroke-width="5" stroke-linecap="round"/><polygon points="8,78 60,104 60,84 8,58" fill="#C98B4E"/><polygon points="60,104 112,78 112,58 60,84" fill="#B07740"/><polygon points="8,58 60,84 112,58 60,32" fill="#D9A15E"/><g><circle cx="30" cy="64" r="6" fill="#E64B4B"/><circle cx="40" cy="69" r="6" fill="#F6A33C"/><circle cx="50" cy="73" r="6" fill="#6DBB63"/><circle cx="70" cy="74" r="6" fill="#F6CB5A"/><circle cx="82" cy="68" r="6" fill="#8E5CBA"/><circle cx="94" cy="62" r="6" fill="#E64B4B"/><circle cx="60" cy="60" r="6" fill="#6DBB63"/><circle cx="48" cy="54" r="5.5" fill="#F6A33C"/><circle cx="72" cy="54" r="5.5" fill="#F28AA8"/></g><polygon points="2,36 60,64 60,14" fill="#E86A5C"/><polygon points="60,64 118,36 60,14" fill="#C9574B"/><path d="M14 34l46 22M26 28l34 17M40 22l20 10M106 34L60 56M94 28L60 45M80 22L60 32" stroke="#FFF3E6" stroke-width="5" opacity=".75"/><path d="M2 36q7 8 14 4t14 4 14 4 14 4 2 2M118 36q-7 8-14 4t-14 4-14 4-14 4-2 2" fill="none" stroke="#E86A5C" stroke-width="4"/></svg>';
-function gBuildings(L0,nb){const B=gBld(),P={shed:GB_SHED,shop:GB_SHOP,market:GB_MARKET,board:GBOARDI,barrel:gBarrel(gMode()==='bottle'?gWaterOn(TODAY):1)};
- return Object.keys(B).map(k=>{const [c,r]=B[k],w=GBLD[k].w,[x,y]=isoP(c+(w-1)/2,r+(w-1)/2),W=w===2?170:84,badge=k==='shed'?nb:k==='market'?L0.filter(o=>!o.done&&gHold(o.k)>=o.n).length:0,lab=k==='barrel'?wL(wTotal(S.days[TODAY]||{})):GBLD[k].n;
-  return `<button class="gbld${G.ed?' ed':''}" type="button" data-gv="${GBLD[k].v}" data-bld="${k}"${k==='shed'?' id="gd-bag"':k==='barrel'?' id="gd-barrel"':''} style="left:${pct(x-W/2,ISO.w)};top:${pct(w===2?y-W*.633:y+14-W*.95,ISO.h)};width:${pct(W,ISO.w)};z-index:${Math.round((c+r+2*(w-1))*10)+5}" aria-label="${GBLD[k].n}"><span class="gsti">${P[k]}${k==='market'?`<span class="tmas mini ${gMood()}">${TORT}</span>`:''}</span><span class="gstl num">${lab}</span>${badge?`<span class="gbn num">${badge}</span>`:''}</button>`}).join('')}
+const GB_SHED='<svg viewBox="0 -16 120 128" aria-hidden="true"><ellipse cx="60" cy="100" rx="58" ry="14" fill="rgba(0,0,0,.16)"/><polygon points="6,76 60,103 60,58 6,31" fill="#C8473D"/><polygon points="60,103 114,76 114,31 60,58" fill="#A23B32"/><path d="M6 76L60 103L114 76M60 58v45" stroke="#F4EEE6" stroke-width="2.6" fill="none"/><polygon points="20,80 44,92 44,66 20,54" fill="#7E2C25"/><path d="M20 54l24 38M44 66L20 80M20 54l24 12v26L20 80z" stroke="#F4EEE6" stroke-width="2.4" fill="none"/><polygon points="74,62 98,50 98,40 74,52" fill="#4A2B22"/><path d="M74 62l24-12v-10L74 52z" stroke="#F4EEE6" stroke-width="2" fill="none"/><polygon points="60,0 118,29 89,15 31,-14" fill="#3A2620"/><polygon points="60,58 114,31 87,15" fill="#A23B32"/><path d="M60 58L87 15L114 31" stroke="#F4EEE6" stroke-width="2.4" fill="none" stroke-linejoin="round"/><polygon points="1,33 62,63 89,15 28,-15" fill="#5A3A2E"/><path d="M28 -15L89 15" stroke="#3A2620" stroke-width="3" stroke-linecap="round"/><path d="M9 25l60 30M16 13l60 30M22 1l60 30" stroke="#47302A" stroke-width="1.4" opacity=".6"/><path d="M1 33L62 63" stroke="#3A2620" stroke-width="2.4"/><polygon points="88,96 104,88 104,80 88,88" fill="#E3C27A"/><polygon points="88,88 104,80 98,77 82,85" fill="#F0D68F"/></svg>';
+const GB_SHOP='<svg viewBox="0 -16 120 128" aria-hidden="true"><ellipse cx="60" cy="100" rx="58" ry="14" fill="rgba(0,0,0,.16)"/><polygon points="8,76 60,102 60,60 8,34" fill="#F1E3C6"/><polygon points="60,102 112,76 112,34 60,60" fill="#DCC9A4"/><polygon points="26,84 42,92 42,68 26,60" fill="#6E4E37"/><circle cx="39" cy="80" r="1.6" fill="#F6CB5A"/><polygon points="72,78 100,64 100,46 72,60" fill="#BFE3EE"/><path d="M86 71V53M72 69l28-14" stroke="#FFFFFF" stroke-width="2"/><polygon points="70,82 102,66 102,72 70,88" fill="#8A5E33"/><circle cx="76" cy="80" r="4" fill="#F28AA8"/><circle cx="84" cy="76" r="4" fill="#F6CB5A"/><circle cx="92" cy="72" r="4" fill="#E86A5C"/><circle cx="98" cy="69" r="3.6" fill="#B9A0E6"/><polygon points="18,58 50,74 50,66 18,50" fill="#4E9E52"/><path d="M24 53v8M32 57v8M40 61v8M46 64v7" stroke="#F4FBEE" stroke-width="3.4"/><polygon points="2,37 60,66 60,16 31,2" fill="#4E9E52"/><polygon points="60,66 118,37 89,2 60,16" fill="#3E8442"/><path d="M31 2L89 2" stroke="#2F6B34" stroke-width="3"/><rect x="74" y="0" width="7" height="14" fill="#B07740"/></svg>';
+const GB_MARKET='<svg viewBox="0 -16 120 128" aria-hidden="true"><ellipse cx="60" cy="100" rx="58" ry="14" fill="rgba(0,0,0,.16)"/><path d="M12 78V34M60 104V60M108 78V34" stroke="#8A5E33" stroke-width="5" stroke-linecap="round"/><polygon points="8,78 60,104 60,84 8,58" fill="#C98B4E"/><polygon points="60,104 112,78 112,58 60,84" fill="#B07740"/><polygon points="8,58 60,84 112,58 60,32" fill="#D9A15E"/><g><circle cx="30" cy="64" r="6" fill="#E64B4B"/><circle cx="40" cy="69" r="6" fill="#F6A33C"/><circle cx="50" cy="73" r="6" fill="#6DBB63"/><circle cx="70" cy="74" r="6" fill="#F6CB5A"/><circle cx="82" cy="68" r="6" fill="#8E5CBA"/><circle cx="94" cy="62" r="6" fill="#E64B4B"/><circle cx="60" cy="60" r="6" fill="#6DBB63"/><circle cx="48" cy="54" r="5.5" fill="#F6A33C"/><circle cx="72" cy="54" r="5.5" fill="#F28AA8"/></g><polygon points="2,36 60,64 60,14" fill="#E86A5C"/><polygon points="60,64 118,36 60,14" fill="#C9574B"/><path d="M14 34l46 22M26 28l34 17M40 22l20 10M106 34L60 56M94 28L60 45M80 22L60 32" stroke="#FFF3E6" stroke-width="5" opacity=".75"/><path d="M2 36q7 8 14 4t14 4 14 4 14 4 2 2M118 36q-7 8-14 4t-14 4-14 4-14 4-2 2" fill="none" stroke="#E86A5C" stroke-width="4"/></svg>';
+function gBuildings(L0,nb){const B=gBld(),P={shed:GB_SHED,shop:GB_SHOP,market:GB_MARKET,board:GBOARDI};
+ return Object.keys(B).map(k=>{const [c,r]=B[k],w=GBLD[k].w,[x,y]=isoP(c+(w-1)/2,r+(w-1)/2),W=w===2?184:84,badge=k==='shed'?nb:k==='market'?L0.filter(o=>!o.done&&gHold(o.k)>=o.n).length:0,lab=GBLD[k].n;
+  return `<button class="gbld${G.ed?' ed':''}" type="button" data-gv="${GBLD[k].v}" data-bld="${k}"${k==='shed'?' id="gd-bag"':''} style="left:${pct(x-W/2,ISO.w)};top:${pct(w===2?y-W*.767:y+14-W*.95,ISO.h)};width:${pct(W,ISO.w)};z-index:${Math.round((c+r+2*(w-1))*10)+5}" aria-label="${GBLD[k].n}"><span class="gsti">${P[k]}${k==='market'?`<span class="tmas mini ${gMood()}">${TORT}</span>`:''}</span><span class="gstl num">${lab}</span>${badge?`<span class="gbn num">${badge}</span>`:''}</button>`}).join('')}
 /* camera */
 function gCamFit(){const vp=$('gd-scene');if(!vp)return;const R=vp.getBoundingClientRect();if(!R.width)return;const L=gLand(),[x0]=isoP(-.5,L.R-.5),[x1]=isoP(L.C-.5,-.5),[,y0]=isoP(-.5,-.5),[,y1]=isoP(L.C-.5,L.R-.5),s=Math.min(1.3,Math.max(.35,R.width*.92/(x1-x0)));G.cam={s,x:R.width/2-(x0+x1)/2*s,y:R.height*.47-(y0+y1)/2*s}}
 const gCamGo=()=>{if(!G.cam)gCamFit();gCamApply()};
@@ -3631,6 +3653,11 @@ function gCamBind(){const vp=$('gd-scene');if(!vp)return;const P=new Map();let s
  vp.addEventListener('pointerup',up);vp.addEventListener('pointercancel',up);
  vp.addEventListener('click',e=>{if(G.panned){G.panned=0;e.stopPropagation();e.preventDefault()}},true);
  vp.addEventListener('wheel',e=>{e.preventDefault();gZoom(e.deltaY<0?1.1:1/1.1,e.clientX,e.clientY)},{passive:false})}
+/* press and hold anything in the world to start moving it */
+function gHoldBind(){const vp=$('gd-scene');if(!vp||G.ed)return;let lp=null;const stop=()=>{if(lp){clearTimeout(lp.tm);lp=null}};
+ vp.addEventListener('pointerdown',e=>{if(lp){stop();return}if(e.target.closest('.ghud'))return;const bl=e.target.closest('[data-bld]'),t=bl?bldTiles(bl.dataset.bld)[0]:gTileAt(e.clientX,e.clientY);if(!t)return;
+  const X=e.clientX,Y=e.clientY,id=e.pointerId;lp={X,Y,tm:setTimeout(()=>{lp=null;G.ed='sec';G.es=null;G.sel=null;G.lp={t,x:X,y:Y,id};try{navigator.vibrate&&navigator.vibrate(18)}catch(_){}renderGarden()},450)}});
+ vp.addEventListener('pointermove',e=>{if(lp&&Math.hypot(e.clientX-lp.X,e.clientY-lp.Y)>8)stop()});vp.addEventListener('pointerup',stop);vp.addEventListener('pointercancel',stop)}
 /* the main view: the world fills the screen, controls float on top */
 function gMain(g,nb){const R=g.plants.filter(gReady),wk=gWeekN(),nx=gNext(wk),mode=gMode(),wf=gWaterOn(TODAY),sel=G.sel&&g.plants.find(p=>p.k===G.sel&&!gReady(p)),bg=g.decor.bg||'meadow',L=g.orders&&g.orders.d===TODAY?g.orders.list:[];
  const drops=GSTILL()?'':Array.from({length:10},(_,i)=>`<i style="left:${6+i*9.4}%;animation-delay:${(i%4)*.07}s"></i>`).join('');
@@ -3644,11 +3671,10 @@ function gMain(g,nb){const R=g.plants.filter(gReady),wk=gWeekN(),nx=gNext(wk),mo
   ${sel?`<p class="ghud gtip" role="status"><b>${esc(kindInfo(sel.k).name)}</b> · ${gEta(sel)}</p>`:''}
   ${!g.plants.length&&!g.tray.length&&!G.ed?'<p class="ghud gtip">Log a plant food to get its seed</p>':''}
   <div class="ghud hfab">${G.ed?'':`<button class="gfab" type="button" id="gd-edit" aria-label="Edit layout">${PENSM}</button><button class="gfab" type="button" id="gd-share" aria-label="Share my garden"><svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/></svg></button>`}<button class="gfab" type="button" id="gd-zin" aria-label="Zoom in">+</button><button class="gfab" type="button" id="gd-zout" aria-label="Zoom out">−</button></div>
-  ${R.length>=2&&!G.ed?`<button class="ghud gharv" type="button" id="gd-all"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 40l9-9" stroke="#8A5E33" stroke-width="5" stroke-linecap="round"/><path d="M19 31C14 18 22 6 38 6c-9 4-14 12-12 22z" fill="#E1E7EB" stroke="#7E8C96" stroke-width="2"/></svg><span class="num">${R.length}</span></button>`:''}
+  ${R.length&&!G.ed?`<button class="ghud gharv" type="button" id="gd-all" aria-label="Scythe: drag over ripe plants, or tap to cut them all"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M10 40l9-9" stroke="#8A5E33" stroke-width="5" stroke-linecap="round"/><path d="M19 31C14 18 22 6 38 6c-9 4-14 12-12 22z" fill="#E1E7EB" stroke="#7E8C96" stroke-width="2"/></svg><span class="num">${R.length}</span></button>`:''}
   <div class="ghud hbot">${G.ed?gEditBar():gSeedBar()}</div></div>`;
  gCamGo();if(!G.cam)requestAnimationFrame(()=>{if(G)gCamGo()});
- gReapBind(b);gSeedBind(b);gCamBind();
- if($('gd-all'))$('gd-all').onclick=()=>{const Q=[...document.querySelectorAll('#gd-body .gplot.st3')].sort((x,y)=>(+x.style.zIndex)-(+y.style.zIndex));if(!Q.length)return;$('gd-all').disabled=true;const st=GSTILL();Q.forEach((x,i)=>{if(st)gReapAt(x);else setTimeout(()=>gReapAt(x),i*70)});gReapEnd(st?0:Q.length*70+480,Q.length)};
+ gReapBind(b);gSeedBind(b);gCamBind();gHoldBind();
  b.querySelectorAll('[data-gv]').forEach(x=>x.onclick=()=>{if(G.ed)return;gView(x.dataset.gv)});b.querySelectorAll('[data-ul]').forEach(x=>x.onclick=()=>{G.ul=x.dataset.ul;gView('unlock')});b.querySelectorAll('[data-sb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.sb;gView('sec')});
  if($('gd-share'))$('gd-share').onclick=gShare;$('gd-zin').onclick=()=>gZoom(1.25);$('gd-zout').onclick=()=>gZoom(.8);
  b.querySelectorAll('[data-gch]').forEach(x=>x.onclick=()=>{const c0=g.coins,r=gClaim(+x.dataset.gch);if(!r)return;save();renderGarden();gCount(c0,g.coins);gDone(`+${r.c} coins${r.d?' and a '+r.d.toLowerCase():''}`)});
@@ -3661,7 +3687,7 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
 `;
  if($('gd-pen'))$('gd-pen').onclick=()=>{G.nm=1;renderGarden();const n=$('gd-nm');if(n){n.focus();n.select()}};
  const nf=$('gd-nm');if(nf){const done=()=>{if(nf.dataset.done)return;nf.dataset.done='1';g.name=nf.value.trim().slice(0,28);G.nm=0;save();renderGarden()};nf.onblur=done;nf.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();nf.blur()}}}
- if(v!=='main'){const d=$('gsheet');$('gs-head').innerHTML=`<div class="row"><h2>${{market:'Market',basket:'Shed',shop:'Garden shop',album:'Notice board',water:'Rain barrel',unlock:'Unlock',sec:GSECN[G.sb]||'Section'}[v]||''}</h2><button class="iconbtn" type="button" id="gs-x" aria-label="Close">${XIC}</button></div>`;$('gs-x').onclick=gSheetClose;gPanel(v,$('gs-body'));if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}}else if($('gsheet').open)$('gsheet').close();
+ if(v!=='main'){const d=$('gsheet');$('gs-head').innerHTML=`<div class="row"><h2>${{market:'Market',basket:'Shed',shop:'Garden shop',album:'Notice board',water:'Rain barrel',unlock:'Unlock',sec:GSECN[G.sb]||'Section',plant:GSECN[(G.pp||{}).b]||'Plant'}[v]||''}</h2><button class="iconbtn" type="button" id="gs-x" aria-label="Close">${XIC}</button></div>`;$('gs-x').onclick=gSheetClose;gPanel(v,$('gs-body'));if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}}else if($('gsheet').open)$('gsheet').close();
  gMain(g,nb)}
 
 
@@ -3753,7 +3779,7 @@ function gEditBind(b){if(!G.ed)return;const L=gLand(),re=()=>{save();renderGarde
   const R=gTry(d,t);d.last=t;d.R=R;gFoot(R.tiles,R.ok);d.tray=gOverTray(e.clientX,e.clientY)};
  const end=e=>{if(!d||e.pointerId!==d.id)return;const x=d;d=null;gGhost(null);gFoot(null);
   if(x.k==='paint'){if(x.n){re()}return}
-  if(!x.mv){if(x.k==='sec'){G.es=G.es===x.b?null:x.b;renderGarden()}else if(x.k==='path'&&x.from){gPathT(x.from);re()}return}
+  if(!x.mv){if(x.lp&&x.k!=='sec')return;if(x.k==='sec'){G.es=G.es===x.b?null:x.b;renderGarden()}else if(x.k==='path'&&x.from){gPathT(x.from);re()}return}
   if(x.tray&&x.from){if(x.k==='dec'){gPut(x.from,null);re();return}if(x.k==='path'){gPathT(x.from);re();return}}
   const R=x.R;if(!R||!R.ok||!x.last){if(x.last)no();renderGarden();return}
   if(x.k==='sec'){if(gSetSec(x.b,R.s)){G.es=x.b;re()}else no();return}
@@ -3761,13 +3787,15 @@ function gEditBind(b){if(!G.ed)return;const L=gLand(),re=()=>{save();renderGarde
   if(x.k==='dec'){if(gPut(x.last,x.dec))re();else no();return}
   if(x.k==='path'){if(x.from){const i=L.path.indexOf(x.from);if(i>=0)L.path.splice(i,1)}if(!gOcc()[x.last])L.path.push(x.last);re()}};
  const lay=b.querySelector('.gedit');
- if(lay)lay.addEventListener('pointerdown',e=>{const p=e.target.closest('[data-t]');if(!p)return;const t=p.dataset.t,o=gOcc()[t]||'',[c,r]=tileXY(t);e.preventDefault();try{lay.setPointerCapture(e.pointerId)}catch(_){}
+ const begin=(t,X,Y,id,lp)=>{const o=gOcc()[t]||'',[c,r]=tileXY(t);
   if(o.startsWith('b:')){const k=o.slice(2),q=gBld()[k];d={k:'bld',b:k,dc:c-q[0],dr:r-q[1],gh:`<span class="gghl">${GBLD[k].n}</span>`}}
   else if(o.startsWith('s:')){const bd=o.slice(2),s=L.sec[bd];d={k:'sec',b:bd,dc:c-s.c,dr:r-s.r,gh:`<span class="gghl">${GSECN[bd]}</span>`}}
   else if(o==='d')d={k:'dec',dec:L.dec[t],from:t,gh:gDec(L.dec[t])};
   else if(o==='p')d={k:'path',from:t,gh:'<span class="gghl">Path</span>'};
-  else{if(G.es){G.es=null;renderGarden()}return}
-  Object.assign(d,{x:e.clientX,y:e.clientY,mv:0,id:e.pointerId})});
+  else return 0;
+  Object.assign(d,{x:X,y:Y,mv:0,id,lp});try{lay.setPointerCapture(id)}catch(_){}return 1};
+ if(lay)lay.addEventListener('pointerdown',e=>{const p=e.target.closest('[data-t]');if(!p)return;if(begin(p.dataset.t,e.clientX,e.clientY,e.pointerId))e.preventDefault();else if(G.es){G.es=null;renderGarden()}});
+ if(lay&&G.lp){const q=G.lp;G.lp=null;begin(q.t,q.x,q.y,q.id,1)}
  if(lay){lay.addEventListener('pointermove',move);lay.addEventListener('pointerup',end);lay.addEventListener('pointercancel',end)}
  b.querySelectorAll('[data-tray]').forEach(x=>{x.addEventListener('pointerdown',e=>{e.preventDefault();const v=x.dataset.tray;try{x.setPointerCapture(e.pointerId)}catch(_){}
   d=v==='path'?{k:'paint',n:0,gh:'<span class="gghl">Path</span>'}:{k:'dec',from:null,gh:gDec(v)};d.dec=v;Object.assign(d,{x:e.clientX,y:e.clientY,mv:0,id:e.pointerId})});
@@ -3784,7 +3812,7 @@ function gStreet(L0,nb){const list=[['shop',GST_SHOP,'Shop',''],['album',GBOARDI
 /* locked land beside the garden: tap to unlock */
 function gParcels(){if(!S.garden)return [];const L=gLand(),o=[];if(!L.sec.h)o.push({id:'sec:h',c:L.C,r:0,w:2,h:4,n:'Herbs'});if(!L.sec.b)o.push({id:'sec:b',c:L.C,r:L.sec.h?0:4,w:2,h:4,n:'Berries'});if(gUpPrice('land'))o.push({id:'land',c:0,r:L.R,w:L.C,h:2,n:'More land'});return o}
 /* drinking fills the rain barrel; the barrel waters the garden */
-function gDrink(ml){const p=S.days[TODAY]||(S.days[TODAY]=emptyPlan());p.wlog=p.wlog||[];p.w=(+p.w||0)+ml;p.wlog.push(ml);p.wt=Date.now();save();try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}toast('+ '+wL(ml)+(GON()&&gMode()==='bottle'?' · garden watered':''));render();gRain()}
+function gDrink(ml){const p=S.days[TODAY]||(S.days[TODAY]=emptyPlan());p.wlog=p.wlog||[];p.w=(+p.w||0)+ml;p.wlog.push(ml);p.wt=Date.now();save();try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}toast('+ '+wL(ml));render()}
 const gBarrel=f=>{const h=Math.round(30*Math.max(0,Math.min(1,f))*10)/10;return `<svg viewBox="0 0 48 52" aria-hidden="true"><ellipse cx="24" cy="46" rx="17" ry="4" fill="rgba(0,0,0,.15)"/><path d="M8 10q-3 18 0 36h32q3-18 0-36z" fill="#A8743F"/><path d="M8 10h32" stroke="#7C5329" stroke-width="3"/>${h?`<path d="M10.5 ${44-h}h27v${h-2}q0 2-2 2h-23q-2 0-2-2z" fill="var(--water)" opacity=".9"/>`:''}<path d="M7 20h34M7 36h34" stroke="#5E3F22" stroke-width="2.6"/><ellipse cx="24" cy="10" rx="16" ry="4" fill="#7C5329"/><ellipse cx="24" cy="10" rx="13" ry="2.6" fill="${f>0?'var(--water)':'#5E3F22'}"/></svg>`};
 const GSHOPI='<svg viewBox="0 0 56 52" aria-hidden="true"><rect x="8" y="22" width="40" height="26" rx="2" fill="#C8955F"/><path d="M4 22L28 6l24 16z" fill="#8A5E33"/><path d="M6 22h44l-3 8H9z" fill="#4E9E52"/><path d="M14 22l-2 8M26 22v8M38 22l2 8" stroke="#E8F5E0" stroke-width="3.4" opacity=".8"/><rect x="22" y="34" width="12" height="14" rx="1.5" fill="#7C5329"/><rect x="11" y="33" width="8" height="7" rx="1" fill="#CDEBF3"/><rect x="37" y="33" width="8" height="7" rx="1" fill="#CDEBF3"/><circle cx="15" cy="44" r="3" fill="#F28AA8"/><circle cx="41" cy="44" r="3" fill="#F6CB5A"/></svg>';
 const GBOARDI='<svg viewBox="0 0 48 52" aria-hidden="true"><path d="M12 30v18M36 30v18" stroke="#7C5329" stroke-width="3.4"/><rect x="5" y="6" width="38" height="28" rx="3" fill="#A8743F"/><rect x="9" y="10" width="13" height="10" fill="#FFF6E6" transform="rotate(-4 15 15)"/><rect x="25" y="11" width="13" height="16" fill="#FDE9B8" transform="rotate(3 31 19)"/><circle cx="15" cy="11" r="1.6" fill="#E64B4B"/><circle cx="31" cy="12" r="1.6" fill="#4C86C6"/><circle cx="31" cy="20" r="3.4" fill="#F6CB5A"/></svg>';
@@ -3794,11 +3822,11 @@ function gStand(v,ic,lab,badge,id){return `<button class="gstand" type="button" 
 
 /* the seed bar: tap a packet then a plot, or press a packet and swipe across empty plots */
 function gEmpties(){const g=S.garden,L=gLand();let h='';gBeds().forEach(([b])=>{for(let pos=0;pos<gPlots(b);pos++){if(g.plants.some(p=>p.b===b&&p.pos===pos))continue;const {c,r,x,y}=isoC(b,pos),ok=G.seed?gBedOf(G.seed)===b:g.tray.some(t=>gBedOf(t.k)===b);
- h+=`<button class="gplot empty${ok&&G.seed?' can':''}" type="button" data-eb="${b}" data-ep="${pos}" style="left:${pct(x-29,ISO.w)};top:${pct(y+7-70,ISO.h)};width:${pct(58,ISO.w)};height:${pct(70,ISO.h)};z-index:${Math.round((c+r)*10)+4}" aria-label="Empty plot in ${GSECN[b]}"></button>`}});return h}
+ h+=`<button class="gplot empty${ok&&G.seed?' can':''}" type="button" data-eb="${b}" data-ep="${pos}" style="left:${pct(x-29,ISO.w)};top:${pct(y-17,ISO.h)};width:${pct(58,ISO.w)};height:${pct(32,ISO.h)};z-index:${Math.round((c+r)*10)+4}" aria-label="Empty plot in ${GSECN[b]}"></button>`}});return h}
 function gSeedBar(){const g=S.garden;if(!g.tray.length)return '';const seen={};g.tray.forEach(t=>{seen[t.k]=(seen[t.k]||0)+1});
  return `<div class="gseeds"><div class="gsrow">${Object.keys(seen).map(k=>{const I=kindInfo(k);return `<button class="gpack${G.seed===k?' on':''}" type="button" data-seed="${esc(k)}" aria-pressed="${G.seed===k}" aria-label="${esc(I.name)} seed, ${GSECN[gBedOf(k)]}"><span class="gpki">${I.icon}</span><span class="gpkn">${esc(I.name)}</span></button>`}).join('')}</div><button class="btn sm" type="button" id="gd-plantall">Plant all</button></div>`}
 function gSeedBind(b){const g=S.garden;
- b.querySelectorAll('[data-eb]').forEach(x=>x.addEventListener('click',()=>{if(x.dataset.done)return;const bd=x.dataset.eb,pos=+x.dataset.ep,k=G.seed&&gBedOf(G.seed)===bd?G.seed:(g.tray.find(t=>gBedOf(t.k)===bd)||{}).k;if(!k){toast(`No ${GSECN[bd].toLowerCase()} seeds yet`);return}
+ b.querySelectorAll('[data-eb]').forEach(x=>x.addEventListener('click',()=>{if(x.dataset.done)return;const bd=x.dataset.eb,pos=+x.dataset.ep,k=G.seed&&gBedOf(G.seed)===bd?G.seed:null;if(!k){G.pp={b:bd,pos};gView('plant');return}
   if(gPlant(k,pos)){if(G.seed===k&&!g.tray.some(t=>t.k===k))G.seed=null;gPop(x);save();renderGarden();render()}}));
  b.querySelectorAll('[data-seed]').forEach(x=>{let st=null;
   x.addEventListener('pointerdown',e=>{st={id:e.pointerId,x:e.clientX,y:e.clientY,mv:0,k:x.dataset.seed,n:0};try{x.setPointerCapture(e.pointerId)}catch(_){}});
@@ -3821,6 +3849,9 @@ function gSeedFly(){if(!S.garden||!GON())return;const now=S.garden.tray.map(t=>t
 /* the stands' sheets: market, shed, shop, notice board, barrel, unlocking land, a section */
 function gSheetClose(){if(!G)return;G.view='main';G.buy=null;G.ul=null;G.sb=null;const d=$('gsheet');if(d.open)d.close();renderGarden()}
 function gPanel(v,b){const g=S.garden;
+ if(v==='plant'){const pp=G.pp||{},cnt={};g.tray.filter(t=>gBedOf(t.k)===pp.b).forEach(t=>{cnt[t.k]=(cnt[t.k]||0)+1});const ks=Object.keys(cnt);
+  b.innerHTML=ks.length?`<div class="gpick">${ks.map(k=>{const I=kindInfo(k);return `<button class="gpack big" type="button" data-pk="${esc(k)}"><span class="gpki">${I.icon}</span><span class="gpkn">${esc(I.name)}</span>${cnt[k]>1?`<span class="gbn num">${cnt[k]}</span>`:''}</button>`}).join('')}</div>`:`<p class="gempty">No seeds for this patch yet</p><p class="cap gpkhint">Log a plant food to get its seed</p>`;
+  b.querySelectorAll('[data-pk]').forEach(x=>x.onclick=()=>{if(gPlant(x.dataset.pk,pp.pos)){save();gSheetClose();render();toast('Planted')}});return}
  if(v==='market'){const L=g.orders&&g.orders.d===TODAY?g.orders.list:[],md=gMood(),say=gSay(L,md);
   const ord=L.map((o,i)=>{const I=gOK(o.k),have=gHold(o.k);return `<div class="gord${o.done?' done':''}"><span class="thumb em">${I.icon}</span><span class="otx"><b>${esc(I.name)}${o.n>1?` <span class="num">× ${o.n}</span>`:''}</b>${gNeedTag(o.k)}</span><span class="gprice num">${COINI}${o.pay}</span>
    ${o.done?'<span class="gok" aria-label="Done">✓</span>':have>=o.n?`<button class="btn sm acc" type="button" data-give="${i}">Give</button>`:`<span class="cap num gprog">${have} of ${o.n}</span>`}</div>`}).join('');
@@ -3861,14 +3892,15 @@ function gPanel(v,b){const g=S.garden;
 /* reaping: press a ready plant and drag across the others, Hay Day style; every plant pops, sheds leaves and flies to the basket */
 let REAP=null,GREND=0;
 function gReapBind(b){const sc=$('gd-scene');if(!sc)return;
- const at=(x,y)=>{const e=document.elementFromPoint(x,y);return e&&e.closest?e.closest('#gd-scene [data-gp]'):null};
- sc.addEventListener('pointerdown',e=>{const t=e.target.closest('[data-gp]');if(!t||!t.classList.contains('st3')||t.dataset.done)return;e.preventDefault();
-  REAP={id:e.pointerId,n:0};try{sc.setPointerCapture(e.pointerId)}catch(_){}gSickle(e.clientX,e.clientY,1);if(gReapAt(t))REAP.n++});
- sc.addEventListener('pointermove',e=>{if(!REAP||e.pointerId!==REAP.id)return;gSickle(e.clientX,e.clientY,1);const t=at(e.clientX,e.clientY);if(t&&t.classList.contains('st3')&&!t.dataset.done&&gReapAt(t))REAP.n++});
- const end=e=>{if(!REAP||e.pointerId!==REAP.id)return;const n=REAP.n;REAP=null;gSickle(0,0,0);if(n)gReapEnd(GSTILL()?0:480,n)};
- sc.addEventListener('pointerup',end);sc.addEventListener('pointercancel',end);
  sc.querySelectorAll('[data-gp]').forEach(x=>x.addEventListener('click',()=>{if(x.dataset.done)return;const k=x.dataset.gp,p=S.garden.plants.find(q=>q.k===k);if(!p)return;
-  if(gReady(p)){if(gReadyHit(x))gReapEnd(GSTILL()?0:480,1)}else{G.sel=G.sel===k?null:k;renderGarden()}}))}
+  if(gReady(p)){const s=$('gd-all');if(s){s.classList.remove('nudge');void s.offsetWidth;s.classList.add('nudge')}toast('Drag the scythe over it');return}G.sel=G.sel===k?null:k;renderGarden()}));
+ const s=$('gd-all');if(!s)return;let st=null;
+ s.addEventListener('pointerdown',e=>{e.preventDefault();st={id:e.pointerId,x:e.clientX,y:e.clientY,mv:0,n:0};try{s.setPointerCapture(e.pointerId)}catch(_){}});
+ s.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;if(!st.mv&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>8){st.mv=1;s.classList.add('out')}if(!st.mv)return;gSickle(e.clientX,e.clientY,1);
+  document.elementsFromPoint(e.clientX,e.clientY).forEach(el=>{const t=el.closest&&el.closest('#gd-scene .gplot.st3[data-gp]');if(t&&!t.dataset.done&&gReapAt(t))st.n++})});
+ const end=e=>{if(!st||e.pointerId!==st.id)return;const x=st;st=null;gSickle(0,0,0);s.classList.remove('out');if(!x.mv){gCutAll();return}if(x.n)gReapEnd(GSTILL()?0:480,x.n)};
+ s.addEventListener('pointerup',end);s.addEventListener('pointercancel',end)}
+function gCutAll(){const Q=[...document.querySelectorAll('#gd-body .gplot.st3')].filter(x=>!x.dataset.done).sort((x,y)=>(+x.style.zIndex)-(+y.style.zIndex));if(!Q.length)return;const st=GSTILL();Q.forEach((x,i)=>{if(st)gReapAt(x);else setTimeout(()=>gReapAt(x),i*70)});gReapEnd(st?0:Q.length*70+480,Q.length)}
 const gReadyHit=x=>gReapAt(x);
 function gReapAt(el){const g=S.garden,k=el.dataset.gp,i=g.plants.findIndex(p=>p.k===k);if(i<0||!gReady(g.plants[i]))return 0;gHarvest(i);el.dataset.done='1';
  const nb=Object.values(g.bag).reduce((a,c)=>a+c,0),bb=$('gd-bag');if(bb){let n=bb.querySelector('.gbn');if(!n){n=document.createElement('span');n.className='gbn num';bb.appendChild(n)}n.textContent=nb}
@@ -3876,8 +3908,8 @@ function gReapAt(el){const g=S.garden,k=el.dataset.gp,i=g.plants.findIndex(p=>p.
  if(GSTILL()){el.classList.add('reaped');return 1}
  el.classList.add('reaped');gBurst(el);gFly(el);return 1}
 function gReapEnd(ms,n){clearTimeout(GREND);save();GREND=setTimeout(()=>{if(G){renderGarden();render()}if(n>1)toast(`Harvested ${n}`)},ms)}
-function gSickle(x,y,on){let s=$('gd-sickle');if(!on){if(s)s.remove();return}if(GSTILL())return;if(!s){s=document.createElement('div');s.id='gd-sickle';s.setAttribute('aria-hidden','true');s.innerHTML='<svg viewBox="0 0 48 48"><path d="M10 40l9-9" stroke="#8A5A33" stroke-width="5" stroke-linecap="round"/><path d="M19 31C14 18 22 6 38 6c-9 4-14 12-12 22z" fill="#C9D3DA" stroke="#7E8C96" stroke-width="2" stroke-linejoin="round"/></svg>';$('v-garden').appendChild(s)}
- s.style.transform=`translate(${x-10}px,${y-46}px)`}
+function gSickle(x,y,on){let s=$('gd-sickle');if(!on){if(s)s.remove();return}if(!s){s=document.createElement('div');s.id='gd-sickle';s.setAttribute('aria-hidden','true');s.innerHTML='<svg viewBox="0 0 48 48"><path d="M10 40l9-9" stroke="#8A5A33" stroke-width="5" stroke-linecap="round"/><path d="M19 31C14 18 22 6 38 6c-9 4-14 12-12 22z" fill="#C9D3DA" stroke="#7E8C96" stroke-width="2" stroke-linejoin="round"/></svg>';$('v-garden').appendChild(s)}
+ s.style.transform=`translate(${x-18}px,${y-74}px)`}
 function gBurst(el){const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*.55,d=$('v-garden'),C=['var(--g-leaf)','var(--g-leaf2)','#F6CB5A','var(--g-leaf)','#FFE89A','var(--g-leaf2)','#F6CB5A','var(--g-leaf)'];
  C.forEach((c,i)=>{const p=document.createElement('i');p.className='gpart'+(i%3===2?' spark':'');p.style.cssText=`left:${cx}px;top:${cy}px;background:${c}`;d.appendChild(p);const a=(i/C.length)*Math.PI*2+Math.random()*.5,dist=34+Math.random()*26;
   p.animate([{transform:'translate(-50%,-50%) scale(1) rotate(0deg)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*dist}px),calc(-50% + ${Math.sin(a)*dist-18}px)) scale(.4) rotate(${180+i*40}deg)`,opacity:0}],{duration:520+Math.random()*160,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>p.remove()})}
@@ -4345,7 +4377,7 @@ function renderProfileView(){
    :'<p class="cap">No supplements yet. Add one in Supplements on Today.</p>';
   if($('p-remt'))$('p-remt').onchange=e=>{if(/^\d\d:\d\d$/.test(e.target.value))S.prof.remt=e.target.value;save()};
   $('p-rem').querySelectorAll('[data-prem]').forEach(b=>b.onclick=()=>{const x=S.sups.find(y=>y.id===b.dataset.prem);if(x)addReminder(x,S.prof.remt||'09:00')})}
- const T=targets(),sv=supV();$('p-hk').checked=!HK();$('p-water').checked=WON();$('p-garden').checked=GON();$('p-gwater').hidden=!(GON()&&WON()&&S.garden);if(S.garden)document.querySelectorAll('#p-gw [data-gw]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.gw===gMode()));$('p-wlog').checked=WLON();$('p-btl-row').hidden=!WON();if(document.activeElement!==$('p-btl'))$('p-btl').value=BTL();document.querySelectorAll('[data-kc]').forEach(el=>el.hidden=HK());renderDislikes();
+ const T=targets(),sv=supV();$('p-hk').checked=!HK();$('p-water').checked=WON();$('p-garden').checked=GON();$('p-gwater').hidden=true;if(S.garden)document.querySelectorAll('#p-gw [data-gw]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.gw===gMode()));$('p-wlog').checked=WLON();$('p-btl-row').hidden=!WON();if(document.activeElement!==$('p-btl'))$('p-btl').value=BTL();document.querySelectorAll('[data-kc]').forEach(el=>el.hidden=HK());renderDislikes();
  Object.entries(PF).forEach(([k,id])=>{const el=$(id);if(document.activeElement!==el)el.value=S.prof[k]});
  $('prof-targets').innerHTML=withAct(S.prof.act,()=>targetBoxes(targets()));
  $('prof-sup').innerHTML=supRows('sup-');bindSup($('prof-sup'));
