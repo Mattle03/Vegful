@@ -1002,6 +1002,9 @@ html.still .tort *{animation:none!important}
 .qmore .chev{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2}
 .qglass{flex:none}
 html.still #gd-pour *,html.still .gplot.wet *{animation:none!important}
+.gneed{display:inline-block;white-space:nowrap;max-width:100%;overflow:hidden;text-overflow:ellipsis;align-self:flex-start;margin-top:2px;padding:1px 7px;border-radius:6px;font-size:11.5px;font-weight:800;background:var(--accent-soft);color:var(--accent)}
+.gpxl{margin:10px 2px 2px;font-size:12.5px;color:var(--muted)}
+.gpxl b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -3362,8 +3365,8 @@ function gHarvest(i){const g=S.garden,p=g.plants[i];if(!p||!gReady(p))return 0;g
 function gHarvestAll(){let n=0;for(let i=S.garden.plants.length-1;i>=0;i--)n+=gHarvest(i);return n}
 /* the basket sells at the base price; what open orders ask for stays */
 function gKeep(){const g=S.garden,o={};if(g.orders&&g.orders.d===TODAY)(g.orders.list||[]).forEach(x=>{if(!x.done&&x.k&&x.k.indexOf('any')!==0)o[x.k]=(o[x.k]||0)+x.n});return o}
-function gSellRest(){const g=S.garden,keep=gKeep();let c=0;Object.keys(g.bag).forEach(k=>{const n=Math.max(0,g.bag[k]-(keep[k]||0));if(!n)return;c+=n*kindInfo(k).price;g.bag[k]-=n;if(!g.bag[k]){delete g.bag[k];delete g.bagT[k]}});g.coins+=c;return c}
-const gSellable=()=>{const g=S.garden,keep=gKeep();return Object.keys(g.bag).reduce((a,k)=>a+Math.max(0,g.bag[k]-(keep[k]||0))*kindInfo(k).price,0)};
+function gSellRest(){const g=S.garden,keep=gKeep();let c=0;Object.keys(g.bag).forEach(k=>{const n=Math.max(0,g.bag[k]-(keep[k]||0));if(!n)return;c+=n*gPrice(k);g.bag[k]-=n;if(!g.bag[k]){delete g.bag[k];delete g.bagT[k]}});g.coins+=c;return c}
+const gSellable=()=>{const g=S.garden,keep=gKeep();return Object.keys(g.bag).reduce((a,k)=>a+Math.max(0,g.bag[k]-(keep[k]||0))*gPrice(k),0)};
 const wkStart=d=>shift(d,-((kdate(d).getDay()+6)%7));
 function gWeekN(){const ds=[];for(let d=wkStart(TODAY);d<=TODAY;d=shift(d,1))ds.push(d);const o=PROJ;PROJ=false;try{return plantSet(ds).size}finally{PROJ=o}}
 function loggedDays(n){const o=PROJ;PROJ=false;try{let c=0;for(let i=0;i<n;i++)if(logged(S.days[shift(TODAY,-i)]))c++;return c}finally{PROJ=o}}
@@ -3433,8 +3436,8 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
  if($('gd-pen'))$('gd-pen').onclick=()=>{G.nm=1;renderGarden();const n=$('gd-nm');if(n){n.focus();n.select()}};
  const nf=$('gd-nm');if(nf){const done=()=>{if(nf.dataset.done)return;nf.dataset.done='1';g.name=nf.value.trim().slice(0,28);G.nm=0;save();renderGarden()};nf.onblur=done;nf.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();nf.blur()}}}
  const b=$('gd-body'),y=b.scrollTop;
- if(v==='basket'){const ks=Object.keys(g.bag).filter(k=>g.bag[k]>0).sort((a,c)=>kindInfo(c).price-kindInfo(a).price||a.localeCompare(c)),sell=gSellable(),keep=gKeep();
-  b.innerHTML=ks.length?`<div class="gbag">${ks.map(k=>{const I=kindInfo(k);return `<div class="gbr"><span class="thumb em">${I.icon}</span><span class="otx"><b>${esc(I.name)}</b>${keep[k]?'<span class="cap">Kept for an order</span>':''}</span><span class="num gbx">× ${g.bag[k]}</span><span class="gprice num">${COINI}${I.price}</span></div>`}).join('')}</div>`+
+ if(v==='basket'){const ks=Object.keys(g.bag).filter(k=>g.bag[k]>0).sort((a,c)=>gPrice(c)-gPrice(a)||a.localeCompare(c)),sell=gSellable(),keep=gKeep(),px=gPx();
+  b.innerHTML=ks.length?`<div class="gbag">${ks.map(k=>{const I=kindInfo(k);return `<div class="gbr"><span class="thumb em">${I.icon}</span><span class="otx"><b>${esc(I.name)}</b>${gNeedTag(k)}${keep[k]?'<span class="cap">Kept for an order</span>':''}</span><span class="num gbx">× ${g.bag[k]}</span><span class="gprice num">${COINI}${gPrice(k)}</span></div>`}).join('')}</div>${gPxLine()}`+
    (sell?`<button class="btn primary wide gsell" type="button" id="gd-sell">Sell the rest · ${sell} coin${sell>1?'s':''}</button>`:''):`<p class="gempty">Harvest a ready plant to fill it.</p>`;
   if($('gd-sell'))$('gd-sell').onclick=()=>{const c0=g.coins,c=gSellRest();save();renderGarden();gCount(c0,g.coins);gDone(`Sold for ${c} coin${c>1?'s':''}`)};b.scrollTop=y;return}
  if(v==='shop'){const card=(id,n,pr,own,bg)=>`<button class="gsh${own?' own':''}${G.buy===id?' on':''}" type="button" data-gs="${id}" aria-pressed="${bg?g.decor.bg===id:G.buy===id}"><span class="gshp${bg?' bgprev bg-'+id:''}">${bg?'':gDec(id)}</span><b>${n}</b><span class="gprice num">${own?(bg&&g.decor.bg===id?'In use':'✓'):pr?COINI+pr:'Free'}</span></button>`;
@@ -3453,9 +3456,9 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
  const drops=GSTILL()?'':Array.from({length:10},(_,i)=>`<i style="left:${6+i*9.4}%;animation-delay:${(i%4)*.07}s"></i>`).join('');
  const chests=GCFG.week.map(([t])=>{const got=g.wk&&g.wk.claimed.includes(t),can=wk>=t&&!got;return can?`<button class="gch on" type="button" data-gch="${t}" aria-label="Open the chest for ${t} plants">${CHESTC}<span class="num">${t}</span></button>`:`<span class="gch${got?' got':''}" aria-label="${got?'Opened':'Chest at '+t}">${got?CHESTO:CHESTC}<span class="num">${t}</span></span>`}).join('');
  const L=g.orders&&g.orders.d===TODAY?g.orders.list:[],allDone=L.length&&L.every(o=>o.done);
- const ord=L.map((o,i)=>{const I=gOK(o.k),have=gHold(o.k),f=o.fid&&FM[o.fid],nn=o.wish&&f?f.n.split(',')[0]:I.name,why=o.wish&&o.nut&&NUT[o.nut]?'rich in '+NUT[o.nut].n.replace(/^([A-Z])(?=[a-z])/,m=>m.toLowerCase()):'';
-  return `<div class="gord${o.done?' done':''}${o.wish?' wish':''}"><span class="thumb em">${o.wish&&f?fIcon(f.id):I.icon}</span><span class="otx"><b>${esc(nn)}${o.n>1?` <span class="num">× ${o.n}</span>`:''}</b>${why?`<span class="cap">${why}</span>`:''}</span><span class="gprice num">${COINI}${o.pay}</span>
-   ${o.done?'<span class="gok" aria-label="Done">✓</span>':have>=o.n?`<button class="btn sm acc" type="button" data-give="${i}">Give</button>`:o.wish?`<button class="btn sm" type="button" data-wadd="${i}">Add to a meal</button>`:`<span class="cap num gprog">${have} of ${o.n}</span>`}</div>`}).join('');
+ const ord=L.map((o,i)=>{const I=gOK(o.k),have=gHold(o.k);
+  return `<div class="gord${o.done?' done':''}"><span class="thumb em">${I.icon}</span><span class="otx"><b>${esc(I.name)}${o.n>1?` <span class="num">× ${o.n}</span>`:''}</b>${gNeedTag(o.k)}</span><span class="gprice num">${COINI}${o.pay}</span>
+   ${o.done?'<span class="gok" aria-label="Done">✓</span>':have>=o.n?`<button class="btn sm acc" type="button" data-give="${i}">Give</button>`:`<span class="cap num gprog">${have} of ${o.n}</span>`}</div>`}).join('');
  b.innerHTML=`<div class="gweek"><span class="otx"><b class="num">${wk} plant${wk===1?'':'s'} this week${nx?` · chest at ${nx}`:''}</b><span class="cap num">${ld} of the last 7 days logged</span></span><span class="gchests">${chests}</span></div>
   ${g.gift||g.giftD?`<button class="ggift" type="button" id="gd-gift">${CHESTC}<b>From last week</b></button>`:''}
   <div class="gscene bg-${esc(bg)}" id="gd-scene"><div class="gsky" aria-hidden="true"><span class="gsun"></span><span class="gcloud"></span><span class="gcloud c2"></span></div>
@@ -3471,7 +3474,7 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
   ${g.tray.length?`<p class="cap gtray">${g.tray.length} seed${g.tray.length>1?'s':''} waiting</p>`:''}
   ${!g.plants.length&&!g.tray.length?'<p class="gempty">Eat a plant to sow a seed</p>':''}
   ${mode==='auto'&&g.plants.length?'<p class="cap gtray">Grows overnight</p>':''}
-  ${L.length?(()=>{const md=gMood(),say=gSay(L,md);return `<div class="card gmarket"><div class="gmh"><span class="tmas ${md}">${TORT}</span><span class="otx"><b>Market</b>${say?`<span class="tsay">${esc(say)}</span>`:''}</span></div>${ord}</div>`})():''}
+  ${L.length?(()=>{const md=gMood(),say=gSay(L,md);return `<div class="card gmarket"><div class="gmh"><span class="tmas ${md}">${TORT}</span><span class="otx"><b>Market</b>${say?`<span class="tsay">${esc(say)}</span>`:''}</span></div>${ord}${gPxLine()}</div>`})():''}
   <button class="btn wide ghost gsharebtn" type="button" id="gd-share">Share my garden</button>`;
  b.scrollTop=y;
  gReapBind(b);
@@ -3480,7 +3483,6 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
  gCanBind();
  if($('gd-share'))$('gd-share').onclick=gShare;
  b.querySelectorAll('[data-give]').forEach(x=>x.onclick=()=>{const c0=g.coins,c=gGive(+x.dataset.give);if(!c)return;G.pl=Date.now();setTimeout(()=>{if(G&&G.view==='main')renderGarden()},2700);save();renderGarden();gCount(c0,g.coins);gDone(`+${c} coins`)});
- b.querySelectorAll('[data-wadd]').forEach(x=>x.onclick=()=>{const o=L[+x.dataset.wadd],f=o&&FM[o.fid];if(!f)return;closeGarden();openAdd(panSlot());AD.q=f.n.split(',')[0];$('ad-q').value=AD.q;renderAdd()});
  b.querySelectorAll('[data-gch]').forEach(x=>x.onclick=()=>{const c0=g.coins,r=gClaim(+x.dataset.gch);if(!r)return;save();renderGarden();gCount(c0,g.coins);gDone(`+${r.c} coins${r.d?' and a '+r.d.toLowerCase():''}`)});
  if($('gd-gift'))$('gd-gift').onclick=()=>{const c0=g.coins,r=gGift();if(!r)return;save();renderGarden();gCount(c0,g.coins);toast(`+${r.c} coins${r.d?' and '+r.d.toLowerCase():''}`)};
  b.querySelectorAll('[data-spot]').forEach(x=>x.onclick=()=>{const i=+x.dataset.spot;if(!own)return;G.spot=G.spot===i?null:i;renderGarden()});
@@ -3494,7 +3496,7 @@ const TORT='<svg class="tort" viewBox="0 0 128 86" aria-hidden="true"><g class="
  '<g class="thead"><path d="M110 62c2-11 9-15 14-13 4 2 4 10 0 14-4 3-10 3-14-1z" fill="#8FC27A"/><g class="teye"><circle cx="118.5" cy="55" r="2" fill="#2B2B2B"/><circle cx="119.2" cy="54.3" r=".7" fill="#fff"/></g><path class="tsl" d="M116.5 55.5q2 1.8 4 0" stroke="#2B2B2B" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="121" cy="60" r="2" fill="#F28AA8" opacity=".6"/><path d="M115.5 61q3 2.2 6 0" stroke="#2B2B2B" stroke-width="1.3" fill="none" stroke-linecap="round"/></g></g>'+
  '<g class="theart"><path d="M100 26c-2-4-8-2-6 2.4l6 6 6-6c2-4.4-4-6.4-6-2.4z" fill="#F28AA8"/></g><g class="tz" fill="#7E9AA6" font-family="system-ui,sans-serif" font-weight="800"><text x="104" y="38" font-size="11">z</text><text x="112" y="28" font-size="14">z</text></g></svg>';
 function gMood(){const h=new Date().getHours();if(G&&G.pl&&Date.now()-G.pl<2600)return 'pleased';if(h>=22||h<6)return 'asleep';if(G&&G.wave)return 'waving';return 'idle'}
-function gSay(L,mood){if(mood==='asleep')return '';if(mood==='pleased')return 'Thank you';const w=L.find(o=>o.wish&&!o.done),f=w&&FM[w.fid];if(f)return f.n.split(',')[0]+' today?';return L.length&&L.every(o=>o.done)?'Thank you':''}
+function gSay(L,mood){if(mood==='asleep')return '';if(mood==='pleased')return 'Thank you';if(L.length&&L.every(o=>o.done))return 'Thank you';const o=L.find(x=>!x.done&&!ANYK[x.k]&&gHold(x.k)>=x.n)||L.find(x=>!x.done&&!ANYK[x.k]);return o?kindInfo(o.k).name+' today?':''}
 /* Share my garden: the land, plants and decorations drawn into one picture */
 function gShareSVG(){const g=S.garden,sc=$('gd-scene')||document.documentElement,cs=getComputedStyle(sc),rv=t=>t.replace(/var\((--[a-z0-9-]+)\)/g,(m,n)=>cs.getPropertyValue(n).trim()||'#888');
  const W=1080,H=1350,ls=1000/ISO.w,nest=(str,x,y,w,h)=>{const m=String(str).match(/<svg[^>]*viewBox="([^"]+)"[^>]*>([\s\S]*)<\/svg>/);if(m)return `<svg x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" viewBox="${m[1]}">${m[2]}</svg>`;const im=String(str).match(/src="([^"]+)"/);return im?`<image href="${im[1]}" x="${x}" y="${y}" width="${w}" height="${h}"/>`:''};
@@ -3589,22 +3591,25 @@ function gCount(a,b){const el=$('gd-coins');if(!el||GSTILL()||a===b){if(el)el.te
    Coins are only earned here and only spent in the shop. Nothing is ever taken back. */
 const gHash=s=>{let h=2166136261;for(const c of String(s)){h^=c.charCodeAt(0);h=Math.imul(h,16777619)}return h>>>0};
 function gEarn(c){const g=S.garden;if(!(c>0))return 0;g.coins+=c;if(g.wk)g.wk.coins=(g.wk.coins||0)+c;return c}
-const ANYK={'any:f':['Any fruit','f','1f34e'],'any:v':['Any vegetable','v','1f955']};
+const ANYK={'any:f':['Any fruit','f','1f34e'],'any:v':['Any vegetable','v','1f955'],'any:c':['Any grain, bean or nut','c','1f33e']};
 const gOK=k=>ANYK[k]?{name:ANYK[k][0],icon:EMO[ANYK[k][2]]||GSPR}:kindInfo(k);
-/* the wish: one piece of a kind you do not grow, rich in what is lowest today; never salt, Brazil nuts or foods you leave out */
-function gWish(have){const T=targets(),okF=f=>!f.hide&&(f.src!=='usda'||f.common)&&f.cat!=='My foods'&&!isDis(f.id)&&!['salt','seasalt','brazil'].includes(f.id),kOf=f=>{const k=plantKinds(f.id);return k.length===1?k[0]:null};
- const L=lowList(T).filter(x=>x.k!=='b12'&&x.k!=='d'&&x.k!=='kcal');
- for(const x of L){const i=K.indexOf(x.k),seen=new Set(),top=[];
-  F.filter(f=>okF(f)&&f.v[i]>0&&kOf(f)&&!have.has(kOf(f))).map(f=>({f,v:f.v[i]*f.por/100})).sort((a,b)=>b.v-a.v).forEach(y=>{const k=kOf(y.f);if(top.length<5&&!seen.has(k)){seen.add(k);top.push(y)}});
-  if(top.length){const y=top[gHash(TODAY+'w')%top.length],k=kOf(y.f);return {k,n:1,pay:kindInfo(k).price*GCFG.wishMul+GCFG.wishBonus,wish:1,nut:x.k,fid:y.f.id,done:0}}}
- const ds=[];for(let i=0;i<14;i++)ds.push(shift(TODAY,-i));const ate=plantSet(ds),C=Object.values(kindMap()).filter(I=>I.id&&FM[I.id]&&okF(FM[I.id])&&!have.has(I.k)&&!ate.has(I.k)&&plantKinds(I.id).length===1);
- if(!C.length)return null;const I=C[gHash(TODAY+'w')%C.length];return {k:I.k,n:1,pay:I.price*GCFG.wishMul+GCFG.wishBonus,wish:1,nut:null,fid:I.id,done:0}}
-/* two orders for kinds you have: oldest basket items first, then ready plants, then the plants closest to ready */
+/* three orders for kinds you have: oldest basket items first, then ready plants, then the plants closest to ready */
+
+/* prices follow your nutrition: crops rich in what you are low on this week pay up to twice, and a healthy week raises every price up to 1.5 times; never below the base price */
+function gPxSig(){let n=0;for(let i=0;i<7;i++){const p=S.days[shift(TODAY,-i)];if(p)mealKeys(p).forEach(k=>{const sl=p[k];if(sl&&!sl.pl)sl.it.forEach(x=>n+=(+x[1]||0)+1)})}return TODAY+':'+n}
+function gPx(){const g=S.garden,sig=gPxSig();if(g.px&&g.px.sig===sig&&g.px.v===2)return g.px;const o=PROJ;PROJ=false;try{const R=rangeStats(7,TODAY),T=targets(),A=R.L.length?R.avg:null,sc=A?dayScore(A,T):0,gap={};
+ if(A)ALLK.forEach(n=>{if(!(T[n]>0)||n==='b12'||n==='d')return;const c=A[K.indexOf(n)]/T[n];if(c<.9)gap[n]=Math.min(1,1-c)});
+ g.px={v:2,sig,d:TODAY,wk:Math.round((1+Math.max(0,Math.min(50,sc-50))/100)*10)/10,sc,gap,k:{}};return g.px}finally{PROJ=o}}
+function gNeed(k){const P=gPx();if(P.k[k])return P.k[k];const I=kindInfo(k),f=I.id&&FM[I.id],T=targets();let best=null,sum=0;
+ if(f){const v=itemV([f.id,f.por||100]);Object.keys(P.gap).forEach(n=>{const x=Math.min((v[K.indexOf(n)]||0)/T[n],P.gap[n]);sum+=x;if(!best||x>best.x)best={n,x}})}
+ return P.k[k]={m:Math.round(Math.min(2,1+1.6*sum)*10)/10,n:best&&best.x>=.1?best.n:null}}
+const gPxLine=()=>{const P=gPx();return `<p class="gpxl">${P.wk>1?`<b>Healthy week × ${P.wk}</b> · `:''}Crops rich in what you need pay up to × 2</p>`};
+function gPrice(k){const wk=gPx().wk;if(ANYK[k])return Math.round(4*wk);const I=kindInfo(k);return Math.max(I.price,Math.round(I.price*gNeed(k).m*wk))}
+const gNeedTag=k=>{if(ANYK[k])return '';const N=gNeed(k);return N.m>=1.2&&N.n?`<span class="gneed">Needed for ${nlow(N.n)} · × ${N.m}</span>`:''};
 function gOrders(){const g=S.garden,o=PROJ;PROJ=false;try{const h=gHash(TODAY),bagK=Object.keys(g.bag).filter(k=>g.bag[k]>0).sort((a,b)=>(g.bagT[a]||'').localeCompare(g.bagT[b]||'')||a.localeCompare(b));
  const cand=[...bagK,...g.plants.filter(gReady).map(p=>p.k),...g.plants.filter(p=>!gReady(p)).sort((a,b)=>b.gp/b.need-a.gp/a.need||a.k.localeCompare(b.k)).map(p=>p.k)].filter((k,i,a)=>a.indexOf(k)===i);
- const list=cand.slice(0,2).map((k,j)=>{const n=g.bag[k]>0?Math.min(3,g.bag[k],1+(h>>(j*3))%3):1;return {k,n,pay:kindInfo(k).price*n*GCFG.orderMul,done:0}});
- ['any:f','any:v'].slice(0,2-list.length).forEach(k=>list.push({k,n:1,pay:4,done:0}));
- const have=new Set([...g.plants.map(p=>p.k),...g.tray.map(t=>t.k),...Object.keys(g.bag)]),w=gWish(have);if(w)list.push(w);return list}finally{PROJ=o}}
+ const list=cand.slice(0,3).map((k,j)=>{const n=g.bag[k]>0?Math.min(3,g.bag[k],1+(h>>(j*3))%3):1;return {k,n,pay:gPrice(k)*n*GCFG.orderMul,done:0}});
+ ['any:f','any:v','any:c'].forEach(k=>{if(list.length<3)list.push({k,n:1,pay:gPrice(k),done:0})});return list}finally{PROJ=o}}
 const gHold=k=>{const g=S.garden;if(ANYK[k])return Object.keys(g.bag).filter(x=>kindInfo(x).bed===ANYK[k][1]).reduce((a,x)=>a+g.bag[x],0);return g.bag[k]||0};
 function gGive(i){const g=S.garden,o=g.orders&&g.orders.list[i];if(!o||o.done||gHold(o.k)<o.n)return 0;
  if(ANYK[o.k]){let n=o.n;Object.keys(g.bag).filter(x=>kindInfo(x).bed===ANYK[o.k][1]).sort((a,b)=>(g.bagT[a]||'').localeCompare(g.bagT[b]||'')).forEach(x=>{const t=Math.min(n,g.bag[x]);g.bag[x]-=t;n-=t;if(!g.bag[x]){delete g.bag[x];delete g.bagT[x]}})}
