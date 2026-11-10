@@ -1069,6 +1069,16 @@ html.still #gd-pour *,html.still .gplot.wet *{animation:none!important}
 .tabbar [data-v="garden"]{position:relative}
 .tbadge{position:absolute;top:2px;left:56%;min-width:18px;height:18px;padding:0 5px;box-sizing:border-box;border-radius:9px;background:var(--coral);color:var(--coral-ink);font-size:11px;font-weight:800;display:grid;place-items:center}
 html.still .gplot.empty.can::after{animation:none}
+.gedit .et.ok{fill:rgba(110,200,90,.45);stroke:#4E9E4A;stroke-width:3}
+.gedit .et.bad{fill:rgba(230,90,80,.4);stroke:#D9573E;stroke-width:3}
+.gedit{touch-action:none}
+.gtray2{display:flex;gap:8px;overflow-x:auto;padding:4px 2px;scrollbar-width:none}
+.gtit{flex:none;display:flex;flex-direction:column;align-items:center;gap:2px;width:68px;padding:6px 2px;border-radius:12px;border:0;background:var(--surface2);color:var(--ink);font:inherit;font-size:10.5px;font-weight:700;touch-action:none;user-select:none;-webkit-user-select:none}
+.gtii{width:36px;height:36px;display:block}
+.gtii svg{width:100%;height:100%}
+.gghost{position:fixed;left:0;top:0;z-index:20;pointer-events:none;width:52px;height:52px;opacity:.9;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))}
+.gghost svg{width:100%;height:100%}
+.gghl{display:inline-block;padding:4px 10px;border-radius:10px;background:var(--surface);font-weight:800;font-size:12px;white-space:nowrap}
 </style>
 </head>
 <body>
@@ -3473,7 +3483,7 @@ const gPlots=b=>{const s=S.garden&&gLand().sec[b];return s?4*s.rows:0};
 function gBeds(){if(!S.garden)return [['f','Orchard'],['v','Vegetables'],['c','Field']];const L=gLand();return ['f','v','c','h','b'].filter(b=>L.sec[b]).map(b=>[b,GSECN[b]])}
 /* which section a kind grows in: berries and herbs move to their own patch once you have it */
 function gBedOf(k){const I=kindInfo(k),L=gLand(),f=I.id&&FM[I.id];if(L.sec.b&&I.bed==='f'&&/berr|currant|grape/.test(k))return 'b';if(L.sec.h&&f&&/herb|spice/i.test(f.cat||''))return 'h';return I.bed}
-function isoGeom(){const L=gLand(),P=gParcels(),WC=Math.max(L.C,...P.map(p=>p.c+p.w)),WR=Math.max(L.R,...P.map(p=>p.r+p.h)),CM=-2;ISO.C=WC;ISO.R=WR;ISO.CM=CM;ISO.ox=(WR-CM)*42;ISO.oy=21-CM*21+ISO.head;ISO.w=(WC-CM+WR)*42;ISO.h=(WC-CM+WR)*21+ISO.head+ISO.dep+26}
+function isoGeom(){const L=gLand(),P=gParcels(),WC=Math.max(L.C,...P.map(p=>p.c+p.w)),WR=Math.max(L.R,...P.map(p=>p.r+p.h)),CM=-3;ISO.C=WC;ISO.R=WR;ISO.CM=CM;ISO.ox=(WR-CM)*42;ISO.oy=21-CM*21+ISO.head;ISO.w=(WC-CM+WR)*42;ISO.h=(WC-CM+WR)*21+ISO.head+ISO.dep+26}
 const isoP=(c,r)=>[ISO.ox+(c-r)*42,ISO.oy+(c+r)*21];
 const isoC=(b,pos)=>{const s=gLand().sec[b]||{c:0,r:0,rot:0},x=pos%4,y=Math.floor(pos/4),c=s.c+(s.rot?y:x),r=s.r+(s.rot?x:y),[X,Y]=isoP(c,r);return {c,r,x:X,y:Y}};
 const tileXY=t=>t.split(',').map(Number);
@@ -3481,8 +3491,8 @@ const PTS=a=>a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
 const isoDia=(c,r,k)=>{const [x,y]=isoP(c,r);return PTS([[x,y-21*k],[x+42*k,y],[x,y+21*k],[x-42*k,y]])};
 function isoLand(){isoGeom();const L=gLand(),C=L.C,R=L.R,d=ISO.dep,T=isoP(-.5,-.5),Rt=isoP(C-.5,-.5),B=isoP(C-.5,R-.5),Lf=isoP(-.5,R-.5),occ=gOcc();
  let h=`<polygon points="${PTS([Lf,B,[B[0],B[1]+d],[Lf[0],Lf[1]+d]])}" fill="var(--g-side1)"/><polygon points="${PTS([B,Rt,[Rt[0],Rt[1]+d],[B[0],B[1]+d]])}" fill="var(--g-side2)"/><path d="M${Lf[0]} ${Lf[1]+d*.45}L${B[0]} ${B[1]+d*.45}L${Rt[0]} ${Rt[1]+d*.45}" fill="none" stroke="var(--g-strata)" stroke-width="2"/><polygon points="${PTS([T,Rt,B,Lf])}" fill="var(--g-lawn)" stroke="var(--g-grim)" stroke-width="3" stroke-linejoin="round"/>`;
- for(let r=0;r<R;r++)for(let c=0;c<C;c++){const t=c+','+r,[x,y]=isoP(c,r);if(occ[t]==='p')h+=`<polygon points="${isoDia(c,r,.97)}" fill="var(--g-path)"/><ellipse cx="${(x-12).toFixed(1)}" cy="${(y-2).toFixed(1)}" rx="9" ry="4.2" fill="var(--g-stone)"/><ellipse cx="${(x+13).toFixed(1)}" cy="${(y+4).toFixed(1)}" rx="8" ry="3.8" fill="var(--g-stone)"/>`;
-  else if(!occ[t]&&(c*7+r*3)%4===0)h+=`<path d="M${(x-10).toFixed(1)} ${(y+2).toFixed(1)}l2 -6 2 6M${(x+8).toFixed(1)} ${(y-3).toFixed(1)}l2 -6 2 6" stroke="var(--g-tuft2)" stroke-width="1.6" fill="none"/>`}
+ for(let r=0;r<ISO.R;r++)for(let c=0;c<ISO.C;c++){const t=c+','+r,[x,y]=isoP(c,r);if(occ[t]==='p')h+=`<polygon points="${isoDia(c,r,.97)}" fill="var(--g-path)"/><ellipse cx="${(x-12).toFixed(1)}" cy="${(y-2).toFixed(1)}" rx="9" ry="4.2" fill="var(--g-stone)"/><ellipse cx="${(x+13).toFixed(1)}" cy="${(y+4).toFixed(1)}" rx="8" ry="3.8" fill="var(--g-stone)"/>`;
+  else if(!occ[t]&&c<C&&r<R&&(c*7+r*3)%4===0)h+=`<path d="M${(x-10).toFixed(1)} ${(y+2).toFixed(1)}l2 -6 2 6M${(x+8).toFixed(1)} ${(y-3).toFixed(1)}l2 -6 2 6" stroke="var(--g-tuft2)" stroke-width="1.6" fill="none"/>`}
  Object.keys(L.sec).forEach(b=>{const s=L.sec[b],[w,hh]=secWH(s),q=[isoP(s.c-.46,s.r-.46),isoP(s.c+w-.54,s.r-.46),isoP(s.c+w-.54,s.r+hh-.54),isoP(s.c-.46,s.r+hh-.54)];
   h+=`<polygon points="${PTS(q.map(p=>[p[0],p[1]+4]))}" fill="var(--g-side1)" opacity=".55"/><polygon points="${PTS(q)}" fill="var(--g-${b}top)" stroke="var(--g-${b}edge)" stroke-width="2" stroke-linejoin="round"/>`;
   for(let pos=0;pos<4*s.rows;pos++){const {x,y,c,r}=isoC(b,pos);h+=b==='f'||b==='b'?`<ellipse cx="${x}" cy="${y+2}" rx="27" ry="12" fill="var(--g-${b==='f'?'tuft':'bin'})"/>`:`<polygon points="${isoDia(c,r,.82)}" fill="var(--g-${b}in)"/><path d="M${x-19} ${y+1}l19 -9.5M${x-8} ${y+7}l19 -9.5" stroke="var(--g-furrow)" stroke-width="2" stroke-linecap="round"/>`}});
@@ -3493,9 +3503,9 @@ function gSigns(ed){const L=gLand();return (ed?Object.keys(L.sec):[]).map(b=>{co
 function gDecs(){const L=gLand();return Object.keys(L.dec).map(t=>{const [c,r]=tileXY(t),[x,y]=isoP(c,r),id=L.dec[t];return `<span class="gspot" style="left:${pct(x-27,ISO.w)};top:${pct(y+10-54,ISO.h)};width:${pct(54,ISO.w)};z-index:${Math.round((c+r)*10)+6}" aria-label="${(GDEC.find(d=>d[0]===id)||[0,''])[1]}">${gDec(id)}</span>`}).join('')}
 /* placing */
 function gAutoPlace(id){const L=gLand();if(Object.values(L.dec).includes(id))return;const occ=gOcc();for(let r=0;r<L.R;r++)for(let c=L.C-1;c>=0;c--){const t=c+','+r;if(!occ[t]){L.dec[t]=id;return}}}
-function gPut(t,id){const L=gLand(),[c,r]=tileXY(t);if(!(c>=0&&r>=0&&c<L.C&&r<L.R))return 0;const o=gOcc()[t];
+function gPut(t,id){const L=gLand();isoGeom();if(!gInWorld(t))return 0;const o=gOcc()[t];
  if(!id){if(L.dec[t]){delete L.dec[t];return 1}return 0}if(!S.garden.decor.own.includes(id)||(o&&o!=='d'))return 0;Object.keys(L.dec).forEach(k=>{if(L.dec[k]===id)delete L.dec[k]});L.dec[t]=id;return 1}
-function gPathT(t){const L=gLand(),[c,r]=tileXY(t);if(!(c>=0&&r>=0&&c<L.C&&r<L.R))return 0;const o=gOcc()[t],i=L.path.indexOf(t);if(i>=0){L.path.splice(i,1);return 1}if(o)return 0;L.path.push(t);return 1}
+function gPathT(t){const L=gLand();isoGeom();if(!gInWorld(t))return 0;const o=gOcc()[t],i=L.path.indexOf(t);if(i>=0){L.path.splice(i,1);return 1}if(o)return 0;L.path.push(t);return 1}
 function gFits(b,s){const L=gLand(),occ=gOcc(b);return secTiles(s).every(t=>{const [c,r]=tileXY(t);return c>=0&&r>=0&&c<L.C&&r<L.R&&!(occ[t]||'').startsWith('s:')})}
 function gSetSec(b,s){const L=gLand();if(!gFits(b,s))return 0;L.sec[b]=s;const T=new Set(secTiles(s));L.path=L.path.filter(t=>!T.has(t));Object.keys(L.dec).forEach(t=>{if(T.has(t))delete L.dec[t]});return 1}
 function gMoveSec(b,t){const s=gLand().sec[b],[c,r]=tileXY(t);return s?gSetSec(b,Object.assign({},s,{c,r})):0}
@@ -3562,7 +3572,7 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
   <div class="gscene bg-${esc(bg)}" id="gd-scene"><div class="gsky" aria-hidden="true"><span class="gsun"></span><span class="gcloud"></span><span class="gcloud c2"></span></div>
 
    ${gSkyline(bg)}
-   <div class="gfwrap" id="gd-fw"><div class="gfarm${G.ed?' editing':''}" style="aspect-ratio:${ISO.w}/${ISO.h};min-width:${Math.round(ISO.w*.72)}px;--wet:${(mode==='bottle'?wf:1).toFixed(2)}">${isoLand()}${gSigns(G.ed)}${gStreet(L,nb)}${G.ed?'':gEmpties()}${g.plants.map(gPlot).join('')}${gDecs()}${G.ed?gEditLayer():''}</div></div>
+   <div class="gfwrap" id="gd-fw"><div class="gfarm${G.ed?' editing':''}" style="aspect-ratio:${ISO.w}/${ISO.h};min-width:${G.ed?0:Math.round(ISO.w*.72)}px;--wet:${(mode==='bottle'?wf:1).toFixed(2)}">${isoLand()}${gSigns(G.ed)}${gStreet(L,nb)}${G.ed?'':gEmpties()}${g.plants.map(gPlot).join('')}${gDecs()}${G.ed?gEditLayer():''}</div></div>
    <div class="grain" aria-hidden="true">${drops}</div></div>
   ${G.ed?gEditBar():''}
   ${sel?`<p class="gtip" role="status"><b>${esc(kindInfo(sel.k).name)}</b> · ${gEta(sel)}</p>`:''}
@@ -3638,31 +3648,54 @@ function bindQuests(v){v.querySelectorAll('[data-qw]').forEach(b=>b.onclick=()=>
  const sc=v.querySelector('#sup-chest');if(sc)sc.onclick=()=>{if(S.garden.chest===TODAY)return;const n=gOpenChest();save();toast(`+${n} coins`);if(GSTILL()){render();return}sc.classList.add('opening');setTimeout(render,520)}}
 
 
-/* Edit layout: tap a section then the tile it should start on; paint stone paths; put decorations on free tiles */
-function gEditLayer(){const L=gLand(),occ=gOcc(),sel=G.es?new Set(secTiles(L.sec[G.es])):null;let h='';
- for(let r=0;r<L.R;r++)for(let c=0;c<L.C;c++){const t=c+','+r,o=occ[t]||'';h+=`<polygon class="et${sel&&sel.has(t)?' sel':''}${o==='p'?' pth':''}" data-t="${t}" points="${isoDia(c,r,.98)}"><title>${o.startsWith('s:')?GSECN[o.slice(2)]:o==='p'?'Path':o==='d'?'Decoration':'Grass'}</title></polygon>`}
- return `<svg class="gedit" viewBox="0 0 ${ISO.w} ${ISO.h}" role="group" aria-label="Layout tiles">${h}</svg>`}
-function gEditBar(){const g=S.garden,t=G.ed,own=g.decor.own,placed=new Set(Object.values(gLand().dec));
- const hint=t==='sec'?(G.es?`Tap where ${GSECN[G.es].toLowerCase()} should start`:'Tap a section to move it'):t==='path'?'Tap grass for a path, tap a path to remove it':own.length?(G.ei?'Tap a free tile':'Pick a decoration, or tap one to put it away'):'Buy decorations in the shop';
- return `<div class="gedbar"><div class="seg" role="tablist">${[['sec','Sections'],['path','Paths'],['dec','Decorations']].map(([k,l])=>`<button type="button" data-ged="${k}" aria-pressed="${t===k}">${l}</button>`).join('')}</div>
-  <p class="cap gedhint">${hint}</p>
-  ${t==='sec'&&G.es?`<div class="gups"><button class="btn sm" type="button" id="ged-turn">Turn</button>${gUpPrice('rows:'+G.es)?`<button class="btn sm" type="button" id="ged-big"${g.coins<gUpPrice('rows:'+G.es)?' disabled':''}>12 plots · ${COINI}${gUpPrice('rows:'+G.es)}</button>`:''}</div>`:''}
-  ${t==='dec'&&own.length?`<div class="chips wrap">${own.map(id=>`<button class="chip gpc" type="button" data-gei="${id}" aria-pressed="${G.ei===id}">${gDec(id)}${(GDEC.find(d=>d[0]===id)||[0,id])[1]}${placed.has(id)?'':' · new'}</button>`).join('')}</div>`:''}
+/* Edit layout, Hay Day style: press anything and drag it; the footprint shows green where it fits and red where it does not.
+   Decorations and stones come from the tray below and go back there when dropped on it. */
+const gInPar=t=>{const [c,r]=tileXY(t);return gParcels().some(p=>c>=p.c&&c<p.c+p.w&&r>=p.r&&r<p.r+p.h)};
+const gInWorld=t=>{const [c,r]=tileXY(t);return c>=0&&r>=0&&c<ISO.C&&r<ISO.R&&!gInPar(t)};
+function gEditLayer(){let h='';const occ=gOcc();for(let r=0;r<ISO.R;r++)for(let c=0;c<ISO.C;c++){const t=c+','+r;if(!gInWorld(t))continue;const o=occ[t]||'';h+=`<polygon class="et${G.es&&o==='s:'+G.es?' sel':''}" data-t="${t}" points="${isoDia(c,r,.98)}"/>`}
+ return `<svg class="gedit" viewBox="0 0 ${ISO.w} ${ISO.h}" role="group" aria-label="Layout: press and drag to move things">${h}</svg>`}
+function gEditBar(){const g=S.garden,placed=new Set(Object.values(gLand().dec)),free=g.decor.own.filter(id=>!placed.has(id));
+ return `<div class="gedbar"><p class="cap gedhint">${G.es?`${GSECN[G.es]}: drag it, or turn it`:'Press and drag anything to move it. Drag from the tray to place; drop on the tray to put away.'}</p>
+  ${G.es?`<div class="gups"><button class="btn sm" type="button" id="ged-turn">Turn</button>${gUpPrice('rows:'+G.es)?`<button class="btn sm" type="button" id="ged-big"${g.coins<gUpPrice('rows:'+G.es)?' disabled':''}>12 plots · ${COINI}${gUpPrice('rows:'+G.es)}</button>`:''}</div>`:''}
+  <div class="gtray2" id="ged-tray"><button class="gtit" type="button" data-tray="path" aria-label="Stone path: drag across tiles"><span class="gtii"><svg viewBox="0 0 48 48"><path d="M4 30L24 20l20 10-20 10z" fill="var(--g-path)"/><ellipse cx="17" cy="30" rx="7" ry="3.4" fill="var(--g-stone)"/><ellipse cx="31" cy="31" rx="6" ry="3" fill="var(--g-stone)"/></svg></span><span>Path</span></button>${free.map(id=>`<button class="gtit" type="button" data-tray="${id}"><span class="gtii">${gDec(id)}</span><span>${(GDEC.find(d=>d[0]===id)||[0,id])[1]}</span></button>`).join('')}</div>
   <button class="btn primary wide" type="button" id="ged-done">Done</button></div>`}
+function gTileAt(x,y){const f=document.querySelector('#gd-body .gfarm');if(!f)return null;const R=f.getBoundingClientRect(),ux=(x-R.left)/R.width*ISO.w,uy=(y-R.top)/R.height*ISO.h,a=(ux-ISO.ox)/42,b=(uy-ISO.oy)/21;const c=Math.round((a+b)/2),r=Math.round((b-a)/2),t=c+','+r;return gInWorld(t)?t:null}
+function gFoot(tiles,ok){document.querySelectorAll('#gd-body .gedit .et').forEach(p=>p.classList.remove('ok','bad'));(tiles||[]).forEach(t=>{const p=document.querySelector(`#gd-body .gedit [data-t="${t}"]`);if(p)p.classList.add(ok?'ok':'bad')})}
+function gGhost(html,x,y){let el=$('gd-gh');if(!html){if(el)el.remove();return}if(!el){el=document.createElement('div');el.id='gd-gh';el.className='gghost';el.setAttribute('aria-hidden','true');$('v-garden').appendChild(el)}if(el.dataset.h!==html){el.innerHTML=html;el.dataset.h=html}el.style.transform=`translate(${x-26}px,${y-60}px)`}
+const gOverTray=(x,y)=>{const t=$('ged-tray');if(!t)return false;const R=t.getBoundingClientRect();return x>=R.left&&x<=R.right&&y>=R.top-10&&y<=R.bottom+10};
+/* what a drag would do at tile t */
+function gTry(d,t){const L=gLand();if(!t)return {ok:0,tiles:[]};const [c,r]=tileXY(t);
+ if(d.k==='sec'){const s=Object.assign({},L.sec[d.b],{c:c-d.dc,r:r-d.dr});const tiles=secTiles(s);return {ok:tiles.every(gInWorld)&&gFits(d.b,s),tiles,s}}
+ const o=gOcc()[t];if(d.k==='dec')return {ok:!o||(d.from&&t===d.from),tiles:[t]};if(d.k==='path')return {ok:!o||t===d.from,tiles:[t]};return {ok:0,tiles:[t]}}
 function gEditBind(b){if(!G.ed)return;const L=gLand(),re=()=>{save();renderGarden()},no=()=>toast('No room there');
- b.querySelectorAll('[data-ged]').forEach(x=>x.onclick=()=>{G.ed=x.dataset.ged;G.es=null;G.ei=null;renderGarden()});
- if($('ged-done'))$('ged-done').onclick=()=>{G.ed=null;G.es=null;G.ei=null;save();renderGarden();render()};
+ if($('ged-done'))$('ged-done').onclick=()=>{G.ed=null;G.es=null;save();renderGarden();render()};
  if($('ged-turn'))$('ged-turn').onclick=()=>{if(!gTurnSec(G.es))no();re()};
  if($('ged-big'))$('ged-big').onclick=()=>{const c0=S.garden.coins;if(gBuyUp('rows:'+G.es)){re();gCount(c0,S.garden.coins);toast('Bigger '+GSECN[G.es].toLowerCase())}else no()};
- b.querySelectorAll('[data-gei]').forEach(x=>x.onclick=()=>{G.ei=G.ei===x.dataset.gei?null:x.dataset.gei;renderGarden()});
- const lay=b.querySelector('.gedit');if(!lay)return;
- lay.addEventListener('click',e=>{const p=e.target.closest('[data-t]');if(!p)return;const t=p.dataset.t,o=gOcc()[t]||'';
-  if(G.ed==='sec'){const sb=o.startsWith('s:')?o.slice(2):null;if(sb&&sb===G.es){G.es=null;renderGarden();return}if(sb&&(!G.es||gMoveSec(G.es,t)===0)){G.es=sb;renderGarden();return}if(!G.es)return;if(gMoveSec(G.es,t)){G.es=null;re()}else no();return}
-  if(G.ed==='path'){if(!gPathT(t))no();re();return}
-  if(G.ed==='dec'){if(G.ei){if(gPut(t,G.ei)){G.ei=null;re()}else no()}else if(o==='d'){gPut(t,null);re()}}})}
-
-
-
+ let d=null;
+ const move=e=>{if(!d||e.pointerId!==d.id)return;if(!d.mv&&Math.hypot(e.clientX-d.x,e.clientY-d.y)>6)d.mv=1;if(!d.mv)return;e.preventDefault();
+  const t=gTileAt(e.clientX,e.clientY);gGhost(d.gh,e.clientX,e.clientY);
+  if(d.k==='paint'){if(t&&!gOcc()[t]){L.path.push(t);d.n++;const p=document.querySelector(`#gd-body .gedit [data-t="${t}"]`);if(p)p.classList.add('ok')}return}
+  const R=gTry(d,t);d.last=t;d.R=R;gFoot(R.tiles,R.ok);d.tray=gOverTray(e.clientX,e.clientY)};
+ const end=e=>{if(!d||e.pointerId!==d.id)return;const x=d;d=null;gGhost(null);gFoot(null);
+  if(x.k==='paint'){if(x.n){re()}return}
+  if(!x.mv){if(x.k==='sec'){G.es=G.es===x.b?null:x.b;renderGarden()}else if(x.k==='path'&&x.from){gPathT(x.from);re()}return}
+  if(x.tray&&x.from){if(x.k==='dec'){gPut(x.from,null);re();return}if(x.k==='path'){gPathT(x.from);re();return}}
+  const R=x.R;if(!R||!R.ok||!x.last){if(x.last)no();renderGarden();return}
+  if(x.k==='sec'){if(gSetSec(x.b,R.s)){G.es=x.b;re()}else no();return}
+  if(x.k==='dec'){if(gPut(x.last,x.dec))re();else no();return}
+  if(x.k==='path'){if(x.from){const i=L.path.indexOf(x.from);if(i>=0)L.path.splice(i,1)}if(!gOcc()[x.last])L.path.push(x.last);re()}};
+ const lay=b.querySelector('.gedit');
+ if(lay)lay.addEventListener('pointerdown',e=>{const p=e.target.closest('[data-t]');if(!p)return;const t=p.dataset.t,o=gOcc()[t]||'',[c,r]=tileXY(t);e.preventDefault();try{lay.setPointerCapture(e.pointerId)}catch(_){}
+  if(o.startsWith('s:')){const bd=o.slice(2),s=L.sec[bd];d={k:'sec',b:bd,dc:c-s.c,dr:r-s.r,gh:`<span class="gghl">${GSECN[bd]}</span>`}}
+  else if(o==='d')d={k:'dec',dec:L.dec[t],from:t,gh:gDec(L.dec[t])};
+  else if(o==='p')d={k:'path',from:t,gh:'<span class="gghl">Path</span>'};
+  else{if(G.es){G.es=null;renderGarden()}return}
+  Object.assign(d,{x:e.clientX,y:e.clientY,mv:0,id:e.pointerId})});
+ if(lay){lay.addEventListener('pointermove',move);lay.addEventListener('pointerup',end);lay.addEventListener('pointercancel',end)}
+ b.querySelectorAll('[data-tray]').forEach(x=>{x.addEventListener('pointerdown',e=>{e.preventDefault();const v=x.dataset.tray;try{x.setPointerCapture(e.pointerId)}catch(_){}
+  d=v==='path'?{k:'paint',n:0,gh:'<span class="gghl">Path</span>'}:{k:'dec',from:null,gh:gDec(v)};d.dec=v;Object.assign(d,{x:e.clientX,y:e.clientY,mv:0,id:e.pointerId})});
+  x.addEventListener('pointermove',move);x.addEventListener('pointerup',e=>{if(d&&d.k==='dec'&&!d.from&&d.dec){const t=d.last;if(d.mv&&t&&d.R&&d.R.ok){const id=d.dec;d=null;gGhost(null);gFoot(null);if(gPut(t,id))re();else no();return}}
+   if(d&&!d.mv&&d.k==='dec'&&d.dec){const id=d.dec;d=null;gAutoPlace(id);re();return}end(e)});x.addEventListener('pointercancel',end)})}
 
 /* stands: small isometric booths standing on the street */
 function gBooth(w1,w2,r1,r2,aw,extra){return `<svg viewBox="0 0 80 80" aria-hidden="true"><ellipse cx="40" cy="70" rx="31" ry="9" fill="rgba(0,0,0,.16)"/><polygon points="12,62 40,76 40,50 12,36" fill="${w1}"/><polygon points="40,76 68,62 68,36 40,50" fill="${w2}"/>${aw?`<polygon points="16,52 36,62 36,56 16,46" fill="#5E3F22" opacity=".55"/><polygon points="9,42 40,58 40,51 9,35" fill="${aw}"/><path d="M15 38.2v7M22 41.8v7M29 45.3v7M35.5 48.6v7" stroke="#FFF6E6" stroke-width="3.2" opacity=".85"/>`:''}<polygon points="6,37 40,54 40,12" fill="${r1}"/><polygon points="40,54 74,37 40,12" fill="${r2}"/>${extra||''}</svg>`}
