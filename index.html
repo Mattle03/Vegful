@@ -1138,6 +1138,12 @@ html.still .gplot.empty.can::after{animation:none}
 .gpack.big .gbn{top:4px;right:4px}
 .gpkhint{text-align:center;margin:0}
 .gplot.empty.can::after{height:80%;bottom:6%}
+.gcrop{position:absolute;left:50%;bottom:0;width:155%;transform:translateX(-50%);transform-origin:50% 92%;display:block;pointer-events:none}
+.gcrop .gcropsvg{display:block;width:100%;height:auto;overflow:visible;transform-origin:50% 92%}
+.gplot.st2 .gcrop .gcropsvg{animation:gsway 4.5s ease-in-out infinite}
+.gplot.st3 .gcrop .gcropsvg{animation:gbounce 2.4s ease-in-out infinite;filter:drop-shadow(0 0 4px rgba(255,220,120,.6))}
+.gico0{position:absolute;left:50%;top:26%;width:34%;aspect-ratio:1;transform:translateX(-50%);opacity:0!important}
+.gcrop.a-tree,.gcrop.a-palm{width:175%}
 </style>
 </head>
 <body>
@@ -3588,8 +3594,68 @@ const GUPIC={land:'<svg viewBox="0 0 48 48"><path d="M4 30L24 20l20 10-20 10z" f
 const gUpIc=id=>GUPIC[id==='land'?'land':id.startsWith('rows')?'rows':id==='sec:h'?'h':id==='sec:b'?'b':'stall'];
 
 const pct=(v,t)=>(v/t*100).toFixed(2)+'%';
+/* crops: each kind grows as its own plant: trees, bushes, vines on stakes, roots, grain, pods, leafy heads */
+const GARCH={};
+function gArch(k,b){const key=k+'|'+b;if(GARCH[key])return GARCH[key];const n=(kindInfo(k).name+' '+k).toLowerCase(),t=re=>re.test(n);let a;
+ if(b==='h')a='herb';else if(b==='b')a='bush';
+ else if(t(/melon|pumpkin|squash|butternut|gourd|zucchini|courgette|^summer|^winter/))a='melon';
+ else if(b==='f')a=t(/banana|plantain/)?'palm':t(/strawberr|pineapple/)?'low':t(/berr|currant|grape|goji|acerola|gooseberr|mulberr/)?'bush':'tree';
+ else if(t(/mushroom|shiitake|enoki|maitake|chanterelle|morel|fungi|oyster|jew's|pepeao/))a='shroom';
+ else if(t(/corn|hominy|maize/))a='corn';
+ else if(t(/sunflower/))a='sunflower';
+ else if(t(/lentil|chickpea|bean|\bpeas?\b|mung|soy|tofu|peanut|lupin|okara|hummu|miso|edamame/))a=b==='v'?'stake':'pods';
+ else if(t(/almond|walnut|pecan|hazel|cashew|pistachio|macadamia|chestnut|brazil|hickory|beech|pili|acorn|ginkgo|coconut|breadnut|olive|avocado|cocoa|carob|nut\b/))a='tree';
+ else if(t(/tomato|pepper|chil|jalape|eggplant|cucumber|okra|tomatillo|pimento|ancho|serrano|pasilla|hungarian|snap|chayote/))a='stake';
+ else if(t(/carrot|beet|radish|turnip|parsnip|rutabaga|celeriac|potato|russet|yam|taro|cassava|ginger|burdock|salsify|kohlrabi|jicama|arrowroot|lotus root|daikon|hash brown|o'brien|poi\b|yautia/))a='root';
+ else if(t(/onion|garlic|shallot|leek|chive|scallion/))a='allium';
+ else a=b==='v'?'leafy':'grain';
+ return GARCH[key]=a}
+/* the main colour of a kind, read from its icon: the biggest shape that is not leaf green */
+const GCOL={};
+function gHsl(h){h=h.replace('#','');if(h.length===3)h=h.split('').map(x=>x+x).join('');const r=parseInt(h.slice(0,2),16)/255,g=parseInt(h.slice(2,4),16)/255,b=parseInt(h.slice(4,6),16)/255,mx=Math.max(r,g,b),mn=Math.min(r,g,b),l=(mx+mn)/2,d=mx-mn;let hu=0;if(d){hu=mx===r?((g-b)/d)%6:mx===g?(b-r)/d+2:(r-g)/d+4;hu=(hu*60+360)%360}return {h:hu,s:d?d/(1-Math.abs(2*l-1)):0,l}}
+const GCOLK=[[/red cabbage/,'#7A3E8E'],[/sweet potato/,'#C4643A'],[/watermelon/,'#4E9E52'],[/strawberr/,'#E8384F'],[/raspberr/,'#D63A5A'],[/blueberr|bilberr/,'#4A5FC1'],[/blackberr/,'#3B2B5A'],[/cherr/,'#C0233A'],[/grape|raisin/,'#7A3E8E'],[/beet/,'#9B2247'],[/radish/,'#D9455F'],[/carrot/,'#F08A24'],[/tomato/,'#E5432F'],[/chil|jalape|serrano/,'#D9302A'],[/pepper|pimento/,'#E5432F'],[/eggplant/,'#6B3FA0'],[/orange|tangerine|clementine|mandarin|kumquat/,'#F4900C'],[/lemon/,'#F6D33C'],[/lime/,'#8CC63F'],[/banana|plantain/,'#F6D33C'],[/pear/,'#B9D25E'],[/plum|prune/,'#7B3F8C'],[/peach|apricot|nectarine/,'#F6A35E'],[/fig/,'#6E3B5E'],[/kiwi/,'#8A6A3A'],[/mango|papaya/,'#F6B13C'],[/avocado/,'#5E8A3A'],[/olive/,'#6B7A3A'],[/potato|russet/,'#C89A5E'],[/onion|shallot/,'#C08A5A'],[/garlic/,'#F1E7D2'],[/pumpkin|squash|butternut/,'#F08A24'],[/melon/,'#C9DE8A'],[/cucumber|zucchini|courgette/,'#4E8F45'],[/bean/,'#6DAF4A'],[/\bpeas?\b/,'#7CC46F'],[/corn/,'#F2C94C'],[/apple/,'#DD2E44'],[/pomegranate|currant|cranberr/,'#B5203A'],[/mushroom|shiitake|fungi|maitake|morel|chanterelle/,'#B98A62'],[/lentil/,'#E8702A'],[/chickpea/,'#E3C27A'],[/soy|tofu|edamame/,'#9CC56B'],[/peanut/,'#C9A06A'],[/almond/,'#B07A4A'],[/walnut|pecan|hazel|chestnut|brazil|hickory/,'#8A5E3A'],[/coconut/,'#7A5A3A'],[/cashew|macadamia/,'#E3C9A0'],[/pistach/,'#9CC56B'],[/cocoa|carob/,'#6B4423'],[/turnip|kohlrabi/,'#D9C2E3'],[/broccoli/,'#3E7A3A'],[/cauliflower/,'#F1EBD8'],[/cabbage|lettuce/,'#A9D07A'],[/kale|spinach|chard|collard|arugula|watercress|endive|chicory|celery|leaf|green/,'#5E9E4A'],[/pineapple/,'#F2B33D'],[/date/,'#8A4E2A'],[/quince/,'#E3CB4A'],[/persimmon/,'#F08A24'],[/pomelo|pummelo|grapefruit/,'#F5A27A']];
+function gCol(k){if(GCOL[k])return GCOL[k];const n=(kindInfo(k).name+' '+k).toLowerCase(),hit=GCOLK.find(([re])=>re.test(n));if(hit)return GCOL[k]=hit[1];
+ const ic=kindInfo(k).icon||'',tot={},gtot={};(ic.match(/<(path|circle|ellipse|rect)[^>]*>/g)||[]).forEach(tag=>{const f=(tag.match(/fill="(#[0-9A-Fa-f]{3,6})"/)||[])[1];if(!f)return;const c=gHsl(f);if(c.l<.28||c.l>.92||c.s<.2)return;const green=c.h>65&&c.h<170;(green?gtot:tot)[f]=((green?gtot:tot)[f]||0)+tag.length});
+ const top=o=>Object.keys(o).sort((a,b)=>o[b]-o[a])[0];return GCOL[k]=top(tot)||top(gtot)||'#E64B4B'}
+const gE=(cx,cy,rx,ry,f,rot,ex)=>`<ellipse cx="${cx}" cy="${cy}" rx="${rx}" ry="${ry}" fill="${f}"${rot?` transform="rotate(${rot} ${cx} ${cy})"`:''}${ex||''}/>`;
+const gC=(cx,cy,r,f,ex)=>`<circle cx="${cx}" cy="${cy}" r="${r}" fill="${f}"${ex||''}/>`;
+const GLF='var(--g-leaf)',GLF2='var(--g-leaf2)',GSTM='var(--g-stem)',GCR='var(--g-crown)',GMD='<ellipse cx="45" cy="92" rx="21" ry="6.5" fill="var(--g-mound)"/>';
+const gFruit=(x,y,r,C)=>gC(x,y,r,C)+gC(x-r*.35,y-r*.35,r*.32,'rgba(255,255,255,.55)');
+function gCropArt(k,b,s){const a=gArch(k,b),C=gCol(k),R=s===3,n=kindInfo(k).name.toLowerCase();let h='';
+ const sc=(f,inner)=>`<g transform="translate(45 92) scale(${f}) translate(-45 -92)">${inner}</g>`;
+ if(a==='tree'){const fr=[[33,40],[53,33],[60,50],[39,55],[48,45],[28,51],[57,62]];
+  h=gE(45,92,24,7,'rgba(0,0,0,.15)')+sc(R?1:.8,`<path d="M45 92V56M45 72l-9-8M45 66l10-8" stroke="var(--g-trunk)" stroke-width="7" stroke-linecap="round" fill="none"/><path d="M45 72l-9-8M45 66l10-8" stroke="var(--g-trunk)" stroke-width="4" stroke-linecap="round"/>${gC(45,40,23,GCR)}${gC(29,52,14,GCR)}${gC(61,52,14,GCR)}${gC(38,31,10,'rgba(255,255,255,.16)')}${gC(56,58,9,'rgba(0,0,0,.08)')}`+
+   (R?fr.map(([x,y])=>gFruit(x,y,4.6,C)).join(''):[[34,38],[55,44],[44,56]].map(([x,y])=>gC(x,y,2.4,'#FFF4F7')).join('')))}
+ else if(a==='palm'){h=gE(45,92,20,6,'rgba(0,0,0,.15)')+sc(R?1:.8,`<path d="M45 92Q41 70 47 44" stroke="var(--g-trunk)" stroke-width="7" stroke-linecap="round" fill="none"/>${[-60,-25,10,45,80,120].map(r=>gE(47,30,6,20,r%2?GCR:GLF2,r,'')).join('')}`.replace(/rotate\((-?\d+) 47 30\)/g,'rotate($1 47 44)')+(R?[0,1,2,3].map(i=>gE(52+i*1.5,50+i*4,3,8,C,-25+i*8)).join(''):''))}
+ else if(a==='bush'){h=GMD+sc(R?1:.78,`${gC(45,72,17,GCR)}${gC(31,79,12,GLF2)}${gC(59,79,12,GLF2)}${gC(40,66,7,'rgba(255,255,255,.14)')}`+(R?[[36,70],[48,64],[56,74],[42,80],[30,80],[60,82],[50,78],[38,62],[53,86]].map(([x,y])=>gFruit(x,y,3,C)).join(''):''))}
+ else if(a==='low'){const pine=/pineapple/.test(n);h=GMD+[-60,-30,0,30,60].map(r=>gE(45,74,6,16,r%60?GLF:GLF2,r)).join('').replace(/rotate\((-?\d+) 45 74\)/g,'rotate($1 45 88)')+
+  (R?(pine?`${gE(45,70,10,13,C)}<path d="M38 64l14 10M52 64L38 74M38 70l14 10" stroke="rgba(0,0,0,.18)" stroke-width="1.4"/><path d="M45 58l-6-12 6 6 1-10 3 10 6-6z" fill="${GLF2}"/>`:[[33,88],[57,87],[45,91]].map(([x,y])=>`<path d="M${x-4} ${y-4}q4 -2 8 0q0 7 -4 9q-4 -2 -4 -9z" fill="${C}"/>`).join('')):'')}
+ else if(a==='melon'){h=GMD+[[30,82,-30],[60,82,30],[44,76,0],[52,88,70]].map(([x,y,r])=>gE(x,y,10,7,r%60?GLF:GLF2,r)).join('')+`<path d="M24 90q10 -8 20 -4t22 0" stroke="${GSTM}" stroke-width="2" fill="none"/>`+
+  (R?`${gE(48,84,15,10,C)}<path d="M36 80q12 4 24 0M36 86q12 4 24 0" stroke="rgba(0,0,0,.18)" stroke-width="2" fill="none"/>${gE(43,80,4,2,'rgba(255,255,255,.4)')}`:gE(48,86,6,4,'#9CC56B'))}
+ else if(a==='stake'){const pod=/bean|pea|snap|okra/.test(n);
+  h=GMD+sc(R?1:.82,`<path d="M45 92V22" stroke="#A8743F" stroke-width="3.2" stroke-linecap="round"/><path d="M45 90C36 78 54 68 44 56S52 40 46 30" stroke="${GSTM}" stroke-width="3" fill="none"/>${[[37,78,-50],[53,70,50],[37,58,-50],[54,46,50],[39,40,-40],[51,30,40]].map(([x,y,r])=>gE(x,y,5,9,r>0?GLF:GLF2,r)).join('')}`+
+   (R?(pod?[[38,66],[52,58],[40,50],[52,80]].map(([x,y])=>`<path d="M${x} ${y}q-2 9 2 14" stroke="${C}" stroke-width="4" stroke-linecap="round" fill="none"/>`).join(''):[[37,66],[54,58],[38,48],[53,78]].map(([x,y])=>gFruit(x,y,5.4,C)).join('')):[[40,62],[51,50]].map(([x,y])=>gC(x,y,2.4,'#F6CB5A')).join('')))}
+ else if(a==='leafy'){const head=gHsl(C).h>65&&gHsl(C).h<170?'color-mix(in srgb,'+C+' 70%,#fff)':C;
+  h=GMD+sc(R?1:.75,[-75,-45,-15,15,45,75].map((r,i)=>gE(45,68,9,20,i%2?GLF:GLF2,r)).join('').replace(/rotate\((-?\d+) 45 68\)/g,'rotate($1 45 86)')+(R?`${gC(45,78,12,head)}<path d="M39 74q6 6 12 0M40 80q5 5 10 0" stroke="rgba(0,0,0,.15)" stroke-width="1.6" fill="none"/>`:gC(45,80,6,GLF)))}
+ else if(a==='root'){const round=/beet|radish|turnip|rutabaga|celeriac|potato|russet|kohlrabi|taro|jicama|yautia|o'brien|hash brown/.test(n);
+  h=GMD+sc(R?1:.75,[[-30,34,54],[0,45,46],[30,56,54],[-14,38,50],[16,52,50]].map(([r,x,y])=>`<path d="M45 88Q${(45+x)/2} ${y+12} ${x} ${y}" stroke="${GSTM}" stroke-width="2.4" fill="none"/>${gE(x,y,4.5,7,GLF,r)}${gE((45+x)/2,(88+y)/2,3.2,5,GLF2,r)}`).join(''))+
+  (R?(round?gE(45,87,10,8,C)+gE(42,84,3,2,'rgba(255,255,255,.35)'):`<path d="M37 86q8 -7 16 0q-2 7 -8 9q-6 -2 -8 -9z" fill="${C}"/><path d="M40 89h10" stroke="rgba(0,0,0,.15)" stroke-width="1.4"/>`):'')}
+ else if(a==='allium'){const leek=/leek|scallion|chive/.test(n);
+  h=GMD+sc(R?1:.75,[[-14,32],[-6,24],[0,20],[7,26],[14,34]].map(([dx,y])=>`<path d="M45 86Q${45+dx/2} 60 ${45+dx} ${y}" stroke="${dx%2?GLF:GLF2}" stroke-width="4.6" stroke-linecap="round" fill="none"/>`).join(''))+
+  (R?(leek?`<rect x="40" y="70" width="10" height="20" rx="4" fill="#F4F1E1"/>`:gE(45,86,10,8.5,C)+`<path d="M45 78v-6" stroke="${C}" stroke-width="3"/>`):'')}
+ else if(a==='shroom'){h=gE(45,92,22,6.5,'var(--g-soil)')+sc(R?1:.65,[[33,84,7],[52,80,10],[44,88,6]].map(([x,y,r])=>`<rect x="${x-r*.35}" y="${y}" width="${r*.7}" height="${92-y}" rx="2" fill="#F1E7D2"/><path d="M${x-r} ${y+1}a${r} ${r*.85} 0 0 1 ${2*r} 0z" fill="${C}"/>${gC(x-r*.35,y-r*.35,r*.18,'rgba(255,255,255,.5)')}`).join(''))}
+ else if(a==='corn'){h=GMD+sc(R?1:.72,`<path d="M45 92V20" stroke="${GSTM}" stroke-width="4" stroke-linecap="round"/>${[[45,74,-1],[45,58,1],[45,42,-1],[45,30,1]].map(([x,y,d])=>`<path d="M${x} ${y}q${d*14} -2 ${d*20} 10" stroke="${d>0?GLF:GLF2}" stroke-width="4.5" stroke-linecap="round" fill="none"/>`).join('')}<path d="M45 20l-4 -8M45 20l4 -8M45 20v-10" stroke="#D9B65A" stroke-width="2" stroke-linecap="round"/>`+
+  (R?`${gE(52,56,5.5,11,'#F2C94C',15)}<path d="M48 66q2 -10 8 -18" stroke="${GLF2}" stroke-width="3.4" fill="none"/>`:''))}
+ else if(a==='sunflower'){h=GMD+sc(R?1:.72,`<path d="M45 92V34" stroke="${GSTM}" stroke-width="4" stroke-linecap="round"/>${gE(37,70,5,10,GLF,-50)}${gE(53,60,5,10,GLF2,50)}`+(R?Array.from({length:12},(_,i)=>gE(45,20,3.6,8,'#F6C343',i*30)).join('').replace(/rotate\((\d+) 45 20\)/g,'rotate($1 45 30)')+gC(45,30,7.5,'#6B4423'):gC(45,32,6,GLF2)))}
+ else if(a==='pods'){const pc=gHsl(C).h>65&&gHsl(C).h<170?'#B7C76B':C;
+  h=GMD+sc(R?1:.75,[[34,80],[45,72],[56,80],[40,64],[52,64],[45,84]].map(([x,y],i)=>`${gC(x-3,y,5,i%2?GLF:GLF2)}${gC(x+3,y,5,i%2?GLF2:GLF)}${gC(x,y-4,5,GLF)}`).join('')+(R?[[38,72],[52,70],[44,80],[57,78]].map(([x,y])=>`<path d="M${x} ${y}q4 3 6 9" stroke="${pc}" stroke-width="4.4" stroke-linecap="round" fill="none"/>`).join(''):''))}
+ else if(a==='herb'){h=GMD+sc(R?1:.75,[[36,82],[45,74],[54,82],[40,68],[50,66],[45,60],[32,74],[58,74],[45,84]].map(([x,y],i)=>`<path d="M45 90L${x} ${y}" stroke="${GSTM}" stroke-width="1.6"/>${gE(x,y,4,6,i%2?GLF:GLF2,(x-45)*3)}`).join('')+(R?[[40,62],[50,60],[45,55],[34,70]].map(([x,y])=>gC(x,y,2.2,'#C9B6F2')).join(''):''))}
+ else {/* grain */const gold=R?'#D9B65A':GLF;
+  h=GMD+sc(R?1:.72,[30,36,42,48,54,60,45].map((x,i)=>{const top=34+(i*7)%12;return `<path d="M${(x+45)/2} 90Q${x} 60 ${x} ${top}" stroke="${gold}" stroke-width="2.2" fill="none"/>`+(R?[0,1,2].map(j=>gE(x,top+2+j*5,2.4,4,'#E8C66A',j%2?20:-20)).join(''):'')}).join(''))}
+ return `<svg class="gcropsvg" viewBox="0 0 90 100" aria-hidden="true">${h}</svg>`}
+
 function gPlot(p){const st=gStage(p),I=kindInfo(p.k),orch=p.b==='f',pop=!GSTILL()&&GST[p.k]!==undefined&&GST[p.k]<st;GST[p.k]=st;const {c,r,x,y}=isoC(p.b,p.pos);
- const pic=st===0?GMOUND:st===1?GSPROUT:`<span class="gpl${orch?' tree':''}">${orch?GTREE:GSTEM}<span class="gico">${I.icon}</span></span>`;
+ const pic=st===0?GMOUND:st===1?GSPROUT:`<span class="gcrop a-${gArch(p.k,p.b)}">${gCropArt(p.k,p.b,st)}<span class="gico gico0">${I.icon}</span></span>`;
  return `<button class="gplot st${st}${pop?' pop':''}${G.sel===p.k?' sel':''}" type="button" data-gp="${esc(p.k)}" style="left:${pct(x-29,ISO.w)};top:${pct(y+7-70,ISO.h)};width:${pct(58,ISO.w)};height:${pct(70,ISO.h)};z-index:${Math.round((c+r)*10)+5}" aria-label="${esc(I.name)}${st===3?', ready to harvest':''}">${st===3?'<span class="gglow" aria-hidden="true"></span>':''}${pic}${st===3?'<span class="gspk" aria-hidden="true"><i></i><i></i><i></i></span>':''}</button>`}
 /* small pictures for the shop; plain shapes, readable on any backdrop */
 const GDSVG={path:'<ellipse cx="14" cy="38" rx="9" ry="4.5" fill="#BDB6A8"/><ellipse cx="30" cy="33" rx="8" ry="4" fill="#CFC8BA"/><ellipse cx="22" cy="44" rx="7" ry="3.5" fill="#A9A293"/><ellipse cx="38" cy="41" rx="6" ry="3" fill="#BDB6A8"/>',
@@ -3615,13 +3681,13 @@ function gSkyline(bg){if(bg==='roof')return '<svg class="ghills" viewBox="0 0 40
 const gNext=wk=>{const x=GCFG.week.find(([t])=>wk<t);return x?x[0]:null};
 function gDone(msg){if(GNEWB){const b=GBADGE.find(x=>x[0]===GNEWB);GNEWB=null;if(b){toast(`Badge: ${b[1]}`);return}}if(msg)toast(msg)}
 /* ---------- the world: a meadow you look into; drag to move, pinch or buttons to zoom ---------- */
-const GBLD={shed:{n:'Shed',w:2,v:'basket'},market:{n:'Market',w:2,v:'market'},shop:{n:'Shop',w:2,v:'shop'},board:{n:'Board',w:1,v:'album'}};
-const GBLD0={shed:[-4,0],market:[-4,5],shop:[1,-4],board:[4,-2]};
-function gBld(){const L=gLand();if(!L.bld||typeof L.bld!=='object')L.bld={};Object.keys(L.bld).forEach(k=>{if(!GBLD[k])delete L.bld[k]});Object.keys(GBLD).forEach(k=>{if(!Array.isArray(L.bld[k]))L.bld[k]=GBLD0[k].slice()});return L.bld}
+const GBLD={shed:{n:'Shed',w:3,v:'basket'},market:{n:'Market',w:3,v:'market'},shop:{n:'Shop',w:3,v:'shop'},board:{n:'Board',w:2,v:'album'}};
+const GBLD0={shed:[-5,-1],market:[-5,4],shop:[1,-5],board:[5,-3]};
+function gBld(){const L=gLand();if(!L.bld||typeof L.bld!=='object'||L.bv!==2){L.bld={};L.bv=2}Object.keys(L.bld).forEach(k=>{if(!GBLD[k])delete L.bld[k]});Object.keys(GBLD).forEach(k=>{if(!Array.isArray(L.bld[k]))L.bld[k]=GBLD0[k].slice()});return L.bld}
 const bldTiles=(k,o)=>{const [c,r]=o||gBld()[k],w=GBLD[k].w,t=[];for(let y=0;y<w;y++)for(let x=0;x<w;x++)t.push((c+x)+','+(r+y));return t};
 const gH=(c,r)=>{let h=(c*73856093)^(r*19349663);h=(h^(h>>>13))*1274126177;return ((h^(h>>>16))>>>0)%1000};
 function gMeadow(){let h='';const B=gBld();for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++)if((c+r)&1)h+=`<polygon points="${isoDia(c,r,1)}" fill="var(--g-grass2)" opacity=".5"/>`;
- Object.keys(B).forEach(k=>{const [c,r]=B[k],w=GBLD[k].w,e=.42,q=[isoP(c-.5-e,r-.5-e),isoP(c+w-.5+e,r-.5-e),isoP(c+w-.5+e,r+w-.5+e),isoP(c-.5-e,r+w-.5+e)];h+=`<polygon points="${PTS(q.map(p=>[p[0],p[1]+5]))}" fill="var(--g-padd)"/><polygon points="${PTS(q)}" fill="var(--g-pad)"/>`;for(let y=-1;y<=w;y++)for(let x=-1;x<=w;x++){if(x>=0&&y>=0&&x<w&&y<w)continue;const [X,Y]=isoP(c+x+(x<0?.55:x>=w?-.55:0),r+y+(y<0?.55:y>=w?-.55:0));h+=`<ellipse cx="${X.toFixed(1)}" cy="${Y.toFixed(1)}" rx="10" ry="5" fill="var(--g-padin)"/>`}});return h}
+ Object.keys(B).forEach(k=>{const [c,r]=B[k],w=GBLD[k].w,q=[isoP(c-.5,r-.5),isoP(c+w-.5,r-.5),isoP(c+w-.5,r+w-.5),isoP(c-.5,r+w-.5)];h+=`<polygon points="${PTS(q.map(p=>[p[0],p[1]+5]))}" fill="var(--g-padd)"/><polygon points="${PTS(q)}" fill="var(--g-pad)"/>`;bldTiles(k).forEach(t=>{const [x,y]=tileXY(t);h+=`<polygon points="${isoDia(x,y,.9)}" fill="var(--g-padin)"/>`})});return h}
 function gNature(){const occ=gOcc(),B=gBld(),near=(c,r)=>(c>=-1&&r>=-1&&c<=ISO.C+1&&r<=ISO.R+1)||Object.keys(B).some(k=>c>=B[k][0]-1&&r>=B[k][1]-1&&c<=B[k][0]+GBLD[k].w&&r<=B[k][1]+GBLD[k].w);let h='';
  for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++){const t=c+','+r;if(near(c,r)||occ[t])continue;const k=gH(c,r),[x,y]=isoP(c,r);
   if(k<70)h+=`<g><ellipse cx="${x}" cy="${y+6}" rx="22" ry="8" fill="rgba(0,0,0,.13)"/><path d="M${x} ${y+4}v-22" stroke="var(--g-trunk)" stroke-width="7" stroke-linecap="round"/><circle cx="${x}" cy="${y-34}" r="26" fill="var(--g-crown)"/><circle cx="${x-9}" cy="${y-42}" r="11" fill="var(--g-leaf2)" opacity=".45"/><circle cx="${x+12}" cy="${y-24}" r="9" fill="var(--g-leaf2)" opacity=".35"/></g>`;
@@ -3635,8 +3701,8 @@ const GB_SHED='<svg viewBox="0 -16 120 128" aria-hidden="true"><ellipse cx="60" 
 const GB_SHOP='<svg viewBox="0 -16 120 128" aria-hidden="true"><ellipse cx="60" cy="100" rx="58" ry="14" fill="rgba(0,0,0,.16)"/><polygon points="8,76 60,102 60,60 8,34" fill="#F1E3C6"/><polygon points="60,102 112,76 112,34 60,60" fill="#DCC9A4"/><polygon points="26,84 42,92 42,68 26,60" fill="#6E4E37"/><circle cx="39" cy="80" r="1.6" fill="#F6CB5A"/><polygon points="72,78 100,64 100,46 72,60" fill="#BFE3EE"/><path d="M86 71V53M72 69l28-14" stroke="#FFFFFF" stroke-width="2"/><polygon points="70,82 102,66 102,72 70,88" fill="#8A5E33"/><circle cx="76" cy="80" r="4" fill="#F28AA8"/><circle cx="84" cy="76" r="4" fill="#F6CB5A"/><circle cx="92" cy="72" r="4" fill="#E86A5C"/><circle cx="98" cy="69" r="3.6" fill="#B9A0E6"/><polygon points="18,58 50,74 50,66 18,50" fill="#4E9E52"/><path d="M24 53v8M32 57v8M40 61v8M46 64v7" stroke="#F4FBEE" stroke-width="3.4"/><polygon points="2,37 60,66 60,16 31,2" fill="#4E9E52"/><polygon points="60,66 118,37 89,2 60,16" fill="#3E8442"/><path d="M31 2L89 2" stroke="#2F6B34" stroke-width="3"/><rect x="74" y="0" width="7" height="14" fill="#B07740"/></svg>';
 const GB_MARKET='<svg viewBox="0 -16 120 128" aria-hidden="true"><ellipse cx="60" cy="100" rx="58" ry="14" fill="rgba(0,0,0,.16)"/><path d="M12 78V34M60 104V60M108 78V34" stroke="#8A5E33" stroke-width="5" stroke-linecap="round"/><polygon points="8,78 60,104 60,84 8,58" fill="#C98B4E"/><polygon points="60,104 112,78 112,58 60,84" fill="#B07740"/><polygon points="8,58 60,84 112,58 60,32" fill="#D9A15E"/><g><circle cx="30" cy="64" r="6" fill="#E64B4B"/><circle cx="40" cy="69" r="6" fill="#F6A33C"/><circle cx="50" cy="73" r="6" fill="#6DBB63"/><circle cx="70" cy="74" r="6" fill="#F6CB5A"/><circle cx="82" cy="68" r="6" fill="#8E5CBA"/><circle cx="94" cy="62" r="6" fill="#E64B4B"/><circle cx="60" cy="60" r="6" fill="#6DBB63"/><circle cx="48" cy="54" r="5.5" fill="#F6A33C"/><circle cx="72" cy="54" r="5.5" fill="#F28AA8"/></g><polygon points="2,36 60,64 60,14" fill="#E86A5C"/><polygon points="60,64 118,36 60,14" fill="#C9574B"/><path d="M14 34l46 22M26 28l34 17M40 22l20 10M106 34L60 56M94 28L60 45M80 22L60 32" stroke="#FFF3E6" stroke-width="5" opacity=".75"/><path d="M2 36q7 8 14 4t14 4 14 4 14 4 2 2M118 36q-7 8-14 4t-14 4-14 4-14 4-2 2" fill="none" stroke="#E86A5C" stroke-width="4"/></svg>';
 function gBuildings(L0,nb){const B=gBld(),P={shed:GB_SHED,shop:GB_SHOP,market:GB_MARKET,board:GBOARDI};
- return Object.keys(B).map(k=>{const [c,r]=B[k],w=GBLD[k].w,[x,y]=isoP(c+(w-1)/2,r+(w-1)/2),W=w===2?184:84,badge=k==='shed'?nb:k==='market'?L0.filter(o=>!o.done&&gHold(o.k)>=o.n).length:0,lab=GBLD[k].n;
-  return `<button class="gbld${G.ed?' ed':''}" type="button" data-gv="${GBLD[k].v}" data-bld="${k}"${k==='shed'?' id="gd-bag"':''} style="left:${pct(x-W/2,ISO.w)};top:${pct(w===2?y-W*.767:y+14-W*.95,ISO.h)};width:${pct(W,ISO.w)};z-index:${Math.round((c+r+2*(w-1))*10)+5}" aria-label="${GBLD[k].n}"><span class="gsti">${P[k]}${k==='market'?`<span class="tmas mini ${gMood()}">${TORT}</span>`:''}</span><span class="gstl num">${lab}</span>${badge?`<span class="gbn num">${badge}</span>`:''}</button>`}).join('')}
+ return Object.keys(B).map(k=>{const [c,r]=B[k],w=GBLD[k].w,[x,y]=isoP(c+(w-1)/2,r+(w-1)/2),W=w===3?212:128,badge=k==='shed'?nb:k==='market'?L0.filter(o=>!o.done&&gHold(o.k)>=o.n).length:0,lab=GBLD[k].n;
+  return `<button class="gbld${G.ed?' ed':''}" type="button" data-gv="${GBLD[k].v}" data-bld="${k}"${k==='shed'?' id="gd-bag"':''} style="left:${pct(x-W/2,ISO.w)};top:${pct(w===3?y-W*.767:y+20-W*1.04,ISO.h)};width:${pct(W,ISO.w)};z-index:${Math.round((c+r+2*(w-1))*10)+5}" aria-label="${GBLD[k].n}"><span class="gsti">${P[k]}${k==='market'?`<span class="tmas mini ${gMood()}">${TORT}</span>`:''}</span><span class="gstl num">${lab}</span>${badge?`<span class="gbn num">${badge}</span>`:''}</button>`}).join('')}
 /* camera */
 function gCamFit(){const vp=$('gd-scene');if(!vp)return;const R=vp.getBoundingClientRect();if(!R.width)return;const L=gLand(),[x0]=isoP(-.5,L.R-.5),[x1]=isoP(L.C-.5,-.5),[,y0]=isoP(-.5,-.5),[,y1]=isoP(L.C-.5,L.R-.5),s=Math.min(1.3,Math.max(.35,R.width*.92/(x1-x0)));G.cam={s,x:R.width/2-(x0+x1)/2*s,y:R.height*.47-(y0+y1)/2*s}}
 const gCamGo=()=>{if(!G.cam)gCamFit();gCamApply()};
