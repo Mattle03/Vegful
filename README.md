@@ -30,7 +30,7 @@ Both give HTTPS, which installing needs.
 ## 3. Updating
 
 1. Replace `index.html` with the new version.
-2. In `sw.js`, raise the version: `vegful-v157` to `vegful-v158` (raise it by one each time).
+2. In `sw.js`, raise the version: `vegful-v159` to `vegful-v160` (raise it by one each time).
 3. Upload again (Netlify: drag the folder onto the site's Deploys page; GitHub: commit).
 
 Phones load the new version the next time the app is opened online.

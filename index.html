@@ -744,6 +744,91 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .bldnew .thumb{background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;border-radius:12px}
 .bldnew .thumb svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
 @media (prefers-reduced-motion:reduce){.adgrp .adm .chev{transition:none}}
+
+/* garden */
+:root{--g-sky:#DCEEF6;--g-sky2:#EAF5E2;--g-grass:#C9E4B4;--g-grass2:#B7D99E;--g-soil:#9C7354;--g-soilin:#8A6347;--g-plot:#7E5A40;--g-mound:#6E4E37;--g-seed:#E7D2A8;--g-stem:#4E8F45;--g-leaf:#6DBB63;--g-leaf2:#4E9E4A;--g-trunk:#7D5A3E;--g-crown:#78C06C;--g-label:#2F4A2E;--g-sun:#F7D26A;--g-cloud:#FFFFFF;--g-can:#6F8FA6;--g-canin:#3E5568}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--g-sky:#1E2C38;--g-sky2:#22342B;--g-grass:#2A4430;--g-grass2:#23392A;--g-soil:#5A4131;--g-soilin:#4C3728;--g-plot:#433023;--g-mound:#6B4E39;--g-seed:#C9B48C;--g-stem:#6FB565;--g-leaf:#7CC873;--g-leaf2:#5AAA55;--g-trunk:#8A6849;--g-crown:#4F9A55;--g-label:#CFE3CC;--g-sun:#E9D7A0;--g-cloud:#3A4A57;--g-can:#7D9AB0;--g-canin:#2C3C49}}
+:root[data-theme="dark"]{--g-sky:#1E2C38;--g-sky2:#22342B;--g-grass:#2A4430;--g-grass2:#23392A;--g-soil:#5A4131;--g-soilin:#4C3728;--g-plot:#433023;--g-mound:#6B4E39;--g-seed:#C9B48C;--g-stem:#6FB565;--g-leaf:#7CC873;--g-leaf2:#5AAA55;--g-trunk:#8A6849;--g-crown:#4F9A55;--g-label:#CFE3CC;--g-sun:#E9D7A0;--g-cloud:#3A4A57;--g-can:#7D9AB0;--g-canin:#2C3C49}
+.gstrip{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:10px 14px;border:0;font:inherit;color:var(--ink);text-align:left;position:relative;overflow:hidden;background:linear-gradient(90deg,color-mix(in srgb,var(--g-grass) 55%,var(--surface)) 0%,var(--surface) 75%)}
+.gstrip .gsic{display:flex;gap:2px;flex:none}
+.gsi{width:28px;height:28px;display:grid;place-items:center;border-radius:50%}
+.gsi svg,.gsi img{width:24px;height:24px}
+.gsi.gr{filter:saturate(.4);opacity:.7}.gsi.gr svg,.gsi.gr img{width:19px;height:19px}
+.gsi.rd{background:color-mix(in srgb,var(--g-sun) 45%,transparent);box-shadow:0 0 0 2px color-mix(in srgb,var(--g-sun) 70%,transparent)}
+.gstx{flex:1;min-width:0;display:flex;flex-direction:column;line-height:1.25}.gstx b{font-size:14px}.gstx b,.gstx .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.gstrip>.chev{width:18px;height:18px;flex:none;fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round}
+.gsi.pop{animation:gpop .5s ease}
+@media (max-width:420px){.gsi:nth-child(n+5){display:none}}
+.gshow{position:absolute;inset:0;pointer-events:none}
+.gshow i,.grain i{position:absolute;top:-10px;width:3px;height:10px;border-radius:2px;background:var(--water);opacity:0}
+.gshow i{animation:gdrop .6s ease-in 1}
+.gshow i:nth-child(1){left:10%}.gshow i:nth-child(2){left:25%;animation-delay:.08s}.gshow i:nth-child(3){left:40%;animation-delay:.03s}.gshow i:nth-child(4){left:55%;animation-delay:.12s}.gshow i:nth-child(5){left:70%;animation-delay:.05s}.gshow i:nth-child(6){left:85%;animation-delay:.1s}
+@keyframes gdrop{0%{transform:translateY(0);opacity:0}15%{opacity:.85}100%{transform:translateY(90px);opacity:0}}
+@keyframes gpop{0%{transform:scale(.4)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
+#garden{height:100dvh;max-height:100dvh;margin:0 auto;border-radius:0}
+#garden .pk{max-height:none;height:100%}
+#garden .pk-head::before{display:none}
+#garden .pk-head{padding-top:12px}
+@media (min-width:640px){#garden{height:88vh;max-height:88vh;margin:auto;border-radius:24px}}
+.ghead{display:flex;align-items:center;gap:8px;flex:none}
+.gcoins{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:16px;padding:0 4px}
+.gcoins svg{width:22px;height:22px}
+.gib{position:relative;width:44px;height:44px;color:var(--ink)}
+.gib svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.gbn{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 5px;box-sizing:border-box}
+.gweek{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin:6px 4px 10px}
+.gweek b{font-size:16px}
+.gscene{position:relative;border-radius:22px;overflow:hidden;padding:64px 10px 12px;background:linear-gradient(var(--g-sky) 0,var(--g-sky2) 54px,var(--g-grass) 74px,var(--g-grass2) 100%);display:flex;flex-direction:column;gap:10px}
+.gsky{position:absolute;left:0;right:0;top:0;height:70px;pointer-events:none}
+.gsun{position:absolute;left:18px;top:14px;width:30px;height:30px;border-radius:50%;background:var(--g-sun);box-shadow:0 0 0 7px color-mix(in srgb,var(--g-sun) 30%,transparent)}
+.gcloud{position:absolute;left:38%;top:16px;width:46px;height:14px;border-radius:10px;background:var(--g-cloud);opacity:.9}
+.gcloud::before{content:"";position:absolute;left:10px;top:-8px;width:22px;height:18px;border-radius:50%;background:inherit}
+.gcloud.c2{left:62%;top:30px;width:34px;height:11px;opacity:.7}
+.gcan{position:absolute;right:10px;top:8px;display:flex;align-items:center;gap:6px;min-height:46px;padding:4px 10px 4px 6px;border:0;border-radius:14px;background:color-mix(in srgb,var(--surface) 75%,transparent);color:var(--ink);font:inherit;font-weight:800;font-size:13px}
+.gcanw svg{width:40px;height:34px;display:block}
+.gbedw{display:flex;flex-direction:column;gap:3px}
+.gbl{font-size:12px;font-weight:800;color:var(--g-label);margin-left:6px;letter-spacing:.02em}
+.gbed{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--g-soil);border-radius:16px;padding:6px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
+.gplot{position:relative;height:66px;border-radius:12px;background:var(--g-soilin);border:0;padding:0;display:flex;align-items:flex-end;justify-content:center;overflow:visible;font:inherit;color:inherit;min-width:0}
+.gplot.empty{background:var(--g-plot);opacity:.55}
+.gplot.sel{box-shadow:0 0 0 2px var(--accent)}
+.gplot .gmound{width:62%;margin-bottom:6px}
+.gplot .gspr{width:38px;height:38px;margin-bottom:2px}
+.gpl{position:relative;width:46px;height:62px;display:block;transform-origin:50% 100%}
+.gpl .gstem,.gpl .gtree{position:absolute;left:3px;bottom:0;width:40px;height:46px}
+.gpl .gico{position:absolute;left:50%;top:2px;width:26px;height:26px;transform:translateX(-50%);filter:saturate(.4);opacity:.7}
+.gpl.tree .gico{top:12px;width:20px;height:20px}
+.gico svg,.gico img{width:100%;height:100%;display:block}
+.st3 .gpl .gico{top:-2px;width:36px;height:36px;filter:none;opacity:1}
+.st3 .gpl.tree .gico{top:4px;width:32px;height:32px}
+.gshine{position:absolute;inset:0;border-radius:12px;pointer-events:none;overflow:hidden}
+.gshine::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:gsweep 3.6s ease-in-out infinite}
+.st3{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--g-sun) 75%,transparent)}
+.st3 .gpl{animation:gbounce 3.6s ease-in-out infinite}
+.gbed .gplot:nth-child(3n+1).st2 .gpl,.gbed .gplot:nth-child(4n+2).st2 .gpl{animation:gsway 4.5s ease-in-out infinite}
+.gplot.pop>*:first-child{animation:gpop .5s ease}
+@keyframes gsweep{0%,55%{left:-60%}85%,100%{left:130%}}
+@keyframes gbounce{0%,80%,100%{transform:translateY(0)}86%{transform:translateY(-4px)}92%{transform:translateY(0)}}
+@keyframes gsway{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+.grain{position:absolute;inset:0;pointer-events:none}
+.gscene.rain .grain i{animation:gdrop2 .6s ease-in 1 both}
+@keyframes gdrop2{0%{transform:translateY(0);opacity:0}15%{opacity:.85}100%{transform:translateY(420px);opacity:0}}
+.ghop{position:fixed;z-index:9;pointer-events:none}
+.ghop svg,.ghop img{width:100%;height:100%}
+.gtip{margin:10px 4px 0;font-size:14px}
+.gtray{margin:8px 4px 0;text-align:center}
+.gempty{text-align:center;color:var(--muted);font-weight:700;margin:16px 4px}
+#gd-all{margin-top:12px}
+.gbag{display:flex;flex-direction:column}
+.gbr{display:flex;align-items:center;gap:12px;padding:8px 4px;border-bottom:1px solid var(--line)}
+.gbr .thumb{width:40px;height:40px;flex:none}
+.gbr b{flex:1;min-width:0}
+.gbx{color:var(--muted);font-weight:700}
+.gprice{display:inline-flex;align-items:center;gap:3px;font-weight:800;min-width:44px;justify-content:flex-end}
+.gprice svg{width:16px;height:16px}
+.gsell{margin-top:14px}
+html.still .gstrip *,html.still #garden *,html.still #garden *::after,html.still #garden *::before{animation:none!important;transition:none!important}
+@media (prefers-reduced-motion:reduce){.gstrip *,#garden *,#garden *::after,#garden *::before{animation:none!important;transition:none!important}}
 </style>
 </head>
 <body>
@@ -838,6 +923,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
       <h2>Tracking</h2>
       <label class="suprow" for="p-water" style="margin-top:10px"><span class="supname">Water bottle</span><span class="switch"><input type="checkbox" id="p-water"><i></i></span><small>Shows a bottle on Today. Hold it to log a filled bottle; it empties at the pace you should drink.</small></label>
       <label class="suprow" for="p-wlog" style="margin-top:10px"><span class="supname">Weight log</span><span class="switch"><input type="checkbox" id="p-wlog"><i></i></span><small>Log your weight when you like. Each value counts from that day on and keeps your energy and protein targets current. Shows a trend graph.</small></label>
+      <label class="suprow" for="p-garden" style="margin-top:10px"><span class="supname">Garden</span><span class="switch"><input type="checkbox" id="p-garden"><i></i></span><small>Every plant you eat sows a seed. Harvest and sell for coins.</small></label>
+      <div class="full" id="p-gwater" hidden style="margin-top:12px"><span class="lbl">Watering</span><div class="seg" id="p-gw" style="margin-top:6px"><button type="button" data-gw="bottle">With the bottle</button><button type="button" data-gw="auto">Grows overnight</button></div></div>
       <label class="full" id="p-btl-row" hidden style="margin-top:14px;display:grid;gap:6px">Bottle size in ml<input id="p-btl" type="number" min="100" max="3000" step="50" inputmode="numeric"></label>
     </div>
     <div class="card psec" data-ps="sup" hidden>
@@ -889,6 +976,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
   <div class="pk-list" id="pk-list"></div>
 </div></dialog>
 
+<dialog id="garden" aria-label="Garden"><div class="pk"><div class="pk-head" id="gd-head"></div><div class="pk-list" id="gd-body"></div></div></dialog>
 <dialog id="add"><div class="pk"><div class="pk-head" id="ad-head"></div><div class="pk-list" id="ad-body"></div><div class="adfoot" id="ad-foot" hidden></div></div></dialog>
 <dialog id="plan"><div class="pk"><div class="pk-head"><div class="row"><h2>Plan ahead</h2><button class="btn sm" id="pl-close" type="button">Done</button></div></div><div class="pk-list detail" id="pl-body" style="padding:14px 16px 24px"></div></div></dialog>
 <dialog id="gran"><div class="pk"><div class="pk-head"><div class="row"><h2 id="gr-title">Granola builder</h2><button class="btn sm" id="gr-close" type="button">Close</button></div></div><div class="pk-list detail" id="gr-body" style="padding:14px 16px 24px"></div></div></dialog>
@@ -1797,7 +1885,7 @@ const PLANTS={"alprosoy":["soy"],"alprosoy0":["soy"],"biosoyca":["soy"],"biosoy"
 const VEGX=new Set(['peas']);const DRIED={apricots:2.5,dates:2.5};
 function fv(p){let veg=0,fruit=0;eatK(p).forEach(k=>p[k].it.forEach(([id,g])=>{const f=FM[id];if(!f)return;if(f.cat==='Vegetables'||VEGX.has(id))veg+=+g;else if(f.cat==='Fruit')fruit+=g*(DRIED[id]||1)}));return{veg,fruit}}
 const FVT={veg:400,fruit:250};
-function plantSet(dates){const set=new Set();dates.forEach(d=>{const p=S.days[d];if(!p)return;eatK(p).forEach(k=>p[k].it.forEach(([id,g])=>{if(g<=0)return;(PLANTS[id]||(FM[id]&&FM[id].pk?[FM[id].pk]:FM[id]&&FM[id].ing?FM[id].ing.filter(x=>x[1]>=2&&FM[x[0]]&&FM[x[0]].cat!=='Oils and other').flatMap(([q])=>PLANTS[q]||(FM[q]&&FM[q].pk?[FM[q].pk]:[])):FM[id]&&FM[id].parts?FM[id].parts.flatMap(p=>PLANTS[p[0]]||(FM[p[0]]&&FM[p[0]].pk?[FM[p[0]].pk]:[])):String(id).startsWith('c_')?[FM[id]?FM[id].n.toLowerCase():id]:[])).forEach(x=>set.add(x))}))});return set}
+function plantSet(dates){const set=new Set();dates.forEach(d=>{const p=S.days[d];if(!p)return;eatK(p).forEach(k=>p[k].it.forEach(([id,g])=>{if(g<=0)return;plantKinds(id).forEach(x=>set.add(x))}))});return set}
 function fvCard(p,avgN){const R=rangeStats(7),pl=plantSet(R.dates),x=avgN?avgN:fv(p);
  const bar=(lab,v,t,c)=>`<div class="macro"><div class="row"><span>${lab}</span><b>${Math.round(v)}<span class="muted" style="font-weight:500"> / ${t} g</span></b></div><div class="meter"><i style="width:${Math.min(v/t*100,100)}%;background:${v>=t?'var(--ok)':c}"></i></div></div>`;
  return `<div class="card fvcard"><div class="card-head" style="margin-bottom:10px"><h2>Fruit and vegetables</h2>${srcLinks(['pot'],'Guide values: about 400 g vegetables and 250 g fruit a day (DGE). Plant variety: the American Gut Project found 30 or more different plants a week linked to more diverse gut bacteria.')}</div>
@@ -1894,6 +1982,7 @@ function renderToday(T,D){
   ${emptyDay?`<div class="card newday"><h2>${isT?'New day':S.date>TODAY?'Nothing planned yet':'Nothing logged'}</h2><p class="cap" style="margin:4px 0 12px">${S.date>TODAY?'Plan this day ahead: the ideas below fit what you still need.':'Add what you eat: pick foods one by one, or a dish.'}</p>${actPill(isT,1)}${wsc!==null?`<button class="weekline" type="button" id="go-week" style="margin:0 0 10px"><span>Last 7 days</span><b>${wsc}% covered</b>${CHEV}</button>`:''}${prev?`<button class="btn wide" type="button" id="d-copy">Same as ${prev===shift(S.date,-1)?'yesterday':kdate(prev).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'})}</button>`:''}</div>`:''}
 ${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero${WON()?' hw':''}"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}. Open Nutrients"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
    <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div>${WON()?bottleHTML():''}</div>${waterRow()}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div>${actPill(isT)}</div>`}
+${gardenStrip()}
   <div class="secthead"><h2>Meals</h2>${emptyDay?'':`<span class="cap num">${HK()?'':Math.round(D[0]).toLocaleString('en')+' kcal · '}${Math.round(D[1])} g protein so far</span>`}</div>
   <div class="meals">${SLOTS.filter(s=>s.id!=='x').map(meal).join('')}</div>
   <div class="addmeal"><span class="lbl">Add a meal</span><div class="chips">${[...'blds'].map(t=>`<button class="chip" type="button" data-addmeal="${t}">+ ${TY[t].n}</button>`).join('')}</div></div>
@@ -1905,7 +1994,7 @@ ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="m
   ${fgCard()}
   ${supCard(isT)}${weightRow()}`;
  const v=$('v-today');
- bindFg(v);bindSupCard(v);bindWater(v);bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
+ bindFg(v);bindSupCard(v);bindWater(v);if($('go-garden'))$('go-garden').onclick=()=>openGarden();bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
  v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{openAdd(b.dataset.pick);const e=$('ad-ideas');if(e)e.scrollIntoView({block:'start'})});
  v.querySelectorAll('[data-tag]').forEach(b=>b.onclick=()=>{const k=b.dataset.tag,a=AGT[k];if(!a)return;useAgain(k,a);save();toast(`Added ${a.n}`);render()});
  v.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>startMeal(b.dataset.start));
@@ -3020,6 +3109,138 @@ function adFoot(s,sl){const f=$('ad-foot'),v=AD.view;
  $('ad-plate').onclick=()=>adView('plate',{open:null});$('ad-done').onclick=closeAdd}
 
 /* rows: one line each, a + puts it on the plate */
+/* ---------- garden: every plant you eat sows itself, water makes it grow, what you harvest buys things ----------
+   S.garden holds everything (see gInit). gardenTick applies growth per finished day, gardenSync sows what was eaten in the last 7 days.
+   The garden always reflects today, whatever day is on screen. Nothing ever lowers growth, takes coins or produce. */
+const GCFG={plots:8,need:[0,2,3,4],price:[0,1,2,4],orderMul:2,wishMul:3,wishBonus:2,week:[[10,10],[20,20],[30,40]],fruit:2,chest:[3,5],maxTickDays:14,seenDays:7};
+const GBEDS=[['f','Orchard'],['v','Vegetable patch'],['c','Field']];
+const GON=()=>!S.garden||S.garden.on!==0;
+const GSTILL=()=>document.documentElement.classList.contains('still')||REDUCE();
+const GSPR='<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 36V20" stroke="#4E8F45" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M20 24c-1-6-6-9-11-8 0 5 4 9 11 8z" fill="#6DBB63"/><path d="M20 21c1-6 6-9 11-8 0 5-4 9-11 8z" fill="#4E9E4A"/></svg>';
+const GMOUND='<svg class="gmound" viewBox="0 0 40 16" aria-hidden="true"><path d="M3 15c3-9 31-9 34 0z" fill="var(--g-mound)"/><circle cx="16" cy="9" r="1.4" fill="var(--g-seed)"/><circle cx="23.5" cy="8" r="1.4" fill="var(--g-seed)"/></svg>';
+const GSPROUT='<svg class="gspr" viewBox="0 0 40 40" aria-hidden="true"><path d="M4 39c4-6 28-6 32 0z" fill="var(--g-mound)"/><path d="M20 37V21" stroke="var(--g-stem)" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M20 25c-1-6-6-9-11-8 0 5 4 9 11 8z" fill="var(--g-leaf)"/><path d="M20 22c1-6 6-9 11-8 0 5-4 9-11 8z" fill="var(--g-leaf2)"/></svg>';
+const GSTEM='<svg class="gstem" viewBox="0 0 40 46" aria-hidden="true"><path d="M4 45c4-6 28-6 32 0z" fill="var(--g-mound)"/><path d="M20 43V14" stroke="var(--g-stem)" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M20 34c-2-6-7-8-12-7 1 5 5 8 12 7z" fill="var(--g-leaf)"/><path d="M20 28c2-6 7-8 12-7-1 5-5 8-12 7z" fill="var(--g-leaf2)"/></svg>';
+const GTREE='<svg class="gtree" viewBox="0 0 40 46" aria-hidden="true"><path d="M4 45c4-6 28-6 32 0z" fill="var(--g-mound)"/><path d="M20 43V26" stroke="var(--g-trunk)" stroke-width="4.2" stroke-linecap="round"/><circle cx="20" cy="17" r="15" fill="var(--g-crown)"/><circle cx="13.5" cy="12" r="5.5" fill="var(--g-leaf2)" opacity=".45"/></svg>';
+const COINI='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="#E9B23A"/><circle cx="12" cy="12" r="6.5" fill="#F6CB5A"/><path d="M12 8.5v7" stroke="#B9831C" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const BASKI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10h17l-1.7 8.6a2 2 0 0 1-2 1.6H7.2a2 2 0 0 1-2-1.6z"/><path d="M8 10l3-5.5M16 10l-3-5.5M9 14v3M12 14v3M15 14v3"/></svg>';
+const gCanSvg=wf=>{const h=Math.round(18*Math.max(0,Math.min(1,wf))*10)/10;return `<svg viewBox="0 0 48 40" aria-hidden="true"><path d="M30 16l13-8 2 3-12 10" fill="none" stroke="var(--g-can)" stroke-width="3" stroke-linejoin="round"/><path d="M13 12a6 5 0 0 1 12 0" fill="none" stroke="var(--g-can)" stroke-width="3"/><rect x="6" y="12" width="26" height="24" rx="5" fill="var(--g-can)"/><rect x="9" y="15" width="20" height="18" rx="3" fill="var(--g-canin)"/>${h?`<rect x="9" y="${33-h}" width="20" height="${h}" rx="3" fill="var(--water)"/>`:''}</svg>`};
+
+function plantKinds(id){const f=FM[id],pk=q=>PLANTS[q]||(FM[q]&&FM[q].pk?[FM[q].pk]:[]);
+ if(PLANTS[id])return PLANTS[id];if(f&&f.pk)return [f.pk];
+ if(f&&f.ing)return f.ing.filter(x=>x[1]>=2&&FM[x[0]]&&FM[x[0]].cat!=='Oils and other').flatMap(([q])=>pk(q));
+ if(f&&f.parts)return f.parts.flatMap(p=>pk(p[0]));
+ if(String(id).startsWith('c_'))return [f?f.n.toLowerCase():id];return []}
+/* one representative food per kind gives its bed, icon and tier; tiers are thirds of a nutrient score, ranked once per session */
+let KI=null;
+function kindMap(){if(KI)return KI;const best={},T=targets();
+ F.forEach(f=>{let ks=[];try{ks=plantKinds(f.id)}catch(e){}const nm=f.n.toLowerCase();ks.forEach(k=>{const q=(f.hide?16:0)+(f.src==='usda'?4:0)+(nm.startsWith(k.split(' ')[0])?0:nm.includes(k.split(' ')[0])?1:2)*(ks.length===1?1:2)+(f.cat==='My foods'?8:0);if(!best[k]||q<best[k].q)best[k]={f,q}})});
+ const L=Object.keys(best).map(k=>{const f=best[k].f,v=itemV([f.id,f.por||100]);let sc=0;ALLK.forEach(n=>{const t=T[n];if(t>0)sc+=Math.min((v[K.indexOf(n)]||0)/t,.5)});return {k,f,sc}}).sort((a,b)=>a.sc-b.sc||a.k.localeCompare(b.k));
+ KI={};L.forEach((x,i)=>{const tier=1+Math.min(2,Math.floor(i*3/L.length)),f=x.f;KI[x.k]={k:x.k,bed:f.cat==='Fruit'?'f':f.cat==='Vegetables'?'v':'c',icon:fIcon(f.id)||GSPR,tier,need:GCFG.need[tier],price:GCFG.price[tier],name:kName(x.k),id:f.id,sc:x.sc}});return KI}
+const kName=k=>k.charAt(0).toUpperCase()+k.slice(1);
+function kindInfo(k){return kindMap()[k]||{k,bed:'c',icon:GSPR,tier:1,need:GCFG.need[1],price:GCFG.price[1],name:kName(k),id:null,sc:0}}
+
+/* create or repair the garden; a first run sows what was eaten in the last 7 days */
+function gInit(){let g=S.garden;const fresh=!g||typeof g!=='object'||Array.isArray(g);if(fresh)g=S.garden={};
+ const D={v:1,on:1,water:null,coins:0,plants:[],tray:[],bag:{},bagT:{},tick:TODAY,seen:{},wk:null,gift:0,album:[],orders:null,decor:{own:[],spot:[null,null,null,null,null,null],bg:'meadow',bgs:['meadow']},fruit:null,chest:null,badges:[],ever:[],stat:{harv:0}};
+ Object.keys(D).forEach(k=>{if(g[k]===undefined)g[k]=D[k]});
+ ['plants','tray','album','badges','ever'].forEach(k=>{if(!Array.isArray(g[k]))g[k]=[]});['bag','bagT','seen','stat'].forEach(k=>{if(!g[k]||typeof g[k]!=='object'||Array.isArray(g[k]))g[k]=k==='stat'?{harv:0}:{}});
+ if(!(+g.coins>=0))g.coins=0;g.plants=g.plants.filter(p=>p&&p.k&&GBEDS.some(b=>b[0]===p.b));
+ GBEDS.forEach(([b])=>{const used=new Set();g.plants.filter(p=>p.b===b).forEach(p=>{if(!(p.pos>=0&&p.pos<GCFG.plots)||used.has(p.pos))p.pos=-1;else used.add(p.pos)});
+  g.plants.filter(p=>p.b===b&&p.pos<0).forEach(p=>{const i=[...Array(GCFG.plots).keys()].find(x=>!used.has(x));if(i===undefined){g.tray.push({k:p.k,b,s:p.s||TODAY});p.gone=1}else{p.pos=i;used.add(i)}})});
+ g.plants=g.plants.filter(p=>!p.gone);
+ if(fresh)gSeed()}
+function gSeed(){const g=S.garden,first={},o=PROJ;PROJ=false;try{
+ for(let i=GCFG.seenDays-1;i>=0;i--){const d=shift(TODAY,-i),ks=[...plantSet([d])];if(ks.length)g.seen[d]=ks.slice();ks.forEach(k=>{if(!first[k])first[k]=d})}
+ Object.keys(first).map(k=>{const I=kindInfo(k);return {k,b:I.bed,d:first[k],gp:Math.min(I.need,dayDiff(first[k],TODAY)),need:I.need,tier:I.tier,s:first[k]}}).sort((a,b)=>b.gp-a.gp||a.k.localeCompare(b.k))
+  .forEach(p=>{const pos=gFreePos(p.b);if(pos<0)g.tray.push({k:p.k,b:p.b,s:p.s});else{p.pos=pos;g.plants.push(p)}});g.tick=TODAY}finally{PROJ=o}}
+function gFreePos(b){const used=new Set(S.garden.plants.filter(p=>p.b===b).map(p=>p.pos));for(let i=0;i<GCFG.plots;i++)if(!used.has(i))return i;return -1}
+function gSow(k,s){const g=S.garden,I=kindInfo(k),pos=gFreePos(I.bed);if(pos<0)g.tray.push({k,b:I.bed,s});else g.plants.push({k,b:I.bed,d:TODAY,gp:0,need:I.need,tier:I.tier,s,pos})}
+/* a freed plot takes the oldest seed waiting for that bed */
+function gRefill(){const g=S.garden;for(let i=0;i<g.tray.length;){const t=g.tray[i],pos=gFreePos(t.b);if(pos>=0){g.tray.splice(i,1);const I=kindInfo(t.k);g.plants.push({k:t.k,b:t.b,d:TODAY,gp:0,need:I.need,tier:I.tier,s:t.s,pos})}else i++}}
+const gMode=()=>!WON()?'auto':S.garden.water==='auto'?'auto':'bottle';
+const gWaterOn=d=>{const p=S.days[d];return p?Math.min(1,wTotal(p)/wTarget()):0};
+const gGrowth=x=>gMode()==='auto'?1:gWaterOn(x);
+/* growth for every finished day since the last tick, at most 14 days back; a tick in the future applies nothing */
+function gardenTick(){const g=S.garden;if(g.tick===TODAY)return;if(!g.tick||g.tick>TODAY){g.tick=TODAY;return}const o=PROJ;PROJ=false;try{
+ let x=g.tick;const from=shift(TODAY,-GCFG.maxTickDays);if(x<from)x=from;
+ for(;x<TODAY;x=shift(x,1)){const gr=gGrowth(x);if(gr>0)g.plants.forEach(p=>{if(p.d<=x)p.gp=Math.min(p.need,Math.round((p.gp+gr)*1000)/1000)})}
+ g.tick=TODAY}finally{PROJ=o}}
+/* sowing: a kind eaten in the last 7 days is credited once per day; it sows a seed when none of its kind grows or waits */
+function gardenSync(){const g=S.garden,o=PROJ;PROJ=false;try{
+ for(let i=GCFG.seenDays-1;i>=0;i--){const d=shift(TODAY,-i),ks=[...plantSet([d])];let sn=g.seen[d];
+  if(!i&&sn)sn.slice().forEach(k=>{if(ks.includes(k))return;sn.splice(sn.indexOf(k),1);
+   const pi=g.plants.findIndex(p=>p.k===k&&p.s===TODAY&&p.d===TODAY&&!(p.gp>0));if(pi>=0){g.plants.splice(pi,1);gRefill()}else{const ti=g.tray.findIndex(t=>t.k===k&&t.s===TODAY);if(ti>=0)g.tray.splice(ti,1)}});
+  ks.forEach(k=>{sn=g.seen[d]||(g.seen[d]=[]);if(sn.includes(k))return;sn.push(k);if(g.plants.some(p=>p.k===k)||g.tray.some(t=>t.k===k))return;gSow(k,d)});
+  if(sn&&!sn.length)delete g.seen[d]}
+ Object.keys(g.seen).forEach(d=>{if(d>TODAY||dayDiff(d,TODAY)>8)delete g.seen[d]})}finally{PROJ=o}}
+/* what a plant shows: stored growth plus today's water in bottle mode */
+function gProgress(p){const pr=p.gp+(gMode()==='bottle'&&p.d<=TODAY?gWaterOn(TODAY):0);return Math.min(p.need,pr)}
+const gReady=p=>gProgress(p)>=p.need-1e-6;
+const gStage=p=>{const pr=gProgress(p);return pr>=p.need-1e-6?3:pr<=0?0:pr<p.need/2?1:2};
+function gHarvest(i){const g=S.garden,p=g.plants[i];if(!p||!gReady(p))return 0;g.plants.splice(i,1);g.bag[p.k]=(g.bag[p.k]||0)+1;if(!g.bagT[p.k])g.bagT[p.k]=TODAY;
+ g.stat.harv=(g.stat.harv||0)+1;if(!g.ever.includes(p.k))g.ever.push(p.k);gRefill();return 1}
+function gHarvestAll(){let n=0;for(let i=S.garden.plants.length-1;i>=0;i--)n+=gHarvest(i);return n}
+/* the basket sells at the base price; what open orders ask for stays */
+function gKeep(){const g=S.garden,o={};if(g.orders&&g.orders.d===TODAY)(g.orders.list||[]).forEach(x=>{if(!x.done&&x.k&&x.k.indexOf('any')!==0)o[x.k]=(o[x.k]||0)+x.n});return o}
+function gSellRest(){const g=S.garden,keep=gKeep();let c=0;Object.keys(g.bag).forEach(k=>{const n=Math.max(0,g.bag[k]-(keep[k]||0));if(!n)return;c+=n*kindInfo(k).price;g.bag[k]-=n;if(!g.bag[k]){delete g.bag[k];delete g.bagT[k]}});g.coins+=c;return c}
+const gSellable=()=>{const g=S.garden,keep=gKeep();return Object.keys(g.bag).reduce((a,k)=>a+Math.max(0,g.bag[k]-(keep[k]||0))*kindInfo(k).price,0)};
+const wkStart=d=>shift(d,-((kdate(d).getDay()+6)%7));
+function gWeekN(){const ds=[];for(let d=wkStart(TODAY);d<=TODAY;d=shift(d,1))ds.push(d);const o=PROJ;PROJ=false;try{return plantSet(ds).size}finally{PROJ=o}}
+function loggedDays(n){const o=PROJ;PROJ=false;try{let c=0;for(let i=0;i<n;i++){const p=S.days[shift(TODAY,-i)];if(p&&eatK(p).some(k=>p[k].it.some(x=>x[1]>0)))c++}return c}finally{PROJ=o}}
+
+/* Today: one strip under the main card */
+let GSTRIP=null;
+function gardenStrip(){if(!GON()||S.date!==TODAY||!S.garden)return '';const g=S.garden,o=PROJ;PROJ=false;try{
+ const R=g.plants.filter(gReady),rest=g.plants.filter(p=>!gReady(p)).sort((a,b)=>gProgress(b)/b.need-gProgress(a)/a.need),L=[...R,...rest].slice(0,6),wk=gWeekN(),w=wTotal(S.days[TODAY]||{});
+ const prev=GSTRIP;GSTRIP={k:new Set(g.plants.map(p=>p.k)),w};const st=GSTILL(),pop=k=>!st&&prev&&!prev.k.has(k),shower=!st&&prev&&w>prev.w&&gMode()==='bottle';
+ const wl=wk?wk+(wk===1?' plant':' plants')+' this week':'',line=[R.length?R.length+' ready':'',wl].filter(Boolean).join(' · ')||'Eat a plant to sow a seed';
+ return `<button class="card gstrip${shower?' shower':''}" type="button" id="go-garden" aria-label="Garden: ${line}"><span class="gsic">${L.map(p=>`<span class="gsi ${gReady(p)?'rd':'gr'}${pop(p.k)?' pop':''}">${kindInfo(p.k).icon}</span>`).join('')||`<span class="gsi">${GSPROUT}</span>`}</span><span class="gstx">${R.length?`<b>${R.length} ready</b>${wl?`<span class="cap">${wl}</span>`:''}`:`<b>${wl||'Eat a plant to sow a seed'}</b>`}</span>${CHEV}${shower?'<span class="gshow" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i><i></i></span>':''}</button>`}finally{PROJ=o}}
+
+/* the garden screen: one dialog with the views main and basket */
+let G=null;const GST={};
+function openGarden(view){if(!GON())return;gInit();G={view:view||'main',sel:null};const d=$('garden');renderGarden();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('gd-body').scrollTop=0}
+function closeGarden(){G=null;const d=$('garden');d.close?d.close():d.removeAttribute('open');render()}
+$('garden').addEventListener('close',()=>{if(G&&!$('garden').open){G=null;render()}});
+$('garden').addEventListener('click',e=>{if(e.target===$('garden'))closeGarden()});
+function gView(v){G.view=v;G.sel=null;renderGarden();$('gd-body').scrollTop=0}
+function renderGarden(){if(!G||!S.garden)return;const o=PROJ;PROJ=false;try{renderGarden0()}finally{PROJ=o}}
+function gEta(p){const left=p.need-gProgress(p);if(gMode()==='auto'){const n=Math.ceil(left-1e-6);return n<=1?'Ready tomorrow':`Ready in about ${n} days`}
+ const wf=gWaterOn(TODAY);if(left<=1-wf+1e-6)return 'Ready with more water today';if(wf<=0)return 'Needs water';const n=Math.ceil(left-(1-wf)-1e-6);return n<=1?'Ready tomorrow':`Ready in about ${n} days`}
+function gPlot(p){const st=gStage(p),I=kindInfo(p.k),orch=p.b==='f',pop=!GSTILL()&&GST[p.k]!==undefined&&GST[p.k]<st;GST[p.k]=st;
+ const pic=st===0?GMOUND:st===1?GSPROUT:`<span class="gpl${orch?' tree':''}">${orch?GTREE:GSTEM}<span class="gico">${I.icon}</span></span>`;
+ return `<button class="gplot st${st}${pop?' pop':''}${G.sel===p.k?' sel':''}" type="button" data-gp="${esc(p.k)}" aria-label="${esc(I.name)}${st===3?', ready to harvest':''}">${pic}${st===3?'<span class="gshine" aria-hidden="true"></span>':''}</button>`}
+function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduce((a,b)=>a+b,0);
+ $('gd-head').innerHTML=`<div class="row"><div class="adt">${v!=='main'?`<button class="adback" type="button" id="gd-back" aria-label="Back">${BACKI}</button>`:''}<h2>${v==='basket'?'Basket':'Garden'}</h2></div><div class="ghead"><span class="gcoins num" aria-label="${g.coins} coins">${COINI}<b id="gd-coins">${g.coins}</b></span>${v==='main'?`<button class="iconbtn gib" type="button" id="gd-bag" aria-label="Basket, ${nb} items">${BASKI}${nb?`<span class="gbn num">${nb}</span>`:''}</button>`:''}<button class="btn sm" type="button" id="gd-close">Close</button></div></div>`;
+ $('gd-close').onclick=closeGarden;if($('gd-back'))$('gd-back').onclick=()=>gView('main');if($('gd-bag'))$('gd-bag').onclick=()=>gView('basket');
+ const b=$('gd-body'),y=b.scrollTop;
+ if(v==='basket'){const ks=Object.keys(g.bag).filter(k=>g.bag[k]>0).sort((a,c)=>kindInfo(c).price-kindInfo(a).price||a.localeCompare(c)),sell=gSellable();
+  b.innerHTML=ks.length?`<div class="gbag">${ks.map(k=>{const I=kindInfo(k);return `<div class="gbr"><span class="thumb em">${I.icon}</span><b>${esc(I.name)}</b><span class="num gbx">× ${g.bag[k]}</span><span class="gprice num">${COINI}${I.price}</span></div>`}).join('')}</div>`+
+   (sell?`<button class="btn primary wide gsell" type="button" id="gd-sell">Sell the rest · ${sell} coin${sell>1?'s':''}</button>`:''):`<p class="gempty">Harvest a ready plant to fill it.</p>`;
+  if($('gd-sell'))$('gd-sell').onclick=()=>{const c0=g.coins,c=gSellRest();save();renderGarden();gCount(c0,g.coins);toast(`Sold for ${c} coin${c>1?'s':''}`)};b.scrollTop=y;return}
+ const R=g.plants.filter(gReady),wk=gWeekN(),ld=loggedDays(7),mode=gMode(),wf=gWaterOn(TODAY),sel=G.sel&&g.plants.find(p=>p.k===G.sel&&!gReady(p));
+ const drops=GSTILL()?'':Array.from({length:10},(_,i)=>`<i style="left:${6+i*9.4}%;animation-delay:${(i%4)*.07}s"></i>`).join('');
+ b.innerHTML=`<div class="gweek"><b class="num">${wk} plant${wk===1?'':'s'} this week</b><span class="cap num">${ld} of the last 7 days logged</span></div>
+  <div class="gscene bg-${esc(g.decor&&g.decor.bg||'meadow')}" id="gd-scene"><div class="gsky" aria-hidden="true"><span class="gsun"></span><span class="gcloud"></span><span class="gcloud c2"></span></div>
+   ${mode==='bottle'?`<button class="gcan" type="button" id="gd-can" aria-label="Log a glass of water, ${wL(wTotal(S.days[TODAY]||{}))} today"><span class="gcanw">${gCanSvg(wf)}</span><span class="num">${wL(wTotal(S.days[TODAY]||{}))}</span></button>`:''}
+   ${GBEDS.map(([bd,n])=>{const P=g.plants.filter(p=>p.b===bd);return `<div class="gbedw"><span class="gbl">${n}</span><div class="gbed">${Array.from({length:GCFG.plots},(_,pos)=>{const p=P.find(x=>x.pos===pos);return p?gPlot(p):'<span class="gplot empty" aria-hidden="true"></span>'}).join('')}</div></div>`}).join('')}
+   <div class="grain" aria-hidden="true">${drops}</div></div>
+  ${sel?`<p class="gtip" role="status"><b>${esc(kindInfo(sel.k).name)}</b> · ${gEta(sel)}</p>`:''}
+  ${R.length>=2?`<button class="btn primary wide" type="button" id="gd-all">Harvest all · ${R.length}</button>`:''}
+  ${g.tray.length?`<p class="cap gtray">${g.tray.length} seed${g.tray.length>1?'s':''} waiting</p>`:''}
+  ${!g.plants.length&&!g.tray.length?'<p class="gempty">Eat a plant to sow a seed</p>':''}
+  ${mode==='auto'&&g.plants.length?'<p class="cap gtray">Grows overnight</p>':''}`;
+ b.scrollTop=y;
+ b.querySelectorAll('[data-gp]').forEach(x=>tapBind(x,()=>{const k=x.dataset.gp,i=g.plants.findIndex(p=>p.k===k);if(i<0)return;
+  if(gReady(g.plants[i])){gHop(x);gHarvest(i);G.sel=null;save();renderGarden();render()}else{G.sel=G.sel===k?null:k;renderGarden()}}));
+ if($('gd-all'))$('gd-all').onclick=()=>{document.querySelectorAll('#gd-body .gplot.st3').forEach(gHop);const n=gHarvestAll();save();renderGarden();render();toast(`Harvested ${n}`)};
+ if($('gd-can'))$('gd-can').onclick=()=>{const p=S.days[TODAY]||(S.days[TODAY]=emptyPlan());p.wlog=p.wlog||[];p.w=(+p.w||0)+250;p.wlog.push(250);p.wt=Date.now();save();render();gRain()}}
+/* motion: off under still and reduced motion */
+function gHop(btn){if(GSTILL())return;const ic=btn.querySelector('.gico'),bag=$('gd-bag');if(!ic||!bag||!ic.animate)return;const a=ic.getBoundingClientRect(),t=bag.getBoundingClientRect(),c=ic.cloneNode(true);
+ c.className='ghop';Object.assign(c.style,{left:a.left+'px',top:a.top+'px',width:a.width+'px',height:a.height+'px'});$('garden').appendChild(c);
+ c.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${(t.left+t.width/2-a.left-a.width/2)*.5}px,${t.top-a.top-60}px) scale(.9)`,opacity:1,offset:.5},{transform:`translate(${t.left+t.width/2-a.left-a.width/2}px,${t.top+t.height/2-a.top-a.height/2}px) scale(.4)`,opacity:.6}],{duration:350,easing:'ease-in'}).onfinish=()=>c.remove()}
+function gRain(){if(GSTILL())return;const s=$('gd-scene');if(!s)return;s.classList.remove('rain');void s.offsetWidth;s.classList.add('rain');setTimeout(()=>s&&s.classList.remove('rain'),800)}
+function gCount(a,b){const el=$('gd-coins');if(!el||GSTILL()||a===b){if(el)el.textContent=b;return}const t0=performance.now(),d=400;const f=t=>{const k=Math.min(1,(t-t0)/d);if(!$('gd-coins'))return;$('gd-coins').textContent=Math.round(a+(b-a)*k);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
+
 /* ---------- pantry: what you have at home ----------
    S.pantry = {id:{g, d, u0, top}}: g grams stocked on day d, u0 grams of it already eaten that day, top the last full amount.
    What is left follows your logged meals from then on (planned, skipped and eaten out meals do not count), so editing a meal corrects the stock.
@@ -3336,7 +3557,7 @@ function psSum(k){const P=S.prof,T=targets();
  if(k==='targets')return `${{efsa:'EFSA',dge:'DGE',nih:'NIH'}[P.ref||'efsa']} reference values${HK()?'':' · '+EN(T.kcal)}`;
  if(k==='sup'){const L=(S.sups||[]).filter(x=>sCurrent(x)&&!(x.end&&x.end<=TODAY)).map(sName);return L.length?L.join(', '):'None yet'}
  if(k==='dis'){const n=DL().filter(id=>FM[id]).length;return n?n+' food'+(n>1?'s':''):'None'}
- if(k==='track'){const L=[WON()&&'Water bottle',WLON()&&'Weight log'].filter(Boolean);return L.length?L.join(', '):'Off'}
+ if(k==='track'){const L=[WON()&&'Water bottle',WLON()&&'Weight log',GON()&&'Garden'].filter(Boolean);return L.length?L.join(', '):'Off'}
  if(k==='look')return `${{auto:'Automatic',light:'Light',dark:'Dark'}[P.mode||'auto']} · ${(ACC.find(a=>a[0]===(P.acc||'green'))||ACC[0])[1]}`;
  return 'Save or restore your data, run setup again'}
 function renderProfileView(){
@@ -3357,7 +3578,7 @@ function renderProfileView(){
    :'<p class="cap">No supplements yet. Add one in Supplements on Today.</p>';
   if($('p-remt'))$('p-remt').onchange=e=>{if(/^\d\d:\d\d$/.test(e.target.value))S.prof.remt=e.target.value;save()};
   $('p-rem').querySelectorAll('[data-prem]').forEach(b=>b.onclick=()=>{const x=S.sups.find(y=>y.id===b.dataset.prem);if(x)addReminder(x,S.prof.remt||'09:00')})}
- const T=targets(),sv=supV();$('p-hk').checked=!HK();$('p-water').checked=WON();$('p-wlog').checked=WLON();$('p-btl-row').hidden=!WON();if(document.activeElement!==$('p-btl'))$('p-btl').value=BTL();document.querySelectorAll('[data-kc]').forEach(el=>el.hidden=HK());renderDislikes();
+ const T=targets(),sv=supV();$('p-hk').checked=!HK();$('p-water').checked=WON();$('p-garden').checked=GON();$('p-gwater').hidden=!(GON()&&WON()&&S.garden);if(S.garden)document.querySelectorAll('#p-gw [data-gw]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.gw===gMode()));$('p-wlog').checked=WLON();$('p-btl-row').hidden=!WON();if(document.activeElement!==$('p-btl'))$('p-btl').value=BTL();document.querySelectorAll('[data-kc]').forEach(el=>el.hidden=HK());renderDislikes();
  Object.entries(PF).forEach(([k,id])=>{const el=$(id);if(document.activeElement!==el)el.value=S.prof[k]});
  $('prof-targets').innerHTML=withAct(S.prof.act,()=>targetBoxes(targets()));
  $('prof-sup').innerHTML=supRows('sup-');bindSup($('prof-sup'));
@@ -3458,6 +3679,8 @@ function renderOnb(){
 }
 $('p-hk').onchange=e=>{S.prof.hidekcal=e.target.checked?'0':'1';render()};
 $('p-wlog').onchange=e=>{S.prof.wlog=e.target.checked?'1':'0';if(WLON()){S.weights=S.weights||{};if(!wDates().length)S.weights[TODAY]=Math.round((+S.prof.wt||70)*10)/10}render()};
+$('p-garden').onchange=e=>{gInit();S.garden.on=e.target.checked?1:0;render()};
+document.querySelectorAll('#p-gw [data-gw]').forEach(b=>b.onclick=()=>{gInit();S.garden.water=b.dataset.gw;render()});
 $('p-water').onchange=e=>{S.prof.water=e.target.checked?'1':'0';if(!S.prof.btl)S.prof.btl=750;render()};
 $('p-btl').onchange=e=>{const v=parseInt(e.target.value);S.prof.btl=v>=100&&v<=3000?v:750;render()};
 function backupJSON(){return JSON.stringify(Object.assign({app:'vegful',v:1,saved:new Date().toISOString()},JSON.parse(localStorage.getItem('vpc2')||JSON.stringify(S,function(k,v){return this===S&&k==='plan'?undefined:v}))))}
@@ -3960,6 +4183,7 @@ function render0(){
  const v0=S.view;
  if(S.plan)mealKeys(S.plan).forEach(k=>{if(k.length>1&&!S.plan[k].it.length&&k!==MS&&!($('pk').open&&PK&&PK.slot===k))delete S.plan[k]});
  if(S.plan){normPlan(S.plan);rebuildSlots()}
+ if(GON()){gInit();gardenTick();gardenSync()}else if($('garden').open){G=null;$('garden').close()}
  const fid=document.activeElement&&document.activeElement.id;
  if(S.view==='ideas'){S.view='nutr';S.nsub='imp'}
  if(!['today','nutr','scan','lib','profile'].includes(S.view))S.view='today';
@@ -3978,6 +4202,7 @@ function render0(){
  if($('meal').open)renderMeal();
  if($('pk').open)renderPicker();
  if($('add').open)renderAdd();
+ if($('garden').open)renderGarden();
  if($('food').open)renderFood();if($('gran').open)renderGran();
  if($('sheet').open)renderDetail(T,$('sheet-body'));
  try{shopBadge()}catch(e){}
