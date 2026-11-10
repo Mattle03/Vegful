@@ -746,9 +746,9 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 @media (prefers-reduced-motion:reduce){.adgrp .adm .chev{transition:none}}
 
 /* garden */
-:root{--g-sky:#DCEEF6;--g-sky2:#EAF5E2;--g-grass:#C9E4B4;--g-grass2:#B7D99E;--g-soil:#9C7354;--g-soilin:#8A6347;--g-plot:#7E5A40;--g-mound:#6E4E37;--g-seed:#E7D2A8;--g-stem:#4E8F45;--g-leaf:#6DBB63;--g-leaf2:#4E9E4A;--g-trunk:#7D5A3E;--g-crown:#78C06C;--g-label:#2F4A2E;--g-sun:#F7D26A;--g-cloud:#FFFFFF;--g-can:#6F8FA6;--g-canin:#3E5568}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--g-sky:#1E2C38;--g-sky2:#22342B;--g-grass:#2A4430;--g-grass2:#23392A;--g-soil:#5A4131;--g-soilin:#4C3728;--g-plot:#433023;--g-mound:#6B4E39;--g-seed:#C9B48C;--g-stem:#6FB565;--g-leaf:#7CC873;--g-leaf2:#5AAA55;--g-trunk:#8A6849;--g-crown:#4F9A55;--g-label:#CFE3CC;--g-sun:#E9D7A0;--g-cloud:#3A4A57;--g-can:#7D9AB0;--g-canin:#2C3C49}}
-:root[data-theme="dark"]{--g-sky:#1E2C38;--g-sky2:#22342B;--g-grass:#2A4430;--g-grass2:#23392A;--g-soil:#5A4131;--g-soilin:#4C3728;--g-plot:#433023;--g-mound:#6B4E39;--g-seed:#C9B48C;--g-stem:#6FB565;--g-leaf:#7CC873;--g-leaf2:#5AAA55;--g-trunk:#8A6849;--g-crown:#4F9A55;--g-label:#CFE3CC;--g-sun:#E9D7A0;--g-cloud:#3A4A57;--g-can:#7D9AB0;--g-canin:#2C3C49}
+:root{--g-sky:#DCEEF6;--g-sky2:#EAF5E2;--g-grass:#C9E4B4;--g-grass2:#B7D99E;--g-soil:#9C7354;--g-soilin:#8A6347;--g-plot:#7E5A40;--g-mound:#6E4E37;--g-seed:#E7D2A8;--g-stem:#4E8F45;--g-leaf:#6DBB63;--g-leaf2:#4E9E4A;--g-trunk:#7D5A3E;--g-crown:#78C06C;--g-label:#2F4A2E;--g-sun:#F7D26A;--g-cloud:#FFFFFF;--g-can:#6F8FA6;--g-canin:#3E5568;--g-side1:#7A5638;--g-side2:#644530;--g-rim:#B48A66;--g-furrow:rgba(60,38,22,.28);--g-gtop:#9ED07F;--g-gside1:#6E5136;--g-gside2:#5B422C;--g-grim:#B9E09C;--g-tuft:#8CC56E;--g-hill:#B3D99A;--g-board:#A8743F;--g-boardd:#7C5329}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--g-sky:#1E2C38;--g-sky2:#22342B;--g-grass:#2A4430;--g-grass2:#23392A;--g-soil:#5A4131;--g-soilin:#4C3728;--g-plot:#433023;--g-mound:#6B4E39;--g-seed:#C9B48C;--g-stem:#6FB565;--g-leaf:#7CC873;--g-leaf2:#5AAA55;--g-trunk:#8A6849;--g-crown:#4F9A55;--g-label:#CFE3CC;--g-sun:#E9D7A0;--g-cloud:#3A4A57;--g-can:#7D9AB0;--g-canin:#2C3C49;--g-side1:#3F2D21;--g-side2:#33241A;--g-rim:#6E5240;--g-furrow:rgba(0,0,0,.3);--g-gtop:#3E6B3F;--g-gside1:#3F2D21;--g-gside2:#33241A;--g-grim:#4E7F4C;--g-tuft:#477A45;--g-hill:#2F4D35;--g-board:#8A5E33;--g-boardd:#5E3F22}}
+:root[data-theme="dark"]{--g-sky:#1E2C38;--g-sky2:#22342B;--g-grass:#2A4430;--g-grass2:#23392A;--g-soil:#5A4131;--g-soilin:#4C3728;--g-plot:#433023;--g-mound:#6B4E39;--g-seed:#C9B48C;--g-stem:#6FB565;--g-leaf:#7CC873;--g-leaf2:#5AAA55;--g-trunk:#8A6849;--g-crown:#4F9A55;--g-label:#CFE3CC;--g-sun:#E9D7A0;--g-cloud:#3A4A57;--g-can:#7D9AB0;--g-canin:#2C3C49;--g-side1:#3F2D21;--g-side2:#33241A;--g-rim:#6E5240;--g-furrow:rgba(0,0,0,.3);--g-gtop:#3E6B3F;--g-gside1:#3F2D21;--g-gside2:#33241A;--g-grim:#4E7F4C;--g-tuft:#477A45;--g-hill:#2F4D35;--g-board:#8A5E33;--g-boardd:#5E3F22}
 .gstrip{display:flex;align-items:center;gap:12px;width:100%;min-height:64px;padding:10px 14px;border:0;font:inherit;color:var(--ink);text-align:left;position:relative;overflow:hidden;background:linear-gradient(90deg,color-mix(in srgb,var(--g-grass) 55%,var(--surface)) 0%,var(--surface) 75%)}
 .gstrip .gsic{display:flex;gap:2px;flex:none}
 .gsi{width:28px;height:28px;display:grid;place-items:center;border-radius:50%}
@@ -778,7 +778,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .gbn{position:absolute;top:-4px;right:-4px;min-width:20px;height:20px;border-radius:10px;background:var(--accent);color:var(--accent-ink);font-size:11px;font-weight:800;display:grid;place-items:center;padding:0 5px;box-sizing:border-box}
 .gweek{display:flex;justify-content:space-between;align-items:baseline;gap:10px;flex-wrap:wrap;margin:6px 4px 10px}
 .gweek b{font-size:16px}
-.gscene{position:relative;border-radius:22px;overflow:hidden;padding:64px 10px 12px;background:linear-gradient(var(--g-sky) 0,var(--g-sky2) 54px,var(--g-grass) 74px,var(--g-grass2) 100%);display:flex;flex-direction:column;gap:10px}
+.gscene{position:relative;border-radius:22px;overflow:hidden;padding:70px 8px 18px;touch-action:pan-y;user-select:none;-webkit-user-select:none;background:linear-gradient(var(--g-sky) 0,var(--g-sky2) 54px,var(--g-grass) 74px,var(--g-grass2) 100%);display:block}
 .gsky{position:absolute;left:0;right:0;top:0;height:70px;pointer-events:none}
 .gsun{position:absolute;left:18px;top:14px;width:30px;height:30px;border-radius:50%;background:var(--g-sun);box-shadow:0 0 0 7px color-mix(in srgb,var(--g-sun) 30%,transparent)}
 .gcloud{position:absolute;left:38%;top:16px;width:46px;height:14px;border-radius:10px;background:var(--g-cloud);opacity:.9}
@@ -786,30 +786,51 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .gcloud.c2{left:62%;top:30px;width:34px;height:11px;opacity:.7}
 .gcan{position:absolute;right:10px;top:8px;display:flex;align-items:center;gap:6px;min-height:46px;padding:4px 10px 4px 6px;border:0;border-radius:14px;background:color-mix(in srgb,var(--surface) 75%,transparent);color:var(--ink);font:inherit;font-weight:800;font-size:13px}
 .gcanw svg{width:40px;height:34px;display:block}
-.gbedw{display:flex;flex-direction:column;gap:3px}
-.gbl{font-size:12px;font-weight:800;color:var(--g-label);margin-left:6px;letter-spacing:.02em}
-.gbed{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;background:var(--g-soil);border-radius:16px;padding:6px;box-shadow:inset 0 -3px 0 rgba(0,0,0,.12)}
-.gplot{position:relative;height:66px;border-radius:12px;background:var(--g-soilin);border:0;padding:0;display:flex;align-items:flex-end;justify-content:center;overflow:visible;font:inherit;color:inherit;min-width:0}
-.gplot.empty{background:var(--g-plot);opacity:.55}
-.gplot.sel{box-shadow:0 0 0 2px var(--accent)}
-.gplot .gmound{width:62%;margin-bottom:6px}
-.gplot .gspr{width:38px;height:38px;margin-bottom:2px}
-.gpl{position:relative;width:46px;height:62px;display:block;transform-origin:50% 100%}
-.gpl .gstem,.gpl .gtree{position:absolute;left:3px;bottom:0;width:40px;height:46px}
-.gpl .gico{position:absolute;left:50%;top:2px;width:26px;height:26px;transform:translateX(-50%);filter:saturate(.4);opacity:.7}
-.gpl.tree .gico{top:12px;width:20px;height:20px}
+.ghills{position:absolute;left:0;right:0;top:40px;width:100%;height:34px;pointer-events:none}
+.gbedw{position:relative;width:76%;margin-top:-9%}
+.gbedw:first-of-type{margin-top:0}
+.gbedw.rt{margin-left:24%}
+.gbed{position:relative;width:100%;aspect-ratio:252/194}
+.gbsvg{position:absolute;inset:0;width:100%;height:100%;filter:drop-shadow(0 5px 4px rgba(0,0,0,.14))}
+.gsign{position:absolute;top:44%;display:flex;flex-direction:column;align-items:center;z-index:12;pointer-events:none}
+.gbedw.lt .gsign{left:102%}
+.gbedw.rt .gsign{right:102%}
+.gsign b{display:block;background:var(--g-board);color:#FFF6E6;font-size:11px;font-weight:800;padding:4px 7px;border-radius:6px;box-shadow:0 2px 0 var(--g-boardd);white-space:nowrap;max-width:80px;overflow:hidden;text-overflow:ellipsis}
+.gsign::after{content:"";width:4px;height:16px;background:var(--g-boardd);border-radius:2px}
+.gplot{position:absolute;width:25.4%;height:38%;border:0;padding:0;background:none;display:flex;align-items:flex-end;justify-content:center;font:inherit;color:inherit;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+.gplot.st3{touch-action:none}
+.gplot.sel .gpl,.gplot.sel .gspr,.gplot.sel .gmound{filter:drop-shadow(0 0 3px var(--accent)) drop-shadow(0 0 1px var(--accent))}
+.gplot .gmound{width:62%;margin-bottom:4%}
+.gplot .gspr{width:60%;height:auto}
+.gpl{position:relative;width:78%;height:100%;display:block;transform-origin:50% 100%}
+.gpl .gstem,.gpl .gtree{position:absolute;left:0;bottom:0;width:100%;height:76%}
+.gpl .gico{position:absolute;left:50%;top:6%;width:52%;aspect-ratio:1;transform:translateX(-50%);filter:saturate(.45);opacity:.72}
+.gpl.tree .gico{top:20%;width:40%}
 .gico svg,.gico img{width:100%;height:100%;display:block}
-.st3 .gpl .gico{top:-2px;width:36px;height:36px;filter:none;opacity:1}
-.st3 .gpl.tree .gico{top:4px;width:32px;height:32px}
-.gshine{position:absolute;inset:0;border-radius:12px;pointer-events:none;overflow:hidden}
-.gshine::after{content:"";position:absolute;top:0;bottom:0;left:-60%;width:40%;background:linear-gradient(100deg,transparent,rgba(255,255,255,.55),transparent);animation:gsweep 3.6s ease-in-out infinite}
-.st3{box-shadow:inset 0 0 0 2px color-mix(in srgb,var(--g-sun) 75%,transparent)}
-.st3 .gpl{animation:gbounce 3.6s ease-in-out infinite}
-.gbed .gplot:nth-child(3n+1).st2 .gpl,.gbed .gplot:nth-child(4n+2).st2 .gpl{animation:gsway 4.5s ease-in-out infinite}
-.gplot.pop>*:first-child{animation:gpop .5s ease}
-@keyframes gsweep{0%,55%{left:-60%}85%,100%{left:130%}}
-@keyframes gbounce{0%,80%,100%{transform:translateY(0)}86%{transform:translateY(-4px)}92%{transform:translateY(0)}}
+.st3 .gpl .gico{top:-2%;width:70%;filter:drop-shadow(0 2px 2px rgba(0,0,0,.25));opacity:1}
+.st3 .gpl.tree .gico{top:6%;width:62%}
+.gglow{position:absolute;left:50%;bottom:-4%;width:96%;height:34%;transform:translateX(-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,214,90,.85),rgba(255,214,90,.35) 60%,transparent);animation:gglow 1.8s ease-in-out infinite}
+.gspk{position:absolute;inset:0;pointer-events:none}
+.gspk i{position:absolute;width:15px;height:15px;background:#FFE27A;filter:drop-shadow(0 0 3px rgba(255,220,100,.9));clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);opacity:0;animation:gtw 1.9s ease-in-out infinite}
+.gspk i:nth-child(1){left:6%;top:12%}.gspk i:nth-child(2){right:4%;top:30%;animation-delay:.6s;width:11px;height:11px}.gspk i:nth-child(3){left:58%;top:-4%;animation-delay:1.2s;width:13px;height:13px}
+.st3 .gpl{animation:gbounce 2.4s ease-in-out infinite}
+.st3 .gpl .gico::after{content:none}
+.gplot.st3 .gpl .gico{overflow:hidden;border-radius:30%}
+.gbed .gplot:nth-of-type(3n+1).st2 .gpl,.gbed .gplot:nth-of-type(4n+2).st2 .gpl{animation:gsway 4.5s ease-in-out infinite}
+.gplot.pop>*{animation:gpop .5s ease}
+.gplot.reaped{pointer-events:none}
+.gplot.reaped>*{animation:greap .32s ease-in forwards}
+@keyframes greap{0%{transform:scale(1)}35%{transform:scale(1.22) translateY(-6%)}100%{transform:scale(0) translateY(20%);opacity:0}}
+@keyframes gglow{0%,100%{opacity:.65;transform:translateX(-50%) scale(.92)}50%{opacity:1;transform:translateX(-50%) scale(1.06)}}
+@keyframes gtw{0%,100%{opacity:0;transform:scale(.3) rotate(0deg)}45%{opacity:1;transform:scale(1) rotate(45deg)}70%{opacity:0;transform:scale(.4) rotate(90deg)}}
+@keyframes gbounce{0%,70%,100%{transform:translateY(0) scale(1)}78%{transform:translateY(-7%) scale(1.04,.97)}86%{transform:translateY(0) scale(.97,1.03)}93%{transform:translateY(-2%)}}
 @keyframes gsway{0%,100%{transform:rotate(-2.5deg)}50%{transform:rotate(2.5deg)}}
+.gpart{position:fixed;width:9px;height:6px;border-radius:50% 50% 50% 0;z-index:10;pointer-events:none}
+.gpart.spark{width:8px;height:8px;border-radius:0;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%)}
+.gplus1{position:fixed;z-index:11;font-weight:800;font-size:13px;color:var(--accent);pointer-events:none}
+#gd-sickle{position:fixed;left:0;top:0;width:44px;height:44px;z-index:12;pointer-events:none;animation:gswing .35s ease-in-out infinite alternate}
+#gd-sickle svg{width:100%;height:100%}
+@keyframes gswing{from{rotate:-14deg}to{rotate:16deg}}
 .grain{position:absolute;inset:0;pointer-events:none}
 .gscene.rain .grain i{animation:gdrop2 .6s ease-in 1 both}
 @keyframes gdrop2{0%{transform:translateY(0);opacity:0}15%{opacity:.85}100%{transform:translateY(420px);opacity:0}}
@@ -827,7 +848,7 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .gprice{display:inline-flex;align-items:center;gap:3px;font-weight:800;min-width:44px;justify-content:flex-end}
 .gprice svg{width:16px;height:16px}
 .gsell{margin-top:14px}
-html.still .gstrip *,html.still #garden *,html.still #garden *::after,html.still #garden *::before{animation:none!important;transition:none!important}
+html.still .gstrip *,html.still #garden *,html.still #garden *::after,html.still #garden *::before,html.still .gpart,html.still #garden *::after,html.still #garden *::before{animation:none!important;transition:none!important}
 @media (prefers-reduced-motion:reduce){.gstrip *,#garden *,#garden *::after,#garden *::before{animation:none!important;transition:none!important}}
 </style>
 </head>
@@ -3206,9 +3227,15 @@ function gView(v){G.view=v;G.sel=null;renderGarden();$('gd-body').scrollTop=0}
 function renderGarden(){if(!G||!S.garden)return;const o=PROJ;PROJ=false;try{renderGarden0()}finally{PROJ=o}}
 function gEta(p){const left=p.need-gProgress(p);if(gMode()==='auto'){const n=Math.ceil(left-1e-6);return n<=1?'Ready tomorrow':`Ready in about ${n} days`}
  const wf=gWaterOn(TODAY);if(left<=1-wf+1e-6)return 'Ready with more water today';if(wf<=0)return 'Needs water';const n=Math.ceil(left-(1-wf)-1e-6);return n<=1?'Ready tomorrow':`Ready in about ${n} days`}
-function gPlot(p){const st=gStage(p),I=kindInfo(p.k),orch=p.b==='f',pop=!GSTILL()&&GST[p.k]!==undefined&&GST[p.k]<st;GST[p.k]=st;
+/* 2.5D beds: 4 by 2 tiles in isometric view; a bed box is 252 by 194 design units, everything placed in percent so it scales */
+const ISO={w:252,h:194,tw:84,th:42,ox:84,oy:77,dep:12};
+const isoC=pos=>{const c=pos%4,r=Math.floor(pos/4);return {c,r,x:ISO.ox+(c-r)*ISO.tw/2,y:ISO.oy+(c+r)*ISO.th/2}};
+function isoBed(b){const t=[84,56],R=[252,140],B=[168,182],L=[0,98],d=ISO.dep,P=a=>a.map(x=>x.join(',')).join(' '),f=b==='f';
+ const tiles=Array.from({length:8},(_,i)=>{const {x,y}=isoC(i),k=.84;return f?`<ellipse cx="${x}" cy="${y}" rx="${30}" ry="${14}" fill="var(--g-tuft)"/>`:`<polygon points="${P([[x,y-21*k],[x+42*k,y],[x,y+21*k],[x-42*k,y]])}" fill="var(--g-soilin)"/><path d="M${x-22} ${y+2}l22 -11M${x-10} ${y+8}l22 -11" stroke="var(--g-furrow)" stroke-width="2" stroke-linecap="round"/>`}).join('');
+ return `<svg class="gbsvg" viewBox="0 0 252 194" aria-hidden="true" preserveAspectRatio="none"><polygon points="${P([L,B,[B[0],B[1]+d],[L[0],L[1]+d]])}" fill="var(${f?'--g-gside1':'--g-side1'})"/><polygon points="${P([B,R,[R[0],R[1]+d],[B[0],B[1]+d]])}" fill="var(${f?'--g-gside2':'--g-side2'})"/><polygon points="${P([t,R,B,L])}" fill="var(${f?'--g-gtop':'--g-soil'})" stroke="var(${f?'--g-grim':'--g-rim'})" stroke-width="2.5" stroke-linejoin="round"/>${tiles}</svg>`}
+function gPlot(p){const st=gStage(p),I=kindInfo(p.k),orch=p.b==='f',pop=!GSTILL()&&GST[p.k]!==undefined&&GST[p.k]<st;GST[p.k]=st;const {c,r,x,y}=isoC(p.pos);
  const pic=st===0?GMOUND:st===1?GSPROUT:`<span class="gpl${orch?' tree':''}">${orch?GTREE:GSTEM}<span class="gico">${I.icon}</span></span>`;
- return `<button class="gplot st${st}${pop?' pop':''}${G.sel===p.k?' sel':''}" type="button" data-gp="${esc(p.k)}" aria-label="${esc(I.name)}${st===3?', ready to harvest':''}">${pic}${st===3?'<span class="gshine" aria-hidden="true"></span>':''}</button>`}
+ return `<button class="gplot st${st}${pop?' pop':''}${G.sel===p.k?' sel':''}" type="button" data-gp="${esc(p.k)}" style="left:${((x-32)/ISO.w*100).toFixed(2)}%;top:${((y+8-74)/ISO.h*100).toFixed(2)}%;z-index:${c+r+2}" aria-label="${esc(I.name)}${st===3?', ready to harvest':''}">${st===3?'<span class="gglow" aria-hidden="true"></span>':''}${pic}${st===3?'<span class="gspk" aria-hidden="true"><i></i><i></i><i></i></span>':''}</button>`}
 function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduce((a,b)=>a+b,0);
  $('gd-head').innerHTML=`<div class="row"><div class="adt">${v!=='main'?`<button class="adback" type="button" id="gd-back" aria-label="Back">${BACKI}</button>`:''}<h2>${v==='basket'?'Basket':'Garden'}</h2></div><div class="ghead"><span class="gcoins num" aria-label="${g.coins} coins">${COINI}<b id="gd-coins">${g.coins}</b></span>${v==='main'?`<button class="iconbtn gib" type="button" id="gd-bag" aria-label="Basket, ${nb} items">${BASKI}${nb?`<span class="gbn num">${nb}</span>`:''}</button>`:''}<button class="btn sm" type="button" id="gd-close">Close</button></div></div>`;
  $('gd-close').onclick=closeGarden;if($('gd-back'))$('gd-back').onclick=()=>gView('main');if($('gd-bag'))$('gd-bag').onclick=()=>gView('basket');
@@ -3222,7 +3249,8 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
  b.innerHTML=`<div class="gweek"><b class="num">${wk} plant${wk===1?'':'s'} this week</b><span class="cap num">${ld} of the last 7 days logged</span></div>
   <div class="gscene bg-${esc(g.decor&&g.decor.bg||'meadow')}" id="gd-scene"><div class="gsky" aria-hidden="true"><span class="gsun"></span><span class="gcloud"></span><span class="gcloud c2"></span></div>
    ${mode==='bottle'?`<button class="gcan" type="button" id="gd-can" aria-label="Log a glass of water, ${wL(wTotal(S.days[TODAY]||{}))} today"><span class="gcanw">${gCanSvg(wf)}</span><span class="num">${wL(wTotal(S.days[TODAY]||{}))}</span></button>`:''}
-   ${GBEDS.map(([bd,n])=>{const P=g.plants.filter(p=>p.b===bd);return `<div class="gbedw"><span class="gbl">${n}</span><div class="gbed">${Array.from({length:GCFG.plots},(_,pos)=>{const p=P.find(x=>x.pos===pos);return p?gPlot(p):'<span class="gplot empty" aria-hidden="true"></span>'}).join('')}</div></div>`}).join('')}
+   <svg class="ghills" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40V22C40 8 80 6 120 16s70 14 110 2 90-16 170 4V40z" fill="var(--g-hill)"/></svg>
+   ${GBEDS.map(([bd,n],j)=>{const P=g.plants.filter(p=>p.b===bd);return `<div class="gbedw ${j%2?'rt':'lt'}"><span class="gsign" aria-hidden="true"><b>${n.replace(' patch','s')}</b></span><div class="gbed b-${bd}">${isoBed(bd)}${P.map(gPlot).join('')}</div></div>`}).join('')}
    <div class="grain" aria-hidden="true">${drops}</div></div>
   ${sel?`<p class="gtip" role="status"><b>${esc(kindInfo(sel.k).name)}</b> · ${gEta(sel)}</p>`:''}
   ${R.length>=2?`<button class="btn primary wide" type="button" id="gd-all">Harvest all · ${R.length}</button>`:''}
@@ -3230,14 +3258,43 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
   ${!g.plants.length&&!g.tray.length?'<p class="gempty">Eat a plant to sow a seed</p>':''}
   ${mode==='auto'&&g.plants.length?'<p class="cap gtray">Grows overnight</p>':''}`;
  b.scrollTop=y;
- b.querySelectorAll('[data-gp]').forEach(x=>tapBind(x,()=>{const k=x.dataset.gp,i=g.plants.findIndex(p=>p.k===k);if(i<0)return;
-  if(gReady(g.plants[i])){gHop(x);gHarvest(i);G.sel=null;save();renderGarden();render()}else{G.sel=G.sel===k?null:k;renderGarden()}}));
- if($('gd-all'))$('gd-all').onclick=()=>{document.querySelectorAll('#gd-body .gplot.st3').forEach(gHop);const n=gHarvestAll();save();renderGarden();render();toast(`Harvested ${n}`)};
+ gReapBind(b);
+ if($('gd-all'))$('gd-all').onclick=()=>{const L=[...document.querySelectorAll('#gd-body .gplot.st3')].sort((x,y)=>(+x.style.zIndex)-(+y.style.zIndex));if(!L.length)return;$('gd-all').disabled=true;const st=GSTILL();
+  L.forEach((x,i)=>{if(st)gReapAt(x);else setTimeout(()=>gReapAt(x),i*70)});gReapEnd(st?0:L.length*70+480,L.length)};
  if($('gd-can'))$('gd-can').onclick=()=>{const p=S.days[TODAY]||(S.days[TODAY]=emptyPlan());p.wlog=p.wlog||[];p.w=(+p.w||0)+250;p.wlog.push(250);p.wt=Date.now();save();render();gRain()}}
-/* motion: off under still and reduced motion */
-function gHop(btn){if(GSTILL())return;const ic=btn.querySelector('.gico'),bag=$('gd-bag');if(!ic||!bag||!ic.animate)return;const a=ic.getBoundingClientRect(),t=bag.getBoundingClientRect(),c=ic.cloneNode(true);
+
+/* reaping: press a ready plant and drag across the others, Hay Day style; every plant pops, sheds leaves and flies to the basket */
+let REAP=null,GREND=0;
+function gReapBind(b){const sc=$('gd-scene');if(!sc)return;
+ const at=(x,y)=>{const e=document.elementFromPoint(x,y);return e&&e.closest?e.closest('#gd-scene [data-gp]'):null};
+ sc.addEventListener('pointerdown',e=>{const t=e.target.closest('[data-gp]');if(!t||!t.classList.contains('st3')||t.dataset.done)return;e.preventDefault();
+  REAP={id:e.pointerId,n:0};try{sc.setPointerCapture(e.pointerId)}catch(_){}gSickle(e.clientX,e.clientY,1);if(gReapAt(t))REAP.n++});
+ sc.addEventListener('pointermove',e=>{if(!REAP||e.pointerId!==REAP.id)return;gSickle(e.clientX,e.clientY,1);const t=at(e.clientX,e.clientY);if(t&&t.classList.contains('st3')&&!t.dataset.done&&gReapAt(t))REAP.n++});
+ const end=e=>{if(!REAP||e.pointerId!==REAP.id)return;const n=REAP.n;REAP=null;gSickle(0,0,0);if(n)gReapEnd(GSTILL()?0:480,n)};
+ sc.addEventListener('pointerup',end);sc.addEventListener('pointercancel',end);
+ sc.querySelectorAll('[data-gp]').forEach(x=>x.addEventListener('click',()=>{if(x.dataset.done)return;const k=x.dataset.gp,p=S.garden.plants.find(q=>q.k===k);if(!p)return;
+  if(gReady(p)){if(gReadyHit(x))gReapEnd(GSTILL()?0:480,1)}else{G.sel=G.sel===k?null:k;renderGarden()}}))}
+const gReadyHit=x=>gReapAt(x);
+function gReapAt(el){const g=S.garden,k=el.dataset.gp,i=g.plants.findIndex(p=>p.k===k);if(i<0||!gReady(g.plants[i]))return 0;gHarvest(i);el.dataset.done='1';
+ const nb=Object.values(g.bag).reduce((a,c)=>a+c,0),bb=$('gd-bag');if(bb){let n=bb.querySelector('.gbn');if(!n){n=document.createElement('span');n.className='gbn num';bb.appendChild(n)}n.textContent=nb}
+ try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}
+ if(GSTILL()){el.classList.add('reaped');return 1}
+ el.classList.add('reaped');gBurst(el);gFly(el);return 1}
+function gReapEnd(ms,n){clearTimeout(GREND);save();GREND=setTimeout(()=>{if(G){renderGarden();render()}if(n>1)toast(`Harvested ${n}`)},ms)}
+function gSickle(x,y,on){let s=$('gd-sickle');if(!on){if(s)s.remove();return}if(GSTILL())return;if(!s){s=document.createElement('div');s.id='gd-sickle';s.setAttribute('aria-hidden','true');s.innerHTML='<svg viewBox="0 0 48 48"><path d="M10 40l9-9" stroke="#8A5A33" stroke-width="5" stroke-linecap="round"/><path d="M19 31C14 18 22 6 38 6c-9 4-14 12-12 22z" fill="#C9D3DA" stroke="#7E8C96" stroke-width="2" stroke-linejoin="round"/></svg>';$('garden').appendChild(s)}
+ s.style.transform=`translate(${x-10}px,${y-46}px)`}
+function gBurst(el){const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*.55,d=$('garden'),C=['var(--g-leaf)','var(--g-leaf2)','#F6CB5A','var(--g-leaf)','#FFE89A','var(--g-leaf2)','#F6CB5A','var(--g-leaf)'];
+ C.forEach((c,i)=>{const p=document.createElement('i');p.className='gpart'+(i%3===2?' spark':'');p.style.cssText=`left:${cx}px;top:${cy}px;background:${c}`;d.appendChild(p);const a=(i/C.length)*Math.PI*2+Math.random()*.5,dist=34+Math.random()*26;
+  p.animate([{transform:'translate(-50%,-50%) scale(1) rotate(0deg)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*dist}px),calc(-50% + ${Math.sin(a)*dist-18}px)) scale(.4) rotate(${180+i*40}deg)`,opacity:0}],{duration:520+Math.random()*160,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>p.remove()})}
+function gFly(el){const ic=el.querySelector('.gico'),bag=$('gd-bag');if(!ic||!bag||!ic.animate)return;const a=ic.getBoundingClientRect(),t=bag.getBoundingClientRect(),c=ic.cloneNode(true);
  c.className='ghop';Object.assign(c.style,{left:a.left+'px',top:a.top+'px',width:a.width+'px',height:a.height+'px'});$('garden').appendChild(c);
- c.animate([{transform:'translate(0,0) scale(1)',opacity:1},{transform:`translate(${(t.left+t.width/2-a.left-a.width/2)*.5}px,${t.top-a.top-60}px) scale(.9)`,opacity:1,offset:.5},{transform:`translate(${t.left+t.width/2-a.left-a.width/2}px,${t.top+t.height/2-a.top-a.height/2}px) scale(.4)`,opacity:.6}],{duration:350,easing:'ease-in'}).onfinish=()=>c.remove()}
+ const dx=t.left+t.width/2-a.left-a.width/2,dy=t.top+t.height/2-a.top-a.height/2;
+ c.animate([{transform:'translate(0,0) scale(1)'},{transform:`translate(0,-30px) scale(1.35)`,offset:.22},{transform:`translate(${dx*.55}px,${Math.max(dy*.6-40,8-a.top)}px) scale(1.05)`,offset:.6},{transform:`translate(${dx}px,${dy}px) scale(.35)`}],{duration:620,easing:'cubic-bezier(.45,0,.55,1)'}).onfinish=()=>{c.remove();const b=$('gd-bag');if(!b||GSTILL())return;
+  b.animate([{transform:'scale(1)'},{transform:'scale(1.25) rotate(-8deg)'},{transform:'scale(.95) rotate(5deg)'},{transform:'scale(1)'}],{duration:320,easing:'ease-out'});
+  const r=b.getBoundingClientRect();let f=$('gd-plus');if(!f){f=document.createElement('span');f.id='gd-plus';f.className='gplus1';f.dataset.n='0';$('garden').appendChild(f)}
+  f.dataset.n=+f.dataset.n+1;f.textContent='+'+f.dataset.n;f.style.left=(r.left+r.width/2)+'px';f.style.top=(r.top+r.height)+'px';f.getAnimations().forEach(x=>x.cancel());
+  f.animate([{transform:'translate(-50%,0) scale(1.25)',opacity:1},{transform:'translate(-50%,2px) scale(1)',opacity:1,offset:.3},{transform:'translate(-50%,14px)',opacity:0}],{duration:900,easing:'ease-out'}).onfinish=()=>f.remove()}}
+/* motion: off under still and reduced motion */
 function gRain(){if(GSTILL())return;const s=$('gd-scene');if(!s)return;s.classList.remove('rain');void s.offsetWidth;s.classList.add('rain');setTimeout(()=>s&&s.classList.remove('rain'),800)}
 function gCount(a,b){const el=$('gd-coins');if(!el||GSTILL()||a===b){if(el)el.textContent=b;return}const t0=performance.now(),d=400;const f=t=>{const k=Math.min(1,(t-t0)/d);if(!$('gd-coins'))return;$('gd-coins').textContent=Math.round(a+(b-a)*k);if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
 
