@@ -922,6 +922,28 @@ button.schest>svg:first-child{animation:gchb 1.6s ease-in-out infinite;filter:dr
 .bg-dusk .gsun{top:44px;left:66%;box-shadow:0 0 0 10px color-mix(in srgb,var(--g-sun) 25%,transparent)}
 html.still .schest *,html.still .gch,html.still .ggift svg{animation:none!important}
 @media (prefers-reduced-motion:reduce){.schest *,.gch,.ggift svg{animation:none!important}}
+
+.meter.mt i:not(.pv){position:relative;z-index:1}
+.meter.mt i.pv{position:absolute;left:0;top:0;opacity:.35}
+.ring .pvarc{opacity:.35}
+.pvline{margin:8px 2px 0;font-size:13px;color:var(--hero-ink);opacity:.85}
+.pvline b{font-weight:800}
+.cucard h2{margin-bottom:6px}
+.culist{display:flex;flex-direction:column}
+.curow{display:flex;align-items:center;gap:12px;width:100%;border:0;border-bottom:1px solid var(--line);background:none;padding:10px 2px;text-align:left;font:inherit;color:var(--ink);min-height:52px}
+.curow .otx{display:flex;flex-direction:column;min-width:0}
+.curow .cap{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cuck{width:26px;height:26px;border-radius:8px;border:2px solid var(--line);display:grid;place-items:center;flex:none}
+.cuck svg{width:16px;height:16px;fill:none;stroke:transparent;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.curow[aria-pressed="true"] .cuck{background:var(--accent);border-color:var(--accent)}
+.curow[aria-pressed="true"] .cuck svg{stroke:var(--accent-ink)}
+.cucard .btnrow{margin-top:12px}
+.inscard{display:flex;align-items:center;gap:4px;padding:8px 6px 8px 12px}
+.insb{flex:1;display:flex;align-items:center;gap:12px;border:0;background:none;padding:6px 0;text-align:left;font:inherit;font-weight:700;color:var(--ink);min-height:44px}
+.insi{width:34px;height:34px;border-radius:50%;background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;flex:none}
+.insi svg{width:18px;height:18px;fill:currentColor}
+.inscard #ins-x svg{width:18px;height:18px}
+.galdays{margin:2px 2px 10px}
 </style>
 </head>
 <body>
@@ -1016,6 +1038,7 @@ html.still .schest *,html.still .gch,html.still .ggift svg{animation:none!import
       <h2>Tracking</h2>
       <label class="suprow" for="p-water" style="margin-top:10px"><span class="supname">Water bottle</span><span class="switch"><input type="checkbox" id="p-water"><i></i></span><small>Shows a bottle on Today. Hold it to log a filled bottle; it empties at the pace you should drink.</small></label>
       <label class="suprow" for="p-wlog" style="margin-top:10px"><span class="supname">Weight log</span><span class="switch"><input type="checkbox" id="p-wlog"><i></i></span><small>Log your weight when you like. Each value counts from that day on and keeps your energy and protein targets current. Shows a trend graph.</small></label>
+      <div class="full" style="margin-top:12px"><span class="lbl">Meal reminder</span><div class="pnedrow" style="margin-top:6px"><input type="time" id="p-mrem" value="20:00" aria-label="Reminder time"><button class="btn sm" type="button" id="p-mrem-add">Add to calendar</button></div></div>
       <label class="suprow" for="p-garden" style="margin-top:10px"><span class="supname">Garden</span><span class="switch"><input type="checkbox" id="p-garden"><i></i></span><small>Every plant you eat sows a seed. Harvest and sell for coins.</small></label>
       <div class="full" id="p-gwater" hidden style="margin-top:12px"><span class="lbl">Watering</span><div class="seg" id="p-gw" style="margin-top:6px"><button type="button" data-gw="bottle">With the bottle</button><button type="button" data-gw="auto">Grows overnight</button></div></div>
       <label class="full" id="p-btl-row" hidden style="margin-top:14px;display:grid;gap:6px">Bottle size in ml<input id="p-btl" type="number" min="100" max="3000" step="50" inputmode="numeric"></label>
@@ -2057,7 +2080,8 @@ function renderToday(T,D){
  const rlab=S.range===0?'mixed':S.range===1?(isT?'today':'this day'):S.range+' days',rnote=S.range===0?(isT?'Energy today, protein and fiber 3 days':'Energy this day, protein and fiber 3 days'):S.range===1?(isT?'Today':'This day'):(useR?`Average of ${RG.L.length} logged day${RG.L.length>1?'s':''}`:'No days logged');
  let prev=null;for(let i=1;i<=14&&!prev;i++){const k=shift(S.date,-i);if(logged(S.days[k]))prev=k}
  const HC=p=>p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)';
- const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?EN(T.kcal).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const sc=Math.max(100,Math.min(p,200));return `<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?HC(p>=85?100:p):HC(p)}"></i>${p>100?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
+ const PV0=isT&&!emptyDay&&(S.range===0||S.range===1)?dayPreview(D):null,PV=PV0&&PV0.sc>rs?PV0:null;
+ const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?EN(T.kcal).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?HC(p2>=85?100:p2):HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?HC(p>=85?100:p):HC(p)}"></i>${p>100?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
  const SGt=computeSugg(),TT=targets(),TN=needT(TT);
  let sni=0;const usedI=new Set(),usedA=new Set();AGT={};const idea=s=>{let L=[];const ag=againList(s.id,3).find(a=>!usedA.has(mealSig(a.it)));if(ag){usedA.add(mealSig(ag.it));AGT[s.id]=ag}
    if(s.ty==='s'){const ix=sni++,n=SGt.snacks.length;for(let j=0;j<n;j++){const q=(ix+j)%n,x=SGt.snacks[q];L.push({nm:x.food?x.food.n.split(',')[0]+' '+x.food.por+' g':x.d.n,add:x.add,ic:x.food?fIcon(x.food.id):dIcon(x.d),attr:`data-tsn="${s.id}:${q}"`,did:x.d&&hasRcp(x.d.id)?x.d.id:null})}}
@@ -2076,12 +2100,13 @@ function renderToday(T,D){
    ${empty?`${idea(s)}<div class="mact"><button class="btn primary" type="button" data-start="${s.id}">${s.t==='s'?'Add a snack':'Add '+s.n.toLowerCase()}</button><button class="btn" type="button" data-pick="${s.id}">More ideas</button></div>`:''}</article>`};
  $('v-today').innerHTML=`<div class="vhead"><div>${isT?`<h1>${title}</h1>`:`<h1><button class="h1btn" type="button" id="d-today" aria-label="${title}, back to today">${title}</button></h1>`}<p class="cap">${date}</p></div><div class="datenav"><button class="iconbtn" type="button" id="go-plan" aria-label="Plan ahead"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10l1.5 1.5L13 9M9 15.5l1.5 1.5L13 14.5M15 11h1M15 16.5h1"/></svg></button><button class="iconbtn" type="button" id="d-cal" aria-label="History calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button class="iconbtn" type="button" id="d-prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><button class="iconbtn" type="button" id="d-next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>${dueLine()}${shopLine()}
   ${emptyDay?`<div class="card newday"><h2>${isT?'New day':S.date>TODAY?'Nothing planned yet':'Nothing logged'}</h2><p class="cap" style="margin:4px 0 12px">${S.date>TODAY?'Plan this day ahead: the ideas below fit what you still need.':'Add what you eat: pick foods one by one, or a dish.'}</p>${actPill(isT,1)}${wsc!==null?`<button class="weekline" type="button" id="go-week" style="margin:0 0 10px"><span>Last 7 days</span><b>${wsc}% covered</b>${CHEV}</button>`:''}${prev?`<button class="btn wide" type="button" id="d-copy">Same as ${prev===shift(S.date,-1)?'yesterday':kdate(prev).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'})}</button>`:''}</div>`:''}
-${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero${WON()?' hw':''}"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}. Open Nutrients"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/><circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
-   <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div>${WON()?bottleHTML():''}</div>${waterRow()}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div>${actPill(isT)}</div>`}
-${gardenStrip()}
+${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero${WON()?' hw':''}"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}. Open Nutrients"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/>${PV?`<circle class="pvarc" cx="60" cy="60" r="52" fill="none" stroke="${HC(PV.sc)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-PV.sc/100)}"/>`:''}<circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
+   <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div>${WON()?bottleHTML():''}</div>${PV?`<p class="pvline">${PV.txt} <b class="num">${PV.sc} %</b></p>`:''}${waterRow()}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div>${actPill(isT)}</div>`}
+${isT?cuHTML():''}${gardenStrip()}
   <div class="secthead"><h2>Meals</h2>${emptyDay?'':`<span class="cap num">${HK()?'':Math.round(D[0]).toLocaleString('en')+' kcal · '}${Math.round(D[1])} g protein so far</span>`}</div>
   <div class="meals">${SLOTS.filter(s=>s.id!=='x').map(meal).join('')}</div>
   <div class="addmeal"><span class="lbl">Add a meal</span><div class="chips">${[...'blds'].map(t=>`<button class="chip" type="button" data-addmeal="${t}">+ ${TY[t].n}</button>`).join('')}</div></div>
+  ${isT?insCard():''}
 ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="margin-bottom:4px"><div><h2>${iss.length===1?'1 thing to look at':iss.length+' things to look at'}</h2><p class="cap">${S.range===0?'Each nutrient over the time your body stores it':S.range===1?(isT?'Today':'This day'):'Last '+S.range+' days'}</p></div><button class="btn sm ghost" type="button" id="go-ideas">Improve</button></div>
    <div class="attn">${iss.slice(0,3).map(x=>`<button class="arow" type="button" data-sel="${x.k}"><span class="dotst" style="background:${x.s.c}"></span><span class="nm">${NUT[x.k].n}${x.run>=3?` <span class="cap">for ${runTxt(x.run)}</span>`:''}</span><span class="pill" style="color:${x.s.c};background:color-mix(in srgb,${x.s.c} 16%,transparent)">${x.s.over?'Too much':Math.round(x.s.p)+' %'}</span>${CHEV}</button>`).join('')}
    ${iss.length>3?`<button class="arow" type="button" id="go-nutr"><span class="nm muted" style="font-weight:600">${iss.length-3} more</span>${CHEV}</button>`:''}</div></div>`
@@ -2090,7 +2115,7 @@ ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="m
   ${fgCard()}
   ${supCard(isT)}${weightRow()}`;
  const v=$('v-today');
- bindFg(v);bindSupCard(v);bindWater(v);if($('go-garden'))$('go-garden').onclick=()=>openGarden();bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
+ bindFg(v);bindSupCard(v);bindWater(v);bindCu(v);bindIns(v);if($('go-garden'))$('go-garden').onclick=()=>openGarden();bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
  v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{openAdd(b.dataset.pick);const e=$('ad-ideas');if(e)e.scrollIntoView({block:'start'})});
  v.querySelectorAll('[data-tag]').forEach(b=>b.onclick=()=>{const k=b.dataset.tag,a=AGT[k];if(!a)return;useAgain(k,a);save();toast(`Added ${a.n}`);render()});
  v.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>startMeal(b.dataset.start));
@@ -3282,7 +3307,7 @@ function gSellRest(){const g=S.garden,keep=gKeep();let c=0;Object.keys(g.bag).fo
 const gSellable=()=>{const g=S.garden,keep=gKeep();return Object.keys(g.bag).reduce((a,k)=>a+Math.max(0,g.bag[k]-(keep[k]||0))*kindInfo(k).price,0)};
 const wkStart=d=>shift(d,-((kdate(d).getDay()+6)%7));
 function gWeekN(){const ds=[];for(let d=wkStart(TODAY);d<=TODAY;d=shift(d,1))ds.push(d);const o=PROJ;PROJ=false;try{return plantSet(ds).size}finally{PROJ=o}}
-function loggedDays(n){const o=PROJ;PROJ=false;try{let c=0;for(let i=0;i<n;i++){const p=S.days[shift(TODAY,-i)];if(p&&eatK(p).some(k=>p[k].it.some(x=>x[1]>0)))c++}return c}finally{PROJ=o}}
+function loggedDays(n){const o=PROJ;PROJ=false;try{let c=0;for(let i=0;i<n;i++)if(logged(S.days[shift(TODAY,-i)]))c++;return c}finally{PROJ=o}}
 
 /* Today: one strip under the main card */
 let GSTRIP=null;
@@ -3364,7 +3389,7 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
   if($('gd-buy'))$('gd-buy').onclick=()=>{const id=G.buy,c0=g.coins;if(gBuy(id)){G.buy=null;save();renderGarden();gCount(c0,g.coins);toast(GBG.some(d=>d[0]===id)?'New backdrop':'Placed in your garden')}};b.scrollTop=y;return}
  if(v==='album'){const wk=gWeekN(),o=PROJ,ds=[];for(let d=wkStart(TODAY);d<=TODAY;d=shift(d,1))ds.push(d);const cur={id:wkStart(TODAY),n:wk,kinds:[...plantSet(ds)].sort(),cur:1};
   const wc=a=>`<div class="galb"><span class="cap">${a.cur?'This week':'Week of '+fdS(a.id)}</span><b class="num">${a.n} plant${a.n===1?'':'s'}</b><span class="galk">${a.kinds.slice(0,12).map(k=>`<i>${kindInfo(k).icon}</i>`).join('')}</span></div>`;
-  b.innerHTML=(g.badges.length?`<div class="gbadges">${GBADGE.filter(x=>g.badges.includes(x[0])).map(x=>`<span class="gmed">${MEDI}<span class="cap">${x[1]}</span></span>`).join('')}</div>`:'')+
+  b.innerHTML=`<p class="galdays num"><b>Days logged: ${daysLoggedEver()}</b></p>`+(g.badges.length?`<div class="gbadges">${GBADGE.filter(x=>g.badges.includes(x[0])).map(x=>`<span class="gmed">${MEDI}<span class="cap">${x[1]}</span></span>`).join('')}</div>`:'')+
    `<div class="galbum">${[cur,...g.album.slice().reverse()].map(wc).join('')}</div><p class="cap gtray num">${g.stat.harv||0} harvest${g.stat.harv===1?'':'s'} · ${g.ever.length} kind${g.ever.length===1?'':'s'} grown</p>`;b.scrollTop=y;return}
  const R=g.plants.filter(gReady),wk=gWeekN(),nx=gNext(wk),ld=loggedDays(7),mode=gMode(),wf=gWaterOn(TODAY),sel=G.sel&&g.plants.find(p=>p.k===G.sel&&!gReady(p)),bg=g.decor.bg||'meadow',own=g.decor.own.length;
  const drops=GSTILL()?'':Array.from({length:10},(_,i)=>`<i style="left:${6+i*9.4}%;animation-delay:${(i%4)*.07}s"></i>`).join('');
@@ -3489,6 +3514,66 @@ function gDaily(){const g=S.garden;gWeekTick();if(!g.orders||g.orders.d!==TODAY)
 /* the supplements chest: the full stop after the card, the same for taken and skipped */
 const gChestN=()=>GCFG.chest[0]+gHash(TODAY+'c')%(GCFG.chest[1]-GCFG.chest[0]+1);
 function gOpenChest(){const g=S.garden;if(!g||g.chest===TODAY)return 0;g.chest=TODAY;return gEarn(gChestN())}
+
+/* ---------- coming back: usual meals, yesterday, the day preview, things you learn about yourself ---------- */
+/* the meal you usually have for a slot type: most frequent combination of the last 14 logged days, at least twice; a tie goes to the newest */
+function usualMeal(ty,before){before=before||TODAY;const C={};let n=0;
+ for(let i=1;i<=90&&n<14;i++){const d=shift(before,-i),p=S.days[d];if(!logged(p))continue;n++;
+  mealKeys(p).forEach(k=>{const sl=p[k];if(!sl||sl.skip||sl.pl||typeOf(p,k)!==ty)return;const it=sl.it.filter(([id])=>FM[id]);if(!it.length)return;const sg=mealSig(it),c=C[sg]||(C[sg]={c:0,d,i:n,sl,it});c.c++})}
+ const x=Object.values(C).filter(c=>c.c>=2).sort((a,b)=>b.c-a.c||a.i-b.i)[0];if(!x)return null;
+ return {it:cp(x.it),t:x.sl.t||'',did:x.sl.did&&dish(x.sl.did)?x.sl.did:null,est:x.sl.est?1:0,d:x.d,n:mealName(Object.assign({},x.sl,{it:x.it})),v:x.it.reduce((a,y)=>addv(a,itemV(y)),z())}}
+/* yesterday, offered once: only when it has no eaten meal and two usual meals exist */
+let CU=null;
+function catchUp(){const y=shift(TODAY,-1);if(S.date!==TODAY||logged(S.days[y])||S.catchup===y)return null;const p=S.days[y];
+ const L=['b','l','d','s'].filter(ty=>!(p&&p[ty]&&(p[ty].it.length||p[ty].skip))).map(ty=>({ty,u:usualMeal(ty,y)})).filter(x=>x.u);if(L.length<2)return null;
+ if(!CU||CU.y!==y)CU={y,off:{}};return {y,L}}
+function cuHTML(){const cu=catchUp();if(!cu)return '';const on=cu.L.filter(x=>!CU.off[x.ty]).length;
+ return `<div class="card cucard"><h2>Yesterday</h2><div class="culist">${cu.L.map(x=>`<button class="curow" type="button" data-cu="${x.ty}" aria-pressed="${!CU.off[x.ty]}"><span class="cuck" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M6 12.5l4 4 8-9"/></svg></span><span class="otx"><b>${TY[x.ty].n}</b><span class="cap">${esc(x.u.it.map(([id])=>FM[id].n.split(',')[0]).join(', '))}</span></span></button>`).join('')}</div>
+  <div class="btnrow"><button class="btn primary" type="button" id="cu-add"${on?'':' disabled'}>Add</button><button class="btn" type="button" id="cu-no">Not now</button></div></div>`}
+function bindCu(v){v.querySelectorAll('[data-cu]').forEach(b=>b.onclick=()=>{const t=b.dataset.cu;CU.off[t]=!CU.off[t];render()});
+ if($('cu-no'))$('cu-no').onclick=()=>{S.catchup=shift(TODAY,-1);save();render()};
+ if($('cu-add'))$('cu-add').onclick=()=>{const cu=catchUp();if(!cu)return;const p=S.days[cu.y]||(S.days[cu.y]=emptyPlan());let n=0;
+  cu.L.forEach(x=>{if(CU.off[x.ty])return;const o={t:x.u.t,it:cp(x.u.it)};if(x.u.did)o.did=x.u.did;p[x.ty]=o;n++});if(!n)return;save();toast(`Added ${n} meal${n>1?'s':''} to yesterday`);render()}}
+/* where today is heading: empty main meals filled with the planned or the usual meal; changes nothing stored */
+function dayPreview(D){const h=new Date().getHours(),add=[];
+ SLOTS.forEach(s=>{const k=s.id,sl=S.plan[k],ty=s.ty;if(!sl||sl.skip||!['b','l','d'].includes(ty))return;if((ty==='b'&&h>=14)||(ty==='l'&&h>=18))return;
+  let it=null,kind='';if(sl.pl&&sl.it.length){it=sl.it;kind='planned'}else if(!sl.it.length){const u=usualMeal(ty);if(u){it=u.it;kind='usual'}}
+  if(it)add.push({k,ty,it,kind})});
+ if(!add.length)return null;let PD;
+ if(S.range===1){PD=D.slice();add.forEach(a=>a.it.forEach(x=>addv(PD,itemV(x))))}
+ else{const orig=S.days[TODAY],tmp=JSON.parse(JSON.stringify(orig));add.forEach(a=>{tmp[a.k]={t:'',it:cp(a.it)}});S.days[TODAY]=tmp;try{PD=mixStats(TODAY,mixMemo(),1).avg}finally{S.days[TODAY]=orig}}
+ const part=kd=>{const n=add.filter(a=>a.kind===kd).map(a=>TY[a.ty].n.toLowerCase());return n.length?kd+' '+n.join(' and '):''};
+ return {D:PD,add,sc:dayScore(PD,targets()),txt:'with your '+[part('planned'),part('usual')].filter(Boolean).join(' and ')}}
+/* things you learn about yourself: one a day, descriptive only, never repeated within 30 days */
+const nlow=n=>{const s=NUT[n].n;return /^[A-Z][a-z]/.test(s)?s.charAt(0).toLowerCase()+s.slice(1):s};
+const kindWord=k=>{const I=kindInfo(k),f=I.id&&FM[I.id];return (f?f.n.split(',')[0]:I.name).toLowerCase()};
+function dayFoodV(p){const v=z();eatK(p).forEach(k=>p[k].it.forEach(it=>addv(v,itemV(it))));return v}
+function insights(){const o=PROJ;PROJ=false;try{const ds=[];for(let i=1;i<=60;i++){const d=shift(TODAY,-i);if(logged(S.days[d]))ds.push(d)}if(ds.length<14)return [];
+ const T=targets(),V={},Ks={},out=[],NK=ALLK.filter(n=>T[n]>0),cov=(v,n)=>Math.min(150,v[K.indexOf(n)]/T[n]*100);ds.forEach(d=>{V[d]=dayFoodV(S.days[d]);Ks[d]=plantSet([d])});
+ const kinds=new Set();ds.forEach(d=>Ks[d].forEach(x=>kinds.add(x)));
+ kinds.forEach(kd=>{const w=ds.filter(d=>Ks[d].has(kd)),wo=ds.filter(d=>!Ks[d].has(kd));if(w.length<4||wo.length<4)return;
+  NK.forEach(n=>{const m=a=>a.reduce((s,d)=>s+cov(V[d],n),0)/a.length,df=m(w)-m(wo);if(df>=15)out.push({key:'f:'+n+':'+kd,k:n,e:df,t:`Your ${nlow(n)} is ${Math.round(df)} points higher on days with ${kindWord(kd)}`})})});
+ NK.map(n=>({n,c:ds.reduce((s,d)=>s+cov(V[d],n),0)/ds.length})).sort((a,b)=>a.c-b.c).slice(0,3).forEach(({n})=>{const i=K.indexOf(n),sh={};let tot=0;
+  ds.forEach(d=>{const p=S.days[d];eatK(p).forEach(k=>{const ty=typeOf(p,k);p[k].it.forEach(it=>{const x=itemV(it)[i];sh[ty]=(sh[ty]||0)+x;tot+=x})})});
+  if(!tot)return;const b=Object.keys(sh).sort((a,c)=>sh[c]-sh[a])[0],p=sh[b]/tot*100;if(p>=35&&TY[b])out.push({key:'m:'+n+':'+b,k:n,e:p-25,t:`${TY[b].n} brings ${Math.round(p)} % of your ${nlow(n)}`})});
+ const lw=shift(wkStart(TODAY),-7),lds=[];for(let i=0;i<7;i++)lds.push(shift(lw,i));const ll=lds.filter(d=>logged(S.days[d]));
+ if(ll.length){const st=NK.map(n=>({n,c:ll.reduce((s,d)=>s+cov(V[d]||dayFoodV(S.days[d]),n),0)/ll.length})).sort((a,b)=>b.c-a.c)[0];
+  out.push({key:'w:'+lw,k:st.n,e:1000,t:`Last week: ${ll.length} day${ll.length>1?'s':''} logged · ${plantSet(lds).size} plants · strongest: ${nlow(st.n)}`})}
+ return out.sort((a,b)=>b.e-a.e)}finally{PROJ=o}}
+function insToday(){if(S.insX===TODAY)return null;if(S.insD&&S.insD.d===TODAY)return S.insD.x;if(!S.ins||typeof S.ins!=='object'||Array.isArray(S.ins))S.ins={};
+ Object.keys(S.ins).forEach(k=>{if(dayDiff(S.ins[k],TODAY)>60)delete S.ins[k]});
+ const x=insights().find(c=>!S.ins[c.key]||dayDiff(S.ins[c.key],TODAY)>=30)||null;S.insD={d:TODAY,x};if(x)S.ins[x.key]=TODAY;return x}
+function insCard(){if(S.date!==TODAY)return '';const x=insToday();if(!x)return '';
+ return `<div class="card inscard"><button class="insb" type="button"${x.k?` data-insk="${x.k}"`:''}><span class="insi" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M12 3l1.8 5.2L19 10l-5.2 1.8L12 17l-1.8-5.2L5 10l5.2-1.8z"/></svg></span><span>${esc(x.t)}</span></button><button class="iconbtn" type="button" id="ins-x" aria-label="Close">${XIC}</button></div>`}
+function bindIns(v){const b=v.querySelector('[data-insk]');if(b)b.onclick=()=>selectNut(b.dataset.insk);if($('ins-x'))$('ins-x').onclick=()=>{S.insX=TODAY;save();render()}}
+/* one daily reminder, as a calendar event; the app sends nothing itself */
+function mealIcs(time){const [hh,mm]=(time||'20:00').split(':'),dt=TODAY.replace(/-/g,'')+'T'+hh+mm+'00',now=new Date().toISOString().replace(/[-:]/g,'').slice(0,15)+'Z',url=location.href.split('#')[0];
+ return ['BEGIN:VCALENDAR','VERSION:2.0','PRODID:-//Vegful//Meal reminder//EN','CALSCALE:GREGORIAN','BEGIN:VEVENT','UID:vegful-meals@vegful.app','DTSTAMP:'+now,'DTSTART:'+dt,'DURATION:PT10M','RRULE:FREQ=DAILY;INTERVAL=1',
+  "SUMMARY:Log today's meals",'DESCRIPTION:Vegful: '+url+'\\nDelete this event to stop the reminder.','BEGIN:VALARM','ACTION:DISPLAY',"DESCRIPTION:Log today's meals",'TRIGGER:PT0M','END:VALARM','END:VEVENT','END:VCALENDAR'].join('\r\n')}
+async function addMealReminder(time){const blob=new Blob([mealIcs(time)],{type:'text/calendar'}),fn='vegful-meal-reminder.ics';
+ try{const f=new File([blob],fn,{type:'text/calendar'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:'Meal reminder'});return}}catch(e){if(e&&e.name==='AbortError')return}
+ const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)}
+const daysLoggedEver=()=>{const o=PROJ;PROJ=false;try{const n=Object.keys(S.days).filter(d=>d<=TODAY&&logged(S.days[d])).length;if(S.garden){S.garden.daysMax=Math.max(S.garden.daysMax||0,n);return S.garden.daysMax}return n}finally{PROJ=o}};
 
 /* ---------- pantry: what you have at home ----------
    S.pantry = {id:{g, d, u0, top}}: g grams stocked on day d, u0 grams of it already eaten that day, top the last full amount.
@@ -3928,6 +4013,7 @@ function renderOnb(){
 }
 $('p-hk').onchange=e=>{S.prof.hidekcal=e.target.checked?'0':'1';render()};
 $('p-wlog').onchange=e=>{S.prof.wlog=e.target.checked?'1':'0';if(WLON()){S.weights=S.weights||{};if(!wDates().length)S.weights[TODAY]=Math.round((+S.prof.wt||70)*10)/10}render()};
+$('p-mrem-add').onclick=()=>addMealReminder($('p-mrem').value||'20:00');
 $('p-garden').onchange=e=>{gInit();S.garden.on=e.target.checked?1:0;render()};
 document.querySelectorAll('#p-gw [data-gw]').forEach(b=>b.onclick=()=>{gInit();S.garden.water=b.dataset.gw;render()});
 $('p-water').onchange=e=>{S.prof.water=e.target.checked?'1':'0';if(!S.prof.btl)S.prof.btl=750;render()};
