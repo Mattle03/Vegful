@@ -683,9 +683,6 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .adoffer{display:flex;align-items:center;gap:10px;background:var(--accent-soft);border-radius:14px;padding:8px 8px 8px 12px;margin-top:10px}
 .adoffer span{flex:1;font-weight:700;font-size:14px;color:var(--ink)}
 .adacts{display:flex;flex-wrap:wrap;gap:6px;margin-top:10px}
-.adren{margin-top:10px}
-.adrenrow{display:flex;gap:8px;margin-top:4px;align-items:center}
-.adrenrow input{flex:1}
 .dlist .drow{display:flex;justify-content:space-between;gap:12px;padding:10px 4px;border-bottom:1px solid var(--line);font-weight:600}
 .orow{display:flex;align-items:center;gap:12px;width:100%;border:2px solid transparent;border-bottom:1px solid var(--line);background:none;padding:9px 8px;text-align:left;font:inherit;color:var(--ink)}
 .orow[aria-pressed="true"]{border:2px solid var(--accent);border-radius:14px}
@@ -717,6 +714,36 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .tideas .tidea .thumb{width:36px;height:36px;padding:6px}
 .tidea .tcap .rlink{margin:-8px 0;padding:8px 2px;min-height:0;font-size:13px}
 .tidea .sgt b,.tidea .sgt>.cap{display:-webkit-box;-webkit-box-orient:vertical;-webkit-line-clamp:2;overflow:hidden}
+
+/* phase 1: name line, sizes, recent, recipes tab, builder groups */
+.adname{display:flex;align-items:center;gap:6px;margin:2px 0 10px}
+.adname .nmt{flex:1;min-width:0;border:0;background:none;padding:6px 2px;font:inherit;font-weight:800;font-size:18px;color:var(--ink);text-align:left;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;min-height:44px}
+.adname .nmt.ph{color:var(--muted);font-weight:700}
+.adname input{flex:1;min-width:0;font-size:17px;font-weight:700}
+.adname .iconbtn{width:44px;height:44px;border-radius:12px;color:var(--ink);flex:none}
+.adname .iconbtn svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;stroke-linecap:round}
+.adname .iconbtn[aria-pressed="true"]{color:var(--accent);background:var(--accent-soft)}
+.adname .iconbtn[aria-pressed="true"] svg{fill:currentColor}
+.adsz,.fsz{margin:0 0 10px}
+.fsz{margin:8px 0 6px}
+.adhad{margin:10px 2px 0}
+.adquick{margin:2px 0 6px}
+.adgrp .adm .chev{width:18px;height:18px;flex:none;margin-left:auto;fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;transition:transform .2s}
+.adgrp [aria-expanded="true"] .chev{transform:rotate(90deg)}
+.adgv{padding-left:14px;border-left:3px solid var(--accent-soft);margin-left:20px}
+.ldgrp{padding-left:12px;border-left:3px solid var(--accent-soft);margin:0 0 6px 20px}
+.adlab.bld{background:color-mix(in srgb,var(--coral) 30%,transparent);color:var(--ink)}
+#rcp-seg{margin:4px 0 10px}
+#rcp-q{margin-bottom:10px}
+.bldgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bldcard{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:12px;border-radius:16px;border:1px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;text-align:left;min-height:100px}
+.bldcard b{font-size:15px}
+.bldcard[aria-expanded="true"]{border-color:var(--accent);background:var(--accent-soft)}
+.bldcard .thumb{width:40px;height:40px;margin-bottom:2px}
+.bldlist{margin-top:12px;padding-top:4px}
+.bldnew .thumb{background:var(--accent-soft);color:var(--accent);display:grid;place-items:center;border-radius:12px}
+.bldnew .thumb svg{width:22px;height:22px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
+@media (prefers-reduced-motion:reduce){.adgrp .adm .chev{transition:none}}
 </style>
 </head>
 <body>
@@ -747,9 +774,10 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 
   <section id="v-lib" class="view" hidden>
     <div class="vhead"><div><h1>Library</h1><p class="cap">Dishes, your foods, and what to eat for which nutrient</p></div></div>
-    <div class="seg" id="lib-seg"><button type="button" data-lb="dishes">Dishes</button><button type="button" data-lb="foods">Foods</button><button type="button" data-lb="learn">Learn</button></div>
+    <div class="seg" id="lib-seg"><button type="button" data-lb="dishes">Dishes</button><button type="button" data-lb="recipes">Recipes</button><button type="button" data-lb="foods">Foods</button><button type="button" data-lb="learn">Learn</button></div>
     <div id="lib-foods" class="view" hidden><div class="card"><h2 style="margin-bottom:4px">Your foods</h2><p class="cap" style="margin:0 0 10px">Products you scanned or entered, and mixes you made. Tap one to see or change its values.</p><div id="prof-prod"></div>
       <div class="btnrow2" style="margin-top:12px"><button class="btn scanbtn" type="button" id="prof-scan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3M7 8v8M10.5 8v8M14 8v8M17 8v8"/></svg>Scan a product</button><button class="btn" type="button" id="lib-label">Enter from a label</button><button class="btn" type="button" id="lib-mix">Make a mix</button></div></div></div>
+    <div id="lib-rcp" class="view" hidden><div class="chips" id="rcp-seg"><button class="chip" type="button" data-rc="rcp">Recipes</button><button class="chip" type="button" data-rc="bld">Builders</button></div><input type="search" id="rcp-q" placeholder="Search recipes" aria-label="Search recipes"><div id="rcp-list"></div></div>
     <div id="lib-dishes" class="view" hidden><input type="search" id="lib-q" placeholder="Search dishes or ingredients"><div class="chips" id="lib-t"></div><div id="lib-mine"></div><div class="card" style="padding-top:4px"><h2 style="margin:10px 0 4px" id="lib-allh">All dishes</h2><div id="lib-list"></div></div></div>
     <div class="chips" id="learn-seg" hidden><button class="chip" type="button" data-ln="guide">Best sources by nutrient</button><button class="chip" type="button" data-ln="kitchen">Kitchen tips</button></div>
     <div id="it-foods" class="view" hidden>
@@ -2918,6 +2946,23 @@ function putOn(slot,items,t,did,extra){const ty=typeOf(S.plan,slot),sl=S.plan[sl
  else{items.forEach(([id,g,st])=>{const o=sl.it.find(x=>x[0]===id&&(x[2]||'')===(st||''));if(o)o[1]=Math.round(o[1]+g);else sl.it.push(st?[id,g,st]:[id,g])});
   sl.t=sl.t&&t?sl.t+' and '+t.charAt(0).toLowerCase()+t.slice(1):'';delete sl.did;if(extra)Object.assign(sl,extra)}
  if(did)meta(did).used=Date.now();edited(slot)}
+function setSz(slot,f){const sl=S.plan[slot],c=sl.sz||1;if(f===c)return;
+ const ok=Array.isArray(sl.b0)&&sl.b0.length===sl.it.length&&sl.it.every((t,i)=>Math.round(sl.b0[i]*c)===t[1]),base=ok?sl.b0:sl.it.map(t=>t[1]/c);
+ sl.it.forEach((t,i)=>{t[1]=Math.round(base[i]*f)});if(f===1){delete sl.sz;delete sl.b0}else{sl.sz=f;sl.b0=base.map(x=>Math.round(x*100)/100)}}
+/* recent meals from every slot: today's other meals first, then the last 14 days, one per combination */
+function recentMeals(slot,n){n=n||12;const seen=new Set([mealSig(S.plan[slot].it)]),out=[];
+ for(let i=0;i<=14&&out.length<n;i++){const d=shift(S.date,-i),p=i?S.days[d]:S.plan;if(!p)continue;
+  mealKeys(p).forEach(k=>{if(out.length>=n||(!i&&k===slot))return;const sl=p[k];if(!sl||sl.skip||sl.pl)return;const it=(sl.it||[]).filter(([id])=>FM[id]);if(!it.length)return;const sg=mealSig(it);if(seen.has(sg))return;seen.add(sg);
+   out.push({it:cp(it),t:sl.t||'',did:sl.did&&dish(sl.did)?sl.did:null,est:sl.est?1:0,d,k,ty:typeOf(p,k),n:mealName(Object.assign({},sl,{it})),v:it.reduce((a,x)=>addv(a,itemV(x)),z())})})}
+ return out}
+/* builder versions folded into one row per template, outside search */
+const gTplK=id=>{const f=FM[id];return f&&f.gb&&TPL[f.gb.tpl]?f.gb.tpl:'granola'};
+function adDishRows(L,D0){const grp={},done=new Set(),out=[];L.forEach(d=>{if(d.gran)(grp[gTplK(d.id)]=grp[gTplK(d.id)]||[]).push(d)});
+ L.forEach(d=>{if(!d.gran){out.push(dishItem(d,D0).replace(lab('Dish','dsh'),''));return}const k=gTplK(d.id),G=grp[k];if(done.has(k))return;done.add(k);
+  if(G.length===1){out.push(dishItem(d,D0));return}
+  G.sort((a,b)=>(b.used||0)-(a.used||0));const open=AD.gx.includes(k),T=TPL[k];
+  out.push(`<div class="adr adgrp"><button class="adm" type="button" data-adgx="${k}" aria-expanded="${open}"><span class="thumb em">${EMO[T.ic]}</span><span class="otx"><span class="t">${T.n}${lab('Builder','bld')}</span><span class="s">${G.length} versions</span></span>${CHEV}</button></div>`+(open?`<div class="adgv">${G.map(x=>dishItem(x,D0)).join('')}</div>`:''))});
+ return out.join('')}
 function useAgain(slot,a){putOn(slot,a.it,a.t,a.did,a.est?{est:1}:null)}
 function putDish(slot,d){d=dishFit(d)||d;if(!S.plan[slot].it.length)useDish(slot,d);else putOn(slot,d.it,d.n,d.id)}
 /* how often this combination was eaten before, other meals only */
@@ -2932,17 +2977,20 @@ const PLUS='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 5v14M5 12h1
 const CHUP='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 15l6-6 6 6"/></svg>';
 const BACKI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M15 6l-6 6 6 6"/></svg>';
 const lab=(t,c)=>`<span class="adlab${c?' '+c:''}">${t}</span>`;
+const PENI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4" fill="none"/></svg>';
+const BMI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6.5 3.5h11v17L12 16l-5.5 4.5z"/></svg>';
 
-function openAdd(slot,view){if(!S.plan[slot])return;if($('pk').open)closePicker();MS=slot;S.addto=slot;AD={slot,view:view||'main',q:'',focus:[],more:null,open:view==='plate'&&S.plan[slot].it.length===1?0:null,dish:null,oq:'',os:null,oz:1,ren:null,pulse:0,hv:null};
+function openAdd(slot,view){if(!S.plan[slot])return;if($('pk').open)closePicker();MS=slot;S.addto=slot;AD={slot,view:view||'main',q:'',focus:[],more:null,open:null,dish:null,oq:'',os:null,oz:1,edit:0,pulse:0,hv:null,gx:[]};
  const d=$('add');renderAdd();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('ad-body').scrollTop=0}
 function closeAdd(){AD=null;MS=null;const d=$('add');d.close?d.close():d.removeAttribute('open');render()}
 $('add').addEventListener('close',()=>{if(AD&&!$('add').open){AD=null;MS=null;render()}});
 $('add').addEventListener('click',e=>{if(e.target===$('add'))closeAdd()});
-function adView(v,x){Object.assign(AD,{view:v,ren:null},x||{});renderAdd();$('ad-body').scrollTop=0}
+function adView(v,x){Object.assign(AD,{view:v,edit:0},x||{});renderAdd();$('ad-body').scrollTop=0}
 function adPulse(){AD.pulse=Date.now();try{navigator.vibrate&&navigator.vibrate(15)}catch(e){}}
 
 function renderAdd(){if(!AD)return;const o=PROJ;PROJ=S.date>TODAY;try{renderAdd0()}finally{PROJ=o}}
 function renderAdd0(){const sl=S.plan[AD.slot];if(!sl){closeAdd();return}
+ if(AD.view==='plate'&&document.activeElement&&document.activeElement.id==='ad-name')return;
  const s=SLOTS.find(x=>x.id===AD.slot)||SLOTS[0],v=AD.view,hv=v==='main'||v==='more'?'s':v;
  const dl=S.date===TODAY?'':whenTxt(S.date),own=sl.did&&dish(sl.did),mine=own&&own.own;
  if(AD.hv!==hv){AD.hv=hv;
@@ -2952,8 +3000,8 @@ function renderAdd0(){const sl=S.plan[AD.slot];if(!sl){closeAdd();return}
   $('ad-close').onclick=closeAdd;
   if($('ad-q')){$('ad-q').oninput=e=>{AD.q=e.target.value;renderAdd()};$('ad-scan').onclick=()=>{openScan(AD.slot,'scan')}}
   if($('ad-back'))$('ad-back').onclick=()=>adView('main')}
- $('ad-title').textContent=v==='out'?'Ate out':v==='dish'?(dish(AD.dish)||{}).n||s.n:v==='plate'&&sl.t?sl.t:s.n;
- $('ad-date').textContent=v==='plate'&&sl.t?s.n+(dl?' · '+dl:''):dl;
+ $('ad-title').textContent=v==='out'?'Ate out':v==='dish'?(dish(AD.dish)||{}).n||s.n:s.n;
+ $('ad-date').textContent=dl;
  if($('ad-q')&&$('ad-q').value!==AD.q)$('ad-q').value=AD.q;
  const fv=$('ad-fav');if(fv){const fd=v==='dish'?dish(AD.dish):v==='plate'&&mine?own:null;fv.hidden=!fd;if(fd){fv.setAttribute('aria-pressed',!!fd.fav);fv.setAttribute('aria-label',(fd.fav?'Remove from favourites: ':'Favourite: ')+fd.n);fv.onclick=()=>{meta(fd.id).fav=!fd.fav;save();renderAdd()}}}
  const b=$('ad-body'),y=b.scrollTop;
@@ -2969,7 +3017,7 @@ function adFoot(s,sl){const f=$('ad-foot'),v=AD.view;
  if(!sl.it.length){f.hidden=true;f.innerHTML='';return}
  const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.slot),val,1),pu=Date.now()-AD.pulse<700;f.hidden=false;f.className='adfoot plate';
  f.innerHTML=`<button class="platebar${pu?' pulse':''}" type="button" id="ad-plate" aria-label="Open the plate, ${sl.it.length} on it"><span class="pbt"><b>${esc(sl.it.map(([id,gg])=>FM[id].n.split(',')[0]+' '+amtTxt(id,gg)).join(', '))}</b><span class="cap num">${ENs(val[0])}${Math.round(val[1])} g protein${g?' · '+g:''}</span></span><span class="pbn num">${sl.it.length}</span>${CHUP}</button><button class="btn primary" type="button" id="ad-done">Done</button>`;
- $('ad-plate').onclick=()=>adView('plate',{open:sl.it.length===1?0:null});$('ad-done').onclick=closeAdd}
+ $('ad-plate').onclick=()=>adView('plate',{open:null});$('ad-done').onclick=closeAdd}
 
 /* rows: one line each, a + puts it on the plate */
 /* ---------- pantry: what you have at home ----------
@@ -3043,7 +3091,7 @@ function adRow(o){return `<div class="adr"><button class="adm" type="button" ${o
 function foodItem(f,T){const on=S.plan[AD.slot].it.some(x=>x[0]===f.id),g=lastG(f.id),v=itemV([f.id,g]),had=S.lastAmt&&S.lastAmt[f.id];
  return adRow({main:`data-adpf="${f.id}"`,plus:`data-adpf="${f.id}"`,on,ic:fIcon(f.id),n:f.n,lab:f.cat==='My foods'?lab(f.parts?'Your mix':'Your product','pr'):'',sub:`${had?'Last time ':''}${amtTxt(f.id,g)} · ${ENs(v[0])}${fmt(v[1])} g protein`})}
 function dishItem(d,D0){const ph=PH[d.id],add=d.it.reduce((a,it)=>addv(a,itemR(it)),z()),g=gainTxt(D0,add);
- return adRow({main:`data-add="${d.id}"`,plus:`data-adpd="${d.id}"`,ic:ph?`<img src="${ph}" alt="">`:dIcon(d),n:d.n+(d.minus?', '+minusTxt(d):''),lab:d.own?lab('Your dish','own'):lab('Dish','dsh'),sub:`${ENs(add[0])}${Math.round(add[1])} g protein${g?' · '+g:''}`})}
+ return adRow({main:`data-add="${d.id}"`,plus:`data-adpd="${d.id}"`,ic:ph?`<img src="${ph}" alt="">`:dIcon(d),n:d.n+(d.minus?', '+minusTxt(d):''),lab:d.gran?lab('Builder','bld'):d.own?lab('Your dish','own'):lab('Dish','dsh'),sub:`${ENs(add[0])}${Math.round(add[1])} g protein${g?' · '+g:''}`})}
 
 function adMain(b,s){const T=targets(),q=AD.q.toLowerCase().trim(),D0=dayMinus(AD.slot);let h='';
  if(q){const mq=d=>d.n.toLowerCase().includes(q)||d.it.some(([id])=>FM[id]&&fmatch(FM[id],q)),nm=d=>d.n.toLowerCase().includes(q);
@@ -3057,22 +3105,24 @@ function adMain(b,s){const T=targets(),q=AD.q.toLowerCase().trim(),D0=dayMinus(A
   if(!h)h=`<p class="empty2">No match. <button class="linkbtn" type="button" id="ad-tout" style="display:inline-flex;padding:0;min-height:0">Log it as eaten out</button></p>`}
  else if(AD.more)h=adMore(b,s,T,D0);
  else{const ag=againList(AD.slot,2);AD.ag=ag;
+  h+=`<div class="chips adquick" role="group" aria-label="Shortcuts">${[['meals','Recent'],['fav','Favourites'],['mine','Your dishes']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}</div>`;
   if(ag.length)h+=`<h3 class="adh">Again</h3>`+ag.map((a,i)=>adRow({main:`data-adag="${i}"`,plus:`data-adag="${i}"`,ic:slotIcon({did:a.did,it:a.it},typeOf(S.plan,AD.slot)),n:a.n,lab:a.est?lab('Estimate','est'):'',sub:`${whenTxt(a.d)} · ${ENs(a.v[0])}${Math.round(a.v[1])} g protein`})).join('');
   const LO=lowList(T);AD.focus=AD.focus.filter(k=>LO.some(x=>x.k===k));
   const I=s.t==='s'?[]:slotIdeas(AD.slot,AD.focus.length?12:8,AD.focus);
   if(s.t==='s'){const SG=computeSugg();AD.sn=SG.snacks;if(SG.snacks.length)h+=`<h3 class="adh" id="ad-ideas">Ideas</h3>`+SG.snacks.slice(0,8).map((x,i)=>x.food?adRow({main:`data-adsn="${i}"`,plus:`data-adsn="${i}"`,ic:fIcon(x.food.id),n:x.food.n.split(',')[0],sub:`${amtTxt(x.food.id,x.food.por)} · ${ENs(x.add[0])}${Math.round(x.add[1])} g protein${(g=>g?' · '+g:'')(gainTxt(D0,x.add))}`}):dishItem(x.d,D0)).join('')}
   else{h+=`<h3 class="adh" id="ad-ideas">Ideas</h3>`+(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!AD.focus.length}">All</button>${LO.slice(0,8).map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${AD.focus.includes(x.k)}">${NUT[x.k].n}</button>`).join('')}</div>`:'')+
    (I.map(x=>dishItem(x.d,D0).replace(lab('Dish','dsh'),'')).join('')||`<p class="empty2">${AD.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No idea fits.'}</p>`)}
-  h+=`<h3 class="adh">More</h3><div class="chips wrap admore">${[...(Object.keys(S.pantry||{}).length?[['pantry','From my pantry']]:[]),['recent','Recent foods'],['fav','Favourites'],['mine','Your dishes'],['prod','Your products'],['dishes','All dishes'],['foods','All foods']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}<button class="chip" type="button" id="ad-out">Ate out</button></div>`}
+  h+=`<h3 class="adh">More</h3><div class="chips wrap admore">${[...(Object.keys(S.pantry||{}).length?[['pantry','From my pantry']]:[]),['recent','Recent foods'],['prod','Your products'],['dishes','All dishes'],['foods','All foods']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}<button class="chip" type="button" id="ad-out">Ate out</button></div>`}
  b.innerHTML=h;adBind(b,s)}
 
-function adMore(b,s,T,D0){const m=AD.more,ttl={pantry:'From my pantry',recent:'Recent foods',fav:'Favourites',mine:'Your dishes',prod:'Your products',dishes:'All dishes',foods:'All foods'}[m];let h=`<div class="admhead"><button class="chip" type="button" data-admore="">${BACKI}Back</button><h3>${ttl}</h3></div>`;
+function adMore(b,s,T,D0){const m=AD.more,ttl={meals:'Recent',pantry:'From my pantry',recent:'Recent foods',fav:'Favourites',mine:'Your dishes',prod:'Your products',dishes:'All dishes',foods:'All foods'}[m];let h=`<div class="admhead"><button class="chip" type="button" data-admore="">${BACKI}Back</button><h3>${ttl}</h3></div>`;
  if(m==='pantry'){const L=panDishes(s.t);h+=L.map(x=>{const add=x.d.it.reduce((a,it)=>addv(a,itemV(it)),z());return adRow({main:`data-add="${x.d.id}"`,plus:`data-adpd="${x.d.id}"`,ic:PH[x.d.id]?`<img src="${PH[x.d.id]}" alt="">`:dIcon(x.d),n:x.d.n,sub:`${x.ok===x.n?'Everything at home':x.ok+' of '+x.n+' at home · no '+x.miss.slice(0,2).join(', ')} · ${ENs(add[0])}${Math.round(add[1])} g protein`})}).join('')||'<p class="empty2">Nothing fits what is at home yet. Fill your pantry from Scan/Shop.</p>'}
+ else if(m==='meals'){const L=recentMeals(AD.slot);AD.rc=L;h+=L.map((a,i)=>adRow({main:`data-adrc="${i}"`,plus:`data-adrc="${i}"`,ic:slotIcon({did:a.did,it:a.it},a.ty),n:a.n,lab:a.est?lab('Estimate','est'):'',sub:`${whenTxt(a.d)}, ${TY[a.ty].n.toLowerCase()} · ${ENs(a.v[0])}${Math.round(a.v[1])} g protein`})).join('')||'<p class="empty2">Meals you log show up here.</p>'}
  else if(m==='recent')h+=S.recentFoods.map(id=>FM[id]).filter(Boolean).map(f=>foodItem(f,T)).join('')||'<p class="empty2">Foods you add show up here.</p>';
  else if(m==='fav'){const dd=allDishes().filter(d=>d.fav).map(d=>dishFit(d)||d),ff=S.favFoods.map(id=>FM[id]).filter(Boolean);h+=dd.map(d=>dishItem(d,D0)).join('')+ff.map(f=>foodItem(f,T)).join('')||'<p class="empty2">Tap the star on a dish to keep it here.</p>'}
- else if(m==='mine')h+=allDishes().filter(d=>d.own).sort((a,b)=>(b.t===s.t)-(a.t===s.t)||(b.used||0)-(a.used||0)).map(d=>dishItem(dishFit(d)||d,D0)).join('')||'<p class="empty2">Save a meal from its plate to keep it here.</p>';
+ else if(m==='mine')h+=adDishRows(allDishes().filter(d=>d.own).sort((a,b)=>(b.t===s.t)-(a.t===s.t)||(b.used||0)-(a.used||0)).map(d=>dishFit(d)||d),D0)||'<p class="empty2">Save a meal from its plate to keep it here.</p>';
  else if(m==='prod')h+=`<div class="btnrow2" style="margin:4px 0 8px"><button class="btn" type="button" id="ad-label">Enter from a label</button><button class="btn" type="button" id="ad-mix">New mix</button></div>`+(F.filter(f=>f.cat==='My foods'&&!f.hide&&!f.gb).map(f=>foodItem(f,T)).join('')||'<p class="empty2">Scan a product or enter one from its label.</p>');
- else if(m==='dishes')h+=allDishes(s.t).map(dishFit).filter(Boolean).sort((a,b)=>(b.own-a.own)||((a.min||99)-(b.min||99))).map(d=>dishItem(d,D0)).join('');
+ else if(m==='dishes')h+=adDishRows(allDishes(s.t).map(dishFit).filter(Boolean).sort((a,b)=>(!!b.own-!!a.own)||((a.min||99)-(b.min||99))),D0);
  else{AD.cat=AD.cat||'All';h+=`<div class="chips" style="margin-bottom:6px">${['All',...CATS.filter(c=>c!=='My foods')].map(c=>`<button class="chip" type="button" data-adcat="${c}" aria-pressed="${AD.cat===c}">${c}</button>`).join('')}</div>`+
   F.filter(f=>!f.hide&&!f.gb&&(f.src!=='usda'||f.common)&&(AD.cat==='All'?f.cat!=='My foods':f.cat===AD.cat)).slice(0,120).map(f=>foodItem(f,T)).join('')+'<p class="empty2">Search to find over 1,100 more foods.</p>'}
  return h}
@@ -3083,6 +3133,8 @@ function adBind(b,s){const sl=AD.slot,re=()=>{render()};
   addFood(sl,id);adPulse();AD.q='';save();re();const q=$('ad-q');if(q&&document.activeElement===q){q.value=''}$('ad-body').scrollTop=0}));
  b.querySelectorAll('[data-adpd]').forEach(x=>tapBind(x,()=>{putDish(sl,dish(x.dataset.adpd));adPulse();AD.q='';save();re();$('ad-body').scrollTop=0}));
  b.querySelectorAll('[data-add]').forEach(x=>tapBind(x,()=>adView('dish',{dish:x.dataset.add})));
+ b.querySelectorAll('[data-adrc]').forEach(x=>tapBind(x,()=>{const a=AD.rc[+x.dataset.adrc];if(!a)return;useAgain(sl,a);adPulse();save();re()}));
+ b.querySelectorAll('[data-adgx]').forEach(x=>x.onclick=()=>{const k=x.dataset.adgx;AD.gx=AD.gx.includes(k)?AD.gx.filter(y=>y!==k):[...AD.gx,k];renderAdd()});
  b.querySelectorAll('[data-adag]').forEach(x=>tapBind(x,()=>{const a=AD.ag[+x.dataset.adag];if(!a)return;useAgain(sl,a);adPulse();save();re()}));
  b.querySelectorAll('[data-adsn]').forEach(x=>tapBind(x,()=>{const o=AD.sn[+x.dataset.adsn];if(!o)return;if(o.food)addFood(sl,o.food.id,o.food.por);else putDish(sl,o.d);adPulse();save();re()}));
  b.querySelectorAll('[data-fx]').forEach(x=>x.onclick=()=>{const k=x.dataset.fx;AD.focus=!k?[]:AD.focus.includes(k)?AD.focus.filter(z=>z!==k):[...AD.focus,k];renderAdd()});
@@ -3100,17 +3152,19 @@ function adPlate(b,s,sl,mine){const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.
  const row=([id,gr,st],i)=>{const f=FM[id],iv=itemV([id,gr,st]);if(AD.open!==i)return `<div class="prow"><button class="pmain" type="button" data-pop="${i}"><span class="ficon em">${fIcon(id)}</span><span class="nm">${esc(f.n.split(',')[0])}</span><span class="amt num">${amtTxt(id,gr)}</span></button><button class="rm" type="button" data-prm="${i}" aria-label="Remove ${esc(f.n)}">${XIC}</button></div>`;
   return `<div class="item popen"><div class="top"><span class="ficon em">${fIcon(id)}</span><button class="nmbtn" type="button" data-food="${id}" style="min-width:0;flex:1"><span class="nm">${esc(f.n)}</span><span class="sub num" style="display:block">${ENs(iv[0])}${fmt(iv[1])} g protein · <span style="color:var(--accent)">${f.parts?'edit mix':'details'}</span></span></button><button class="rm" type="button" data-prm="${i}" aria-label="Remove ${esc(f.n)}">${XIC}</button></div>
    ${COOK.has(id)||f.cook?`<div class="seg cookseg"><button type="button" data-ck="${i}:c" aria-pressed="${isCooked(id,st)}">Cooked</button><button type="button" data-ck="${i}:r" aria-pressed="${!isCooked(id,st)}">Raw</button></div>`:''}
+   ${f.gb?'':(()=>{const u=lastG(id);return `<div class="seg fsz" role="group" aria-label="Amount">${[[Math.round(u*.7),'Less'],[u,'Usual'],[Math.round(u*1.4),'More']].map(([gg,l])=>`<button type="button" data-fz="${i}:${gg}" aria-pressed="${Math.round(gr)===gg}">${l}</button>`).join('')}</div>`})()}
    <div class="stepper"><button type="button" data-q="${i}:-1" aria-label="Less">−</button><input id="q-${AD.slot}-${i}" type="number" inputmode="numeric" min="0" step="5" value="${gr}" data-qi="${i}" aria-label="${esc(f.n)} grams"><span class="u">g</span><button type="button" data-q="${i}:1" aria-label="More">+</button></div>
    ${UNITS[id]?`<div class="packbtns">${UNITS[id].flatMap(([n,ug])=>(NOPL.has(n)?[1,2]:ug>=150?[.5,1,2]:[1,2,3]).map(x=>`<button type="button" data-unit="${i}:${Math.round(x*ug*10)/10}" aria-pressed="${Math.abs(gr-x*ug)<.6}">${uLabel(n,x)}</button>`)).join('')}</div>`:''}
    ${f.gb?(()=>{const w=gUnitWord(f.gb);return `<div class="packbtns">${[.5,1,1.5,2].map(x=>`<button type="button" data-unit="${i}:${Math.round(x*f.por)}" aria-pressed="${Math.abs(gr-x*f.por)<1}">${fmtQ(x)} ${x>1?w[1]:w[0]}</button>`).join('')}</div>`})():''}
    ${f.pack?`<div class="packbtns">${[[.25,'¼ pack'],[1/3,'⅓ pack'],[.5,'½ pack'],[1,'Whole pack']].map(([x,l])=>`<button type="button" data-pack="${i}:${x}">${l}</button>`).join('')}</div>`:''}</div>`};
- const ren=AD.ren?`<div class="adren"><label class="lbl" for="ad-name">${AD.ren==='save'?'Save as':'Name'}</label><div class="adrenrow"><input type="text" id="ad-name" value="${esc(sl.t||'')}" placeholder="${esc(def)}"><button class="btn primary sm" type="button" id="ad-nok">${AD.ren==='save'?'Save':'OK'}</button></div></div>`:'';
- b.innerHTML=(mine?`<div class="photorow">${PH[mine.id]?`<img class="mphoto" src="${PH[mine.id]}" alt="Photo of ${esc(mine.n)}">`:''}<div class="btnrow"><label class="btn sm" for="ad-file">${PH[mine.id]?'Change photo':'Add photo'}</label><input type="file" id="ad-file" accept="image/*" hidden>${PH[mine.id]?'<button class="btn sm ghost" type="button" id="ad-delph" style="color:var(--low)">Remove photo</button>':''}</div></div>`:'')+
-  (sl.it.length?sl.it.map(row).join(''):'<p class="empty2">Nothing on the plate yet.</p>')+
+ const cz=sl.sz||1,szh=sl.did||sl.it.length>1?`<div class="seg adsz" role="group" aria-label="Portion size">${[[.7,'Small'],[1,'Normal'],[1.4,'Large']].map(([x,l])=>`<button type="button" data-sz="${x}" aria-pressed="${cz===x}">${l}</button>`).join('')}</div>`:'';
+ const nmh=sl.it.length?`<div class="adname">${AD.edit?`<input type="text" id="ad-name" value="${esc(sl.t||'')}" placeholder="${esc(def)}" aria-label="Meal name" enterkeyhint="done" autocomplete="off">`:`<button class="nmt${sl.t?'':' ph'}" type="button" id="ad-nmb">${esc(sl.t||'Name this meal')}</button>`}<button class="iconbtn" type="button" id="ad-pen" aria-label="Rename">${PENI}</button><button class="iconbtn" type="button" id="ad-bm" aria-pressed="${!!mine}" aria-label="${mine?'Saved to your dishes':'Save to your dishes'}">${BMI}</button></div>`:'';
+ b.innerHTML=nmh+(mine?`<div class="photorow">${PH[mine.id]?`<img class="mphoto" src="${PH[mine.id]}" alt="Photo of ${esc(mine.n)}">`:''}<div class="btnrow"><label class="btn sm" for="ad-file">${PH[mine.id]?'Change photo':'Add photo'}</label><input type="file" id="ad-file" accept="image/*" hidden>${PH[mine.id]?'<button class="btn sm ghost" type="button" id="ad-delph" style="color:var(--low)">Remove photo</button>':''}</div></div>`:'')+
+  (sl.it.length?szh+sl.it.map(row).join(''):'<p class="empty2">Nothing on the plate yet.</p>')+
   `<button class="btn wide addmorebtn" type="button" id="ad-more">${PLUS}Add more</button>`+
   (sl.it.length?`<div class="ptot"><b class="num">${ENs(val[0])}${Math.round(val[1])} g protein</b>${g||sl.est?`<span class="cap num">${sl.est?lab('Estimate','est'):''}${g}</span>`:''}</div>`:'')+
-  (had?`<div class="adoffer"><span>You had this ${had===1?'twice':had+1+' times'}</span><button class="btn sm" type="button" id="ad-save">Save as my dish</button></div>`:'')+ren+
-  (sl.it.length?`<div class="adacts"><button class="btn sm" type="button" id="ad-ren">Rename</button>${!mine&&!had?'<button class="btn sm" type="button" id="ad-save">Save as my dish</button>':''}${d?`<button class="btn sm" type="button" id="ad-prcp">Recipe</button>`:''}<button class="btn sm" type="button" id="ad-clear" style="color:var(--low)">${s.extra?'Remove meal':'Clear'}</button></div>`:(s.extra?`<div class="adacts"><button class="btn sm" type="button" id="ad-clear" style="color:var(--low)">Remove meal</button></div>`:''))+
+  (had?`<p class="cap adhad">You had this ${had===1?'twice':had+1+' times'}. The bookmark above keeps it in your dishes.</p>`:'')+
+  (sl.it.length?`<div class="adacts">${d?`<button class="btn sm" type="button" id="ad-prcp">Recipe</button>`:''}<button class="btn sm" type="button" id="ad-clear" style="color:var(--low)">${s.extra?'Remove meal':'Clear'}</button></div>`:(s.extra?`<div class="adacts"><button class="btn sm" type="button" id="ad-clear" style="color:var(--low)">Remove meal</button></div>`:''))+
   `<button class="linkbtn" type="button" id="ad-meas">${INFO} How much is a spoon, a cup or a handful?</button>`;
  const it=()=>S.plan[AD.slot].it,ch=()=>{edited(AD.slot);save();render()};
  b.querySelectorAll('[data-pop]').forEach(x=>x.onclick=()=>{AD.open=+x.dataset.pop;renderAdd()});
@@ -3123,13 +3177,18 @@ function adPlate(b,s,sl,mine){const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.
  b.querySelectorAll('[data-food]').forEach(x=>x.onclick=()=>openFood(x.dataset.food));
  $('ad-more').onclick=()=>{adView('main');const q=$('ad-q');if(q)q.focus()};$('ad-meas').onclick=openMeasures;
  if($('ad-prcp'))$('ad-prcp').onclick=()=>openRecipe(d.id,AD.slot);
- if($('ad-ren'))$('ad-ren').onclick=()=>{AD.ren=AD.ren==='ren'?null:'ren';renderAdd();const n=$('ad-name');if(n)n.focus()};
- b.querySelectorAll('#ad-save').forEach(x=>x.onclick=()=>{AD.ren='save';renderAdd();const n=$('ad-name');if(n)n.focus()});
- if($('ad-nok'))$('ad-nok').onclick=()=>{const n=($('ad-name').value||'').trim(),cur=S.plan[AD.slot];
-  if(AD.ren==='save'){const nm=n||cur.t||def;saveMeal(AD.slot,nm);toast(`Saved "${nm}" to Your dishes`)}
-  else{cur.t=n;if(cur.did&&String(cur.did).startsWith('u_')&&S.dishes[cur.did]&&n)S.dishes[cur.did].n=n}
-  AD.ren=null;save();render()};
- if($('ad-name'))$('ad-name').onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();$('ad-nok').click()}};
+ b.querySelectorAll('[data-sz]').forEach(x=>x.onclick=()=>{setSz(AD.slot,+x.dataset.sz);ch()});
+ b.querySelectorAll('[data-fz]').forEach(x=>x.onclick=()=>{const [i,gg]=x.dataset.fz.split(':');it()[i][1]=+gg;ch()});
+ const nmEdit=()=>{AD.edit=1;renderAdd();const n=$('ad-name');if(n){n.focus();n.select()}};
+ if($('ad-nmb'))$('ad-nmb').onclick=nmEdit;
+ if($('ad-pen'))tapBind($('ad-pen'),()=>{const n=$('ad-name');if(n){n.blur();return}nmEdit()});
+ const nf=$('ad-name');if(nf){
+  nf.onblur=()=>{if(nf.dataset.done)return;nf.dataset.done='1';if(document.activeElement===nf)nf.blur();const v=nf.value.trim(),cur=S.plan[AD.slot];AD.edit=0;
+   if(v!==(cur.t||'')){cur.t=v;if(v&&cur.did&&String(cur.did).startsWith('u_')&&S.dishes[cur.did])S.dishes[cur.did].n=v;save()}render()};
+  nf.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();nf.blur()}else if(e.key==='Escape'){e.preventDefault();nf.value=S.plan[AD.slot].t||'';nf.blur()}}}
+ const bm=$('ad-bm');if(bm){bm.addEventListener('mousedown',e=>e.preventDefault());
+  tapBind(bm,()=>{const n=$('ad-name'),cur=S.plan[AD.slot],nm=(n&&n.value.trim())||cur.t||def,was=!!(cur.did&&String(cur.did).startsWith('u_')&&S.dishes[cur.did]);
+   if(n){n.dataset.done='1';AD.edit=0;n.blur()}saveMeal(AD.slot,nm);save();toast(was?`Updated "${nm}" in your dishes`:`Saved "${nm}" to your dishes`);render()})}
  if($('ad-clear'))$('ad-clear').onclick=e=>{if(e.target.dataset.sure!=='1'){e.target.dataset.sure='1';e.target.textContent=s.extra?'Tap to remove':'Tap to clear';return}
   if(s.extra){delete S.plan[AD.slot];AD=null;MS=null;rebuildSlots();const dg=$('add');dg.close?dg.close():dg.removeAttribute('open');save();render();return}
   const t0=typeOf(S.plan,AD.slot);S.plan[AD.slot]=Object.assign({t:'',it:[]},t0!==AD.slot?{ty:t0}:{});save();adView('main')};
@@ -3210,15 +3269,29 @@ document.querySelectorAll('#nsub-seg [data-ns]').forEach(b=>b.onclick=()=>{S.nsu
 document.querySelectorAll('#lib-seg [data-lb]').forEach(b=>b.onclick=()=>{S.lib=b.dataset.lb;render();scrollTo({top:0})});
 document.querySelectorAll('#learn-seg [data-ln]').forEach(b=>b.onclick=()=>{S.learn=b.dataset.ln;render()});
 $('lib-q').oninput=()=>renderLibDishes();
+$('rcp-q').oninput=()=>renderLibRcp();
+document.querySelectorAll('#rcp-seg [data-rc]').forEach(b=>b.onclick=()=>{S.rcp=b.dataset.rc;RCX=null;save();renderLibRcp()});
 $('lib-label').onclick=()=>openScan(null,'label');
 $('lib-mix').onclick=()=>newMix('d');
 function renderLib(T){
  document.querySelectorAll('#lib-seg [data-lb]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lb===S.lib));
  const ln=S.learn==='kitchen'?'kitchen':'guide';$('learn-seg').hidden=S.lib!=='learn';document.querySelectorAll('#learn-seg [data-ln]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ln===ln));
- $('lib-foods').hidden=S.lib!=='foods';$('lib-dishes').hidden=S.lib!=='dishes';$('it-foods').hidden=!(S.lib==='learn'&&ln==='guide');$('it-kitchen').hidden=!(S.lib==='learn'&&ln==='kitchen');
- if(S.lib==='foods')renderProducts();else if(S.lib==='dishes')renderLibDishes();else if(ln==='guide')renderFoods(T);else renderKitchen();
+ $('lib-foods').hidden=S.lib!=='foods';$('lib-dishes').hidden=S.lib!=='dishes';$('lib-rcp').hidden=S.lib!=='recipes';$('it-foods').hidden=!(S.lib==='learn'&&ln==='guide');$('it-kitchen').hidden=!(S.lib==='learn'&&ln==='kitchen');
+ if(S.lib==='foods')renderProducts();else if(S.lib==='dishes')renderLibDishes();else if(S.lib==='recipes')renderLibRcp();else if(ln==='guide')renderFoods(T);else renderKitchen();
 }
-let LX=null;
+let LX=null,GX=new Set(),RCX=null;
+const byUsed=(a,b)=>((S.meta[b.id]||{}).used||0)-((S.meta[a.id]||{}).used||0);
+const verOf=k=>granVersions().filter(c=>(TPL[c.gb.tpl]?c.gb.tpl:'granola')===k);
+/* Library, Recipes: every dish with steps, your own first; Builders: the templates and the versions you saved */
+function renderLibRcp(){const m=S.rcp==='bld'?'bld':'rcp',el=$('rcp-list');document.querySelectorAll('#rcp-seg [data-rc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.rc===m));$('rcp-q').hidden=m!=='rcp';
+ if(m==='rcp'){const q=$('rcp-q').value.toLowerCase().trim(),L=allDishes().filter(d=>!d.gran&&hasRcp(d.id)).filter(d=>!q||d.n.toLowerCase().includes(q)||d.it.some(([id])=>FM[id]&&fmatch(FM[id],q))).sort((a,b)=>(!!b.own-!!a.own)||(a.own&&b.own?(b.used||0)-(a.used||0):0)||a.n.localeCompare(b.n));
+  el.innerHTML=L.length?`<div class="card" style="padding-top:2px">${L.map(d=>{const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z());return `<div class="ldish"><button class="ldhead" type="button" data-rco="${d.id}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.own?lab('Your dish','own'):''}</b><span class="cap num">${d.min?d.min+' min · ':''}${HK()?Math.round(v[1])+' g protein':EN(v[0])}</span></span>${CHEV}</button></div>`}).join('')}</div>`:'<p class="cap">No match.</p>';
+  el.querySelectorAll('[data-rco]').forEach(b=>b.onclick=()=>openRecipe(b.dataset.rco));return}
+ el.innerHTML=`<div class="bldgrid">${TPLK.map(k=>{const T=TPL[k],n=verOf(k).length;return `<button class="bldcard" type="button" data-rcb="${k}" aria-expanded="${RCX===k}"><span class="thumb em">${EMO[T.ic]}</span><b>${T.n}</b><span class="cap">${n?n+(n>1?' versions':' version'):'No versions yet'}</span></button>`}).join('')}</div>`+
+  (RCX?`<div class="card bldlist" id="rcp-vers"><div class="ldish bldnew"><button class="ldhead" type="button" data-rcn="${RCX}"><span class="thumb">${PLUS}</span><span class="sgt"><b>New ${TPL[RCX].n.toLowerCase()}</b></span></button></div>${verOf(RCX).sort(byUsed).map(c=>`<div class="ldish"><button class="ldhead" type="button" data-rcv="${c.id}"><span class="thumb em">${fIcon(c.id)}</span><span class="sgt"><b>${esc(c.n)}</b><span class="cap num">${FM[c.id]?FM[c.id].por+' g a serving':''}</span></span>${CHEV}</button></div>`).join('')}</div>`:'');
+ el.querySelectorAll('[data-rcb]').forEach(b=>b.onclick=()=>{RCX=RCX===b.dataset.rcb?null:b.dataset.rcb;renderLibRcp();const v=$('rcp-vers');if(v&&v.scrollIntoView)v.scrollIntoView({block:'nearest',behavior:'smooth'})});
+ el.querySelectorAll('[data-rcn]').forEach(b=>b.onclick=()=>openGran(null,null,b.dataset.rcn));
+ el.querySelectorAll('[data-rcv]').forEach(b=>b.onclick=()=>openGran(b.dataset.rcv))}
 function renderLibDishes(){
  const T=targets(),q=$('lib-q').value.toLowerCase().trim(),lt=S.libt||'all';
  $('lib-t').innerHTML=[['all','All'],['fav','★ Favourites'],['b','Breakfast'],['m','Lunch and dinner'],['s','Snacks']].map(([k,l])=>`<button class="chip" type="button" data-lt="${k}" aria-pressed="${lt===k}">${l}</button>`).join('');
@@ -3226,17 +3299,19 @@ function renderLibDishes(){
  const ds=allDishes(lt==='all'||lt==='fav'?null:lt).filter(d=>lt!=='fav'||d.fav).filter(d=>!q||d.n.toLowerCase().includes(q)||d.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q)));
  const mine=ds.filter(d=>(d.own||d.edited)&&!d.gran).sort((a,b)=>(b.used-a.used)||a.n.localeCompare(b.n)),rest=ds.filter(d=>!d.own&&!d.edited).sort((a,b)=>a.n.localeCompare(b.n));
  const row=d=>{const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),open=LX===d.id,slots=d.t==='b'?['b']:d.t==='s'?['s']:['l','d'];
-  return `<div class="ldish"><button class="ldhead" type="button" data-lx="${d.id}" aria-expanded="${open}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.fav?' <span class="favst" aria-label="Favourite">★</span>':''}${d.edited?'<span class="mine">changed</span>':''}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein${d.min?' · '+d.min+' min':''}</span></span>${CHEV}</button>
+  return `<div class="ldish"><button class="ldhead" type="button" data-lx="${d.id}" aria-expanded="${open}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.fav?' <span class="favst" aria-label="Favourite">★</span>':''}${d.edited?'<span class="mine">changed</span>':d.own?lab('Your dish','own'):''}</b><span class="cap num">${ENs(v[0])}${Math.round(v[1])} g protein${d.min?' · '+d.min+' min':''}</span></span>${CHEV}</button>
    ${open?`<div class="ldbody"><p class="cap">${(dishFit(d)||d).it.map(([id,g])=>esc(FM[id]?FM[id].n.split(',')[0]:'Food')+' '+g+' g').join(', ')}${dishFit(d)&&dishFit(d).minus?' · '+minusTxt(dishFit(d)):''}</p><div class="btnrow"><button class="btn sm" type="button" data-lrcp="${d.id}">${hasRcp(d.id)?'Recipe':'Find a recipe'}</button>${slots.map(t=>`<button class="btn sm" type="button" data-ladd="${d.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}<button class="btn sm" type="button" data-lfav="${d.id}" aria-pressed="${d.fav}">${d.fav?'★ Favourite':'☆ Add to favourites'}</button>${d.own||d.edited?`<button class="btn sm ghost" type="button" data-ldel="${d.id}">${d.edited?'Reset to original':'Delete'}</button>`:''}</div></div>`:''}</div>`};
  /* your granolas: saved from the granola builder, eaten by the serving */
- const gv=lt!=='fav'?granVersions().filter(c=>(lt==='all'||gTpl(c.gb).t===lt)&&!q||c.n.toLowerCase().includes(q)||c.parts.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q))):[];
- const grow=c=>{const f=FM[c.id],v=itemV([c.id,f.por]),open=LX===c.id;return `<div class="ldish"><button class="ldhead" type="button" data-lx="${c.id}" aria-expanded="${open}"><span class="thumb em">${fIcon(c.id)}</span><span class="sgt"><b>${esc(c.n)}</b><span class="cap num">${f.por} g · ${ENs(v[0])}${Math.round(v[1])} g protein</span></span>${CHEV}</button>
+ const gv=lt!=='fav'?granVersions().filter(c=>(lt==='all'||gTpl(c.gb).t===lt)&&(!q||c.n.toLowerCase().includes(q)||c.parts.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q)))):[];
+ const grow=c=>{const f=FM[c.id],v=itemV([c.id,f.por]),open=LX===c.id;return `<div class="ldish"><button class="ldhead" type="button" data-lx="${c.id}" aria-expanded="${open}"><span class="thumb em">${fIcon(c.id)}</span><span class="sgt"><b>${esc(c.n)}${lab('Builder','bld')}</b><span class="cap num">${f.por} g · ${ENs(v[0])}${Math.round(v[1])} g protein</span></span>${CHEV}</button>
   ${open?`<div class="ldbody"><div class="btnrow"><button class="btn sm" type="button" data-gedit="${c.id}">Edit</button><button class="btn sm" type="button" data-grcp="${c.id}">Recipe</button>${(gTpl(c.gb).t==='b'?['b']:gTpl(c.gb).t==='s'?['s']:['l','d']).map(t=>`<button class="btn sm" type="button" data-gbf="${c.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}</div></div>`:''}</div>`};
- $('lib-mine').innerHTML=mine.length||gv.length||(!q&&lt!=='fav')?`<div class="card" style="padding-top:4px"><div class="row" style="margin:10px 0 2px"><h2 style="margin:0">Your dishes</h2><button class="btn sm" type="button" id="lib-gran">Recipe builder</button></div>${mine.length||gv.length?'':'<p class="cap" style="margin:4px 0 12px">Dishes you build or change are saved here when you leave Edit.</p>'}${gv.map(grow).join('')}${mine.map(row).join('')}</div>`:'';
+ $('lib-mine').innerHTML=mine.length||gv.length||(!q&&lt!=='fav')?`<div class="card" style="padding-top:4px"><div class="row" style="margin:10px 0 2px"><h2 style="margin:0">Your dishes</h2><button class="btn sm" type="button" id="lib-gran">Recipe builder</button></div>${mine.length||gv.length?'':'<p class="cap" style="margin:4px 0 12px">Dishes you build or change are saved here when you leave Edit.</p>'}${q?gv.map(grow).join(''):TPLK.map(k=>{const G=gv.filter(c=>(TPL[c.gb.tpl]?c.gb.tpl:'granola')===k).sort(byUsed);if(!G.length)return '';if(G.length===1)return grow(G[0]);const T=TPL[k],open=GX.has(k);
+  return `<div class="ldish"><button class="ldhead" type="button" data-lgx="${k}" aria-expanded="${open}"><span class="thumb em">${EMO[T.ic]}</span><span class="sgt"><b>${T.n}${lab('Builder','bld')}</b><span class="cap">${G.length} versions</span></span>${CHEV}</button>${open?`<div class="ldgrp">${G.map(grow).join('')}</div>`:''}</div>`}).join('')}${mine.map(row).join('')}</div>`:'';
  $('lib-allh').textContent=mine.length||gv.length?'All dishes':'Dishes';
  $('lib-list').innerHTML=paRow(q)+shRow(q)+gbRows(q)+(gbRows(q)&&!rest.length?'':rest.length?rest.map(row).join(''):`<p class="cap">${lt==='fav'&&!q?(mine.length?'No other favourites.':'No favourites yet. Tap a dish, then Add to favourites. The star in the add menu works too.'):'No match.'}</p>`);
  const v=$('lib-dishes');v.querySelectorAll('[data-gshop]').forEach(b=>b.onclick=openShop);v.querySelectorAll('[data-gplan]').forEach(b=>b.onclick=openPlan);v.querySelectorAll('[data-gbld]').forEach(b=>b.onclick=()=>openGran(null,null,b.dataset.gbld));
  v.querySelectorAll('[data-lx]').forEach(b=>b.onclick=()=>{LX=LX===b.dataset.lx?null:b.dataset.lx;renderLibDishes()});
+ v.querySelectorAll('[data-lgx]').forEach(b=>b.onclick=()=>{const k=b.dataset.lgx;GX.has(k)?GX.delete(k):GX.add(k);renderLibDishes()});
  v.querySelectorAll('[data-lrcp]').forEach(b=>b.onclick=()=>openRecipe(b.dataset.lrcp));
  if($('lib-gran'))$('lib-gran').onclick=()=>openGran(null);
  v.querySelectorAll('[data-gedit]').forEach(b=>b.onclick=()=>openGran(b.dataset.gedit));
@@ -3889,7 +3964,7 @@ function render0(){
  if(S.view==='ideas'){S.view='nutr';S.nsub='imp'}
  if(!['today','nutr','scan','lib','profile'].includes(S.view))S.view='today';
  if(v0!=='scan'&&SCAN.tab){stopCamera();SCAN.tab=false;ST.drawn=''}
- if(!['over','imp','hist'].includes(S.nsub))S.nsub='over';if(S.lib==='meals')S.lib='dishes';if(S.lib==='guide'||S.lib==='kitchen'){S.learn=S.lib;S.lib='learn'}if(!['dishes','foods','learn'].includes(S.lib))S.lib='dishes';
+ if(!['over','imp','hist'].includes(S.nsub))S.nsub='over';if(S.lib==='meals')S.lib='dishes';if(S.lib==='guide'||S.lib==='kitchen'){S.learn=S.lib;S.lib='learn'}if(!['dishes','recipes','foods','learn'].includes(S.lib))S.lib='dishes';
  save();
  const T=targets(),D=dayV(),v=S.view;
  ['today','nutr','scan','lib','profile'].forEach(x=>{$('v-'+x).hidden=x!==v});
