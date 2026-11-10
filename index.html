@@ -765,11 +765,6 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .gshow i:nth-child(1){left:10%}.gshow i:nth-child(2){left:25%;animation-delay:.08s}.gshow i:nth-child(3){left:40%;animation-delay:.03s}.gshow i:nth-child(4){left:55%;animation-delay:.12s}.gshow i:nth-child(5){left:70%;animation-delay:.05s}.gshow i:nth-child(6){left:85%;animation-delay:.1s}
 @keyframes gdrop{0%{transform:translateY(0);opacity:0}15%{opacity:.85}100%{transform:translateY(90px);opacity:0}}
 @keyframes gpop{0%{transform:scale(.4)}60%{transform:scale(1.18)}100%{transform:scale(1)}}
-#garden{height:100dvh;max-height:100dvh;margin:0 auto;border-radius:0}
-#garden .pk{max-height:none;height:100%}
-#garden .pk-head::before{display:none}
-#garden .pk-head{padding-top:12px}
-@media (min-width:640px){#garden{height:88vh;max-height:88vh;margin:auto;border-radius:24px}}
 .ghead{display:flex;align-items:center;gap:8px;flex:none}
 .gcoins{display:inline-flex;align-items:center;gap:5px;font-weight:800;font-size:16px;padding:0 4px}
 .gcoins svg{width:22px;height:22px}
@@ -838,8 +833,8 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .gprice{display:inline-flex;align-items:center;gap:3px;font-weight:800;min-width:44px;justify-content:flex-end}
 .gprice svg{width:16px;height:16px}
 .gsell{margin-top:14px}
-html.still .gstrip *,html.still #garden *,html.still #garden *::after,html.still #garden *::before,html.still .gpart,html.still #garden *::after,html.still #garden *::before{animation:none!important;transition:none!important}
-@media (prefers-reduced-motion:reduce){.gstrip *,#garden *,#garden *::after,#garden *::before{animation:none!important;transition:none!important}}
+html.still .gstrip *,html.still #v-garden *,html.still #v-garden *::after,html.still #v-garden *::before,html.still .gpart,html.still #v-garden *::after,html.still #v-garden *::before{animation:none!important;transition:none!important}
+@media (prefers-reduced-motion:reduce){.gstrip *,#v-garden *,#v-garden *::after,#v-garden *::before{animation:none!important;transition:none!important}}
 
 .gtabs{margin-top:10px}
 .gtabs button{white-space:nowrap;padding-left:4px;padding-right:4px}
@@ -968,6 +963,45 @@ html.still .schest *,html.still .gch,html.still .ggift svg{animation:none!import
 html.still .tort *{animation:none!important}
 @media (prefers-reduced-motion:reduce){.tort *{animation:none!important}}
 
+
+.vsw{margin:0 0 10px;max-width:260px}
+.gdhead{position:sticky;top:0;z-index:5;background:var(--bg);padding:8px 0 10px}
+.gdhead .row{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.gland{filter:drop-shadow(0 8px 6px rgba(0,0,0,.16)) saturate(calc(.72 + .28*var(--wet,1))) brightness(calc(1.12 - .14*var(--wet,1)))}
+.gplot.wet .gpl,.gplot.wet .gspr,.gplot.wet .gmound{animation:gwet .5s ease}
+@keyframes gwet{0%,100%{transform:rotate(0)}30%{transform:rotate(-6deg)}65%{transform:rotate(5deg)}}
+.gcan{touch-action:none;cursor:grab}
+#gd-pour{position:fixed;left:0;top:0;width:60px;height:52px;z-index:12;pointer-events:none}
+#gd-pour>svg{width:60px;height:50px}
+.gpd{position:absolute;left:-6px;top:30px;width:20px;height:40px}
+.gpd i{position:absolute;width:3px;height:9px;border-radius:2px;background:var(--water);animation:gpour .45s linear infinite}
+.gpd i:nth-child(1){left:2px}.gpd i:nth-child(2){left:8px;animation-delay:.12s}.gpd i:nth-child(3){left:14px;animation-delay:.24s}.gpd i:nth-child(4){left:5px;animation-delay:.33s}
+@keyframes gpour{0%{transform:translateY(0);opacity:.9}100%{transform:translateY(34px);opacity:0}}
+.qboard{padding:14px 16px 10px}
+.qhead{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:4px}
+.qhead h2{font-size:17px}
+.qrow{display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid var(--line);min-height:56px}
+.qrow:first-of-type{border-top:0}
+.qrow .otx{flex:1;min-width:0;display:flex;flex-direction:column;gap:4px}
+.qic{width:36px;height:36px;border-radius:50%;display:grid;place-items:center;flex:none;background:var(--surface2);color:var(--muted)}
+.qic svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.qic.qw{color:#3E8DC4;background:color-mix(in srgb,var(--water) 28%,transparent)}
+.qic.qw svg{fill:currentColor;stroke:none}
+.qrow.done .qic{background:var(--accent);color:var(--accent-ink)}
+.qrow.done .qic svg{fill:none;stroke:currentColor;stroke-width:2.6}
+.qrow.done>.otx>b{color:var(--muted)}
+.qbar{display:block;height:6px;border-radius:3px;background:var(--surface2);overflow:hidden}
+.qbar i{display:block;height:100%;background:var(--water);border-radius:3px}
+.qchips{gap:6px}
+.qchips .chip{min-height:36px}
+.qsup{display:inline-flex;align-items:center;gap:4px}
+.qsup svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.qsup.on{background:var(--accent);color:var(--accent-ink)}
+.qsup.off{opacity:.6}
+.qmin,.qmore{width:40px;height:40px;flex:none;font-size:20px;font-weight:700;color:var(--muted)}
+.qmore .chev{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.2}
+.qglass{flex:none}
+html.still #gd-pour *,html.still .gplot.wet *{animation:none!important}
 </style>
 </head>
 <body>
@@ -975,6 +1009,7 @@ html.still .tort *{animation:none!important}
   <section id="v-today" class="view"></section>
 
   <section id="v-nutr" class="view" hidden>
+    <div class="seg sm vsw" role="tablist"><button type="button" data-vsw="nutr" aria-pressed="true">Nutrients</button><button type="button" data-vsw="lib" aria-pressed="false">Library</button></div>
     <div class="vhead"><div><h1>Nutrients</h1><p class="cap" id="n-sub"></p></div></div>
     <div class="seg" id="nsub-seg"><button data-ns="over">Overview</button><button data-ns="imp">Improve</button><button data-ns="hist">History</button></div>
     <div id="n-over" class="view">
@@ -997,6 +1032,7 @@ html.still .tort *{animation:none!important}
   <section id="v-scan" class="view" hidden></section>
 
   <section id="v-lib" class="view" hidden>
+    <div class="seg sm vsw" role="tablist"><button type="button" data-vsw="nutr" aria-pressed="false">Nutrients</button><button type="button" data-vsw="lib" aria-pressed="true">Library</button></div>
     <div class="vhead"><div><h1>Library</h1><p class="cap">Dishes, your foods, and what to eat for which nutrient</p></div></div>
     <div class="seg" id="lib-seg"><button type="button" data-lb="dishes">Dishes</button><button type="button" data-lb="recipes">Recipes</button><button type="button" data-lb="foods">Foods</button><button type="button" data-lb="learn">Learn</button></div>
     <div id="lib-foods" class="view" hidden><div class="card"><h2 style="margin-bottom:4px">Your foods</h2><p class="cap" style="margin:0 0 10px">Products you scanned or entered, and mixes you made. Tap one to see or change its values.</p><div id="prof-prod"></div>
@@ -1017,6 +1053,7 @@ html.still .tort *{animation:none!important}
     <div id="it-kitchen" class="view" hidden></div>
   </section>
 
+  <section id="v-garden" class="view" hidden><div id="gd-head" class="gdhead"></div><div id="gd-body"></div></section>
   <section id="v-profile" class="view" hidden>
     <div class="vhead" id="p-head"><div><h1>Profile</h1><p class="cap">Your data stays on this phone</p></div></div>
     <div class="card pmenu" id="p-menu"></div>
@@ -1094,7 +1131,7 @@ html.still .tort *{animation:none!important}
   <button data-v="today" type="button"><span class="i"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="3.5"/></svg></span>Today</button>
   <button data-v="nutr" type="button"><span class="i"><svg viewBox="0 0 24 24"><path d="M4 7h11M4 12h16M4 17h8"/></svg></span>Nutrients</button>
   <button data-v="scan" type="button" class="tabscan" aria-label="Scan and shop"><span class="i"><svg viewBox="0 0 24 24"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M7.5 10h9l-.7 6.4a1 1 0 0 1-1 .9H9.2a1 1 0 0 1-1-.9z"/><path d="M10 10V9a2 2 0 0 1 4 0v1"/></svg></span></button>
-  <button data-v="lib" type="button"><span class="i"><svg viewBox="0 0 24 24"><path d="M4 5a2 2 0 0 1 2-2h4v18H6a2 2 0 0 1-2-2z"/><path d="M10 3h8a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2h-8"/><path d="M14 8h3M14 12h3"/></svg></span>Library</button>
+  <button data-v="garden" type="button"><span class="i"><svg viewBox="0 0 24 24"><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"/><path d="M5 19c3-4 6-7 10-9"/></svg></span>Garden</button>
   <button data-v="profile" type="button"><span class="i"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></span>Profile</button>
 </div></nav>
 
@@ -1116,7 +1153,6 @@ html.still .tort *{animation:none!important}
   <div class="pk-list" id="pk-list"></div>
 </div></dialog>
 
-<dialog id="garden" aria-label="Garden"><div class="pk"><div class="pk-head" id="gd-head"></div><div class="pk-list" id="gd-body"></div></div></dialog>
 <dialog id="add"><div class="pk"><div class="pk-head" id="ad-head"></div><div class="pk-list" id="ad-body"></div><div class="adfoot" id="ad-foot" hidden></div></div></dialog>
 <dialog id="plan"><div class="pk"><div class="pk-head"><div class="row"><h2>Plan ahead</h2><button class="btn sm" id="pl-close" type="button">Done</button></div></div><div class="pk-list detail" id="pl-body" style="padding:14px 16px 24px"></div></div></dialog>
 <dialog id="gran"><div class="pk"><div class="pk-head"><div class="row"><h2 id="gr-title">Granola builder</h2><button class="btn sm" id="gr-close" type="button">Close</button></div></div><div class="pk-list detail" id="gr-body" style="padding:14px 16px 24px"></div></div></dialog>
@@ -2124,9 +2160,9 @@ function renderToday(T,D){
    ${empty?`${idea(s)}<div class="mact"><button class="btn primary" type="button" data-start="${s.id}">${s.t==='s'?'Add a snack':'Add '+s.n.toLowerCase()}</button><button class="btn" type="button" data-pick="${s.id}">More ideas</button></div>`:''}</article>`};
  $('v-today').innerHTML=`<div class="vhead"><div>${isT?`<h1>${title}</h1>`:`<h1><button class="h1btn" type="button" id="d-today" aria-label="${title}, back to today">${title}</button></h1>`}<p class="cap">${date}</p></div><div class="datenav"><button class="iconbtn" type="button" id="go-plan" aria-label="Plan ahead"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10l1.5 1.5L13 9M9 15.5l1.5 1.5L13 14.5M15 11h1M15 16.5h1"/></svg></button><button class="iconbtn" type="button" id="d-cal" aria-label="History calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button class="iconbtn" type="button" id="d-prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><button class="iconbtn" type="button" id="d-next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>${dueLine()}${shopLine()}
   ${emptyDay?`<div class="card newday"><h2>${isT?'New day':S.date>TODAY?'Nothing planned yet':'Nothing logged'}</h2><p class="cap" style="margin:4px 0 12px">${S.date>TODAY?'Plan this day ahead: the ideas below fit what you still need.':'Add what you eat: pick foods one by one, or a dish.'}</p>${actPill(isT,1)}${wsc!==null?`<button class="weekline" type="button" id="go-week" style="margin:0 0 10px"><span>Last 7 days</span><b>${wsc}% covered</b>${CHEV}</button>`:''}${prev?`<button class="btn wide" type="button" id="d-copy">Same as ${prev===shift(S.date,-1)?'yesterday':kdate(prev).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'})}</button>`:''}</div>`:''}
-${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero${WON()?' hw':''}"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}. Open Nutrients"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/>${PV?`<circle class="pvarc" cx="60" cy="60" r="52" fill="none" stroke="${HC(PV.sc)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-PV.sc/100)}"/>`:''}<circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
-   <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div>${WON()?bottleHTML():''}</div>${PV?`<p class="pvline">${PV.txt} <b class="num">${PV.sc} %</b></p>`:''}${waterRow()}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div>${actPill(isT)}</div>`}
-${isT?cuHTML():''}${gardenStrip()}
+${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}. Open Nutrients"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/>${PV?`<circle class="pvarc" cx="60" cy="60" r="52" fill="none" stroke="${HC(PV.sc)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-PV.sc/100)}"/>`:''}<circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
+   <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div></div>${PV?`<p class="pvline">${PV.txt} <b class="num">${PV.sc} %</b></p>`:''}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div>${actPill(isT)}</div>`}
+${isT?cuHTML():''}${isT?questBoard():''}
   <div class="secthead"><h2>Meals</h2>${emptyDay?'':`<span class="cap num">${HK()?'':Math.round(D[0]).toLocaleString('en')+' kcal · '}${Math.round(D[1])} g protein so far</span>`}</div>
   <div class="meals">${SLOTS.filter(s=>s.id!=='x').map(meal).join('')}</div>
   <div class="addmeal"><span class="lbl">Add a meal</span><div class="chips">${[...'blds'].map(t=>`<button class="chip" type="button" data-addmeal="${t}">+ ${TY[t].n}</button>`).join('')}</div></div>
@@ -2136,10 +2172,9 @@ ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="m
    ${iss.length>3?`<button class="arow" type="button" id="go-nutr"><span class="nm muted" style="font-weight:600">${iss.length-3} more</span>${CHEV}</button>`:''}</div></div>`
   :`<div class="card"><h2>Everything covered</h2><p class="cap" style="margin-top:4px">${S.range===0?'Every nutrient reaches its target over the time your body stores it.':(S.range===1?'This day reaches':'Your last '+S.range+' days reach')+' all your targets.'}</p></div>`}
 `}
-  ${fgCard()}
-  ${supCard(isT)}${weightRow()}`;
+  ${isT?'':supCard(isT)}${weightRow()}`;
  const v=$('v-today');
- bindFg(v);bindSupCard(v);bindWater(v);bindCu(v);bindIns(v);if($('go-garden'))$('go-garden').onclick=()=>openGarden();bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
+ bindFg(v);bindSupCard(v);bindWater(v);bindCu(v);bindIns(v);bindQuests(v);bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
  v.querySelectorAll('[data-pick]').forEach(b=>b.onclick=()=>{openAdd(b.dataset.pick);const e=$('ad-ideas');if(e)e.scrollIntoView({block:'start'})});
  v.querySelectorAll('[data-tag]').forEach(b=>b.onclick=()=>{const k=b.dataset.tag,a=AGT[k];if(!a)return;useAgain(k,a);save();toast(`Added ${a.n}`);render()});
  v.querySelectorAll('[data-start]').forEach(b=>b.onclick=()=>startMeal(b.dataset.start));
@@ -2154,7 +2189,7 @@ ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="m
  v.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>selectNut(b.dataset.sel));
  if($('go-ideas'))$('go-ideas').onclick=()=>{S.nsub='imp';go('nutr')};
  if($('go-nutr'))$('go-nutr').onclick=()=>{S.nsub='over';go('nutr')};
- $('go-sup').onclick=openSupD;
+ if($('go-sup'))$('go-sup').onclick=openSupD;
  $('d-prev').onclick=()=>{setDate(shift(S.date,-1));render()};$('d-next').onclick=()=>{setDate(shift(S.date,1));render()};
  if($('d-today'))$('d-today').onclick=()=>{setDate(TODAY);render()};
  if($('d-copy'))$('d-copy').onclick=()=>{copyMeals(S.days[prev],S.plan);setDate(S.date);render()};
@@ -3343,11 +3378,11 @@ function gardenStrip(){if(!GON()||S.date!==TODAY||!S.garden)return '';const g=S.
 
 /* the garden screen: one dialog with the views main and basket */
 let G=null;const GST={};
-function openGarden(view){if(!GON())return;gInit();const lo=S.garden.lastOpen;G={view:view||'main',sel:null,spot:null,buy:null,nm:0,wave:!!(lo&&dayDiff(lo,TODAY)>=3)};S.garden.lastOpen=TODAY;save();const d=$('garden');renderGarden();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('gd-body').scrollTop=0}
-function closeGarden(){G=null;const d=$('garden');d.close?d.close():d.removeAttribute('open');render()}
-$('garden').addEventListener('close',()=>{if(G&&!$('garden').open){G=null;render()}});
-$('garden').addEventListener('click',e=>{if(e.target===$('garden'))closeGarden()});
-function gView(v){G.view=v;G.sel=null;G.spot=null;G.buy=null;G.nm=0;renderGarden();$('gd-body').scrollTop=0}
+function gStart(view){gInit();const lo=S.garden.lastOpen;G={view:view||'main',sel:null,spot:null,buy:null,nm:0,wave:!!(lo&&dayDiff(lo,TODAY)>=3)};S.garden.lastOpen=TODAY}
+function gardenView(){if(!GON()){G=null;$('gd-head').innerHTML='<div class="vhead"><div><h1>Garden</h1></div></div>';$('gd-body').innerHTML='<div class="card"><p class="gempty" style="margin:4px 0 12px">The garden is off</p><button class="btn primary wide" type="button" id="gd-on">Turn it on</button></div>';$('gd-on').onclick=()=>{gInit();S.garden.on=1;save();render()};return}if(!G)gStart();renderGarden()}
+function openGarden(view){if(!GON())return;gStart(view);S.view='garden';render();scrollTo({top:0});}
+function closeGarden(){G=null;if(S.view==='garden'){S.view='today'}render()}
+function gView(v){G.view=v;G.sel=null;G.spot=null;G.buy=null;G.nm=0;renderGarden();scrollTo({top:0})}
 function renderGarden(){if(!G||!S.garden)return;const o=PROJ;PROJ=false;try{renderGarden0()}finally{PROJ=o}}
 function gEta(p){const left=p.need-gProgress(p);if(gMode()==='auto'){const n=Math.ceil(left-1e-6);return n<=1?'Ready tomorrow':`Ready in about ${n} days`}
  const wf=gWaterOn(TODAY);if(left<=1-wf+1e-6)return 'Ready with more water today';if(wf<=0)return 'Needs water';const n=Math.ceil(left-(1-wf)-1e-6);return n<=1?'Ready tomorrow':`Ready in about ${n} days`}
@@ -3392,9 +3427,9 @@ function gSkyline(bg){if(bg==='roof')return '<svg class="ghills" viewBox="0 0 40
 const gNext=wk=>{const x=GCFG.week.find(([t])=>wk<t);return x?x[0]:null};
 function gDone(msg){if(GNEWB){const b=GBADGE.find(x=>x[0]===GNEWB);GNEWB=null;if(b){toast(`Badge: ${b[1]}`);return}}if(msg)toast(msg)}
 function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduce((a,b)=>a+b,0);
- $('gd-head').innerHTML=`<div class="row"><div class="adt gname">${G.nm?`<input type="text" id="gd-nm" maxlength="28" value="${esc(g.name||'')}" placeholder="Garden" aria-label="Name your garden" enterkeyhint="done" autocomplete="off">`:`<h2>${esc(g.name||'Garden')}</h2><button class="iconbtn gpen" type="button" id="gd-pen" aria-label="Name your garden">${PENSM}</button>`}</div><div class="ghead"><span class="gcoins num" aria-label="${g.coins} coins">${COINI}<b id="gd-coins">${g.coins}</b></span><button class="iconbtn" type="button" id="gd-close" aria-label="Close">${XIC}</button></div></div>
+ $('gd-head').innerHTML=`<div class="row"><div class="adt gname">${G.nm?`<input type="text" id="gd-nm" maxlength="28" value="${esc(g.name||'')}" placeholder="Garden" aria-label="Name your garden" enterkeyhint="done" autocomplete="off">`:`<h2>${esc(g.name||'Garden')}</h2><button class="iconbtn gpen" type="button" id="gd-pen" aria-label="Name your garden">${PENSM}</button>`}</div><div class="ghead"><span class="gcoins num" aria-label="${g.coins} coins">${COINI}<b id="gd-coins">${g.coins}</b></span></div></div>
   <div class="seg gtabs" role="tablist">${[['main','Garden'],['basket','Basket'],['shop','Shop'],['album','Album']].map(([k,l])=>`<button type="button" role="tab" data-gv="${k}" aria-selected="${v===k}" aria-pressed="${v===k}"${k==='basket'?' id="gd-bag"':''}>${l}${k==='basket'&&nb?` <span class="gbn num">${nb}</span>`:''}</button>`).join('')}</div>`;
- $('gd-close').onclick=closeGarden;document.querySelectorAll('#gd-head [data-gv]').forEach(x=>x.onclick=()=>gView(x.dataset.gv));
+ document.querySelectorAll('#gd-head [data-gv]').forEach(x=>x.onclick=()=>gView(x.dataset.gv));
  if($('gd-pen'))$('gd-pen').onclick=()=>{G.nm=1;renderGarden();const n=$('gd-nm');if(n){n.focus();n.select()}};
  const nf=$('gd-nm');if(nf){const done=()=>{if(nf.dataset.done)return;nf.dataset.done='1';g.name=nf.value.trim().slice(0,28);G.nm=0;save();renderGarden()};nf.onblur=done;nf.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();nf.blur()}}}
  const b=$('gd-body'),y=b.scrollTop;
@@ -3424,9 +3459,9 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
  b.innerHTML=`<div class="gweek"><span class="otx"><b class="num">${wk} plant${wk===1?'':'s'} this week${nx?` · chest at ${nx}`:''}</b><span class="cap num">${ld} of the last 7 days logged</span></span><span class="gchests">${chests}</span></div>
   ${g.gift||g.giftD?`<button class="ggift" type="button" id="gd-gift">${CHESTC}<b>From last week</b></button>`:''}
   <div class="gscene bg-${esc(bg)}" id="gd-scene"><div class="gsky" aria-hidden="true"><span class="gsun"></span><span class="gcloud"></span><span class="gcloud c2"></span></div>
-   ${mode==='bottle'?`<button class="gcan" type="button" id="gd-can" aria-label="Log a glass of water, ${wL(wTotal(S.days[TODAY]||{}))} today"><span class="gcanw">${gCanSvg(wf)}</span><span class="num">${wL(wTotal(S.days[TODAY]||{}))}</span></button>`:''}
+   ${mode==='bottle'?`<button class="gcan" type="button" id="gd-can" aria-label="Water the garden: drag over the plants to log a glass, ${wL(wTotal(S.days[TODAY]||{}))} today"><span class="gcanw">${gCanSvg(wf)}</span><span class="num">${wL(wTotal(S.days[TODAY]||{}))}</span></button>`:''}
    ${gSkyline(bg)}
-   <div class="gfarm">${isoLand()}${GBEDS.map(([bd,n],j)=>{const [x,yy]=isoP(3.5,j*(2+ISO.gap)+.5);return `<span class="gsign" style="left:${pct(x+4,ISO.w)};top:${pct(yy+4,ISO.h)}" aria-hidden="true"><b>${n.replace(' patch','s')}</b></span>`}).join('')}
+   <div class="gfarm" style="--wet:${(mode==='bottle'?wf:1).toFixed(2)}">${isoLand()}${GBEDS.map(([bd,n],j)=>{const [x,yy]=isoP(3.5,j*(2+ISO.gap)+.5);return `<span class="gsign" style="left:${pct(x+4,ISO.w)};top:${pct(yy+4,ISO.h)}" aria-hidden="true"><b>${n.replace(' patch','s')}</b></span>`}).join('')}
     ${g.plants.map(gPlot).join('')}
     ${GSPOT.map(([x,yy],i)=>{const id=g.decor.spot[i];return id||own?`<button class="gspot${id?'':' empty'}${G.spot===i?' sel':''}" type="button" data-spot="${i}" style="left:${pct(x-26,ISO.w)};top:${pct(yy-48,ISO.h)};z-index:${Math.round(yy/4)}" aria-label="${id?(GDEC.find(d=>d[0]===id)||[0,''])[1]:'Empty spot'}">${id?gDec(id):''}</button>`:''}).join('')}</div>
    <div class="grain" aria-hidden="true">${drops}</div></div>
@@ -3442,7 +3477,7 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
  gReapBind(b);
  if($('gd-all'))$('gd-all').onclick=()=>{const Q=[...document.querySelectorAll('#gd-body .gplot.st3')].sort((x,y)=>(+x.style.zIndex)-(+y.style.zIndex));if(!Q.length)return;$('gd-all').disabled=true;const st=GSTILL();
   Q.forEach((x,i)=>{if(st)gReapAt(x);else setTimeout(()=>gReapAt(x),i*70)});gReapEnd(st?0:Q.length*70+480,Q.length)};
- if($('gd-can'))$('gd-can').onclick=()=>{const p=S.days[TODAY]||(S.days[TODAY]=emptyPlan());p.wlog=p.wlog||[];p.w=(+p.w||0)+250;p.wlog.push(250);p.wt=Date.now();save();render();gRain()};
+ gCanBind();
  if($('gd-share'))$('gd-share').onclick=gShare;
  b.querySelectorAll('[data-give]').forEach(x=>x.onclick=()=>{const c0=g.coins,c=gGive(+x.dataset.give);if(!c)return;G.pl=Date.now();setTimeout(()=>{if(G&&G.view==='main')renderGarden()},2700);save();renderGarden();gCount(c0,g.coins);gDone(`+${c} coins`)});
  b.querySelectorAll('[data-wadd]').forEach(x=>x.onclick=()=>{const o=L[+x.dataset.wadd],f=o&&FM[o.fid];if(!f)return;closeGarden();openAdd(panSlot());AD.q=f.n.split(',')[0];$('ad-q').value=AD.q;renderAdd()});
@@ -3482,6 +3517,39 @@ async function gShare(){const url=URL.createObjectURL(new Blob([gShareSVG()],{ty
   const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)}
  catch(e){toast('The picture did not work here')}finally{URL.revokeObjectURL(url)}}
 
+
+/* ---------- daily quests: water, supplements and one food tip, right under the main card ---------- */
+const QDROP='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.5 4.5 6 7.6 6 10.6A6 6 0 0 1 6 13.6C6 10.6 8.5 7.5 12 3z"/></svg>',QPILL='<svg viewBox="0 0 24 24" aria-hidden="true"><g transform="rotate(-40 12 12)"><rect x="3.5" y="8.5" width="17" height="7" rx="3.5"/><path d="M12 8.5v7"/></g></svg>',QLEAF='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>',QTICK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
+function qSups(){const T=targets();return (S.sups||[]).map(s=>({s,st:sStatus(s,TODAY,T)})).filter(({s,st})=>st&&(s.freq==='d'||st.due||(s.takes||[]).includes(TODAY)||(s.skip||[]).includes(TODAY)))}
+const qSupSt=s=>(s.takes||[]).includes(TODAY)?'on':(s.skip||[]).includes(TODAY)?'off':'open';
+function qFood(){if(!S.qfg||S.qfg.d!==TODAY){const L=fgLow();S.qfg={d:TODAY,k:L[0]?L[0].k:null}}const k=S.qfg.k;if(!k||!FG[k])return null;
+ const p=S.days[TODAY],done=!!p&&eatK(p).some(m=>p[m].it.some(([id,g])=>g>0&&FM[id]&&fgOf(id).has(k)));return {k,done,sug:fgSug(k)}}
+function quests(){if(S.date!==TODAY)return [];const Q=[];
+ if(WON()){const tot=wTotal(S.plan),tg=wTarget();Q.push({id:'water',done:tot>=tg,tot,tg})}
+ const ss=qSups();if(ss.length)Q.push({id:'sup',done:ss.every(x=>qSupSt(x.s)!=='open'),ss});
+ const f=qFood();if(f)Q.push(Object.assign({id:'food'},f));return Q}
+function questBoard(){const Q=quests();if(!Q.length)return '';const n=Q.filter(q=>q.done).length,all=n===Q.length,g=GON()&&S.garden;
+ const row=q=>{if(q.id==='water')return `<div class="qrow${q.done?' done':''}"><span class="qic qw">${q.done?QTICK:QDROP}</span><span class="otx"><b>Water</b><span class="qbar"><i style="width:${Math.min(100,q.tot/q.tg*100).toFixed(1)}%"></i></span><span class="cap num">${wL(q.tot)} of ${wL(q.tg)}</span></span>${+S.plan.w>0?`<button class="iconbtn qmin" type="button" data-qw="-1" aria-label="Undo the last glass">−</button>`:''}<button class="btn sm acc qglass" type="button" data-qw="250" aria-label="Add a glass of 250 ml">+ Glass</button></div>`;
+  if(q.id==='sup')return `<div class="qrow${q.done?' done':''}"><span class="qic qs">${q.done?QTICK:QPILL}</span><span class="otx"><b>Supplements</b><span class="chips wrap qchips">${q.ss.map(({s})=>{const st=qSupSt(s);return `<button class="chip qsup ${st}" type="button" data-qs="${s.id}" aria-label="${esc(sName(s))}: ${st==='on'?'taken, tap to skip':st==='off'?'skipped, tap to undo':'tap when taken'}">${st==='on'?QTICK:''}${esc(sName(s).replace(/ \(.*\)$/,''))}${st==='off'?' · skipped':''}</button>`}).join('')}</span></span><button class="iconbtn qmore" type="button" id="q-supd" aria-label="Supplement details">${CHEV}</button></div>`;
+  const G0=FG[q.k];return `<div class="qrow${q.done?' done':''}"><span class="qic qf">${q.done?QTICK:QLEAF}</span><span class="otx"><b>Eat ${G0.n}</b>${q.done?'':`<span class="chips wrap qchips">${q.sug.map(id=>`<button class="chip" type="button" data-qf="${id}"><span class="ficon em" style="width:20px;height:20px">${fIcon(id)}</span>${esc(FM[id].n.split(',')[0])}</button>`).join('')}</span>`}</span></div>`};
+ const chest=g&&all?(S.garden.chest===TODAY?`<div class="schest open">${CHESTO}<span class="otx"><b>All done.</b><span class="cap">Come back tomorrow</span></span><span class="gprice num">${COINI}+${gChestN()}</span></div>`:`<button class="schest" type="button" id="sup-chest">${CHESTC}<span class="otx"><b>All done</b></span>${CHEV}</button>`):'';
+ return `<div class="card qboard"><div class="qhead"><h2>Daily quests</h2><span class="cap num">${n} of ${Q.length}</span></div>${Q.map(row).join('')}${chest}</div>`}
+function bindQuests(v){v.querySelectorAll('[data-qw]').forEach(b=>b.onclick=()=>{const ml=+b.dataset.qw;wAdd(ml);if(ml>0)toast('+ '+wL(ml))});
+ v.querySelectorAll('[data-qs]').forEach(b=>b.onclick=()=>{const s=(S.sups||[]).find(x=>x.id===b.dataset.qs);if(!s)return;s.takes=s.takes||[];s.skip=s.skip||[];const st=qSupSt(s);
+  if(st==='open'){s.takes.push(TODAY);s.skip=s.skip.filter(x=>x!==TODAY)}else if(st==='on'){s.takes=s.takes.filter(x=>x!==TODAY);s.skip.push(TODAY)}else s.skip=s.skip.filter(x=>x!==TODAY);save();render()});
+ if($('q-supd'))$('q-supd').onclick=openSupD;
+ v.querySelectorAll('[data-qf]').forEach(b=>b.onclick=()=>{const id=b.dataset.qf,k=panSlot();addFood(k,id);toast(`Added ${FM[id].n.split(',')[0]} to ${(SLOTS.find(x=>x.id===k)||{n:'a meal'}).n.toLowerCase()}`);render()});
+ const sc=v.querySelector('#sup-chest');if(sc)sc.onclick=()=>{if(S.garden.chest===TODAY)return;const n=gOpenChest();save();toast(`+${n} coins`);if(GSTILL()){render();return}sc.classList.add('opening');setTimeout(render,520)}}
+/* the garden can: drag it over the plants to pour a glass; the soil darkens as you drink */
+function gCanBind(){const c=$('gd-can');if(!c)return;let st=null;
+ const move=e=>{if(!st)return;const dx=e.clientX-st.x,dy=e.clientY-st.y;if(Math.hypot(dx,dy)>12)st.mv=1;const f=$('gd-pour');if(f)f.style.transform=`translate(${e.clientX-30}px,${e.clientY-52}px) rotate(-28deg)`;
+  const el=document.elementFromPoint(e.clientX,e.clientY+40),p=el&&el.closest?el.closest('#gd-scene [data-gp]'):null;if(p&&!p.classList.contains('wet')){p.classList.add('wet');st.n++}};
+ c.addEventListener('pointerdown',e=>{e.preventDefault();st={x:e.clientX,y:e.clientY,mv:0,n:0};try{c.setPointerCapture(e.pointerId)}catch(_){}
+  if(!GSTILL()){const f=document.createElement('div');f.id='gd-pour';f.setAttribute('aria-hidden','true');f.innerHTML=gCanSvg(1)+'<span class="gpd"><i></i><i></i><i></i><i></i></span>';$('v-garden').appendChild(f);f.style.transform=`translate(${e.clientX-30}px,${e.clientY-52}px) rotate(-28deg)`}});
+ c.addEventListener('pointermove',move);
+ const end=()=>{if(!st)return;st=null;const f=$('gd-pour');if(f)f.remove();const p=S.days[TODAY]||(S.days[TODAY]=emptyPlan());p.wlog=p.wlog||[];p.w=(+p.w||0)+250;p.wlog.push(250);p.wt=Date.now();save();try{navigator.vibrate&&navigator.vibrate(12)}catch(_){}toast('+ 250 ml');render();gRain()};
+ c.addEventListener('pointerup',end);c.addEventListener('pointercancel',()=>{st=null;const f=$('gd-pour');if(f)f.remove()})}
+
 /* reaping: press a ready plant and drag across the others, Hay Day style; every plant pops, sheds leaves and flies to the basket */
 let REAP=null,GREND=0;
 function gReapBind(b){const sc=$('gd-scene');if(!sc)return;
@@ -3500,17 +3568,17 @@ function gReapAt(el){const g=S.garden,k=el.dataset.gp,i=g.plants.findIndex(p=>p.
  if(GSTILL()){el.classList.add('reaped');return 1}
  el.classList.add('reaped');gBurst(el);gFly(el);return 1}
 function gReapEnd(ms,n){clearTimeout(GREND);save();GREND=setTimeout(()=>{if(G){renderGarden();render()}if(n>1)toast(`Harvested ${n}`)},ms)}
-function gSickle(x,y,on){let s=$('gd-sickle');if(!on){if(s)s.remove();return}if(GSTILL())return;if(!s){s=document.createElement('div');s.id='gd-sickle';s.setAttribute('aria-hidden','true');s.innerHTML='<svg viewBox="0 0 48 48"><path d="M10 40l9-9" stroke="#8A5A33" stroke-width="5" stroke-linecap="round"/><path d="M19 31C14 18 22 6 38 6c-9 4-14 12-12 22z" fill="#C9D3DA" stroke="#7E8C96" stroke-width="2" stroke-linejoin="round"/></svg>';$('garden').appendChild(s)}
+function gSickle(x,y,on){let s=$('gd-sickle');if(!on){if(s)s.remove();return}if(GSTILL())return;if(!s){s=document.createElement('div');s.id='gd-sickle';s.setAttribute('aria-hidden','true');s.innerHTML='<svg viewBox="0 0 48 48"><path d="M10 40l9-9" stroke="#8A5A33" stroke-width="5" stroke-linecap="round"/><path d="M19 31C14 18 22 6 38 6c-9 4-14 12-12 22z" fill="#C9D3DA" stroke="#7E8C96" stroke-width="2" stroke-linejoin="round"/></svg>';$('v-garden').appendChild(s)}
  s.style.transform=`translate(${x-10}px,${y-46}px)`}
-function gBurst(el){const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*.55,d=$('garden'),C=['var(--g-leaf)','var(--g-leaf2)','#F6CB5A','var(--g-leaf)','#FFE89A','var(--g-leaf2)','#F6CB5A','var(--g-leaf)'];
+function gBurst(el){const r=el.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height*.55,d=$('v-garden'),C=['var(--g-leaf)','var(--g-leaf2)','#F6CB5A','var(--g-leaf)','#FFE89A','var(--g-leaf2)','#F6CB5A','var(--g-leaf)'];
  C.forEach((c,i)=>{const p=document.createElement('i');p.className='gpart'+(i%3===2?' spark':'');p.style.cssText=`left:${cx}px;top:${cy}px;background:${c}`;d.appendChild(p);const a=(i/C.length)*Math.PI*2+Math.random()*.5,dist=34+Math.random()*26;
   p.animate([{transform:'translate(-50%,-50%) scale(1) rotate(0deg)',opacity:1},{transform:`translate(calc(-50% + ${Math.cos(a)*dist}px),calc(-50% + ${Math.sin(a)*dist-18}px)) scale(.4) rotate(${180+i*40}deg)`,opacity:0}],{duration:520+Math.random()*160,easing:'cubic-bezier(.2,.7,.3,1)'}).onfinish=()=>p.remove()})}
 function gFly(el){const ic=el.querySelector('.gico'),bag=$('gd-bag');if(!ic||!bag||!ic.animate)return;const a=ic.getBoundingClientRect(),t=bag.getBoundingClientRect(),c=ic.cloneNode(true);
- c.className='ghop';Object.assign(c.style,{left:a.left+'px',top:a.top+'px',width:a.width+'px',height:a.height+'px'});$('garden').appendChild(c);
+ c.className='ghop';Object.assign(c.style,{left:a.left+'px',top:a.top+'px',width:a.width+'px',height:a.height+'px'});$('v-garden').appendChild(c);
  const dx=t.left+t.width/2-a.left-a.width/2,dy=t.top+t.height/2-a.top-a.height/2;
  c.animate([{transform:'translate(0,0) scale(1)'},{transform:`translate(0,-30px) scale(1.35)`,offset:.22},{transform:`translate(${dx*.55}px,${Math.max(dy*.6-40,8-a.top)}px) scale(1.05)`,offset:.6},{transform:`translate(${dx}px,${dy}px) scale(.35)`}],{duration:620,easing:'cubic-bezier(.45,0,.55,1)'}).onfinish=()=>{c.remove();const b=$('gd-bag');if(!b||GSTILL())return;
   b.animate([{transform:'scale(1)'},{transform:'scale(1.25) rotate(-8deg)'},{transform:'scale(.95) rotate(5deg)'},{transform:'scale(1)'}],{duration:320,easing:'ease-out'});
-  const r=b.getBoundingClientRect();let f=$('gd-plus');if(!f){f=document.createElement('span');f.id='gd-plus';f.className='gplus1';f.dataset.n='0';$('garden').appendChild(f)}
+  const r=b.getBoundingClientRect();let f=$('gd-plus');if(!f){f=document.createElement('span');f.id='gd-plus';f.className='gplus1';f.dataset.n='0';$('v-garden').appendChild(f)}
   f.dataset.n=+f.dataset.n+1;f.textContent='+'+f.dataset.n;f.style.left=(r.left+r.width/2)+'px';f.style.top=(r.top+r.height)+'px';f.getAnimations().forEach(x=>x.cancel());
   f.animate([{transform:'translate(-50%,0) scale(1.25)',opacity:1},{transform:'translate(-50%,2px) scale(1)',opacity:1,offset:.3},{transform:'translate(-50%,14px)',opacity:0}],{duration:900,easing:'ease-out'}).onfinish=()=>f.remove()}}
 /* motion: off under still and reduced motion */
@@ -4574,26 +4642,28 @@ function render0(){
  const v0=S.view;
  if(S.plan)mealKeys(S.plan).forEach(k=>{if(k.length>1&&!S.plan[k].it.length&&k!==MS&&!($('pk').open&&PK&&PK.slot===k))delete S.plan[k]});
  if(S.plan){normPlan(S.plan);rebuildSlots()}
- if(GON()){gInit();gardenTick();gardenSync();gDaily()}else if($('garden').open){G=null;$('garden').close()}
+ if(GON()){gInit();gardenTick();gardenSync();gDaily()}
  const fid=document.activeElement&&document.activeElement.id;
  if(S.view==='ideas'){S.view='nutr';S.nsub='imp'}
- if(!['today','nutr','scan','lib','profile'].includes(S.view))S.view='today';
+ if(!['today','nutr','scan','lib','garden','profile'].includes(S.view))S.view='today';
  if(v0!=='scan'&&SCAN.tab){stopCamera();SCAN.tab=false;ST.drawn=''}
  if(!['over','imp','hist'].includes(S.nsub))S.nsub='over';if(S.lib==='meals')S.lib='dishes';if(S.lib==='guide'||S.lib==='kitchen'){S.learn=S.lib;S.lib='learn'}if(!['dishes','recipes','foods','learn'].includes(S.lib))S.lib='dishes';
  save();
  const T=targets(),D=dayV(),v=S.view;
- ['today','nutr','scan','lib','profile'].forEach(x=>{$('v-'+x).hidden=x!==v});
- document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.setAttribute('aria-current',b.dataset.v===v));
+ ['today','nutr','scan','lib','garden','profile'].forEach(x=>{$('v-'+x).hidden=x!==v});
+ document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.setAttribute('aria-current',b.dataset.v===v||(b.dataset.v==='nutr'&&v==='lib')));
+ document.querySelectorAll('[data-vsw]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.vsw===v);b.onclick=()=>go(b.dataset.vsw)});
+ if(v!=='garden')G=null;
  if(v==='today')renderToday(T,D);
  else if(v==='nutr'){document.querySelectorAll('#nsub-seg [data-ns]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ns===S.nsub));$('n-over').hidden=S.nsub!=='over';$('n-imp').hidden=S.nsub!=='imp';$('n-hist').hidden=S.nsub!=='hist';$('range-seg').closest('#n-over');
   if(S.nsub==='over')renderNutrients(T,D);else if(S.nsub==='hist')renderHistory(T);else{renderImprove();renderSwaps();renderTips(T,D)}}
  else if(v==='lib')renderLib(T);
  else if(v==='scan')renderScanTab();
+ else if(v==='garden')gardenView();
  else renderProfileView();
  if($('meal').open)renderMeal();
  if($('pk').open)renderPicker();
  if($('add').open)renderAdd();
- if($('garden').open)renderGarden();
  if($('food').open)renderFood();if($('gran').open)renderGran();
  if($('sheet').open)renderDetail(T,$('sheet-body'));
  try{shopBadge()}catch(e){}
