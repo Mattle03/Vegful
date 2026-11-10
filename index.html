@@ -877,7 +877,6 @@ html.still .gstrip *,html.still #garden *,html.still #garden *::after,html.still
 .gpc svg{width:24px;height:24px}
 .gmarket{margin-top:14px;padding-top:10px}
 .gmh{display:flex;align-items:center;gap:12px;margin-bottom:4px}
-.gmh svg{width:58px;height:48px;flex:none}
 .gmh .otx{display:flex;flex-direction:column}
 .gord{display:flex;align-items:center;gap:10px;padding:9px 0;border-top:1px solid var(--line)}
 .gord .thumb{width:40px;height:40px;flex:none}
@@ -944,6 +943,31 @@ html.still .schest *,html.still .gch,html.still .ggift svg{animation:none!import
 .insi svg{width:18px;height:18px;fill:currentColor}
 .inscard #ins-x svg{width:18px;height:18px}
 .galdays{margin:2px 2px 10px}
+
+.tmas{width:96px;height:64px;flex:none;display:block}
+.tmas .tort{width:100%;height:100%;overflow:visible}
+.tort .tbody{transform-box:fill-box;transform-origin:50% 100%;animation:tbreath 3.2s ease-in-out infinite}
+.tort .teye{transform-box:fill-box;transform-origin:50% 50%;animation:tblink 4.6s infinite}
+.tort .tsl,.tort .theart,.tort .tz{opacity:0}
+.tort .tleg{transform-box:fill-box;transform-origin:50% 0}
+.tmas.pleased .tbody{animation:thop .5s ease-in-out 3}
+.tmas.pleased .theart{animation:theart 1.4s ease-out forwards}
+.tmas.waving .tleg{animation:twave .6s ease-in-out 4}
+.tmas.asleep .teye{opacity:0;animation:none}.tmas.asleep .tsl{opacity:1}
+.tmas.asleep .thead{transform:translateY(2px)}
+.tmas.asleep .tz{animation:tzz 2.6s ease-in-out infinite}
+.tmas.asleep .tbody{animation-duration:5s}
+@keyframes tbreath{0%,100%{transform:scaleY(1)}50%{transform:scaleY(1.025)}}
+@keyframes tblink{0%,94%,100%{transform:scaleY(1)}96%{transform:scaleY(.1)}}
+@keyframes thop{0%,100%{transform:translateY(0)}45%{transform:translateY(-6px)}}
+@keyframes theart{0%{opacity:0;transform:translateY(6px) scale(.6)}25%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-14px) scale(1)}}
+@keyframes twave{0%,100%{transform:rotate(0)}50%{transform:rotate(-45deg) translateY(-3px)}}
+@keyframes tzz{0%{opacity:0;transform:translate(0,4px)}40%{opacity:1}100%{opacity:0;transform:translate(4px,-6px)}}
+.tsay{display:inline-block;align-self:flex-start;margin-top:4px;padding:5px 10px;border-radius:12px 12px 12px 4px;background:var(--surface2);font-size:14px;font-weight:700;color:var(--ink)}
+.gsharebtn{margin-top:14px}
+html.still .tort *{animation:none!important}
+@media (prefers-reduced-motion:reduce){.tort *{animation:none!important}}
+
 </style>
 </head>
 <body>
@@ -3319,7 +3343,7 @@ function gardenStrip(){if(!GON()||S.date!==TODAY||!S.garden)return '';const g=S.
 
 /* the garden screen: one dialog with the views main and basket */
 let G=null;const GST={};
-function openGarden(view){if(!GON())return;gInit();G={view:view||'main',sel:null,spot:null,buy:null,nm:0};const d=$('garden');renderGarden();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('gd-body').scrollTop=0}
+function openGarden(view){if(!GON())return;gInit();const lo=S.garden.lastOpen;G={view:view||'main',sel:null,spot:null,buy:null,nm:0,wave:!!(lo&&dayDiff(lo,TODAY)>=3)};S.garden.lastOpen=TODAY;save();const d=$('garden');renderGarden();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('gd-body').scrollTop=0}
 function closeGarden(){G=null;const d=$('garden');d.close?d.close():d.removeAttribute('open');render()}
 $('garden').addEventListener('close',()=>{if(G&&!$('garden').open){G=null;render()}});
 $('garden').addEventListener('click',e=>{if(e.target===$('garden'))closeGarden()});
@@ -3360,7 +3384,6 @@ const GDSVG={path:'<ellipse cx="14" cy="38" rx="9" ry="4.5" fill="#BDB6A8"/><ell
 const gDec=id=>`<svg viewBox="0 0 48 48" aria-hidden="true">${GDSVG[id]||''}</svg>`;
 const CHESTC='<svg viewBox="0 0 48 40" aria-hidden="true"><rect x="5" y="16" width="38" height="21" rx="3" fill="#B87438"/><path d="M5 18c0-9 6-13 19-13s19 4 19 13z" fill="#CF8A47"/><rect x="5" y="16" width="38" height="4" fill="#8E5626"/><rect x="20" y="15" width="8" height="10" rx="2" fill="#F2C14E"/><path d="M14 6v31M34 6v31" stroke="#8E5626" stroke-width="3"/></svg>';
 const CHESTO='<svg viewBox="0 0 48 40" aria-hidden="true"><path d="M7 12l4-10h26l4 10z" fill="#CF8A47"/><ellipse cx="24" cy="17" rx="16" ry="5" fill="#F6CB5A"/><circle cx="18" cy="15" r="3" fill="#E9B23A"/><circle cx="28" cy="14" r="3" fill="#F6CB5A" stroke="#E9B23A"/><rect x="5" y="17" width="38" height="20" rx="3" fill="#B87438"/><rect x="5" y="17" width="38" height="4" fill="#8E5626"/><path d="M14 17v20M34 17v20" stroke="#8E5626" stroke-width="3"/></svg>';
-const STALLI='<svg viewBox="0 0 64 52" aria-hidden="true"><rect x="8" y="20" width="4" height="30" fill="#8A5E33"/><rect x="52" y="20" width="4" height="30" fill="#8A5E33"/><path d="M4 8h56l-3 14H7z" fill="#E86A5C"/><path d="M12 8l-2 14M24 8l-1 14M36 8v14M48 8l1 14" stroke="#FFF3E6" stroke-width="5" opacity=".8"/><path d="M7 22q4.5 6 9 0t9 0 9 0 9 0 9 0 7 0" fill="#E86A5C"/><rect x="6" y="34" width="52" height="14" rx="3" fill="#C98B4E"/><circle cx="18" cy="33" r="4" fill="#E64B4B"/><circle cx="27" cy="33" r="4" fill="#F6A33C"/><circle cx="36" cy="32" r="4" fill="#6DBB63"/><circle cx="45" cy="33" r="4" fill="#F28AA8"/></svg>';
 const MEDI='<svg viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="17" fill="#F6CB5A" stroke="#D59B2A" stroke-width="3"/><path d="M20 10l3 7 7 .6-5.3 4.6 1.7 7L20 25.4 13.6 29.2l1.7-7L10 17.6l7-.6z" fill="#FFF3C4"/></svg>';
 const PENSM='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/></svg>';
 function gSkyline(bg){if(bg==='roof')return '<svg class="ghills" viewBox="0 0 400 40" preserveAspectRatio="none" aria-hidden="true"><path d="M0 40V24h22V12h18v12h14V18h26V6h16v18h20V14h24v10h18V20h16V8h20v16h26V16h22v8h18V12h16v12h20v-8h20v24z" fill="var(--g-hill)"/></svg>';
@@ -3413,18 +3436,51 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
   ${g.tray.length?`<p class="cap gtray">${g.tray.length} seed${g.tray.length>1?'s':''} waiting</p>`:''}
   ${!g.plants.length&&!g.tray.length?'<p class="gempty">Eat a plant to sow a seed</p>':''}
   ${mode==='auto'&&g.plants.length?'<p class="cap gtray">Grows overnight</p>':''}
-  ${L.length?`<div class="card gmarket"><div class="gmh">${STALLI}<span class="otx"><b>Market</b><span class="cap">${allDone?'Thank you, see you tomorrow':'Today\'s orders'}</span></span></div>${ord}</div>`:''}`;
+  ${L.length?(()=>{const md=gMood(),say=gSay(L,md);return `<div class="card gmarket"><div class="gmh"><span class="tmas ${md}">${TORT}</span><span class="otx"><b>Market</b>${say?`<span class="tsay">${esc(say)}</span>`:''}</span></div>${ord}</div>`})():''}
+  <button class="btn wide ghost gsharebtn" type="button" id="gd-share">Share my garden</button>`;
  b.scrollTop=y;
  gReapBind(b);
  if($('gd-all'))$('gd-all').onclick=()=>{const Q=[...document.querySelectorAll('#gd-body .gplot.st3')].sort((x,y)=>(+x.style.zIndex)-(+y.style.zIndex));if(!Q.length)return;$('gd-all').disabled=true;const st=GSTILL();
   Q.forEach((x,i)=>{if(st)gReapAt(x);else setTimeout(()=>gReapAt(x),i*70)});gReapEnd(st?0:Q.length*70+480,Q.length)};
  if($('gd-can'))$('gd-can').onclick=()=>{const p=S.days[TODAY]||(S.days[TODAY]=emptyPlan());p.wlog=p.wlog||[];p.w=(+p.w||0)+250;p.wlog.push(250);p.wt=Date.now();save();render();gRain()};
- b.querySelectorAll('[data-give]').forEach(x=>x.onclick=()=>{const c0=g.coins,c=gGive(+x.dataset.give);if(!c)return;save();renderGarden();gCount(c0,g.coins);gDone(`+${c} coins`)});
+ if($('gd-share'))$('gd-share').onclick=gShare;
+ b.querySelectorAll('[data-give]').forEach(x=>x.onclick=()=>{const c0=g.coins,c=gGive(+x.dataset.give);if(!c)return;G.pl=Date.now();setTimeout(()=>{if(G&&G.view==='main')renderGarden()},2700);save();renderGarden();gCount(c0,g.coins);gDone(`+${c} coins`)});
  b.querySelectorAll('[data-wadd]').forEach(x=>x.onclick=()=>{const o=L[+x.dataset.wadd],f=o&&FM[o.fid];if(!f)return;closeGarden();openAdd(panSlot());AD.q=f.n.split(',')[0];$('ad-q').value=AD.q;renderAdd()});
  b.querySelectorAll('[data-gch]').forEach(x=>x.onclick=()=>{const c0=g.coins,r=gClaim(+x.dataset.gch);if(!r)return;save();renderGarden();gCount(c0,g.coins);gDone(`+${r.c} coins${r.d?' and a '+r.d.toLowerCase():''}`)});
  if($('gd-gift'))$('gd-gift').onclick=()=>{const c0=g.coins,r=gGift();if(!r)return;save();renderGarden();gCount(c0,g.coins);toast(`+${r.c} coins${r.d?' and '+r.d.toLowerCase():''}`)};
  b.querySelectorAll('[data-spot]').forEach(x=>x.onclick=()=>{const i=+x.dataset.spot;if(!own)return;G.spot=G.spot===i?null:i;renderGarden()});
  b.querySelectorAll('[data-pl]').forEach(x=>x.onclick=()=>{gPlace(G.spot,x.dataset.pl||null);G.spot=null;save();renderGarden()})}
+
+
+/* the buyer: a tortoise with a market cart. Four states: idle, pleased, waving, asleep; never sad, never about days away */
+const TORT='<svg class="tort" viewBox="0 0 128 86" aria-hidden="true"><g class="tcart"><path d="M48 46l16 6" stroke="#8A5E33" stroke-width="2.6" stroke-linecap="round"/><circle cx="14" cy="29" r="6.5" fill="#E64B4B"/><circle cx="26" cy="26" r="7" fill="#F6A33C"/><circle cx="38" cy="29" r="6.5" fill="#6DBB63"/><path d="M33 22c2-4 6-5 8-4" stroke="#4E8F45" stroke-width="2" fill="none"/><rect x="4" y="31" width="44" height="25" rx="4" fill="#C98B4E"/><path d="M4 38h44M4 46h44" stroke="#A8743F" stroke-width="2.4"/><circle cx="26" cy="64" r="10" fill="#7C5329"/><circle cx="26" cy="64" r="3.6" fill="#E8DCC2"/><path d="M26 54v20M16 64h20" stroke="#5E3F22" stroke-width="1.6"/></g>'+
+ '<g class="tbody"><ellipse cx="70" cy="74" rx="6.5" ry="5.5" fill="#8FC27A"/><ellipse cx="98" cy="74" rx="6.5" ry="5.5" fill="#8FC27A"/><g class="tleg"><ellipse cx="108" cy="70" rx="5.2" ry="6.6" fill="#8FC27A"/></g>'+
+ '<path d="M58 68c0-19 12-32 27-32s27 13 27 32z" fill="#5E9E52"/><path d="M85 40l-9 11 9 9 9-9zM70 56l6-5M100 56l-6-5M77 60v8M93 60v8" stroke="#4A7F41" stroke-width="2.4" fill="none" stroke-linejoin="round"/><path d="M56 68h58" stroke="#4A7F41" stroke-width="5.4" stroke-linecap="round"/>'+
+ '<g class="thead"><path d="M110 62c2-11 9-15 14-13 4 2 4 10 0 14-4 3-10 3-14-1z" fill="#8FC27A"/><g class="teye"><circle cx="118.5" cy="55" r="2" fill="#2B2B2B"/><circle cx="119.2" cy="54.3" r=".7" fill="#fff"/></g><path class="tsl" d="M116.5 55.5q2 1.8 4 0" stroke="#2B2B2B" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="121" cy="60" r="2" fill="#F28AA8" opacity=".6"/><path d="M115.5 61q3 2.2 6 0" stroke="#2B2B2B" stroke-width="1.3" fill="none" stroke-linecap="round"/></g></g>'+
+ '<g class="theart"><path d="M100 26c-2-4-8-2-6 2.4l6 6 6-6c2-4.4-4-6.4-6-2.4z" fill="#F28AA8"/></g><g class="tz" fill="#7E9AA6" font-family="system-ui,sans-serif" font-weight="800"><text x="104" y="38" font-size="11">z</text><text x="112" y="28" font-size="14">z</text></g></svg>';
+function gMood(){const h=new Date().getHours();if(G&&G.pl&&Date.now()-G.pl<2600)return 'pleased';if(h>=22||h<6)return 'asleep';if(G&&G.wave)return 'waving';return 'idle'}
+function gSay(L,mood){if(mood==='asleep')return '';if(mood==='pleased')return 'Thank you';const w=L.find(o=>o.wish&&!o.done),f=w&&FM[w.fid];if(f)return f.n.split(',')[0]+' today?';return L.length&&L.every(o=>o.done)?'Thank you':''}
+/* Share my garden: the land, plants and decorations drawn into one picture */
+function gShareSVG(){const g=S.garden,sc=$('gd-scene')||document.documentElement,cs=getComputedStyle(sc),rv=t=>t.replace(/var\((--[a-z0-9-]+)\)/g,(m,n)=>cs.getPropertyValue(n).trim()||'#888');
+ const W=1080,H=1350,ls=1000/ISO.w,nest=(str,x,y,w,h)=>{const m=String(str).match(/<svg[^>]*viewBox="([^"]+)"[^>]*>([\s\S]*)<\/svg>/);if(m)return `<svg x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" viewBox="${m[1]}">${m[2]}</svg>`;const im=String(str).match(/src="([^"]+)"/);return im?`<image href="${im[1]}" x="${x}" y="${y}" width="${w}" height="${h}"/>`:''};
+ const land=isoLand().match(/<svg[^>]*>([\s\S]*)<\/svg>/)[1];let pl='';
+ g.plants.slice().sort((a,b)=>{const A=isoC(a.b,a.pos),B=isoC(b.b,b.pos);return (A.c+A.r)-(B.c+B.r)}).forEach(p=>{const st=gStage(p),{x,y}=isoC(p.b,p.pos),by=y+7-70,I=kindInfo(p.k),orch=p.b==='f';
+  if(st===0){pl+=nest(GMOUND,x-18,by+70-17,36,14);return}if(st===1){pl+=nest(GSPROUT,x-17.5,by+70-35,35,35);return}
+  if(st===3)pl+=`<ellipse cx="${x}" cy="${y+6}" rx="27" ry="9" fill="#FFD65A" opacity=".3"/>`;const gx=x-22.5;pl+=nest(orch?GTREE:GSTEM,gx,by+70-53,45,53);
+  const iw=45*(st===3?(orch?.62:.7):(orch?.4:.52)),it=by+70*(st===3?(orch?.06:-.02):(orch?.2:.06));pl+=(st===3?'':'<g opacity=".72">')+nest(I.icon,x-iw/2,it,iw,iw)+(st===3?'':'</g>')});
+ const deco=GSPOT.map(([x,yy],i)=>{const id=g.decor.spot[i];return id?nest(gDec(id),x-26,yy-48,52,52):''}).join(''),wk=gWeekN(),F0='font-family="system-ui,-apple-system,Segoe UI,sans-serif"';
+ return rv(`<svg xmlns="http://www.w3.org/2000/svg" width="${W}" height="${H}" viewBox="0 0 ${W} ${H}"><defs><linearGradient id="gs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--g-sky)"/><stop offset=".19" stop-color="var(--g-sky2)"/><stop offset=".25" stop-color="var(--g-grass)"/><stop offset="1" stop-color="var(--g-grass2)"/></linearGradient></defs>
+  <rect width="${W}" height="${H}" fill="url(#gs)"/><circle cx="110" cy="110" r="50" fill="var(--g-sun)"/><path d="M0 330V290C110 250 220 245 330 272s200 30 310 4 260-36 440 10V330z" fill="var(--g-hill)"/>
+  <text x="${W/2}" y="140" text-anchor="middle" ${F0} font-size="64" font-weight="800" fill="var(--g-label)">${esc(g.name||'My garden')}</text>
+  <text x="${W/2}" y="205" text-anchor="middle" ${F0} font-size="38" font-weight="600" fill="var(--g-label)" opacity=".8">${wk} plant${wk===1?'':'s'} this week</text>
+  <g transform="translate(40 300) scale(${ls.toFixed(4)})">${land}${deco}${pl}</g>${nest(TORT.replace(/<g class="theart">[\s\S]*?<\/g>/,'').replace(/<g class="tz"[\s\S]*?<\/g>/,'').replace(/<path class="tsl"[^>]*\/>/,''),W-330,H-235,300,202)}
+  <text x="56" y="${H-56}" ${F0} font-size="30" font-weight="800" fill="var(--g-label)" opacity=".65">Vegful</text></svg>`)}
+async function gShare(){const url=URL.createObjectURL(new Blob([gShareSVG()],{type:'image/svg+xml'}));
+ try{const img=new Image();await new Promise((r,j)=>{img.onload=r;img.onerror=j;img.src=url});const c=document.createElement('canvas');c.width=1080;c.height=1350;c.getContext('2d').drawImage(img,0,0);
+  const blob=await new Promise(r=>c.toBlob(r,'image/png')),fn='my-garden.png';
+  try{const f=new File([blob],fn,{type:'image/png'});if(navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f],title:S.garden.name||'My garden'});return}}catch(e){if(e&&e.name==='AbortError')return}
+  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download=fn;document.body.appendChild(a);a.click();setTimeout(()=>{URL.revokeObjectURL(a.href);a.remove()},2000)}
+ catch(e){toast('The picture did not work here')}finally{URL.revokeObjectURL(url)}}
 
 /* reaping: press a ready plant and drag across the others, Hay Day style; every plant pops, sheds leaves and flies to the basket */
 let REAP=null,GREND=0;
