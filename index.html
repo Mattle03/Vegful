@@ -1079,19 +1079,19 @@ html.still .gplot.empty.can::after{animation:none}
 .gghost{position:fixed;left:0;top:0;z-index:20;pointer-events:none;width:52px;height:52px;opacity:.9;filter:drop-shadow(0 8px 8px rgba(0,0,0,.3))}
 .gghost svg{width:100%;height:100%}
 .gghl{display:inline-block;padding:4px 10px;border-radius:10px;background:var(--surface);font-weight:800;font-size:12px;white-space:nowrap}
-#v-garden:not([hidden]){position:fixed;inset:0;z-index:20;display:block;background:var(--g-grass2)}
+#v-garden:not([hidden]){position:fixed;inset:0;z-index:20;display:block;background:var(--g-grass)}
 #v-garden .gdhead{position:absolute;top:0;left:0;right:0;z-index:60;background:none;padding:calc(10px + env(safe-area-inset-top,0px)) 12px 0;pointer-events:none}
 #v-garden .gdhead .row>*{pointer-events:auto}
 #v-garden .gdhead .gname{background:color-mix(in srgb,var(--surface) 88%,transparent);border-radius:14px;padding:2px 4px 2px 12px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
 #v-garden .gdhead .gname h2{font-size:18px;margin:0}
 #v-garden .gcoins{background:color-mix(in srgb,var(--surface) 88%,transparent);border-radius:14px;padding:6px 12px;box-shadow:0 2px 10px rgba(0,0,0,.12)}
 #gd-body{position:absolute;inset:0}
-.gscene.gfull{position:absolute;inset:0;border-radius:0;padding:0!important;overflow:hidden;touch-action:none;background:radial-gradient(120% 90% at 50% 45%,var(--g-grass) 0,var(--g-grass2) 100%);cursor:grab}
+.gscene.gfull{position:absolute;inset:0;border-radius:0;padding:0!important;overflow:hidden;touch-action:none;background:var(--g-grass);cursor:grab}
 .gworld{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
 .gworld .gfarm{width:100%;height:100%;aspect-ratio:auto;margin:0;min-width:0;isolation:isolate}
 .gfull .gland{filter:saturate(calc(.72 + .28*var(--wet,1))) brightness(calc(1.12 - .14*var(--wet,1)));z-index:-9999}
 .gfull .gedit{z-index:5000}
-.gedit .et.out{stroke:rgba(255,255,255,.22)}
+.gedit .et.out{stroke:rgba(255,255,255,.3)}
 .ghud{position:absolute;z-index:50}
 .hweek{top:calc(62px + env(safe-area-inset-top,0px));left:12px;display:flex;align-items:center;gap:10px;margin:0;padding:4px 6px 4px 12px;border-radius:14px;background:color-mix(in srgb,var(--surface) 88%,transparent);box-shadow:0 2px 10px rgba(0,0,0,.12);font-size:13px}
 .hweek .gchests{display:flex;gap:2px}
@@ -3524,15 +3524,15 @@ const gPlots=b=>{const s=S.garden&&gLand().sec[b];return s?4*s.rows:0};
 function gBeds(){if(!S.garden)return [['f','Orchard'],['v','Vegetables'],['c','Field']];const L=gLand();return ['f','v','c','h','b'].filter(b=>L.sec[b]).map(b=>[b,GSECN[b]])}
 /* which section a kind grows in: berries and herbs move to their own patch once you have it */
 function gBedOf(k){const I=kindInfo(k),L=gLand(),f=I.id&&FM[I.id];if(L.sec.b&&I.bed==='f'&&/berr|currant|grape/.test(k))return 'b';if(L.sec.h&&f&&/herb|spice/i.test(f.cat||''))return 'h';return I.bed}
-function isoGeom(){const L=gLand(),P=gParcels(),WC=Math.max(L.C,...P.map(p=>p.c+p.w)),WR=Math.max(L.R,...P.map(p=>p.r+p.h)),M=5;ISO.C=WC;ISO.R=WR;ISO.c0=-M;ISO.r0=-M;ISO.c1=WC+M;ISO.r1=WR+M;ISO.ox=(WR+2*M)*42;ISO.oy=21+2*M*21+ISO.head;ISO.w=(WC+WR+4*M)*42;ISO.h=(WC+WR+4*M)*21+ISO.head+ISO.dep+26}
+function isoGeom(){const L=gLand(),P=gParcels(),WC=Math.max(L.C,...P.map(p=>p.c+p.w)),WR=Math.max(L.R,...P.map(p=>p.r+p.h)),M=8;ISO.C=WC;ISO.R=WR;ISO.c0=-M;ISO.r0=-M;ISO.c1=WC+M;ISO.r1=WR+M;ISO.ox=(WR+2*M)*42;ISO.oy=21+2*M*21+ISO.head;ISO.w=(WC+WR+4*M)*42;ISO.h=(WC+WR+4*M)*21+ISO.head+ISO.dep+26}
 const isoP=(c,r)=>[ISO.ox+(c-r)*42,ISO.oy+(c+r)*21];
 const isoC=(b,pos)=>{const s=gLand().sec[b]||{c:0,r:0,rot:0},x=pos%4,y=Math.floor(pos/4),c=s.c+(s.rot?y:x),r=s.r+(s.rot?x:y),[X,Y]=isoP(c,r);return {c,r,x:X,y:Y}};
 const tileXY=t=>t.split(',').map(Number);
 const PTS=a=>a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
 const isoDia=(c,r,k)=>{const [x,y]=isoP(c,r);return PTS([[x,y-21*k],[x+42*k,y],[x,y+21*k],[x-42*k,y]])};
 function isoLand(){isoGeom();const L=gLand(),C=L.C,R=L.R,d=ISO.dep,T=isoP(-.5,-.5),Rt=isoP(C-.5,-.5),B=isoP(C-.5,R-.5),Lf=isoP(-.5,R-.5),occ=gOcc();
- let h=`<polygon points="${PTS([isoP(ISO.c0-.5,ISO.r0-.5),isoP(ISO.c1-.5,ISO.r0-.5),isoP(ISO.c1-.5,ISO.r1-.5),isoP(ISO.c0-.5,ISO.r1-.5)])}" fill="var(--g-grass)"/><polygon points="${PTS([T,Rt,B,Lf].map(p=>[p[0]+6,p[1]+d+10]))}" fill="rgba(0,0,0,.13)"/><polygon points="${PTS([Lf,B,[B[0],B[1]+d],[Lf[0],Lf[1]+d]])}" fill="var(--g-side1)"/><polygon points="${PTS([B,Rt,[Rt[0],Rt[1]+d],[B[0],B[1]+d]])}" fill="var(--g-side2)"/><path d="M${Lf[0]} ${Lf[1]+d*.45}L${B[0]} ${B[1]+d*.45}L${Rt[0]} ${Rt[1]+d*.45}" fill="none" stroke="var(--g-strata)" stroke-width="2"/><polygon points="${PTS([T,Rt,B,Lf])}" fill="var(--g-lawn)" stroke="var(--g-grim)" stroke-width="3" stroke-linejoin="round"/>`;
- for(let r=0;r<ISO.R;r++)for(let c=0;c<ISO.C;c++){const t=c+','+r,[x,y]=isoP(c,r);if(occ[t]==='p')h+=`<polygon points="${isoDia(c,r,.97)}" fill="var(--g-path)"/><ellipse cx="${(x-12).toFixed(1)}" cy="${(y-2).toFixed(1)}" rx="9" ry="4.2" fill="var(--g-stone)"/><ellipse cx="${(x+13).toFixed(1)}" cy="${(y+4).toFixed(1)}" rx="8" ry="3.8" fill="var(--g-stone)"/>`;
+ let h=`<polygon points="${PTS([isoP(ISO.c0-.5,ISO.r0-.5),isoP(ISO.c1-.5,ISO.r0-.5),isoP(ISO.c1-.5,ISO.r1-.5),isoP(ISO.c0-.5,ISO.r1-.5)])}" fill="none"/><polygon points="${PTS([T,Rt,B,Lf].map(p=>[p[0]+6,p[1]+d+10]))}" fill="rgba(0,0,0,.13)"/><polygon points="${PTS([Lf,B,[B[0],B[1]+d],[Lf[0],Lf[1]+d]])}" fill="var(--g-side1)"/><polygon points="${PTS([B,Rt,[Rt[0],Rt[1]+d],[B[0],B[1]+d]])}" fill="var(--g-side2)"/><path d="M${Lf[0]} ${Lf[1]+d*.45}L${B[0]} ${B[1]+d*.45}L${Rt[0]} ${Rt[1]+d*.45}" fill="none" stroke="var(--g-strata)" stroke-width="2"/><polygon points="${PTS([T,Rt,B,Lf])}" fill="var(--g-lawn)" stroke="var(--g-grim)" stroke-width="3" stroke-linejoin="round"/>`;
+ for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++){const t=c+','+r,[x,y]=isoP(c,r);if(occ[t]==='p')h+=`<polygon points="${isoDia(c,r,.97)}" fill="var(--g-path)"/><ellipse cx="${(x-12).toFixed(1)}" cy="${(y-2).toFixed(1)}" rx="9" ry="4.2" fill="var(--g-stone)"/><ellipse cx="${(x+13).toFixed(1)}" cy="${(y+4).toFixed(1)}" rx="8" ry="3.8" fill="var(--g-stone)"/>`;
   else if(!occ[t]&&c<C&&r<R&&(c*7+r*3)%4===0)h+=`<path d="M${(x-10).toFixed(1)} ${(y+2).toFixed(1)}l2 -6 2 6M${(x+8).toFixed(1)} ${(y-3).toFixed(1)}l2 -6 2 6" stroke="var(--g-tuft2)" stroke-width="1.6" fill="none"/>`}
  Object.keys(L.sec).forEach(b=>{const s=L.sec[b],[w,hh]=secWH(s),q=[isoP(s.c-.46,s.r-.46),isoP(s.c+w-.54,s.r-.46),isoP(s.c+w-.54,s.r+hh-.54),isoP(s.c-.46,s.r+hh-.54)];
   h+=`<polygon points="${PTS(q.map(p=>[p[0],p[1]+4]))}" fill="var(--g-side1)" opacity=".55"/><polygon points="${PTS(q)}" fill="var(--g-${b}top)" stroke="var(--g-${b}edge)" stroke-width="2" stroke-linejoin="round"/>`;
@@ -3544,9 +3544,9 @@ function gSigns(ed){const L=gLand();return (ed?Object.keys(L.sec):[]).map(b=>{co
 function gDecs(){const L=gLand();return Object.keys(L.dec).map(t=>{const [c,r]=tileXY(t),[x,y]=isoP(c,r),id=L.dec[t];return `<span class="gspot" style="left:${pct(x-27,ISO.w)};top:${pct(y+10-54,ISO.h)};width:${pct(54,ISO.w)};z-index:${Math.round((c+r)*10)+6}" aria-label="${(GDEC.find(d=>d[0]===id)||[0,''])[1]}">${gDec(id)}</span>`}).join('')}
 /* placing */
 function gAutoPlace(id){const L=gLand();if(Object.values(L.dec).includes(id))return;const occ=gOcc();for(let r=0;r<L.R;r++)for(let c=L.C-1;c>=0;c--){const t=c+','+r;if(!occ[t]){L.dec[t]=id;return}}}
-function gPut(t,id){const L=gLand();isoGeom();if(!gInWorld(t))return 0;const o=gOcc()[t];
+function gPut(t,id){const L=gLand();isoGeom();if(!gInMap(t))return 0;const o=gOcc()[t];
  if(!id){if(L.dec[t]){delete L.dec[t];return 1}return 0}if(!S.garden.decor.own.includes(id)||(o&&o!=='d'))return 0;Object.keys(L.dec).forEach(k=>{if(L.dec[k]===id)delete L.dec[k]});L.dec[t]=id;return 1}
-function gPathT(t){const L=gLand();isoGeom();if(!gInWorld(t))return 0;const o=gOcc()[t],i=L.path.indexOf(t);if(i>=0){L.path.splice(i,1);return 1}if(o)return 0;L.path.push(t);return 1}
+function gPathT(t){const L=gLand();isoGeom();if(!gInMap(t))return 0;const o=gOcc()[t],i=L.path.indexOf(t);if(i>=0){L.path.splice(i,1);return 1}if(o)return 0;L.path.push(t);return 1}
 function gFits(b,s){const L=gLand(),occ=gOcc(b);return secTiles(s).every(t=>{const [c,r]=tileXY(t);return c>=0&&r>=0&&c<L.C&&r<L.R&&!(occ[t]||'').startsWith('s:')})}
 function gSetSec(b,s){const L=gLand();if(!gFits(b,s))return 0;L.sec[b]=s;const T=new Set(secTiles(s));L.path=L.path.filter(t=>!T.has(t));Object.keys(L.dec).forEach(t=>{if(T.has(t))delete L.dec[t]});return 1}
 function gMoveSec(b,t){const s=gLand().sec[b],[c,r]=tileXY(t);return s?gSetSec(b,Object.assign({},s,{c,r})):0}
@@ -3741,7 +3741,7 @@ const gOverTray=(x,y)=>{const t=$('ged-tray');if(!t)return false;const R=t.getBo
 function gTry(d,t){const L=gLand();if(!t)return {ok:0,tiles:[]};const [c,r]=tileXY(t);
  if(d.k==='sec'){const s=Object.assign({},L.sec[d.b],{c:c-d.dc,r:r-d.dr});const tiles=secTiles(s);return {ok:tiles.every(gInWorld)&&gFits(d.b,s),tiles,s}}
  if(d.k==='bld'){const tiles=bldTiles(d.b,[c-d.dc,r-d.dr]),occ=gOcc();return {ok:tiles.every(x=>gInMap(x)&&!gInFarm(x)&&(!occ[x]||occ[x]==='b:'+d.b)),tiles,p:[c-d.dc,r-d.dr]}}
- const o=gOcc()[t],w=gInWorld(t);if(d.k==='dec')return {ok:w&&(!o||(d.from&&t===d.from)),tiles:[t]};if(d.k==='path')return {ok:w&&(!o||t===d.from),tiles:[t]};return {ok:0,tiles:[t]}}
+ const o=gOcc()[t],w=gInMap(t);if(d.k==='dec')return {ok:w&&(!o||(d.from&&t===d.from)),tiles:[t]};if(d.k==='path')return {ok:w&&(!o||t===d.from),tiles:[t]};return {ok:0,tiles:[t]}}
 function gEditBind(b){if(!G.ed)return;const L=gLand(),re=()=>{save();renderGarden()},no=()=>toast('No room there');
  if($('ged-done'))$('ged-done').onclick=()=>{G.ed=null;G.es=null;save();renderGarden();render()};
  if($('ged-turn'))$('ged-turn').onclick=()=>{if(!gTurnSec(G.es))no();re()};
@@ -3749,7 +3749,7 @@ function gEditBind(b){if(!G.ed)return;const L=gLand(),re=()=>{save();renderGarde
  let d=null;
  const move=e=>{if(!d||e.pointerId!==d.id)return;if(!d.mv&&Math.hypot(e.clientX-d.x,e.clientY-d.y)>6)d.mv=1;if(!d.mv)return;e.preventDefault();
   const t=gTileAt(e.clientX,e.clientY);gGhost(d.gh,e.clientX,e.clientY);
-  if(d.k==='paint'){if(t&&gInWorld(t)&&!gOcc()[t]){L.path.push(t);d.n++;const p=document.querySelector(`#gd-body .gedit [data-t="${t}"]`);if(p)p.classList.add('ok')}return}
+  if(d.k==='paint'){if(t&&gInMap(t)&&!gOcc()[t]){L.path.push(t);d.n++;const p=document.querySelector(`#gd-body .gedit [data-t="${t}"]`);if(p)p.classList.add('ok')}return}
   const R=gTry(d,t);d.last=t;d.R=R;gFoot(R.tiles,R.ok);d.tray=gOverTray(e.clientX,e.clientY)};
  const end=e=>{if(!d||e.pointerId!==d.id)return;const x=d;d=null;gGhost(null);gFoot(null);
   if(x.k==='paint'){if(x.n){re()}return}
