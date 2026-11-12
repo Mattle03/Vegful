@@ -1,13 +1,13 @@
 {
-  "name": "Vegful: complete your nutrition",
-  "short_name": "Vegful",
-  "description": "Plan vegan days and see which food covers which nutrient.",
+  "name": "Vegful Garden",
+  "short_name": "Garden",
+  "description": "Grow a garden from the plant foods you eat.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#2D5A3F",
-  "theme_color": "#2D5A3F",
+  "background_color": "#7A5230",
+  "theme_color": "#7A5230",
   "icons": [
     {
       "src": "icons/icon-192.png",
@@ -25,5 +25,6 @@
       "type": "image/png",
       "purpose": "maskable"
     }
-  ]
+  ],
+  "id": "./"
 }
