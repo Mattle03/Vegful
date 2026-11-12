@@ -5433,7 +5433,7 @@ function wVoiceRender(){const el=$('p-voice');if(!el)return;const v=wVoice(),ask
  $('p-vtry').onclick=()=>{const c=['nag','tap','log','away'][Math.floor(Math.random()*4)];toast(wPick(c,{meal:'lunch',days:3,low:['nuts','leg']})||wPick('tap'));save()};
  wPushBind(el)}
 /* ---------- push reminders: the server only rings at the chosen times; the phone decides what to say from a small mirror in IndexedDB ---------- */
-const WPUSH={url:'',key:''};
+const WPUSH={url:'https://vegful-push.vegful.workers.dev',key:'BISXsROhAZjpCDUMtk51dQryqD99aqMSBnz6o9kPY2TV628cX2GK_2mb-usrXueT0-Qsqmo_vm4WgsomFIwi5kI'};
 const wPushOK=()=>!!(WPUSH.url&&WPUSH.key&&'serviceWorker' in navigator&&'PushManager' in window&&'Notification' in window);
 const wPushOn=()=>!!(S.garden&&S.garden.push&&S.garden.push.on);
 const WPT=[['b','Breakfast','09:30'],['l','Lunch','13:00'],['d','Dinner','19:00'],['e','Evening','21:30']];
