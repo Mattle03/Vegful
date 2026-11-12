@@ -1374,6 +1374,10 @@ html.still .wib .wn-next.go{animation:none;box-shadow:0 2px 3px rgba(0,0,0,.22),
 .wib .wbin{position:absolute;left:0;top:0;width:266.667%;height:266.667%;transform:scale(.375);transform-origin:0 0;display:grid;grid-template-columns:.9fr 1.4fr 1.1fr;grid-template-rows:1fr;grid-template-areas:"ring gaps next";gap:10px;padding:26px 12px 14px;box-sizing:border-box}
 .wib .wibt{top:-15px!important;font-size:9px!important;padding:1px 7px!important}
 .wib .wibpost{width:5px!important}
+/* the tour's highlight, the path mode button */
+.wtourhl{filter:drop-shadow(0 0 8px rgba(242,193,78,.95)) drop-shadow(0 0 3px rgba(242,193,78,.9))!important;z-index:9000!important}
+#wdock .wtourhl,.wtbtn.wtourhl{outline:3px solid var(--coral);outline-offset:4px;border-radius:50%}
+.gtit.on{outline:3px solid var(--coral);outline-offset:-3px}
 </style>
 </head>
 <body>
@@ -3926,11 +3930,11 @@ function gSkyline(bg){if(bg==='roof')return '<svg class="ghills" viewBox="0 0 40
 const gNext=wk=>{const x=GCFG.week.find(([t])=>wk<t);return x?x[0]:null};
 function gDone(msg){if(GNEWB){const b=GBADGE.find(x=>x[0]===GNEWB);GNEWB=null;if(b){toast(`Badge: ${b[1]}`);return}}if(msg)toast(msg)}
 /* ---------- the world: a meadow you look into; drag to move, pinch or buttons to zoom ---------- */
-const GBLD={shed:{n:'Shed',w:4,v:'basket'},market:{n:'Shop',w:3,v:'market'},shop:{n:'Kitchen',w:4,v:'shop'},board:{n:'Board',w:3,h:1,v:'album'},silo:{n:'Silo',w:2,v:'silo'},mail:{n:'Mailbox',w:1,v:'mail'}};
-const GBLD0={shed:[-5,-3],market:[4,9],shop:[2,-7],board:[-1,-3],silo:[13,3],mail:[2,-2]};
+const GBLD={shed:{n:'Shed',w:4,v:'basket'},market:{n:'Shop',w:3,v:'market'},shop:{n:'Kitchen',w:4,v:'shop'},board:{n:'Board',w:3,h:1,v:'album'},silo:{n:'Silo',w:3,v:'silo'},mail:{n:'Mailbox',w:1,v:'mail'}};
+const GBLD0={shed:[-5,-3],market:[4,9],shop:[2,-7],board:[-1,-3],silo:[13,2],mail:[2,-2]};
 function gBld(){const L=gLand();if(!L.bld||typeof L.bld!=='object'||L.bv!==2){L.bld={};L.bv=2}Object.keys(L.bld).forEach(k=>{if(!GBLD[k])delete L.bld[k]});Object.keys(GBLD).forEach(k=>{if(!Array.isArray(L.bld[k])&&(L.bm>=3||!['silo','mail'].includes(k)))L.bld[k]=GBLD0[k].slice()});
  /* the board left its old corner once, so its live view stands in sight; a board the person moved stays put */
- if(!(L.bm>=2)){L.bm=2;const o=L.bld.board,[c0,r0]=GBLD0.board;if(o&&((o[0]===5&&o[1]===-3)||(o[0]===-3&&o[1]===-3))){const occ=gOcc();let free=1;for(let y=r0;y<r0+2;y++)for(let x=c0;x<c0+2;x++){const t=x+','+y;if(occ[t]&&occ[t]!=='b:board')free=0}if(free)L.bld.board=[c0,r0].concat(o[2]?[o[2]]:[])}}wBld3(L);wBld4(L);wBld5(L);return L.bld}
+ if(!(L.bm>=2)){L.bm=2;const o=L.bld.board,[c0,r0]=GBLD0.board;if(o&&((o[0]===5&&o[1]===-3)||(o[0]===-3&&o[1]===-3))){const occ=gOcc();let free=1;for(let y=r0;y<r0+2;y++)for(let x=c0;x<c0+2;x++){const t=x+','+y;if(occ[t]&&occ[t]!=='b:board')free=0}if(free)L.bld.board=[c0,r0].concat(o[2]?[o[2]]:[])}}wBld3(L);wBld4(L);wBld5(L);wBld6(L);return L.bld}
 const bldTiles=(k,o)=>{const q=gBld()[k]||[0,0];return wBldTilesAt(k,o||q,q[2])};
 const gH=(c,r)=>{let h=(c*73856093)^(r*19349663);h=(h^(h>>>13))*1274126177;return ((h^(h>>>16))>>>0)%1000};
 function gMeadow(){let h='';const B=gBld();for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++)if((c+r)&1)h+=`<polygon points="${isoDia(c,r,1)}" fill="var(--g-grass2)" opacity=".5"/>`;
@@ -3960,7 +3964,7 @@ function gZoom(f,cx,cy){const vp=$('gd-scene');if(!vp||!G.cam)return;const R=vp.
 function gCamBind(){const vp=$('gd-scene');if(!vp)return;const P=new Map();let st=null;
  vp.addEventListener('pointerdown',e=>{if(!G.cam||e.defaultPrevented||e.target.closest('.ghud'))return;if(!P.size)G.panned=0;P.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(P.size===1)st={x:e.clientX,y:e.clientY,cx:G.cam.x,cy:G.cam.y,mv:0};else if(P.size===2){const [a,b]=[...P.values()];st={pinch:1,d:Math.hypot(a.x-b.x,a.y-b.y),s:G.cam.s,mx:(a.x+b.x)/2,my:(a.y+b.y)/2,mv:1}}});
- vp.addEventListener('pointermove',e=>{if(!P.has(e.pointerId)||!st)return;P.set(e.pointerId,{x:e.clientX,y:e.clientY});
+ vp.addEventListener('pointermove',e=>{if(!P.has(e.pointerId)||!st||G.drag)return;P.set(e.pointerId,{x:e.clientX,y:e.clientY});
   if(st.pinch&&P.size>=2){const [a,b]=[...P.values()],d=Math.hypot(a.x-b.x,a.y-b.y);gZoom(st.s*d/st.d/G.cam.s,st.mx,st.my);G.panned=1;return}
   const dx=e.clientX-st.x,dy=e.clientY-st.y;if(!st.mv&&Math.hypot(dx,dy)>8){st.mv=1;G.panned=1;try{vp.setPointerCapture(e.pointerId)}catch(_){}}if(st.mv){G.cam.x=st.cx+dx;G.cam.y=st.cy+dy;gCamApply()}});
  const up=e=>{P.delete(e.pointerId);if(!P.size)st=null;else if(P.size===1){const [a]=[...P.values()];st={x:a.x,y:a.y,cx:G.cam.x,cy:G.cam.y,mv:1}}};
@@ -4067,10 +4071,10 @@ const gInFarm=()=>false;
 function gEditLayer(){let h='';const occ=gOcc();for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++){const t=c+','+r;if(!gInMap(t))continue;const o=occ[t]||'';h+=`<polygon class="et${gInWorld(t)?'':' out'}${(G.es&&o==='s:'+G.es)||(G.eb&&o==='b:'+G.eb)?' sel':''}" data-t="${t}" points="${isoDia(c,r,.98)}"/>`}
  return `<svg class="gedit" viewBox="0 0 ${ISO.w} ${ISO.h}" role="group" aria-label="Layout: press and drag to move things">${h}</svg>`}
 function gEditBar(){const g=S.garden,placed=new Set(Object.values(gLand().dec)),free=g.decor.own.filter(id=>!placed.has(id));
- return `<div class="gedbar"><p class="cap gedhint">${G.es?`${GSECN[G.es]}: drag it, or turn it`:G.eb&&GBLD[G.eb]?`${GBLD[G.eb].n}: drag it, or turn it`:'Drag anything to move it. Drag from the tray to place it.'}</p>
+ return `<div class="gedbar"><p class="cap gedhint">${G.es?`${GSECN[G.es]}: drag it, or turn it`:G.eb&&GBLD[G.eb]?`${GBLD[G.eb].n}: drag it, or turn it`:G.pm?'Tap a tile to lay or lift a stone. Drag for a straight path.':'Hold anything to lift it, then drag. Swipe to look around. Drag from the tray to place it.'}</p>
   ${G.eb&&GBLD[G.eb]&&!G.es?'<div class="gups"><button class="btn sm" type="button" id="ged-bturn">Turn</button></div>':''}
   ${G.es?`<div class="gups"><button class="btn sm" type="button" id="ged-turn">Turn</button></div>`:''}
-  <div class="gtray2" id="ged-tray"><button class="gtit" type="button" data-tray="path" aria-label="Stone path: drag across tiles"><span class="gtii"><svg viewBox="0 0 48 48"><path d="M4 30L24 20l20 10-20 10z" fill="var(--g-path)"/><ellipse cx="17" cy="30" rx="7" ry="3.4" fill="var(--g-stone)"/><ellipse cx="31" cy="31" rx="6" ry="3" fill="var(--g-stone)"/></svg></span><span>Path</span></button>${free.map(id=>`<button class="gtit" type="button" data-tray="${id}"><span class="gtii">${gDec(id)}</span><span>${(GDEC.find(d=>d[0]===id)||[0,id])[1]}</span></button>`).join('')}</div>
+  <div class="gtray2" id="ged-tray"><button class="gtit${G.pm?' on':''}" type="button" data-tray="path" aria-pressed="${G.pm?'true':'false'}" aria-label="Path mode: tap tiles or drag a straight line"><span class="gtii"><svg viewBox="0 0 48 48"><path d="M4 30L24 20l20 10-20 10z" fill="var(--g-path)"/><ellipse cx="17" cy="30" rx="7" ry="3.4" fill="var(--g-stone)"/><ellipse cx="31" cy="31" rx="6" ry="3" fill="var(--g-stone)"/></svg></span><span>Path</span></button>${free.map(id=>`<button class="gtit" type="button" data-tray="${id}"><span class="gtii">${gDec(id)}</span><span>${(GDEC.find(d=>d[0]===id)||[0,id])[1]}</span></button>`).join('')}</div>
   <button class="btn primary wide" type="button" id="ged-done">Done</button></div>`}
 function gTileAt(x,y){const f=document.querySelector('#gd-body .gfarm');if(!f)return null;const R=f.getBoundingClientRect(),ux=(x-R.left)/R.width*ISO.w,uy=(y-R.top)/R.height*ISO.h,a=(ux-ISO.ox)/42,b=(uy-ISO.oy)/21;const c=Math.round((a+b)/2),r=Math.round((b-a)/2),t=c+','+r;return gInMap(t)?t:null}
 function gFoot(tiles,ok){document.querySelectorAll('#gd-body .gedit .et').forEach(p=>p.classList.remove('ok','bad'));(tiles||[]).forEach(t=>{const p=document.querySelector(`#gd-body .gedit [data-t="${t}"]`);if(p)p.classList.add(ok?'ok':'bad')})}
@@ -4082,7 +4086,7 @@ function gTry(d,t){const L=gLand();if(!t)return {ok:0,tiles:[]};const [c,r]=tile
  if(d.k==='bld'){const tiles=bldTiles(d.b,[c-d.dc,r-d.dr]),occ=gOcc();return {ok:tiles.every(x=>gInMap(x)&&!gInFarm(x)&&(!occ[x]||occ[x]==='b:'+d.b)),tiles,p:[c-d.dc,r-d.dr]}}
  const o=gOcc()[t],w=gInMap(t);if(d.k==='dec')return {ok:w&&(!o||(d.from&&t===d.from)),tiles:[t]};if(d.k==='path')return {ok:w&&(!o||t===d.from),tiles:[t]};return {ok:0,tiles:[t]}}
 function gEditBind(b){if(!G.ed)return;const L=gLand(),re=()=>{save();renderGarden()},no=()=>toast('No room there');
- if($('ged-done'))$('ged-done').onclick=()=>{G.ed=null;G.es=null;G.eb=null;save();renderGarden();render()};
+ if($('ged-done'))$('ged-done').onclick=()=>{G.ed=null;G.es=null;G.eb=null;G.pm=0;G.drag=0;save();renderGarden();render()};
  if($('ged-turn'))$('ged-turn').onclick=()=>{if(!gTurnSec(G.es))no();re()};
  if($('ged-bturn'))$('ged-bturn').onclick=()=>{const q=gBld()[G.eb];if(!q)return;const f=q[2]?0:1;if(!wBldFree(G.eb,q,f)){no();return}q[2]=f;re()};
  if($('ged-big'))$('ged-big').onclick=()=>{const c0=S.garden.coins;if(gBuyUp('rows:'+G.es)){re();gCount(c0,S.garden.coins);toast('Bigger '+GSECN[G.es].toLowerCase())}else no()};
@@ -4091,7 +4095,7 @@ function gEditBind(b){if(!G.ed)return;const L=gLand(),re=()=>{save();renderGarde
   const t=gTileAt(e.clientX,e.clientY);gGhost(d.gh,e.clientX,e.clientY);
   if(d.k==='paint'){if(t&&gInMap(t)&&!gOcc()[t]){L.path.push(t);d.n++;const p=document.querySelector(`#gd-body .gedit [data-t="${t}"]`);if(p)p.classList.add('ok')}return}
   const R=gTry(d,t);d.last=t;d.R=R;gFoot(R.tiles,R.ok);d.tray=gOverTray(e.clientX,e.clientY)};
- const end=e=>{if(!d||e.pointerId!==d.id)return;const x=d;d=null;gGhost(null);gFoot(null);
+ const end=e=>{if(!d||e.pointerId!==d.id)return;const x=d;d=null;G.drag=0;gGhost(null);gFoot(null);
   if(x.k==='paint'){if(x.n){re()}return}
   if(!x.mv){if(x.k==='bld'){G.eb=G.eb===x.b&&!x.lp?null:x.b;G.es=null;renderGarden();return}if(x.lp&&x.k!=='sec')return;if(x.k==='sec'){G.eb=null;G.es=G.es===x.b?null:x.b;renderGarden()}else if(x.k==='path'&&x.from){gPathT(x.from);re()}return}
   if(x.tray&&x.from){if(x.k==='dec'){gPut(x.from,null);re();return}if(x.k==='path'){gPathT(x.from);re();return}}
@@ -4108,11 +4112,23 @@ function gEditBind(b){if(!G.ed)return;const L=gLand(),re=()=>{save();renderGarde
   else if(o==='p')d={k:'path',from:t,gh:'<span class="gghl">Path</span>'};
   else return 0;
   Object.assign(d,{x:X,y:Y,mv:0,id,lp});try{lay.setPointerCapture(id)}catch(_){}return 1};
- if(lay)lay.addEventListener('pointerdown',e=>{const p=e.target.closest('[data-t]');if(!p)return;if(begin(p.dataset.t,e.clientX,e.clientY,e.pointerId))e.preventDefault();else if(G.es||G.eb){G.es=null;G.eb=null;renderGarden()}});
+ let pend=null,line=null;const lineTiles=(a,b)=>{const [c0,r0]=tileXY(a),[c1,r1]=tileXY(b),o=[];if(Math.abs(c1-c0)>=Math.abs(r1-r0)){for(let c=Math.min(c0,c1);c<=Math.max(c0,c1);c++)o.push(c+','+r0)}else{for(let r=Math.min(r0,r1);r<=Math.max(r0,r1);r++)o.push(c0+','+r)}return o};
+ if(lay)lay.addEventListener('pointerdown',e=>{const p=e.target.closest('[data-t]');if(!p)return;const t=p.dataset.t,o=gOcc()[t]||'';
+  if(G.pm){e.preventDefault();G.drag=1;line={a:t,b:t,id:e.pointerId};try{lay.setPointerCapture(e.pointerId)}catch(_){}gFoot([t],!o||o==='p');return}
+  if(!o)return;
+  if((G.es&&o==='s:'+G.es)||(G.eb&&o==='b:'+G.eb)){if(begin(t,e.clientX,e.clientY,e.pointerId)){e.preventDefault();G.drag=1}return}
+  pend={t,x:e.clientX,y:e.clientY,id:e.pointerId,tm:setTimeout(()=>{if(!pend)return;const q=pend;pend=null;if(begin(q.t,q.x,q.y,q.id)){G.drag=1;d.mv=1;gGhost(d.gh,q.x,q.y);try{navigator.vibrate&&navigator.vibrate(15)}catch(_){}}},280)}});
+ if(lay){lay.addEventListener('pointermove',e=>{if(pend&&e.pointerId===pend.id&&Math.hypot(e.clientX-pend.x,e.clientY-pend.y)>8){clearTimeout(pend.tm);pend=null}
+   if(line&&e.pointerId===line.id){const t=gTileAt(e.clientX,e.clientY);if(t&&t!==line.b){line.b=t;const T=lineTiles(line.a,t),oc=gOcc();gFoot(T.filter(x=>gInMap(x)&&(!oc[x]||oc[x]==='p')),true)}}},true);
+  lay.addEventListener('pointerup',e=>{if(pend&&e.pointerId===pend.id){clearTimeout(pend.tm);const q=pend;pend=null;if(begin(q.t,q.x,q.y,q.id))end(e);return}
+   if(line&&e.pointerId===line.id){const q=line;line=null;G.drag=0;gFoot(null);const oc=gOcc();
+    if(q.a===q.b){if(oc[q.a]==='p')gPathT(q.a);else if(!oc[q.a]&&gInMap(q.a))L.path.push(q.a)}else lineTiles(q.a,q.b).forEach(x=>{if(gInMap(x)&&!oc[x]&&!L.path.includes(x))L.path.push(x)});re();return}
+   if(!d&&!G.panned&&(G.es||G.eb)){const p=e.target.closest&&e.target.closest('[data-t]');if(p&&!gOcc()[p.dataset.t]){G.es=null;G.eb=null;renderGarden()}}},true);
+  lay.addEventListener('pointercancel',()=>{if(pend){clearTimeout(pend.tm);pend=null}if(line){line=null;G.drag=0;gFoot(null)}},true)}
  if(lay&&G.lp){const q=G.lp;G.lp=null;begin(q.t,q.x,q.y,q.id,1)}
  if(lay){lay.addEventListener('pointermove',move);lay.addEventListener('pointerup',end);lay.addEventListener('pointercancel',end)}
  b.querySelectorAll('[data-tray]').forEach(x=>{x.addEventListener('pointerdown',e=>{e.preventDefault();const v=x.dataset.tray;try{x.setPointerCapture(e.pointerId)}catch(_){}
-  d=v==='path'?{k:'paint',n:0,gh:'<span class="gghl">Path</span>'}:{k:'dec',from:null,gh:gDec(v)};d.dec=v;Object.assign(d,{x:e.clientX,y:e.clientY,mv:0,id:e.pointerId})});
+  if(v==='path'){G.pm=G.pm?0:1;G.es=null;G.eb=null;renderGarden();return}d={k:'dec',from:null,gh:gDec(v)};d.dec=v;Object.assign(d,{x:e.clientX,y:e.clientY,mv:0,id:e.pointerId})});
   x.addEventListener('pointermove',move);x.addEventListener('pointerup',e=>{if(d&&d.k==='dec'&&!d.from&&d.dec){const t=d.last;if(d.mv&&t&&d.R&&d.R.ok){const id=d.dec;d=null;gGhost(null);gFoot(null);if(gPut(t,id))re();else no();return}}
    if(d&&!d.mv&&d.k==='dec'&&d.dec){const id=d.dec;d=null;gAutoPlace(id);re();return}end(e)});x.addEventListener('pointercancel',end)})}
 
@@ -5358,7 +5374,7 @@ function wBedCat(f){const c=f.cat,n=(f.n||'').toLowerCase();if(c==='Fruit')retur
  if(c==='Vegetables'){let s=new Set();try{s=fgOf(f.id)}catch(e){}return s.has('green')||s.has('cruc')?'k':'v'}
  if(c==='Grains and starch')return /potato|\byam|cassava|taro|plantain|tapioca/.test(n)?'v':'c';return 'v'}
 /* the default land: two columns of beds running down the screen, so the whole garden reads at a phone's width */
-const GLAY={sec:{f:[0,0],v:[3,3],c:[6,6],n:[5,0],k:[8,3],l:[11,6]},bld:{shed:[-5,-3],market:[4,9],shop:[2,-7],board:[-1,-3],silo:[13,3],mail:[2,-2]}};
+const GLAY={sec:{f:[0,0],v:[3,3],c:[6,6],n:[5,0],k:[8,3],l:[11,6]},bld:{shed:[-5,-3],market:[4,9],shop:[2,-7],board:[-1,-3],silo:[13,2],mail:[2,-2]}};
 const GOLDB={shed:[[-5,-1],[0,5]],market:[[-5,4],[4,9]],shop:[[1,-5],[5,-5]],board:[[5,-3],[-3,-3],[-2,-3],[-1,-4],[-4,-5]],silo:[[-2,2]],mail:[[-2,-1]]};
 function gLayPath(){const o=[];for(let c=0;c<=11;c++)o.push(c+',2');for(let c=3;c<=14;c++)o.push(c+',5');[[4,0],[4,1],[7,3],[7,4],[10,6],[10,7]].forEach(([c,r])=>o.push(c+','+r));return o}
 function gLaySec(){const o={};Object.keys(GLAY.sec).forEach(b=>{const [c,r]=GLAY.sec[b];o[b]={c,r,rot:0,rows:2}});return o}
@@ -5506,7 +5522,8 @@ function wTort(){let el=$('wtort');if(!el){el=document.createElement('div');el.i
   el.querySelector('.wtbtn').onclick=()=>{if(!wGuide(false))wSay(wPick('tap'),'waving')}}
  el.hidden=S.view!=='garden'||!!(G&&G.ed);el.classList.toggle('has',!!wNext());const tb=el.querySelector('.wtbtn');if(tb)tb.setAttribute('aria-label',wNext()?'The tortoise has a suggestion':'The tortoise')}
 /* once a day, a hello; after days away, the away line */
-function wGreet(){const g=S.garden;if(!g||S.view!=='garden')return;const nx=wNext(),key=TODAY+':'+nx;
+function wGreet(){const g=S.garden;if(!g||S.view!=='garden'||WTI>=0)return;const nx=wNext(),key=TODAY+':'+nx;
+ if(!g.tour&&S.onb&&!(G&&G.ed)){g.tour=1;g.vhi=TODAY;g.vlast=TODAY;g.vpo=TODAY;if(nx)g.vask=key;save();setTimeout(wTour,900);return}
  if(!g.vpush&&!wPushOn()&&g.vpo!==TODAY&&wHasData()&&(wPushOK()||wIOS())){g.vpo=TODAY;g.vlast=TODAY;g.vhi=TODAY;if(nx)g.vask=key;setTimeout(()=>{if(!wPushOffer(true))wGuide(true)},900);return}
  if(nx&&g.vask!==key){g.vask=key;g.vhi=TODAY;g.vlast=TODAY;setTimeout(()=>wGuide(true),900);return}
  if(g.vhi===TODAY)return;const lo=g.vlast;g.vhi=TODAY;g.vlast=TODAY;const d=lo?dayDiff(lo,TODAY):0;
@@ -5516,11 +5533,12 @@ function wVoiceRender(){const el=$('p-voice');if(!el)return;const v=wVoice(),ask
  el.innerHTML=`<div class="seg sm" id="p-vseg" role="group" aria-label="Voice">${[['kind','Kind'],['guilt','Guilt'],['adult','Guilt 18+']].map(([k,l])=>`<button type="button" data-voice="${k}" aria-pressed="${v===k}">${l}</button>`).join('')}</div>
  <p class="cap" style="margin:10px 0 0">${WVTXT[v]}</p>
  ${ask?`<div class="wage"><b>Only for adults</b><p class="cap">The jokes get crude and sexual. Turn it on only if you are 18 or older.</p><div class="btnrow2"><button class="btn primary" type="button" id="p-age-ok">I am 18 or older</button><button class="btn" type="button" id="p-age-no">Cancel</button></div></div>`:''}
- <button class="btn sm" type="button" id="p-vtry" style="margin-top:12px">Hear a line</button>${wPushHTML()}`;
+ <div class="btnrow2" style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap"><button class="btn sm" type="button" id="p-vtry">Hear a line</button><button class="btn sm" type="button" id="p-tour">Garden tour</button></div>${wPushHTML()}`;
  el.querySelectorAll('[data-voice]').forEach(b=>b.onclick=()=>{const k=b.dataset.voice;if(k==='adult'&&!S.garden.adult){el.dataset.ask='1';wVoiceRender();return}el.dataset.ask='';S.garden.voice=k;save();wMirror();wVoiceRender()});
  if($('p-age-ok'))$('p-age-ok').onclick=()=>{S.garden.adult=1;S.garden.voice='adult';el.dataset.ask='';save();wMirror();wVoiceRender()};
  if($('p-age-no'))$('p-age-no').onclick=()=>{el.dataset.ask='';wVoiceRender()};
  $('p-vtry').onclick=()=>{const c=['nag','tap','log','away'][Math.floor(Math.random()*4)];toast(wPick(c,{meal:'lunch',days:3,low:['nuts','leg']})||wPick('tap'));save()};
+ if($('p-tour'))$('p-tour').onclick=()=>{S.view='garden';render();setTimeout(wTour,350)};
  wPushBind(el)}
 /* ---------- push reminders: the server only rings at the chosen times; the phone decides what to say from a small mirror in IndexedDB ---------- */
 const WPUSH={url:'https://vegful-push.vegful.workers.dev',key:'BISXsROhAZjpCDUMtk51dQryqD99aqMSBnz6o9kPY2TV628cX2GK_2mb-usrXueT0-Qsqmo_vm4WgsomFIwi5kI'};
@@ -5576,6 +5594,9 @@ function wBld5(L){if(L.bm>=5)return;L.bm=5;const B=L.bld;if(!B)return;
  const movers=Object.keys(B).filter(k=>Array.isArray(B[k])&&(OLD[k]||[]).some(q=>q[0]===B[k][0]&&q[1]===B[k][1])),keep={};movers.forEach(k=>{keep[k]=B[k];delete B[k]});
  ['board','shed','shop','market','silo','mail'].forEach(k=>{if(!keep[k])return;const fl=!!keep[k][2],p=wBldFree(k,GBLD0[k],fl)?GBLD0[k].slice():wBldPlace(k,GBLD0[k],fl);B[k]=(p||keep[k].slice(0,2)).concat(fl?[1]:[])});
  Object.keys(B).forEach(k=>{if(movers.includes(k)||!Array.isArray(B[k]))return;const fl=!!B[k][2];if(!wBldFree(k,B[k],fl)){const p=wBldPlace(k,B[k],fl);if(p)B[k]=p.concat(fl?[1]:[])}})}
+/* the silo grew to 3 by 3: once, it takes its new spot if it stood on the old one, and anything that no longer fits finds the nearest free place */
+function wBld6(L){if(L.bm>=6)return;L.bm=6;const B=L.bld;if(!B)return;const sl=B.silo;if(sl&&sl[0]===13&&sl[1]===3){delete B.silo;const p=wBldFree('silo',GBLD0.silo,0)?GBLD0.silo.slice():wBldPlace('silo',GBLD0.silo,0);B.silo=p||sl}
+ Object.keys(B).forEach(k=>{if(!Array.isArray(B[k]))return;const fl=!!B[k][2];if(!wBldFree(k,B[k],fl)){const p=wBldPlace(k,B[k],fl);if(p)B[k]=p.concat(fl?[1]:[])}})}
 function wBld3(L){if(L.bm>=3)return;L.bm=3;const B=L.bld;
  ['silo','mail'].forEach(k=>{if(!Array.isArray(B[k])){delete B[k];const p=wBldPlace(k,GBLD0[k],0);if(p)B[k]=p}});
  const b=B.board;if(b){const fl=!!b[2],old=GOLD3.board.some(q=>q[0]===b[0]&&q[1]===b[1]);let p=old&&wBldFree('board',GBLD0.board,fl)?GBLD0.board.slice():null;
@@ -5597,10 +5618,10 @@ WVL.adult.again=['Same {meal} as {when}? Creature of habit. Hot.'];
 WVL.kind.push=['Want a little nudge at meal times?'];
 WVL.guilt.push=['Want me to nag you on your phone too? I am very good at it.'];
 WVL.adult.push=['Want me in your notifications? I will be gentle. I will not be gentle.'];
-function wAsk(t,detail,acts){const el=$('wtort');if(!el||el.hidden)return;const b=el.querySelector('.wtb');
+function wAsk(t,detail,acts,stay){const el=$('wtort');if(!el||el.hidden)return;const b=el.querySelector('.wtb');
  b.innerHTML=`<span>${esc(t)}</span>${detail?`<small>${esc(detail)}</small>`:''}${acts&&acts.length?`<span class="wtacts">${acts.map((a,i)=>`<button type="button" class="btn sm${i?'':' acc'}" data-wta="${i}">${esc(a[0])}</button>`).join('')}</span>`:''}`;
  b.querySelectorAll('[data-wta]').forEach(x=>x.onclick=()=>{el.classList.remove('talk','ask');const m=el.querySelector('.tmas');if(m)m.className='tmas idle';acts[+x.dataset.wta][1]()});
- el.classList.add('talk','ask');const m=el.querySelector('.tmas');if(m)m.className='tmas waving';clearTimeout(WTT);WTT=setTimeout(()=>{el.classList.remove('talk','ask');if(m)m.className='tmas idle'},14000)}
+ el.classList.add('talk','ask');const m=el.querySelector('.tmas');if(m)m.className='tmas waving';clearTimeout(WTT);if(!stay)WTT=setTimeout(()=>{el.classList.remove('talk','ask');if(m)m.className='tmas idle'},14000)}
 function wGuide(auto){const g=S.garden;if(!g||S.view!=='garden')return false;const nx=wNext();
  if(nx){const meal=wMealN(nx).toLowerCase();let ag=null;try{ag=againList(nx,3)[0]||null}catch(e){}
   if(ag){const w=whenTxt(ag.d);wAsk(wPick('again',{meal,when:w==='Yesterday'?'yesterday':w}),ag.n,[['Add',()=>{useAgain(nx,ag);save();render()}],['Something else',()=>startMeal(nx)]]);return true}
@@ -5610,6 +5631,26 @@ function wGuide(auto){const g=S.garden;if(!g||S.view!=='garden')return false;con
 function wPushOffer(auto){const g=S.garden;if(g.vpush||wPushOn()||!(WPUSH.url&&WPUSH.key))return false;if(auto&&!wHasData())return false;
  const ios=wIOS()&&!wStandalone(),ok=wPushOK();if(!ios&&!ok)return false;
  wAsk(wPick('push'),ios?'On iPhone: Share, Add to Home Screen, then open the app from there.':'',ios?[['Got it',()=>{g.vpush=1;save()}]]:[['Yes please',async()=>{g.vpush=1;save();try{await wPushSub();toast('Reminders are on. Change the times in Profile, Voice and reminders.')}catch(e){toast('Notifications are blocked for this app in your phone settings.')}}],['Not now',()=>{g.vpush=1;save()}]]);return true}
+/* the tortoise shows the garden: the view glides to each place and it says what it is */
+const WTOUR=[
+ [null,'Let me show you around. It takes half a minute.'],
+ ['#wboard','The board. Covered is how well your nutrients are covered lately, Low is what is short, Next is the one next step. Tap it for every number.'],
+ ['#gd-world [data-wsb]','Six beds, one per food group. A dashed sign means that group would like a visit. Tap a sign to add a food from it.'],
+ ['#w-add','The basket adds anything you eat. The plates beside it are your meals of the day.'],
+ ['#gd-world [data-bld="shed"]','The barn keeps one of every plant you harvested. Drag the sickle over ripe plants to harvest them.'],
+ ['#gd-world [data-bld="shop"]','The kitchen has dishes, recipes, your own foods and tips about every nutrient.'],
+ ['#gd-world [data-bld="market"]','The shop has your shopping list, your pantry and the barcode scanner.'],
+ ['#gd-world [data-bld="silo"]','The silo keeps seeds when their bed is full. Make a bed bigger and they plant themselves.'],
+ ['#gd-world [data-bld="mail"]','The mailbox sets how I talk to you and when I remind you.'],
+ ['#wtort .wtbtn','And me. Tap me any time for the next step. To move things, tap the pencil, then hold anything and drag.']];
+let WTI=-1;
+function wTourGo(i){document.querySelectorAll('.wtourhl').forEach(x=>x.classList.remove('wtourhl'));if(i>=WTOUR.length||S.view!=='garden'||!G||G.ed){WTI=-1;return}WTI=i;
+ const [sel,t]=WTOUR[i],el=sel&&document.querySelector(sel),last=i===WTOUR.length-1;
+ if(el){el.classList.add('wtourhl');if(el.closest('#gd-world')){const R=el.getBoundingClientRect(),V=$('gd-scene').getBoundingClientRect(),dx=V.left+V.width/2-(R.left+R.width/2),dy=V.top+V.height*.36-(R.top+R.height/2);wGlide(dx,dy)}}
+ wAsk(t,'',last?[['Done',()=>wTourGo(99)]]:[['Next',()=>wTourGo(i+1)],['Skip',()=>wTourGo(99)]],true)}
+function wGlide(dx,dy){if(!G||!G.cam)return;const c=G.cam,x0=c.x,y0=c.y;if(GSTILL()){c.x=x0+dx;c.y=y0+dy;gCamApply();return}const t0=performance.now(),D=450;
+ const f=n=>{const k=Math.min(1,(n-t0)/D),e=1-Math.pow(1-k,3);c.x=x0+dx*e;c.y=y0+dy*e;gCamApply();if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
+function wTour(){if(S.view!=='garden'||!G||G.ed)return;S.garden.tour=1;save();wTourGo(0)}
 function render(){const o=PROJ;PROJ=S.date>TODAY;if(PROJ&&S.plan)mealKeys(S.plan).forEach(k=>{if(S.plan[k].it.length)S.plan[k].pl=1});try{return render0()}finally{PROJ=o}}
 function render0(){
  _VC=null;supMigrate();
