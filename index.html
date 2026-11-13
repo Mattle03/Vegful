@@ -1672,6 +1672,7 @@ html.still .wbird,html.still .wbird *,html.still .wbrip,html.still .wsplash{anim
 @media (prefers-reduced-motion:reduce){.wbird,.wbird *,.wbrip,.wsplash{animation:none!important}}
 .adq{margin:4px 0 10px;font-size:17px;font-weight:800}
 .scphotos{display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px}.scphotos.two{grid-template-columns:1fr 1fr}.scphotos .scphoto{margin-top:0;padding-left:8px;padding-right:8px;white-space:nowrap}
+.scphoto{position:relative;overflow:hidden}.scfile{position:absolute;inset:0;width:100%;height:100%;opacity:0;cursor:pointer;font-size:0}
 </style>
 </head>
 <body>
@@ -3245,13 +3246,13 @@ $('scan').addEventListener('close',stopCamera);
 const wApple=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const CAMI2='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>',GALI='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M5 17l5-5 4 4 2-2 3 3"/></svg>';
 /* a barcode photo: on iPhone and iPad the camera (no permission asked) or a saved photo; elsewhere a saved photo */
-function photoBtn(id,force){const cam=force||wApple();return `<div class="scphotos${cam?' two':''}">${cam?`<label class="btn scphoto" for="${id}">${CAMI2}Take photo</label><input type="file" accept="image/*" capture="environment" id="${id}" hidden>`:''}<label class="btn scphoto" for="${id}-g">${GALI}${cam?'From photos':'Choose a photo of the barcode'}</label><input type="file" accept="image/*" id="${id}-g" hidden></div><p class="cap scpmsg" id="${id}-msg" role="status"></p>`}
+function photoBtn(id,force){const cam=force||wApple();return `<div class="scphotos${cam?' two':''}">${cam?`<label class="btn scphoto">${CAMI2}Take photo<input class="scfile" type="file" accept="image/*" capture="environment" id="${id}" aria-label="Take a photo of the barcode"></label>`:''}<label class="btn scphoto">${GALI}${cam?'From photos':'Choose a photo of the barcode'}<input class="scfile" type="file" accept="image/*" id="${id}-g" aria-label="Choose a photo of the barcode"></label></div><p class="cap scpmsg" id="${id}-msg" role="status"></p>`}
 async function photoRead(f){await loadZX();let src=URL.createObjectURL(f),made=null;
  try{const im=await new Promise((ok,bad)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=bad;i.src=src});const m=1600,sc=Math.min(1,m/Math.max(im.naturalWidth,im.naturalHeight));
   if(sc<1){const c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*sc);c.height=Math.round(im.naturalHeight*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);made=c.toDataURL('image/jpeg',.92)}
   const hints=new Map();hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E]);hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
   const res=await new ZXing.BrowserMultiFormatReader(hints).decodeFromImageUrl(made||src);return res.getText()}finally{URL.revokeObjectURL(src)}}
-function photoBind(id,go,again){[id,id+'-g'].forEach(x=>{const inp=$(x);if(!inp)return;const lb=document.querySelector(`label[for="${x}"]`);if(lb)lb.addEventListener('click',()=>{const m=$(id+'-msg');if(m)m.textContent=''});
+function photoBind(id,go,again){[id,id+'-g'].forEach(x=>{const inp=$(x);if(!inp)return;inp.addEventListener('click',()=>{const m=$(id+'-msg');if(m)m.textContent=''});
  inp.onchange=async()=>{const f=inp.files&&inp.files[0];inp.value='';if(!f)return;stopCamera();const m=$(id+'-msg');if(m)m.textContent='Reading the photo…';
   let code=null;try{code=await photoRead(f)}catch(e){}
   if(code){SCAN.busy=false;go(code)}else again('No barcode found in that photo. Try one closer up, or type the number.')}})}
@@ -3270,7 +3271,7 @@ async function startCamera(vid){
   SCAN.zx=new ZXing.BrowserMultiFormatReader(hints);
   video.setAttribute('playsinline','');SCAN.stream=await camGet();await SCAN.zx.decodeFromStream(SCAN.stream,video,res=>{if(res)onCode(res.getText())});
   scStatus('Point the camera at the barcode.');
- }catch(e){scStatus(e&&e.name==='NotAllowedError'?'Camera permission was refused. Allow camera access for this app in your settings, or type the number under the barcode.':'The camera is not available here (it works in the installed app). Type the number under the barcode instead.')}
+ }catch(e){scStatus(e&&e.name==='NotAllowedError'?(wApple()?'The camera is blocked. Use Take photo below, or allow it in Settings › Apps › Safari › Camera.':'The camera is blocked. Allow it in your browser settings, choose a photo below, or type the number.'):'The camera is not available here (it works in the installed app). Type the number under the barcode instead.')}
 }
 function stopCamera(){SCAN.loop++;if(SCAN.zx){try{SCAN.zx.stopContinuousDecode()}catch(e){}SCAN.zx=null}if(SCAN.stream){SCAN.stream=null;camPark()}}
 function onCode(code){if(SCAN.busy)return;SCAN.busy=true;if(navigator.vibrate)navigator.vibrate(60);const tab=SCAN.tab;stopCamera();if(tab)tabLookup(code);else lookup(code)}
