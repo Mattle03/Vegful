@@ -1380,51 +1380,9 @@ html.still .wib .wn-next.go{animation:none;box-shadow:0 2px 3px rgba(0,0,0,.22),
 #wdock .wtourhl,.wtbtn.wtourhl{outline:3px solid var(--coral);outline-offset:4px;border-radius:50%}
 .gtit.on{outline:3px solid var(--coral);outline-offset:-3px}
 .gbld[data-bld="silo"] .gsti{aspect-ratio:120/188}
-/* the opening scene: the tortoise walks onto its hill and a sprout comes up; later opens that day only show it briefly */
-#boot{position:fixed;inset:0;z-index:100000;overflow:hidden;--b1:#BFE6F2;--b2:#F3EFD6;--h1:#9BCB78;--h2:#7DB461;--sun:#F7D774;--bt:#2D5A3F;--bm:#4E6355;background:linear-gradient(var(--b1),var(--b2) 64%);transition:opacity .45s ease,transform .5s ease;font-family:"Nunito Sans","Segoe UI",system-ui,sans-serif;-webkit-user-select:none;user-select:none}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #boot{--b1:#12203A;--b2:#2C4150;--h1:#2F5A3A;--h2:#22442C;--sun:#F1EBCF;--bt:#EAF0EB;--bm:#B9C8BE}}
-:root[data-theme="dark"] #boot{--b1:#12203A;--b2:#2C4150;--h1:#2F5A3A;--h2:#22442C;--sun:#F1EBCF;--bt:#EAF0EB;--bm:#B9C8BE}
-#boot.go{opacity:0;transform:scale(1.05);pointer-events:none}
-#boot i{position:absolute;display:block}
-#boot .bsun{right:15%;top:11%;width:68px;height:68px;border-radius:50%;background:var(--sun);box-shadow:0 0 46px var(--sun)}
-#boot .bcl{height:22px;border-radius:22px;background:rgba(255,255,255,.85);animation:bcloud 26s linear infinite}
-#boot .bcl::before{content:"";position:absolute;left:22%;top:-12px;width:46%;height:26px;border-radius:50%;background:inherit}
-#boot .c1{width:96px;left:8%;top:17%}#boot .c2{width:70px;left:56%;top:29%;animation-duration:34s;opacity:.8}
-#boot .bst{width:4px;height:4px;border-radius:50%;background:#fff;opacity:0}
-#boot .s1{left:12%;top:12%}#boot .s2{left:36%;top:19%}#boot .s3{left:62%;top:7%}#boot .s4{left:8%;top:24%}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) #boot .bst{opacity:.8}:root:not([data-theme="light"]) #boot .bcl{display:none}}
-:root[data-theme="dark"] #boot .bst{opacity:.8}:root[data-theme="dark"] #boot .bcl{display:none}
-#boot .btx{position:absolute;left:16px;right:16px;top:calc(env(safe-area-inset-top,0px) + 30%);text-align:center}
-#boot h1{margin:0 0 6px;font-size:34px;line-height:1.1;font-weight:800;color:var(--bt);letter-spacing:-.4px;animation:bup .5s ease .75s both}
-#boot p{margin:0;font-size:17px;font-weight:700;color:var(--bm);animation:bup .5s ease .95s both}
-#boot .bhill{position:absolute;left:0;bottom:0;width:100%;height:40%}
-#boot .bh1{fill:var(--h1)}#boot .bh2{fill:var(--h2)}
-#boot .btort{position:absolute;left:50%;bottom:calc(40% - 30px);width:min(46vw,200px);aspect-ratio:74/82;transform:translateX(-50%)}
-#boot .btw,#boot .btw svg{width:100%;height:100%;display:block;overflow:visible}
-#boot .bsh{left:14%;right:2%;bottom:1%;height:9%;border-radius:50%;background:rgba(0,0,0,.16)}
-#boot .btw{animation:bwalk 1.15s cubic-bezier(.25,.7,.3,1) both}
-#boot .bbob{animation:bbob .29s ease-in-out 4 alternate both}
-#boot .bl1{transform-box:fill-box;transform-origin:50% 0;animation:bstep .29s ease-in-out 4 alternate}
-#boot .bl2{transform-box:fill-box;transform-origin:50% 0;animation:bstep .29s ease-in-out .145s 4 alternate}
-#boot .bsp{transform-box:fill-box;transform-origin:50% 100%;animation:bsprout .6s cubic-bezier(.3,1.7,.5,1) 1.1s both}
-@keyframes bwalk{from{transform:translateX(-80vw)}to{transform:none}}
-@keyframes bbob{from{transform:translateY(0)}to{transform:translateY(-2px)}}
-@keyframes bstep{from{transform:rotate(0)}to{transform:rotate(-18deg) translateY(-1px)}}
-@keyframes bsprout{from{transform:scale(0)}to{transform:none}}
-@keyframes bup{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
-@keyframes bcloud{from{transform:translateX(0)}to{transform:translateX(40vw)}}
-#boot.quick .btw,#boot.quick .bbob,#boot.quick .bl1,#boot.quick .bl2,#boot.quick .bsp,#boot.quick h1,#boot.quick p{animation:none}
-@media (prefers-reduced-motion:reduce){#boot *,#boot *::before{animation:none!important}#boot.go{transform:none}}
 </style>
 </head>
 <body>
-<div id="boot" aria-hidden="true"><i class="bsun"></i><i class="bcl c1"></i><i class="bcl c2"></i><i class="bst s1"></i><i class="bst s2"></i><i class="bst s3"></i><i class="bst s4"></i><div class="btx"><h1>Vegful Garden</h1><p id="boot-hi">Hello</p></div><svg class="bhill" viewBox="0 0 400 200" preserveAspectRatio="none"><path d="M0 34Q120 0 220 20T400 14V200H0z" class="bh1"/><path d="M0 96Q150 58 260 80T400 74V200H0z" class="bh2"/></svg><div class="btort"><i class="bsh"></i><div class="btw"><svg viewBox="54 2 74 82"><g class="bbob"><ellipse cx="70" cy="74" rx="6.5" ry="5.5" fill="#8FC27A" class="bl1"/><ellipse cx="98" cy="74" rx="6.5" ry="5.5" fill="#8FC27A" class="bl2"/><ellipse cx="108" cy="70" rx="5.2" ry="6.6" fill="#8FC27A" class="bl1"/><path d="M58 68c0-19 12-32 27-32s27 13 27 32z" fill="#5E9E52"/><path d="M85 40l-9 11 9 9 9-9zM70 56l6-5M100 56l-6-5M77 60v8M93 60v8" stroke="#4A7F41" stroke-width="2.4" fill="none" stroke-linejoin="round"/><path d="M56 68h58" stroke="#4A7F41" stroke-width="5.4" stroke-linecap="round"/><path d="M110 62c2-11 9-15 14-13 4 2 4 10 0 14-4 3-10 3-14-1z" fill="#8FC27A"/><circle cx="118.5" cy="55" r="2.2" fill="#2B2B2B"/><circle cx="119.2" cy="54.3" r=".8" fill="#fff"/><circle cx="121" cy="60" r="2" fill="#F28AA8" opacity=".6"/><path d="M115.5 61q3 2.2 6 0" stroke="#2B2B2B" stroke-width="1.3" fill="none" stroke-linecap="round"/><g class="bsp"><path d="M85 37V21" stroke="#4A7F41" stroke-width="2.6" stroke-linecap="round"/><path d="M85 24C75 24 67 18 66 8c10 0 18 6 19 16z" fill="#A8DDB5"/><path d="M85 21c1-10 9-17 19-17-1 10-9 17-19 17z" fill="#F4C9A8"/></g></g></svg></div></div></div>
-<script>(function(){var b=document.getElementById("boot");if(!b)return;window.bootDone=function(){};if(navigator.webdriver&&!window.VGBOOT){b.remove();return}
- var d=new Date(),h=d.getHours(),k="",q,tp=null,ready=0,gone=0;try{k=localStorage.getItem("vgboot")||""}catch(e){}q=k===d.toDateString();try{localStorage.setItem("vgboot",d.toDateString())}catch(e){}
- if(q)b.classList.add("quick");document.getElementById("boot-hi").textContent=h<5?"Hello, night owl":h<12?"Good morning":h<18?"Good afternoon":"Good evening";
- var go=function(){if(gone)return;gone=1;b.classList.add("go");setTimeout(function(){b.remove()},520)},hold=q?420:1750;b.addEventListener("click",go);
- var tick=function(){if(gone)return;var n=performance.now();if(tp===null)tp=n;if(ready&&n-tp>=hold)go();else requestAnimationFrame(tick)};requestAnimationFrame(tick);
- window.bootDone=function(){ready=1};setTimeout(go,9000)})()</script>
 <div class="app">
   <section id="v-today" class="view"></section>
 
@@ -4057,7 +4015,7 @@ const TORTV=()=>TORT.replace(/<g class="tcart">.*?<\/g>/,'').replace('viewBox="0
 const TORT='<svg class="tort" viewBox="0 0 128 86" aria-hidden="true"><g class="tcart"><path d="M48 46l16 6" stroke="#8A5E33" stroke-width="2.6" stroke-linecap="round"/><circle cx="14" cy="29" r="6.5" fill="#E64B4B"/><circle cx="26" cy="26" r="7" fill="#F6A33C"/><circle cx="38" cy="29" r="6.5" fill="#6DBB63"/><path d="M33 22c2-4 6-5 8-4" stroke="#4E8F45" stroke-width="2" fill="none"/><rect x="4" y="31" width="44" height="25" rx="4" fill="#C98B4E"/><path d="M4 38h44M4 46h44" stroke="#A8743F" stroke-width="2.4"/><circle cx="26" cy="64" r="10" fill="#7C5329"/><circle cx="26" cy="64" r="3.6" fill="#E8DCC2"/><path d="M26 54v20M16 64h20" stroke="#5E3F22" stroke-width="1.6"/></g>'+
  '<g class="tbody"><ellipse cx="70" cy="74" rx="6.5" ry="5.5" fill="#8FC27A"/><ellipse cx="98" cy="74" rx="6.5" ry="5.5" fill="#8FC27A"/><g class="tleg"><ellipse cx="108" cy="70" rx="5.2" ry="6.6" fill="#8FC27A"/></g>'+
  '<path d="M58 68c0-19 12-32 27-32s27 13 27 32z" fill="#5E9E52"/><path d="M85 40l-9 11 9 9 9-9zM70 56l6-5M100 56l-6-5M77 60v8M93 60v8" stroke="#4A7F41" stroke-width="2.4" fill="none" stroke-linejoin="round"/><path d="M56 68h58" stroke="#4A7F41" stroke-width="5.4" stroke-linecap="round"/>'+
- '<g class="thead"><path d="M110 62c2-11 9-15 14-13 4 2 4 10 0 14-4 3-10 3-14-1z" fill="#8FC27A"/><g class="teye"><circle cx="118.5" cy="55" r="2" fill="#2B2B2B"/><circle cx="119.2" cy="54.3" r=".7" fill="#fff"/></g><path class="tsl" d="M116.5 55.5q2 1.8 4 0" stroke="#2B2B2B" stroke-width="1.5" fill="none" stroke-linecap="round"/><circle cx="121" cy="60" r="2" fill="#F28AA8" opacity=".6"/><path d="M115.5 61q3 2.2 6 0" stroke="#2B2B2B" stroke-width="1.3" fill="none" stroke-linecap="round"/></g></g>'+
+ '<g class="thead"><path d="M110 62c2-11 9-15 14-13 4 2 4 10 0 14-4 3-10 3-14-1z" fill="#8FC27A"/><g class="teye"><circle cx="118.5" cy="55" r="2" fill="#2B2B2B"/><circle cx="119.2" cy="54.3" r=".7" fill="#fff"/></g><path class="tsl" d="M116.5 55.5q2 1.8 4 0" stroke="#2B2B2B" stroke-width="1.5" fill="none" stroke-linecap="round"/><ellipse cx="123.4" cy="58.4" rx="1.8" ry="1.3" fill="#F28AA8" opacity=".7"/><path d="M115.5 61q3 2.2 6 0" stroke="#2B2B2B" stroke-width="1.3" fill="none" stroke-linecap="round"/></g></g>'+
  '<g class="theart"><path d="M100 26c-2-4-8-2-6 2.4l6 6 6-6c2-4.4-4-6.4-6-2.4z" fill="#F28AA8"/></g><g class="tz" fill="#7E9AA6" font-family="system-ui,sans-serif" font-weight="800"><text x="104" y="38" font-size="11">z</text><text x="112" y="28" font-size="14">z</text></g></svg>';
 function gMood(){const h=new Date().getHours();if(G&&G.pl&&Date.now()-G.pl<2600)return 'pleased';if(h>=22||h<6)return 'asleep';if(G&&G.wave)return 'waving';return 'idle'}
 function gSay(L,mood){if(mood==='asleep')return '';if(mood==='pleased')return 'Thank you';if(L.length&&L.every(o=>o.done))return 'Thank you';const o=L.find(x=>!x.done&&!ANYK[x.k]&&gHold(x.k)>=x.n)||L.find(x=>!x.done&&!ANYK[x.k]);return o?kindInfo(o.k).name+' today?':''}
@@ -5738,7 +5696,6 @@ function render0(){
 }
 render();
 loadPhotos();
-try{window.bootDone&&bootDone()}catch(e){}
 </script>
 
 <script>
