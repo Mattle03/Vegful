@@ -1611,6 +1611,18 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 :root[data-theme="dark"] .wland{background:rgba(42,35,27,.94);color:#F3EADB;border-color:#9A7A45}:root[data-theme="dark"] .wland span{color:#E9C77B}
 .wkg{position:absolute;transform:translate(-50%,-100%) skewY(26.565deg);z-index:9000;background:#F4EEE6;color:#3B2A18;border:2px solid #C9B48E;border-radius:6px;padding:3px 10px;font-size:17px;font-weight:800;white-space:nowrap;pointer-events:none;box-shadow:-3px -2px 0 #B5A88E}
 .gbld[data-bld="well"] .gsti{aspect-ratio:120/128}
+/* volume, tall bed things, the bed overview */
+:root{--w-lit:#BFE3A6;--w-shade:#3F7A3A}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--w-lit:#5E9A5A;--w-shade:#1E3A22}}
+:root[data-theme="dark"]{--w-lit:#5E9A5A;--w-shade:#1E3A22}
+.wtall{position:absolute;display:block;pointer-events:none}.wtall svg{width:100%;height:auto;display:block;overflow:visible}
+.gplot::after{content:"";position:absolute;left:24%;right:24%;bottom:2%;height:12%;border-radius:50%;background:rgba(30,40,15,.2);z-index:-1}
+.wgrowing{margin:0 0 10px}.wgrowing .lbl{display:block;margin-bottom:6px}
+.wgl{display:flex;flex-wrap:wrap;gap:6px}
+.wgi{display:flex;align-items:center;gap:6px;padding:5px 9px 5px 5px;border-radius:12px;background:var(--surface);border:1.5px solid var(--line);font-size:13px}
+.wgi .em{width:26px;height:26px;display:grid;place-items:center}.wgi .em svg,.wgi .em img{width:100%;height:100%}
+.wgi b{display:block;font-size:13px}.wgi small{display:block;font-size:11.5px;color:var(--muted)}
+.wgi.ripe{border-color:#E9B23A;background:#FFF8E1}
 </style>
 </head>
 <body>
@@ -3936,7 +3948,7 @@ function adFoot(s,sl){const f=$('ad-foot'),v=AD.view;
 /* ---------- garden: every plant you eat sows itself, water makes it grow, what you harvest buys things ----------
    S.garden holds everything (see gInit). gardenTick applies growth per finished day, gardenSync sows what was eaten in the last 7 days.
    The garden always reflects today, whatever day is on screen. Nothing ever lowers growth, takes coins or produce. */
-const GCFG={plots:8,need:[0,2,3,4],price:[0,1,2,4],orderMul:2,wishMul:3,wishBonus:2,week:[[10,10],[20,20],[30,40]],fruit:2,chest:[3,5],maxTickDays:14,seenDays:7};
+const GCFG={plots:8,need:[0,2,3,4],price:[0,2,4,7],orderMul:2,wishMul:3,wishBonus:2,week:[[10,10],[20,20],[30,40]],fruit:2,chest:[3,5],maxTickDays:14,seenDays:7};
 const GON=()=>true;
 const GSTILL=()=>document.documentElement.classList.contains('still')||REDUCE();
 const GSPR='<svg viewBox="0 0 40 40" aria-hidden="true"><path d="M20 36V20" stroke="#4E8F45" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M20 24c-1-6-6-9-11-8 0 5 4 9 11 8z" fill="#6DBB63"/><path d="M20 21c1-6 6-9 11-8 0 5-4 9-11 8z" fill="#4E9E4A"/></svg>';
@@ -4014,7 +4026,7 @@ function gProgress(p){return Math.min(p.need,p.gp)}
 const gReady=p=>gProgress(p)>=p.need-1e-6;
 const gStage=p=>{const pr=gProgress(p);return pr>=p.need-1e-6?3:pr<=0?0:pr<p.need/2?1:2};
 function gHarvest(i){const g=S.garden,p=g.plants[i];if(!p||!gReady(p))return 0;g.plants.splice(i,1);g.bag[p.k]=(g.bag[p.k]||0)+1;if(!g.bagT[p.k])g.bagT[p.k]=TODAY;
- g.stat.harv=(g.stat.harv||0)+1;if(!g.ever.includes(p.k))g.ever.push(p.k);gRefill();return 1}
+ g.stat.harv=(g.stat.harv||0)+1;if(!g.ever.includes(p.k))g.ever.push(p.k);gRefill();try{const r=g.req;if(r&&!r.done&&r.k===p.k){const c=wReqGive();if(c&&typeof toast==='function')setTimeout(()=>toast(`The market got your ${kindInfo(p.k).name.toLowerCase()}: +${c} coins`),300)}}catch(e){}return 1}
 function gHarvestAll(){let n=0;for(let i=S.garden.plants.length-1;i>=0;i--)n+=gHarvest(i);return n}
 /* the basket sells at the base price; what open orders ask for stays */
 function gKeep(){const g=S.garden,o={};if(g.orders&&g.orders.d===TODAY)(g.orders.list||[]).forEach(x=>{if(!x.done&&x.k&&x.k.indexOf('any')!==0)o[x.k]=(o[x.k]||0)+x.n});return o}
@@ -4067,13 +4079,13 @@ function wTerrain(){const c0=ISO.c0-13,r0=ISO.r0-13,H={};const hv=(c,r)=>{const 
   const dc=(z[1]+z[2]-z[0]-z[3])/2,dr=(z[2]+z[3]-z[0]-z[1])/2,lit=Math.max(.74,Math.min(1.12,1+(-dc*.9+dr*1.1)/150));
   const base=zm>235?(dark?'#AEB9C2':'#F2F5F7'):zm>150?(dark?'#5E6870':'#A3ABB0'):zm>70?(dark?'#2F4A34':'#7FAE6E'):(dark?'#33503A':'#9CC88A');
   h+=`<polygon points="${PTS(p)}" fill="${cl(base,lit)}" stroke="${cl(base,lit)}" stroke-width=".8"/>`;
-  if(zm>12&&zm<80&&gH(c,r)<55){const [X,Y]=isoP(c,r);const y=Y-zm;h+=`<path d="M${X} ${(y+2).toFixed(1)}v-14" stroke="var(--g-trunk)" stroke-width="5" stroke-linecap="round"/><circle cx="${X}" cy="${(y-22).toFixed(1)}" r="17" fill="var(--w-forest)"/><circle cx="${X-6}" cy="${(y-28).toFixed(1)}" r="7" fill="var(--g-leaf2)" opacity=".35"/>`}});
+  if(zm>12&&zm<80&&gH(c,r)<55){const [X,Y]=isoP(c,r);const y=Y-zm;h+=`<path d="M${X} ${(y+2).toFixed(1)}v-14" stroke="var(--g-trunk)" stroke-width="5" stroke-linecap="round"/><circle cx="${X}" cy="${(y-22).toFixed(1)}" r="17" fill="url(#gfrv)"/><circle cx="${X-6}" cy="${(y-28).toFixed(1)}" r="7" fill="var(--g-leaf2)" opacity=".35"/>`}});
  return h}
 function wBackdrop(){const T=isoP(ISO.c0-.5,ISO.r0-.5),Lv=isoP(ISO.c0-.5,ISO.r1-.5),Rv=isoP(ISO.c1-.5,ISO.r0-.5),Bv=isoP(ISO.c1-.5,ISO.r1-.5),lerp=(a,b,t)=>[a[0]+(b[0]-a[0])*t,a[1]+(b[1]-a[1])*t];let h='';
  const hills=(a,b,amp,ph,fill,lift)=>{const top=[],bot=[];for(let i=0;i<=24;i++){const t=i/24,[x,y]=lerp(a,b,t);top.push([x,y-lift-amp*(.55+.45*Math.sin(t*7+ph))]);bot.push([x,y+6])}return `<polygon points="${PTS(top.concat(bot.reverse()))}" fill="${fill}"/>`};
- h+=`<defs><linearGradient id="wsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--w-sky1)"/><stop offset="1" stop-color="var(--w-sky2)"/></linearGradient></defs><rect x="0" y="0" width="${ISO.w}" height="${Math.max(Lv[1],Rv[1])}" fill="url(#wsky)"/>`;
+ h+=`<defs><radialGradient id="gcrv" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="var(--w-lit)"/><stop offset=".55" stop-color="var(--g-crown)"/><stop offset="1" stop-color="var(--w-shade)"/></radialGradient><radialGradient id="gfrv" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="var(--w-lit)"/><stop offset=".55" stop-color="var(--w-forest)"/><stop offset="1" stop-color="var(--w-shade)"/></radialGradient></defs><defs><linearGradient id="wsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--w-sky1)"/><stop offset="1" stop-color="var(--w-sky2)"/></linearGradient></defs><rect x="0" y="0" width="${ISO.w}" height="${Math.max(Lv[1],Rv[1])}" fill="url(#wsky)"/>`;
  h+=`<polygon points="${PTS([T,Rv,isoP(ISO.c1-.5,ISO.r1-.5),Lv])}" fill="var(--g-grass)"/>`+wTerrain();
- const tree=(x,y,s)=>`<ellipse cx="${(x+10*s).toFixed(1)}" cy="${(y+4).toFixed(1)}" rx="${(22*s).toFixed(1)}" ry="${(8*s).toFixed(1)}" fill="rgba(20,30,10,.18)"/><path d="M${x.toFixed(1)} ${(y+2).toFixed(1)}v${(-18*s).toFixed(1)}" stroke="var(--g-trunk)" stroke-width="${(6*s).toFixed(1)}" stroke-linecap="round"/><circle cx="${x.toFixed(1)}" cy="${(y-30*s).toFixed(1)}" r="${(22*s).toFixed(1)}" fill="var(--w-forest)"/><circle cx="${(x-8*s).toFixed(1)}" cy="${(y-37*s).toFixed(1)}" r="${(9*s).toFixed(1)}" fill="var(--g-leaf2)" opacity=".35"/>`;
+ const tree=(x,y,s)=>`<ellipse cx="${(x+10*s).toFixed(1)}" cy="${(y+4).toFixed(1)}" rx="${(22*s).toFixed(1)}" ry="${(8*s).toFixed(1)}" fill="rgba(20,30,10,.18)"/><path d="M${x.toFixed(1)} ${(y+2).toFixed(1)}v${(-18*s).toFixed(1)}" stroke="var(--g-trunk)" stroke-width="${(6*s).toFixed(1)}" stroke-linecap="round"/><circle cx="${x.toFixed(1)}" cy="${(y-30*s).toFixed(1)}" r="${(22*s).toFixed(1)}" fill="url(#gfrv)"/><circle cx="${(x-8*s).toFixed(1)}" cy="${(y-37*s).toFixed(1)}" r="${(9*s).toFixed(1)}" fill="var(--g-leaf2)" opacity=".35"/>`;
  for(let i=0;i<14;i++){const t=.08+i/16,[x,y]=lerp(Rv,Bv,t);h+=tree(x+40+(i%3)*22,y+18+(i%2)*26,1.05);h+=tree(x+90+(i%2)*20,y+60,.95)}
  return h}
 function wRiver(){const c0=ISO.c0-.5,c1=ISO.c1-.5,q=[isoP(c0,20.5),isoP(c1,20.5),isoP(c1,22.5),isoP(c0,22.5)],ext=d=>[[q[0][0]-d,q[0][1]+d/2],[q[3][0]-d,q[3][1]+d/2]];let h='';
@@ -4091,15 +4103,14 @@ function wLandLabels(){const n=(S.garden.ever||[]).length;return WLAND.map(([k,t
  return `<div class="wland" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}"><b>${t}</b><span class="num">Opens at ${need} different plants grown · ${Math.min(n,need)} so far</span></div>`}).join('')}
 /* each food group has its own kind of place */
 function wPlaceDeco(b,q){const s=gLand().sec[b];if(!s)return '';let h='';const L=(a,c,t)=>[a[0]+(c[0]-a[0])*t,a[1]+(c[1]-a[1])*t];
- if(b==='n')[[q[3],q[2]],[q[2],q[1]]].forEach(([a,c])=>{for(let t=.12;t<.95;t+=.2){const [x,y]=L(a,c,t);h+=`<path d="M${x.toFixed(1)} ${(y-1).toFixed(1)}v-18" stroke="#4E8F45" stroke-width="2"/><ellipse cx="${(x-4).toFixed(1)}" cy="${(y-9).toFixed(1)}" rx="4" ry="2" fill="#5E9E52"/><circle cx="${x.toFixed(1)}" cy="${(y-21).toFixed(1)}" r="6.5" fill="#F2C14E"/><circle cx="${x.toFixed(1)}" cy="${(y-21).toFixed(1)}" r="2.6" fill="#7A5230"/>`}});
- if(b==='l')for(let pos=0;pos<4*s.rows;pos++){const {x,y}=isoC(b,pos);h+=`<path d="M${x-11} ${y+2}L${x-1} ${y-34}M${x+11} ${y+2}L${x+1} ${y-34}M${x-7} ${y-12}H${x+7}" stroke="#A8743F" stroke-width="2.4" stroke-linecap="round" fill="none"/>`}
  if(b==='c')for(let pos=0;pos<4*s.rows;pos++){const {x,y}=isoC(b,pos);for(let k=0;k<7;k++){const dx=((k*13)%26)-13,dy=((k*7)%12)-6;h+=`<path d="M${x+dx} ${y+dy}v-7" stroke="#B88A2A" stroke-width="1.4" stroke-linecap="round"/>`}}
  return h}
 /* greens and vegetables side by side make one kitchen garden, with a picket fence around both */
 function wKitchenPair(){const L=gLand(),v=L.sec.v,k=L.sec.k;if(!v||!k||v.rot!==k.rot)return null;const [vw,vh]=secWH(v),[kw,kh]=secWH(k);
  if(!v.rot&&v.r===k.r&&vh===kh&&(k.c===v.c+vw||v.c===k.c+kw))return {c:Math.min(v.c,k.c),r:v.r,w:vw+kw,h:vh};
  if(v.rot&&v.c===k.c&&vw===kw&&(k.r===v.r+vh||v.r===k.r+kh))return {c:v.c,r:Math.min(v.r,k.r),w:vw,h:vh+kh};return null}
-function wKitchenFence(){const K=wKitchenPair();if(!K)return '';const m=.62,q=[isoP(K.c-m,K.r-m),isoP(K.c+K.w-1+m,K.r-m),isoP(K.c+K.w-1+m,K.r+K.h-1+m),isoP(K.c-m,K.r+K.h-1+m)];let h='';
+function wKitchenFence(){const K=wKitchenPair(),L=gLand();if(K)return wFenceRect(K);return ['v','k'].map(b=>{const s=L.sec[b];if(!s)return '';const [w,h]=secWH(s);return wFenceRect({c:s.c,r:s.r,w,h})}).join('')}
+function wFenceRect(K){const m=.62,q=[isoP(K.c-m,K.r-m),isoP(K.c+K.w-1+m,K.r-m),isoP(K.c+K.w-1+m,K.r+K.h-1+m),isoP(K.c-m,K.r+K.h-1+m)];let h='';
  [[q[0],q[1]],[q[1],q[2]],[q[3],q[2]],[q[0],q[3]]].forEach(([a,c])=>{const n=Math.max(4,Math.round(Math.hypot(c[0]-a[0],c[1]-a[1])/18));h+=`<path d="M${a[0].toFixed(1)} ${(a[1]-8).toFixed(1)}L${c[0].toFixed(1)} ${(c[1]-8).toFixed(1)}" stroke="#F4EEE6" stroke-width="2.4"/>`;
   for(let i=0;i<=n;i++){const x=a[0]+(c[0]-a[0])*i/n,y=a[1]+(c[1]-a[1])*i/n;h+=`<path d="M${x.toFixed(1)} ${y.toFixed(1)}v-13" stroke="#F4EEE6" stroke-width="2.6" stroke-linecap="round"/>`}});return h}
 function wKitchenSign(){const K=wKitchenPair();if(!K)return '';const [x,y]=isoP(K.c+K.w-1+.95,K.r-.3);return `<span class="wkg" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}" aria-hidden="true">Kitchen garden</span>`}
@@ -4136,7 +4147,7 @@ function isoLand(){isoGeom();const L=gLand(),occ=gOcc();
  let h='';
  h+=gPaths(occ);
  Object.keys(L.sec).forEach(b=>{const s=L.sec[b],[w,hh]=secWH(s),k=.47,D=8,q=[isoP(s.c-k,s.r-k),isoP(s.c+w-1+k,s.r-k),isoP(s.c+w-1+k,s.r+hh-1+k),isoP(s.c-k,s.r+hh-1+k)],dn=p=>[p[0],p[1]+D];
-  h+=`<polygon points="${PTS(q.map(p=>[p[0]+14,p[1]+D+6]))}" fill="rgba(20,30,10,.26)" filter="url(#gblur)"/><polygon points="${PTS([q[3],q[2],dn(q[2]),dn(q[3])])}" fill="var(--g-fr1)"/><polygon points="${PTS([q[2],q[1],dn(q[1]),dn(q[2])])}" fill="var(--g-fr2)"/><path d="M${q[3][0]} ${q[3][1]+D/2}L${q[2][0]} ${q[2][1]+D/2}L${q[1][0]} ${q[1][1]+D/2}" stroke="rgba(0,0,0,.18)" stroke-width="1.2" fill="none"/><polygon points="${PTS(q)}" fill="var(--g-${b}top)" stroke="var(--g-frt)" stroke-width="5" stroke-linejoin="round"/>`;
+  h+=(b==='v'||b==='k'||b==='h'||b==='b')?`<polygon points="${PTS(q.map(p=>[p[0]+14,p[1]+D+6]))}" fill="rgba(20,30,10,.26)" filter="url(#gblur)"/><polygon points="${PTS([q[3],q[2],dn(q[2]),dn(q[3])])}" fill="var(--g-fr1)"/><polygon points="${PTS([q[2],q[1],dn(q[1]),dn(q[2])])}" fill="var(--g-fr2)"/><path d="M${q[3][0]} ${q[3][1]+D/2}L${q[2][0]} ${q[2][1]+D/2}L${q[1][0]} ${q[1][1]+D/2}" stroke="rgba(0,0,0,.18)" stroke-width="1.2" fill="none"/><polygon points="${PTS(q)}" fill="var(--g-${b}top)" stroke="var(--g-frt)" stroke-width="5" stroke-linejoin="round"/>`:`<polygon points="${PTS(q)}" fill="var(--g-${b}top)" stroke="rgba(60,40,20,.2)" stroke-width="2.5" stroke-linejoin="round"/>`;
   for(let pos=0;pos<4*s.rows;pos++){const {x,y,c,r}=isoC(b,pos);
    if(b==='f'||b==='b'||b==='n')h+=`<ellipse cx="${x}" cy="${y+3}" rx="25" ry="11.5" fill="var(--g-soil)"/><ellipse cx="${x}" cy="${y+2}" rx="20" ry="8.6" fill="var(--g-soilin)"/>${[[-9,1],[6,-2],[11,5],[-3,6],[-13,4]].map(([dx,dy])=>`<ellipse cx="${x+dx}" cy="${y+dy}" rx="2.2" ry="1.1" fill="${b==='b'?'#D9B65A':'var(--g-seed)'}" opacity=".7"/>`).join('')}`;
    else{const m=.84,T=[x,y-21*m-3],R=[x+42*m,y-3],B=[x,y+21*m-3],Lf=[x-42*m,y-3],d3=p=>[p[0],p[1]+4];
@@ -4186,7 +4197,7 @@ const GARCH={};
 function gArch(k,b){const key=k+'|'+b;if(GARCH[key])return GARCH[key];const n=(kindInfo(k).name+' '+k).toLowerCase(),t=re=>re.test(n);let a;
  if(b==='h')a='herb';else if(b==='b')a='bush';
  else if(t(/melon|pumpkin|squash|butternut|gourd|zucchini|courgette|^summer|^winter/))a='melon';
- else if(b==='f')a=t(/banana|plantain/)?'palm':t(/strawberr|pineapple/)?'low':t(/berr|currant|grape|goji|acerola|gooseberr|mulberr/)?'bush':'tree';
+ else if(b==='f')a=t(/banana|plantain|coconut|\bdate/)?'palm':t(/strawberr|pineapple/)?'low':t(/berr|currant|grape|goji|acerola|gooseberr|mulberr/)?'bush':'tree';
  else if(t(/mushroom|shiitake|enoki|maitake|chanterelle|morel|fungi|oyster|jew's|pepeao/))a='shroom';
  else if(t(/corn|hominy|maize/))a='corn';
  else if(t(/sunflower/))a='sunflower';
@@ -4282,8 +4293,8 @@ function gMeadow(){let h='';const B=gBld();for(let r=ISO.r0;r<ISO.r1;r++)for(let
   const g=w===3?.7:.45,m=w===3?.12:.2,f=[isoP(c-.5+m,r-.5+m),isoP(c+w-.5-m,r-.5+m),isoP(c+w-.5-m,r+w-.5-m),isoP(c-.5+m,r+w-.5-m)],sx=34*w*g,sy=10*w*g,sh=p=>[p[0]+sx,p[1]+sy];h+=`<polygon points="${PTS([f[3],f[0],sh(f[0]),sh(f[1]),sh(f[2]),f[2]])}" fill="rgba(20,30,10,.3)" filter="url(#gblur)"/>`});return h}
 function gNature(){const occ=gOcc(),B=gBld(),busy=new Set(Object.keys(occ).filter(t=>/^(s|b):/.test(occ[t])));gParcels().forEach(p=>{for(let y=p.r;y<p.r+p.h;y++)for(let x=p.c;x<p.c+p.w;x++)busy.add(x+','+y)});const near=(c,r,R)=>{for(let y=-R;y<=R;y++)for(let x=-R;x<=R;x++)if(busy.has((c+x)+','+(r+y)))return 1;return 0};let h='';
  for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++){const t=c+','+r;if(occ[t]||near(c,r,1))continue;const k=gH(c,r),[x,y]=isoP(c,r);if(k<70&&near(c,r,2))continue;
-  if(k<70)h+=`<g><ellipse cx="${x+16}" cy="${y+6}" rx="30" ry="11" fill="url(#gshr)"/><path d="M${x} ${y+4}v-22" stroke="var(--g-trunk)" stroke-width="7" stroke-linecap="round"/><circle cx="${x}" cy="${y-34}" r="26" fill="var(--g-crown)"/><circle cx="${x-9}" cy="${y-42}" r="11" fill="var(--g-leaf2)" opacity=".45"/><circle cx="${x+12}" cy="${y-24}" r="9" fill="var(--g-leaf2)" opacity=".35"/></g>`;
-  else if(k<130)h+=`<g><ellipse cx="${x+8}" cy="${y+4}" rx="22" ry="8" fill="url(#gshr)"/><circle cx="${x-8}" cy="${y-4}" r="11" fill="var(--g-tuft)"/><circle cx="${x+7}" cy="${y-6}" r="12" fill="var(--g-leaf2)"/><circle cx="${x}" cy="${y-12}" r="9" fill="var(--g-tuft)"/></g>`;
+  if(k<70)h+=`<g><ellipse cx="${x+16}" cy="${y+6}" rx="30" ry="11" fill="url(#gshr)"/><path d="M${x} ${y+4}v-22" stroke="var(--g-trunk)" stroke-width="7" stroke-linecap="round"/><circle cx="${x}" cy="${y-34}" r="26" fill="url(#gcrv)"/><circle cx="${x-9}" cy="${y-42}" r="11" fill="var(--g-leaf2)" opacity=".45"/><circle cx="${x+12}" cy="${y-24}" r="9" fill="var(--g-leaf2)" opacity=".35"/></g>`;
+  else if(k<130)h+=`<g><ellipse cx="${x+8}" cy="${y+4}" rx="22" ry="8" fill="url(#gshr)"/><circle cx="${x-8}" cy="${y-4}" r="11" fill="url(#gcrv)"/><circle cx="${x+7}" cy="${y-6}" r="12" fill="url(#gcrv)"/><circle cx="${x}" cy="${y-12}" r="9" fill="url(#gcrv)"/></g>`;
   else if(k<200)h+=[[-14,-2,'#F28AA8'],[-2,4,'#FFFFFF'],[10,-4,'#F6CB5A'],[3,-9,'#B9A0E6']].map(([dx,dy,col])=>`<path d="M${x+dx} ${y+dy+6}v-7" stroke="var(--g-stem)" stroke-width="1.6"/><circle cx="${x+dx}" cy="${y+dy-2}" r="3.2" fill="${col}"/>`).join('');
   else if(k<225)h+=`<ellipse cx="${x+4}" cy="${y}" rx="13" ry="8" fill="#A9A293"/><ellipse cx="${x+1}" cy="${y-3}" rx="9" ry="5" fill="#C3BCAE"/>`;
   else if(k<330)h+=`<path d="M${x-6} ${y+2}l2 -7 2 7M${x+5} ${y-3}l2 -7 2 7" stroke="var(--g-tuft2)" stroke-width="1.6" fill="none"/>`}
@@ -4324,7 +4335,7 @@ function gMain(g,nb){G.need=wNeedBeds();const R=g.plants.filter(gReady),wk=gWeek
  const chests=GCFG.week.map(([t])=>{const got=g.wk&&g.wk.claimed.includes(t),can=wk>=t&&!got;return can?`<button class="gch on" type="button" data-gch="${t}" aria-label="Open the chest for ${t} plants">${CHESTC}<span class="num">${t}</span></button>`:`<span class="gch${got?' got':''}" aria-label="${got?'Opened':'Chest at '+t}">${got?CHESTO:CHESTC}<span class="num">${t}</span></span>`}).join('');
  const b=$('gd-body');isoGeom();G.vit=wBedVit()||{};const wx=wWeather();
  b.innerHTML=`<div class="gscene gfull bg-${esc(bg)} wx-${wx}${S.date===TODAY&&wClosed()?' wdusk':''}" id="gd-scene">
-  <div class="gworld" id="gd-world" style="width:${ISO.w}px;height:${ISO.h}px"><div class="gfarm${G.ed?' editing':''}" style="--wet:${(mode==='bottle'?wf:1).toFixed(2)}">${isoLand()}${gSigns(G.ed)}${G.ed?'':wBedSigns()}${G.ed?'':wKitchenSign()}${wLandLabels()}${wGrowSpots(G.ed)}${G.ed?'':wBflies()}${wTurnSpot()}${gBuildings(L,nb)}${G.ed?'':gEmpties()}${g.plants.map(gPlot).join('')}${gDecs()}${G.ed?gEditLayer():''}</div></div>
+  <div class="gworld" id="gd-world" style="width:${ISO.w}px;height:${ISO.h}px"><div class="gfarm${G.ed?' editing':''}" style="--wet:${(mode==='bottle'?wf:1).toFixed(2)}">${isoLand()}${gSigns(G.ed)}${G.ed?'':wBedSigns()}${G.ed?'':wKitchenSign()}${wLandLabels()}${wGrowSpots(G.ed)}${G.ed?'':wBflies()}${wTurnSpot()}${wTallDeco()}${gBuildings(L,nb)}${G.ed?'':gEmpties()}${g.plants.map(gPlot).join('')}${gDecs()}${G.ed?gEditLayer():''}</div></div>
   <div class="grain" aria-hidden="true">${drops}</div><div class="wwx" aria-hidden="true"><i></i><i></i><i></i></div>
   ${sel?`<p class="ghud gtip" role="status"><b>${esc(kindInfo(sel.k).name)}</b> · ${gEta(sel)}</p>`:''}
   <div class="ghud hfab">${G.ed?'':`<button class="gfab" type="button" id="gd-edit" aria-label="Edit layout">${PENSM}</button><button class="gfab" type="button" id="gd-share" aria-label="Share my garden"><svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/></svg></button>`}<button class="gfab" type="button" id="gd-zin" aria-label="Zoom in">+</button><button class="gfab" type="button" id="gd-zout" aria-label="Zoom out">−</button></div>
@@ -4526,14 +4537,8 @@ function gPanel(v,b){const g=S.garden;if(v==='bed')return wBedPanel(G.sb,b);
  if(v==='plant'){const pp=G.pp||{},cnt={};g.tray.filter(t=>gBedOf(t.k)===pp.b).forEach(t=>{cnt[t.k]=(cnt[t.k]||0)+1});const ks=Object.keys(cnt);
   b.innerHTML=ks.length?`<div class="gpick">${ks.map(k=>{const I=kindInfo(k);return `<button class="gpack big" type="button" data-pk="${esc(k)}"><span class="gpki">${I.icon}</span><span class="gpkn">${esc(I.name)}</span>${cnt[k]>1?`<span class="gbn num">${cnt[k]}</span>`:''}</button>`}).join('')}</div>`:`<p class="gempty">No seeds for this patch yet</p><p class="cap gpkhint">Log a plant food to get its seed</p>`;
   b.querySelectorAll('[data-pk]').forEach(x=>x.onclick=()=>{if(gPlant(x.dataset.pk,pp.pos)){save();gSheetClose();render();toast('Planted')}});return}
- if(v==='orders'){const L=g.orders&&g.orders.d===TODAY?g.orders.list:[],md=gMood(),say=gSay(L,md),rq=wReqCard();
-  const ord=L.map((o,i)=>{const I=gOK(o.k),have=gHold(o.k);return `<div class="gord${o.done?' done':''}"><span class="thumb em">${I.icon}</span><span class="otx"><b>${esc(I.name)}${o.n>1?` <span class="num">× ${o.n}</span>`:''}</b>${gNeedTag(o.k)}</span><span class="gprice num">${COINI}${o.pay}</span>
-   ${o.done?'<span class="gok" aria-label="Done">✓</span>':have>=o.n?`<button class="btn sm acc" type="button" data-give="${i}">Give</button>`:`<span class="cap num gprog">${have} of ${o.n}</span>`}</div>`}).join('');
-  const ups=['stall4','stallx'].map(id=>{const u=GUP.find(x=>x[0]===id),pr=gUpPrice(id);return pr?`<button class="btn sm" type="button" data-gup="${id}"${g.coins<pr?' disabled':''}>${u[1]} · ${COINI}${pr}</button>`:''}).join('');
-  b.innerHTML=`<div class="gmh"><span class="tmas ${md}">${TORTV()}</span>${say?`<span class="tsay">${esc(say)}</span>`:''}</div>${rq?`<h3 class="rh">A request</h3>${rq}`:''}${ord?`<h3 class="rh">Today's orders</h3>${ord}`:'<p class="gempty">No orders today. Harvest something and the tortoise will ask for it.</p>'}`;
-  if($('greq-give'))$('greq-give').onclick=()=>{const c=wReqGive();if(c){save();renderGarden();render();gDone(`+${c} coins`)}};if($('greq-add'))$('greq-add').onclick=()=>{const r=wReq(),s2=wEnsure(wNext()||wSlotNow());if(r&&FM[r.id]){addFood(s2,r.id);save();gSheetClose();render();toast(`Added to ${wMealN(s2).toLowerCase()}`)}};
-  b.querySelectorAll('[data-give]').forEach(x=>x.onclick=()=>{const c0=g.coins,c=gGive(+x.dataset.give);if(!c)return;G.pl=Date.now();setTimeout(()=>{if(G&&G.view==='market')renderGarden()},2700);save();renderGarden();gCount(c0,g.coins);gDone(`+${c} coins`)});
-  b.querySelectorAll('[data-gup]').forEach(x=>x.onclick=()=>{const c0=g.coins;if(gBuyUp(x.dataset.gup)){if(x.dataset.gup==='stall4'&&g.orders&&g.orders.d===TODAY){const n=gOrders();if(n.length>g.orders.list.length)g.orders.list.push(n[n.length-1])}save();renderGarden();gCount(c0,g.coins);toast('Stall upgraded')}});return}
+ if(v==='orders'){const rq=wReqCard();b.innerHTML=rq?`<h3 class="rh">The market's request</h3>${rq}`:'';
+  if($('greq-add'))$('greq-add').onclick=()=>{const r=wReq(),s2=wEnsure(wNext()||wSlotNow());if(r&&FM[r.id]){addFood(s2,r.id);save();gSheetClose();render();toast(`Added to ${wMealN(s2).toLowerCase()}`)}};return}
  if(v==='water'){const tot=wTotal(S.days[TODAY]||{}),tg=wTarget(),wf=Math.min(1,tot/tg),auto=gMode()==='auto';
   b.innerHTML=`<div class="gwat"><span class="gbarrel big">${gBarrel(wf)}</span><div class="otx"><b class="num">${wL(tot)} of ${wL(tg)}</b><span class="qbar"><i style="width:${(wf*100).toFixed(1)}%"></i></span><span class="cap">${auto?'Plants grow overnight. Your drinks are logged for you.':'Every drink fills the barrel. A full barrel grows every plant by one day.'}</span></div></div>
    <div class="gwbtn">${[[250,'Glass'],[500,'Bottle'],[750,'Large bottle']].map(([ml,l])=>`<button class="btn" type="button" data-gw="${ml}"><b>${l}</b><span class="cap num">${wL(ml)}</span></button>`).join('')}</div>
@@ -4548,7 +4553,7 @@ function gPanel(v,b){const g=S.garden;if(v==='bed')return wBedPanel(G.sb,b);
   $('gs-move').onclick=()=>{G.view='main';G.ed='sec';G.es=bd;renderGarden()};return}
  if(v==='sell'){const ks=Object.keys(g.bag).filter(k=>g.bag[k]>0).sort((a,c)=>gPrice(c)-gPrice(a)||a.localeCompare(c)),sell=gSellable(),keep=gKeep(),px=gPx();
   b.innerHTML=ks.length?`<h3 class="rh">Your harvest</h3><div class="gbag">${ks.map(k=>{const I=kindInfo(k);return `<div class="gbr"><span class="thumb em">${I.icon}</span><span class="otx"><b>${esc(I.name)}</b>${gNeedTag(k)}${keep[k]?'<span class="cap">Kept for an order</span>':''}</span><span class="num gbx">× ${g.bag[k]}</span><span class="gprice num">${COINI}${gPrice(k)}</span></div>`}).join('')}</div>${gPxLine()}`+
-   (sell?`<button class="btn primary wide gsell" type="button" id="gd-sell">Sell the rest · ${sell} coin${sell>1?'s':''}</button>`:''):`<p class="gempty">Nothing to sell yet. Drag the sickle over ripe plants to harvest them.</p>`;
+   (sell?`<button class="btn primary wide gsell" type="button" id="gd-sell">Sell all · ${sell} coin${sell>1?'s':''}</button>`:''):`<p class="gempty">Nothing to sell yet. Drag the sickle over ripe plants to harvest them.</p>`;
   if($('gd-sell'))$('gd-sell').onclick=()=>{const c0=g.coins,c=gSellRest();save();renderGarden();gCount(c0,g.coins);gDone(`Sold for ${c} coin${c>1?'s':''}`)};return}
  if(v==='shop'){const card=(id,n,pr,own,bg)=>{const cnt=bg?0:gDecN(id);return `<button class="gsh${bg&&own?' own':''}${G.buy===id?' on':''}" type="button" data-gs="${id}" aria-pressed="${bg?g.decor.bg===id:G.buy===id}"><span class="gshp${bg?' bgprev bg-'+id:''}">${bg?'':gDec(id)}</span><b>${n}</b>${cnt?`<span class="gown num">You have ${cnt}</span>`:''}<span class="gprice num">${bg&&own?(g.decor.bg===id?'In use':'✓'):pr?COINI+pr:'Free'}</span></button>`};
   const it=G.buy&&(G.buy.startsWith('up:')?(()=>{const u=GUP.find(x=>'up:'+x[0]===G.buy);return u?[G.buy,u[1],gUpPrice(u[0])]:null})():(GDEC.find(x=>x[0]===G.buy)||GBG.find(x=>x[0]===G.buy)));
@@ -4650,7 +4655,7 @@ function gBadges(){const g=S.garden,wk=gWeekN(),has=b=>g.badges.includes(b),add=
  if(gBeds().some(([b])=>g.plants.filter(p=>p.b===b).length>=gPlots(b)))add('bed');if(g.orders&&g.orders.d===TODAY&&g.orders.list.length>=3&&g.orders.list.every(o=>o.done))add('all3')}
 let GNEWB=null;
 /* once a day: orders, the week, the fruit bonus */
-function gDaily(){const g=S.garden;if((g.gift||0)>0||(g.giftD||0)>0){const c=g.gift||0;g.gift=0;g.giftD=0;if(c){gEarn(c);g.wkNote={n:0,c,old:1}}}gWeekTick();if(!g.orders||g.orders.d!==TODAY)g.orders={d:TODAY,list:gOrders()};
+function gDaily(){const g=S.garden;g.orders={d:TODAY,list:[]};if((g.gift||0)>0||(g.giftD||0)>0){const c=g.gift||0;g.gift=0;g.giftD=0;if(c){gEarn(c);g.wkNote={n:0,c,old:1}}}gWeekTick();if(!g.orders||g.orders.d!==TODAY)g.orders={d:TODAY,list:gOrders()};
  if(g.fruit!==TODAY){const o=PROJ;PROJ=false;try{if([...plantSet([TODAY])].some(k=>kindInfo(k).bed==='f')){g.fruit=TODAY;gEarn(GCFG.fruit);0}}finally{PROJ=o}}
  gBadges()}
 /* the supplements chest: the full stop after the card, the same for taken and skipped */
@@ -5720,7 +5725,7 @@ const GNEWBED=[['n','f'],['k','v'],['l','c']];
 /* which bed a food grows in, from its category */
 function wBedCat(f){const c=f.cat,n=(f.n||'').toLowerCase();if(c==='Fruit')return 'f';if(c==='Legumes and soy')return 'l';if(c==='Nuts and seeds')return 'n';
  if(c==='Vegetables'){let s=new Set();try{s=fgOf(f.id)}catch(e){}return s.has('green')||s.has('cruc')?'k':'v'}
- if(c==='Grains and starch')return /potato|\byam|cassava|taro|plantain|tapioca/.test(n)?'v':'c';return 'v'}
+ if(c==='Grains and starch')return /potato|\byam|cassava|taro|plantain|tapioca/.test(n)?'v':'c';if(/coconut|cocoa|chocolate|olive|\bdate/.test(n))return 'f';return 'v'}
 /* the default land: two columns of beds running down the screen, so the whole garden reads at a phone's width */
 const GLAY={sec:{f:[0,0],v:[3,3],c:[6,6],n:[5,0],k:[7,3],l:[11,6]},bld:{shed:[-5,-3],market:[4,9],shop:[2,-7],board:[-1,-3],silo:[13,2],mail:[2,-2]}};
 const GOLDB={shed:[[-5,-1],[0,5]],market:[[-5,4],[4,9]],shop:[[1,-5],[5,-5]],board:[[5,-3],[-3,-3],[-2,-3],[-1,-4],[-4,-5]],silo:[[-2,2]],mail:[[-2,-1]]};
@@ -5756,7 +5761,7 @@ function wBedFoods(bd){const ok=id=>{const f=FM[id];if(!f||f.hide||String(id).st
  if(L.length<6)F.forEach(f=>{if(L.length<6&&!f.hide&&f.src!=='usda'&&!L.includes(f.id)&&ok(f.id))L.push(f.id)});return L.slice(0,6)}
 function wBedPanel(bd,el){const ty=G.bmt||typeOf(S.plan,wSlotNow());G.bmt=ty;const L=wBedFoods(bd);
  const np=S.garden.plants.filter(p=>p.b===bd).length,full=np>=gPlots(bd);
- el.innerHTML=`<div class="wbed">${wBedHealth(bd)}<p class="cap num wbplots">${GBEDCAP[bd]||''} · ${np} of ${gPlots(bd)} plots growing</p>${full?wGrowBtn(bd):''}
+ el.innerHTML=`<div class="wbed">${wBedHealth(bd)}${wBedGrowing(bd)}<p class="cap num wbplots">${GBEDCAP[bd]||''} · ${np} of ${gPlots(bd)} plots growing</p>${full?wGrowBtn(bd):''}
  <div class="seg sm wbm" role="group" aria-label="Meal">${[...'blds'].map(t=>`<button type="button" data-bm="${t}" aria-pressed="${t===ty}">${t==='s'?'Snack':TY[t].n}</button>`).join('')}</div>
  ${L.length?`<div class="wtiles">${L.map(id=>{const f=FM[id],nm=f.n.split(',')[0],g=lastG(id);return `<button class="wtile" type="button" data-bf="${id}" aria-label="Add ${esc(nm)}, ${g} g"><span class="em">${fIcon(id)||''}</span><b>${esc(nm)}</b><small class="num">${g} g</small></button>`}).join('')}</div>`:'<p class="gempty">Search to find a food for this bed</p>'}
  <button class="btn wide wsrch" type="button" id="wb-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Search all foods</button></div>`;
@@ -6014,7 +6019,7 @@ const WTOUR=[
  ['#w-add','The middle button scans a product in the shop and keeps your shopping list and pantry. The plates beside it are your meals of the day: tap one to add food or change it.'],
  ['#gd-world [data-bld="shed"]','The barn keeps one of every plant you harvested. Drag the sickle over ripe plants to harvest them.'],
  ['#gd-world [data-bld="shop"]','The kitchen has dishes, recipes, your own foods and tips about every nutrient.'],
- ['#gd-world [data-bld="market"]','The market buys your harvest. Its thought bubble asks for a crop rich in what you are low on: eat it to plant it, let it grow, and bring it for triple coins.'],
+ ['#gd-world [data-bld="market"]','The market buys your harvest. Its thought bubble asks you to eat a crop rich in what you are low on; it plants itself and goes to the market when you harvest it.'],
  ['#gd-world [data-bld="centre"]','The garden centre sells decorations and backdrops. Pay with the coins from the market. You get 50 to start.'],
  ['#gd-world [data-bld="silo"]','The silo keeps seeds when their bed is full. Make a bed bigger and they plant themselves.'],
  ['#gd-world [data-bld="bench"]','The workbench plans the next days. What you plan there lands on your shopping list.'],
@@ -6084,6 +6089,8 @@ function wBflies(){const V=G.vit||{},L=gLand();let i=0;return gBeds().map(([b])=
 function wWeather(){if(!wHasData())return 'fair';let sc=0;try{sc=wScore().sc}catch(e){}return sc>=75?'sun':sc>=50?'fair':'soft'}
 const WXSAY={sun:'Your garden is sunny: you are well covered.',fair:'Your garden is fair.',soft:'Your garden is cloudy: a few nutrients are low.'};
 const WBEDWHY={f:FG.fruit.why,b:FG.fruit.why,c:FG.whole.why,l:FG.leg.why,n:FG.nuts.why,k:FG.green.why,v:'Vegetables bring fiber, potassium, folate and vitamins A and C; in large studies every extra portion goes with lower heart disease risk.',h:'Herbs and spices add flavour and a little of everything.'};
+function wBedGrowing(bd){const g=S.garden,ps=g.plants.filter(p=>p.b===bd).sort((a,c)=>a.pos-c.pos),wt=g.tray.filter(t=>gBedOf(t.k)===bd);if(!ps.length&&!wt.length)return '';
+ return `<div class="wgrowing"><span class="lbl">Growing here</span><div class="wgl">${ps.map(p=>{const I=kindInfo(p.k),rp=gReady(p);return `<span class="wgi${rp?' ripe':''}"><span class="em">${I.icon}</span><span><b>${esc(I.name)}</b><small>${rp?'Ripe':gEta(p)}</small></span></span>`}).join('')}</div>${wt.length?`<p class="cap">${wt.length} more waiting in the silo</p>`:''}</div>`}
 function wBedHealth(bd){const v=(G.vit||wBedVit()||{})[bd],st=v?v.st:'fine',say={lush:'Thriving',fine:'Doing fine',dry:'Would like a visit'}[st];
  return `<div class="wbedh ${st}"><span class="wbhdot" aria-hidden="true"></span><div><b>${say}</b> <span class="cap num">${v?`· eaten on ${v.n} of the last ${v.of} logged day${v.of===1?'':'s'}`:'· log a meal to see how this bed does'}</span><p class="cap">${WBEDWHY[bd]||''}</p></div></div>`}
 const WISHX=['kcal','b12','d','iod'],GWISH=10;let WHOLDT=0;
@@ -6105,21 +6112,18 @@ function wReport(wn){const t=wn.old?`${wn.c} coins from earlier weeks are yours 
  const d=wn.old?'':[wn.good&&wn.good.length?'Well covered: '+wn.good.map(nlow).join(', ')+'.':'',wn.look&&wn.look.length?'Worth a look: '+wn.look.map(nlow).join(', ')+'.':'',wn.c?`${wn.c} coins${wn.d?' and a '+wn.d.toLowerCase():''} for the variety.`:''].filter(Boolean).join(' ');
  if(S.view==='garden'&&$('wtort')){WHOLDT=Date.now()+25000;wAsk(t,d,[['Thanks',()=>{WHOLDT=0}]],true)}else toast(t)}
 /* the market's request: a crop rich in today's focus nutrient, within four days, for triple coins; it leaves quietly when the time is up */
-function wReq(){const g=S.garden;if(!g)return null;const r=g.req;if(r&&!r.done&&r.until>=TODAY)return r;if(r&&r.made===TODAY)return null;
- const w=wWish();if(!w)return null;const ks=[];w.foods.forEach(id=>plantKinds(id).forEach(k=>{if(!ks.includes(k))ks.push(k)}));const k=ks.find(x=>!(g.bag[x]>0)&&!g.plants.some(p=>p.k===x))||ks.find(x=>!(g.bag[x]>0))||ks[0];if(!k)return null;
- g.req={k,n:w.n,id:w.foods.find(id=>plantKinds(id).includes(k)),made:TODAY,until:shift(TODAY,kindInfo(k).need+2),done:0,pay:Math.max(12,gPrice(k)*3)};return g.req}
+function wReq(){const g=S.garden;if(!g)return null;const r=g.req;if(r&&!r.done){if(!r.planted&&(g.plants.some(p=>p.k===r.k)||g.bag[r.k]>0))r.planted=TODAY;if(r.planted||r.until>=TODAY)return r}if(r&&r.made===TODAY)return null;
+ const w=wWish();if(!w)return null;const ks=[];w.foods.forEach(id=>plantKinds(id).forEach(k=>{if(!ks.includes(k))ks.push(k)}));const k=ks.find(x=>!(g.bag[x]>0)&&!g.plants.some(p=>p.k===x));if(!k)return null;
+ g.req={k,n:w.n,id:w.foods.find(id=>plantKinds(id).includes(k)),made:TODAY,until:shift(TODAY,3),done:0,pay:Math.max(30,gPrice(k)*3)};return g.req}
 function wReqGive(){const g=S.garden,r=wReq();if(!r||!(g.bag[r.k]>0))return 0;g.bag[r.k]--;if(!g.bag[r.k]){delete g.bag[r.k];delete g.bagT[r.k]}r.done=1;gEarn(r.pay);return r.pay}
 function wReqBubble(){const r=wReq();if(!r)return '';const have=S.garden.bag[r.k]>0,dl=dayDiff(TODAY,r.until),I=kindInfo(r.k);
- return `<span class="wthought${have?' have':''}" aria-hidden="true"><i class="wtd1"></i><i class="wtd2"></i><span class="wtico">${I.icon}</span><b>${have?'Ready to give':dl<=0?'by today':'by '+wDay(r.until,1)}</b></span>`}
+ const pl=S.garden.plants.find(p=>p.k===r.k),ripe=pl&&gReady(pl);return `<span class="wthought${ripe?' have':''}" aria-hidden="true"><i class="wtd1"></i><i class="wtd2"></i><span class="wtico">${I.icon}</span><b>${ripe?'ripe':pl?'growing':dl<=0?'eat today':'eat by '+wDay(r.until,1)}</b></span>`}
 const wDay=(d,short)=>d===TODAY?'today':d===shift(TODAY,1)?'tomorrow':new Date(d+'T12:00').toLocaleDateString('en-GB',{weekday:short?'short':'long'});
-function wReqCard(){const r=wReq();if(!r)return '';const g=S.garden,have=g.bag[r.k]>0,I=kindInfo(r.k),bed=gBedOf(r.k),bf=WBEDFOOD[bed]||'food from its bed',grow=g.plants.find(p=>p.k===r.k),sl=wEnsure(wNext()||wSlotNow()),fn=FM[r.id]?FM[r.id].n.split(',')[0].toLowerCase():I.name.toLowerCase();
- const need=grow?grow.need:I.need,done1=have||!!grow,prog=grow?Math.min(need,Math.floor(gProgress(grow)+1e-6)):have?need:0,done2=have||(grow&&gReady(grow));
- const st=(ok,on,t,sub,extra)=>`<li class="${ok?'ok':on?'on':''}"><span class="rqn" aria-hidden="true">${ok?WTICK:''}</span><span><b>${t}</b>${sub?`<small>${sub}</small>`:''}${extra||''}</span></li>`;
- return `<div class="greq${have?' have':''}"><div class="rqh"><span class="thumb em">${I.icon}</span><span class="otx"><b>Bring ${esc(I.name.toLowerCase())} by ${wDay(r.until)}</b><span class="cap">Rich in ${nlow(r.n)}, which is low lately.</span></span><span class="gprice num">${COINI}${r.pay}</span></div>
-  <ol class="rqsteps">${st(done1,!done1,'Plant it: eat some '+esc(fn),done1?'Planted':'Any amount, any meal',done1?'':`<button class="btn sm" type="button" id="greq-add">Add to ${wMealN(sl).toLowerCase()}</button>`)}
-  ${st(done2,done1&&!done2,`Let it grow: ${need} day${need>1?'s':''}, by itself`,grow&&!done2?gEta(grow):done2?'Ripe':'')}
-  ${st(!!r.done,done2,'Bring it: harvest and give it',have?'In your basket':done2?'Ripe: drag the sickle over it':'')}</ol>
-  ${have?'<button class="btn primary wide" type="button" id="greq-give">Give and get '+r.pay+' coins</button>':`<p class="cap rqnote">If it is not ready by ${wDay(r.until)}, no problem: a new request comes.</p>`}</div>`}
+function wReqCard(){const r=wReq();if(!r)return '';const g=S.garden,I=kindInfo(r.k),nm=esc(I.name.toLowerCase()),pl=g.plants.find(p=>p.k===r.k),sl=wEnsure(wNext()||wSlotNow()),fn=FM[r.id]?FM[r.id].n.split(',')[0].toLowerCase():I.name.toLowerCase();
+ let t,d,act='';if(pl&&gReady(pl)){t=`Your ${nm} is ripe`;d=`Drag the sickle over it and it goes straight to the market.`}
+ else if(pl){t=`Looking forward to your ${nm}`;d=`${gEta(pl)}. When you harvest it, it goes straight to the market.`}
+ else{t=`Eat some ${nm} by ${wDay(r.until)}`;d=`It is rich in ${nlow(r.n)}, which is low lately. Eating it plants it by itself; it grows in about ${I.need} days and goes to the market when you harvest it.`;act=`<button class="btn sm" type="button" id="greq-add">Add ${esc(fn)} to ${wMealN(sl).toLowerCase()}</button><p class="cap rqnote">Not by ${wDay(r.until)}? No problem, a new request comes.</p>`}
+ return `<div class="greq${pl&&gReady(pl)?' have':''}"><div class="rqh"><span class="thumb em">${I.icon}</span><span class="otx"><b>${t}</b><span class="cap">${d}</span>${act}</span><span class="gprice num">${COINI}${r.pay}</span></div></div>`}
 /* after logging: what the food did for today, in one line */
 let WIMP=null;
 function wImpact(silent){const p=S.days[TODAY];if(!p){WIMP=null;return}const o=PROJ;PROJ=false;let v,sig;try{v=planV(p);sig=eatK(p).map(k=>p[k].it.map(x=>x[0]+':'+x[1]).join(',')).join('|')}finally{PROJ=o}
@@ -6132,13 +6136,25 @@ function wImpact(silent){const p=S.days[TODAY];if(!p){WIMP=null;return}const o=P
 /* no herb patch (herbs are not worth logging); new patches wait for the new map */
 const WUNL=[];
 function wUnlocks(){const g=S.garden,L=gLand();let out=null;if(L.sec.h){const hp=g.plants.filter(p=>p.b==='h');delete L.sec.h;hp.forEach(p=>{const nb=gBedOf(p.k),pos=gFreePos(nb);if(pos>=0){p.b=nb;p.pos=pos}else{g.tray.push({k:p.k,b:nb,s:p.s||TODAY});p.gone=1}});g.plants=g.plants.filter(p=>!p.gone);save()}WUNL.forEach(([b,n,t,d])=>{if(L.sec[b]||(g.ever||[]).length<n)return;const B=gBld(),near=B.shed?[B.shed[0]+1,B.shed[1]+5]:[2,4];if(gRoom(b,{c:0,r:0,rot:0,rows:2},near[0],near[1])){gResort();gRefill();out=[t,d]}});if(out){g.unl=out;save()}return out}
+/* scanned products and your own foods never grow; anything an older version planted from them is cleared */
+let WCUST=null,WCUSTN=-1;
+function wCustomKinds(){if(WCUSTN!==F.length){WCUSTN=F.length;WCUST=new Set(F.filter(f=>String(f.id).startsWith('c_')||f.cat==='My foods').map(f=>String(f.n).toLowerCase()))}return WCUST}
+function wScrub(){const g=S.garden;if(!g)return;const bad=wCustomKinds(),K=kindMap(),isBad=k=>bad.has(k)&&!K[k];let ch=0;
+ const f=(a,fn)=>{const n=a.length,o=a.filter(fn);if(o.length!==n)ch=1;return o};g.plants=f(g.plants,p=>!isBad(p.k));g.tray=f(g.tray,t=>!isBad(t.k));g.ever=f(g.ever||[],k=>!isBad(k));
+ Object.keys(g.bag||{}).forEach(k=>{if(isBad(k)){delete g.bag[k];delete g.bagT[k];ch=1}});if(g.req&&isBad(g.req.k)){delete g.req;ch=1}if(ch){gRefill();save()}}
+/* tall things on the beds stand in the plant layer, ordered by depth like the plants */
+const WPOLE='<svg viewBox="0 0 32 44" aria-hidden="true"><path d="M5 42L15 4M27 42L17 4M9 24H23" stroke="#A8743F" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M15 4h2" stroke="#7A5230" stroke-width="3" stroke-linecap="round"/></svg>';
+const WSUNF='<svg viewBox="0 0 20 36" aria-hidden="true"><path d="M10 35V13" stroke="#4E8F45" stroke-width="2"/><ellipse cx="6" cy="24" rx="4" ry="2" fill="#5E9E52"/><ellipse cx="14" cy="20" rx="4" ry="2" fill="#5E9E52"/><circle cx="10" cy="9" r="7.5" fill="#F2C14E"/><circle cx="10" cy="9" r="3" fill="#7A5230"/></svg>';
+function wTallDeco(){const L=gLand();let h='';const l=L.sec.l;if(l)for(let pos=0;pos<4*l.rows;pos++){const {x,y,c,r}=isoC('l',pos);h+=`<span class="wtall" style="left:${pct(x-16,ISO.w)};top:${pct(y-40,ISO.h)};width:${pct(32,ISO.w)};z-index:${Math.round((c+r)*10)+4}">${WPOLE}</span>`}
+ const n=L.sec.n;if(n){const [w,hh]=secWH(n);for(let i=0;i<(n.rot?hh:w);i++){const c=n.rot?n.c+w-1:n.c+i,r=n.rot?n.r+i:n.r+hh-1,[x,y]=isoP(c+(n.rot?.62:0),r+(n.rot?0:.62));h+=`<span class="wtall" style="left:${pct(x-10,ISO.w)};top:${pct(y-34,ISO.h)};width:${pct(20,ISO.w)};z-index:${Math.round((c+r)*10)+7}">${WSUNF}</span>`}}
+ return h}
 function render(){FEDC.clear();const o=PROJ;PROJ=S.date>TODAY;if(PROJ&&S.plan)mealKeys(S.plan).forEach(k=>{if(S.plan[k].it.length)S.plan[k].pl=1});try{return render0()}finally{PROJ=o}}
 function render0(){
  _VC=null;supMigrate();
  const v0=S.view;
  if(S.plan)mealKeys(S.plan).forEach(k=>{if(k.length>1&&!S.plan[k].it.length&&k!==MS&&!($('pk').open&&PK&&PK.slot===k))delete S.plan[k]});
  if(S.plan){normPlan(S.plan);rebuildSlots()}
- if(GON()){gInit();gardenTick();gardenSync();gDaily();try{const g0=S.garden;if((g0.wv||0)<2){delete g0.cam;g0.wv=2;if(G)G.cam=null}wKitchenMove(gLand());wLandOpen()}catch(e){}try{wUnlocks()}catch(e){}if(S.garden.unl&&S.view==='garden'&&!document.querySelector('dialog[open]')){const u=S.garden.unl;delete S.garden.unl;save();setTimeout(()=>{if(S.view==='garden'){WHOLDT=Date.now()+20000;if(u[2]&&G&&G.cam){const [x,y]=isoP(u[2][0],u[2][1]),W=$('gd-world'),V=$('gd-scene');if(W&&V){const w=W.getBoundingClientRect(),v=V.getBoundingClientRect();wGlide(v.width/2-(w.left-v.left+x*G.cam.s),v.height*.42-(w.top-v.top+y*G.cam.s))}}setTimeout(()=>wAsk(u[0],u[1],[['Nice',()=>{WHOLDT=0}]],true),u[2]?700:0)}else toast(u[0])},1400)}const wn=S.garden.wkNote;if(wn&&!wn.shown){wn.shown=1;save();setTimeout(()=>wReport(wn),1600)}}
+ if(GON()){gInit();gardenTick();gardenSync();gDaily();try{const g0=S.garden;wScrub();if(g0.bv3!==1){g0.bv3=1;KI=null;gResort();gRefill()}const rq=g0.req;if(rq&&!rq.done&&g0.bag&&g0.bag[rq.k]>0){const c=wReqGive();if(c)setTimeout(()=>toast(`The market got your ${kindInfo(rq.k).name.toLowerCase()}: +${c} coins`),800)}if((g0.wv||0)<2){delete g0.cam;g0.wv=2;if(G)G.cam=null}wKitchenMove(gLand());wLandOpen()}catch(e){}try{wUnlocks()}catch(e){}if(S.garden.unl&&S.view==='garden'&&!document.querySelector('dialog[open]')){const u=S.garden.unl;delete S.garden.unl;save();setTimeout(()=>{if(S.view==='garden'){WHOLDT=Date.now()+20000;if(u[2]&&G&&G.cam){const [x,y]=isoP(u[2][0],u[2][1]),W=$('gd-world'),V=$('gd-scene');if(W&&V){const w=W.getBoundingClientRect(),v=V.getBoundingClientRect();wGlide(v.width/2-(w.left-v.left+x*G.cam.s),v.height*.42-(w.top-v.top+y*G.cam.s))}}setTimeout(()=>wAsk(u[0],u[1],[['Nice',()=>{WHOLDT=0}]],true),u[2]?700:0)}else toast(u[0])},1400)}const wn=S.garden.wkNote;if(wn&&!wn.shown){wn.shown=1;save();setTimeout(()=>wReport(wn),1600)}}
  const fid=document.activeElement&&document.activeElement.id;
  if(S.view==='ideas'){S.view='nutr';S.nsub='imp'}
  if(!['today','nutr','scan','lib','garden','profile'].includes(S.view))S.view='garden';
