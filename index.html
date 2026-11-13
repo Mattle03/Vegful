@@ -1595,6 +1595,9 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 .wempty span{font-size:14px;font-weight:700}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wempty{background:rgba(58,49,39,.92);color:#F3EADB;border-color:#9A7A45}:root:not([data-theme="light"]) .wempty b{color:#E9C77B}}
 :root[data-theme="dark"] .wempty{background:rgba(58,49,39,.92);color:#F3EADB;border-color:#9A7A45}:root[data-theme="dark"] .wempty b{color:#E9C77B}
+.wspt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05}
+.wspt small{font-size:12.5px;font-weight:700;margin-top:2px;opacity:.85}
+.wsign.empty .wsp{outline:3px dashed #C99A1E;outline-offset:-3px}
 </style>
 </head>
 <body>
@@ -4249,7 +4252,7 @@ function gMain(g,nb){G.need=wNeedBeds();const R=g.plants.filter(gReady),wk=gWeek
  const chests=GCFG.week.map(([t])=>{const got=g.wk&&g.wk.claimed.includes(t),can=wk>=t&&!got;return can?`<button class="gch on" type="button" data-gch="${t}" aria-label="Open the chest for ${t} plants">${CHESTC}<span class="num">${t}</span></button>`:`<span class="gch${got?' got':''}" aria-label="${got?'Opened':'Chest at '+t}">${got?CHESTO:CHESTC}<span class="num">${t}</span></span>`}).join('');
  const b=$('gd-body');isoGeom();G.vit=wBedVit()||{};const wx=wWeather();
  b.innerHTML=`<div class="gscene gfull bg-${esc(bg)} wx-${wx}${S.date===TODAY&&wClosed()?' wdusk':''}" id="gd-scene">
-  <div class="gworld" id="gd-world" style="width:${ISO.w}px;height:${ISO.h}px"><div class="gfarm${G.ed?' editing':''}" style="--wet:${(mode==='bottle'?wf:1).toFixed(2)}">${isoLand()}${gSigns(G.ed)}${G.ed?'':wBedSigns()}${G.ed?'':wEmptyBeds()}${wGrowSpots(G.ed)}${G.ed?'':wBflies()}${wTurnSpot()}${gBuildings(L,nb)}${G.ed?'':gEmpties()}${g.plants.map(gPlot).join('')}${gDecs()}${G.ed?gEditLayer():''}</div></div>
+  <div class="gworld" id="gd-world" style="width:${ISO.w}px;height:${ISO.h}px"><div class="gfarm${G.ed?' editing':''}" style="--wet:${(mode==='bottle'?wf:1).toFixed(2)}">${isoLand()}${gSigns(G.ed)}${G.ed?'':wBedSigns()}${wGrowSpots(G.ed)}${G.ed?'':wBflies()}${wTurnSpot()}${gBuildings(L,nb)}${G.ed?'':gEmpties()}${g.plants.map(gPlot).join('')}${gDecs()}${G.ed?gEditLayer():''}</div></div>
   <div class="grain" aria-hidden="true">${drops}</div><div class="wwx" aria-hidden="true"><i></i><i></i><i></i></div>
   ${sel?`<p class="ghud gtip" role="status"><b>${esc(kindInfo(sel.k).name)}</b> · ${gEta(sel)}</p>`:''}
   <div class="ghud hfab">${G.ed?'':`<button class="gfab" type="button" id="gd-edit" aria-label="Edit layout">${PENSM}</button><button class="gfab" type="button" id="gd-share" aria-label="Share my garden"><svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/></svg></button>`}<button class="gfab" type="button" id="gd-zin" aria-label="Zoom in">+</button><button class="gfab" type="button" id="gd-zout" aria-label="Zoom out">−</button></div>
@@ -5672,8 +5675,8 @@ function wNeedBeds(){const M={};let L=[];try{L=fgLow(TODAY)}catch(e){}L.forEach(
 /* an empty bed says plainly what would plant it */
 function wEmptyBeds(){const g=S.garden,L=gLand();return gBeds().map(([b])=>{if(g.plants.some(p=>p.b===b)||g.tray.some(t=>gBedOf(t.k)===b))return '';const s=L.sec[b],[w,hh]=secWH(s),[x,y]=s.rot?isoP(s.c+(w-1)*.15,s.r+(hh-1)/2):isoP(s.c+(w-1)/2,s.r+(hh-1)*.15);
  return `<button class="wempty" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}"><b>Empty</b><span>Eat ${WBEDFOOD[b]||'something from it'} to plant</span></button>`}).join('')}
-function wBedSigns(){const L=gLand(),N=G.need||{};return gBeds().map(([b])=>{const s=L.sec[b],[w,hh]=secWH(s),[x,y]=s.rot?isoP(s.c+w-.1,s.r+hh/2-.5):isoP(s.c+w/2-.5,s.r+hh-.1),nk=N[b],lab=nk?GFGN[nk]:GSECN[b];
- return `<button class="wsign${nk?' need':''}${s.rot?' rot':''}" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)};z-index:${Math.round((s.c+w/2+s.r+hh)*10)+8}" aria-label="${esc(lab)}${nk?', add some':''}"><span class="wsp">${nk?WSEED:''}<b>${esc(lab)}</b></span><i class="wsst" aria-hidden="true"></i></button>`}).join('')}
+function wBedSigns(){const L=gLand(),N=G.need||{};return gBeds().map(([b])=>{const s=L.sec[b],[w,hh]=secWH(s),[x,y]=s.rot?isoP(s.c+w-.1,s.r+hh/2-.5):isoP(s.c+w/2-.5,s.r+hh-.1),nk=N[b],lab=nk?GFGN[nk]:GSECN[b],em=!S.garden.plants.some(p=>p.b===b)&&!S.garden.tray.some(t=>gBedOf(t.k)===b);
+ return `<button class="wsign${nk?' need':''}${em?' empty':''}${s.rot?' rot':''}" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)};z-index:${Math.round((s.c+w/2+s.r+hh)*10)+8}" aria-label="${esc(lab)}${nk?', add some':''}"><span class="wsp">${nk?WSEED:''}<span class="wspt"><b>${esc(lab)}</b>${em?`<small>Empty: eat ${WBEDFOOD[b]||'some'} to plant</small>`:''}</span></span><i class="wsst" aria-hidden="true"></i></button>`}).join('')}
 /* foods for a bed: what you eat most first, then good everyday picks; only whole plant foods, so every tile sows a seed here */
 function wBedFoods(bd){const ok=id=>{const f=FM[id];if(!f||f.hide||String(id).startsWith('c_')||f.cat==='My foods'||isDis(id))return false;if(!(PLANTS[id]||(f.pk&&!f.ing&&!f.parts)))return false;try{return plantKinds(id).some(k=>gBedOf(k)===bd)}catch(e){return false}};
  let E=[];try{E=[...eaten()]}catch(e){}const def=(GBEDFG[bd]||[]).flatMap(k=>FG[k].sug).concat(GBEDDEF[bd]||[]);
