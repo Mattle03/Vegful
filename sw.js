@@ -1,5 +1,5 @@
 // Bump VERSION after every change so phones pick up the new files.
-const VERSION = 'vgarden-v71';
+const VERSION = 'vgarden-v78';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/badge-96.png', 'vendor/zxing.min.js'];
 
 self.addEventListener('install', e => {
@@ -46,6 +46,13 @@ async function ring() {
   let m = null, rec = {};
   try { m = await idb('readonly', s => s.get('m')); rec = (await idb('readonly', s => s.get('r'))) || {}; } catch (_) {}
   const now = new Date(), h = now.getHours(), slot = h < 11 ? 'b' : h < 16 ? 'l' : h < 20 ? 'd' : 'e', today = ymd(now);
+  // a weekly or every few days supplement that is due today: said once that day, on the first reminder
+  const sd = ((m && m.sup) || []).filter(x => x && x.n && x.due && x.due <= today).map(x => x.n);
+  if (sd.length && rec.sup !== today) {
+    rec.sup = today; try { await idb('readwrite', s => s.put(rec, 'r')); } catch (_) {}
+    const names = sd.length > 1 ? sd.slice(0, -1).join(', ') + ' and ' + sd[sd.length - 1] : sd[0];
+    return self.registration.showNotification('Vegful Garden', { body: names + (sd.length > 1 ? ' are' : ' is') + ' due today.', icon: 'icons/icon-192.png', badge: 'icons/badge-96.png', tag: 'vgarden', data: { url: self.registration.scope } });
+  }
   const c = { meal: { b: 'breakfast', l: 'lunch', d: 'dinner', e: 'dinner' }[slot], slot, time: p2(h) + ':' + p2(now.getMinutes()), low: [], days: 0, kinds: 0 };
   let body = 'Your garden is waiting.';
   if (m && m.pools) {

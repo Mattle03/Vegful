@@ -1670,6 +1670,7 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 @keyframes wbrip{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.6);opacity:0}}
 html.still .wbird,html.still .wbird *,html.still .wbrip,html.still .wsplash{animation:none!important}
 @media (prefers-reduced-motion:reduce){.wbird,.wbird *,.wbrip,.wsplash{animation:none!important}}
+.adq{margin:4px 0 10px;font-size:17px;font-weight:800}
 </style>
 </head>
 <body>
@@ -3332,7 +3333,8 @@ function renderScan(){
   const old0=S.custom.find(x=>x.id===id);const fsv=parseFloat(String(($('rv-fs')||{}).value||'').replace(',','.'));const c={id,n:name,bc:P.code,fs:fsv>=0?fsv:undefined,v,est,ing:P.ing&&P.ing.length?P.ing:undefined,pack:+$('rv-pack').value||0,por:+$('rv-por').value||100,img:P.img||(old0&&old0.img)||undefined,ph:(old0&&old0.img===P.img&&old0.ph)||undefined};
   S.custom=S.custom.filter(x=>x.id!==id);S.custom.push(c);registerFood(c);
   if(SC.pick){const cb=SC.pick;closeScan();render();cb(id);return}
-  if(SC.slot)addFood(SC.slot,id,c.por);else toast(`Saved "${name}" to My foods`);closeScan();render();setTimeout(()=>{try{photoFill()}catch(e){}},50);
+  if(SC.slot){const sl0=SC.slot;closeScan();if(!AD||AD.slot!==sl0||!$('add').open)openAdd(sl0);adJust(sl0,()=>addFood(sl0,id,c.por),1);setTimeout(()=>{try{photoFill()}catch(e){}},50);return}
+  toast(`Saved "${name}" to My foods`);closeScan();render();setTimeout(()=>{try{photoFill()}catch(e){}},50);
  };
 }
 /* ---------- scan tab ---------- */
@@ -3976,6 +3978,8 @@ function adPulse(){AD.pulse=Date.now();try{navigator.vibrate&&navigator.vibrate(
 
 function renderAdd(){if(!AD)return;const o=PROJ;PROJ=S.date>TODAY;try{renderAdd0()}finally{PROJ=o}}
 function renderAdd0(){const sl=S.plan[AD.slot];if(!sl){closeAdd();return}
+ if(AD.view==='plate'&&AD.just===1&&(AD.open==null||!sl.it[AD.open])){AD.view='main';AD.just=0;AD.snap=null}
+ if(AD.view==='plate'&&AD.just===2&&!sl.it.length){AD.view='main';AD.just=0;AD.snap=null}
  if(AD.view==='plate'&&document.activeElement&&document.activeElement.id==='ad-name')return;
  const s=SLOTS.find(x=>x.id===AD.slot)||SLOTS[0],v=AD.view,hv=v==='main'||v==='more'?'s':v;
  const dl=S.date===TODAY?'':whenTxt(S.date),own=sl.did&&dish(sl.did),mine=own&&own.own;
@@ -3985,8 +3989,8 @@ function renderAdd0(){const sl=S.plan[AD.slot];if(!sl){closeAdd();return}
   :`<div class="row"><div class="adt"><button class="adback" type="button" id="ad-back" aria-label="Back">${BACKI}</button><div style="min-width:0"><h2 id="ad-title"></h2><span class="cap" id="ad-date"></span></div></div><div style="display:flex;gap:8px;flex:none"><button class="iconbtn star" id="ad-fav" type="button" aria-label="Favourite" hidden>${STAR}</button><button class="btn sm" id="ad-close" type="button">Close</button></div></div>`;
   $('ad-close').onclick=closeAdd;wNoneSync();
   if($('ad-q')){$('ad-q').oninput=e=>{AD.q=e.target.value;renderAdd()};$('ad-scan').onclick=()=>{openScan(AD.slot,'scan')}}
-  if($('ad-back'))$('ad-back').onclick=()=>adView('main')}
- $('ad-title').textContent=v==='out'?'Ate out':v==='dish'?(dish(AD.dish)||{}).n||s.n:s.n;
+  if($('ad-back'))$('ad-back').onclick=()=>{if(AD.view==='plate'&&AD.just)adJustOut(true);else adView('main')}}
+ $('ad-title').textContent=v==='plate'&&AD.just?'How much?':v==='out'?'Ate out':v==='dish'?(dish(AD.dish)||{}).n||s.n:s.n;
  $('ad-date').textContent=dl;
  if($('ad-q')&&$('ad-q').value!==AD.q)$('ad-q').value=AD.q;
  const fv=$('ad-fav');if(fv){const fd=v==='dish'?dish(AD.dish):v==='plate'&&mine?own:null;fv.hidden=!fd;if(fd){fv.setAttribute('aria-pressed',!!fd.fav);fv.setAttribute('aria-label',(fd.fav?'Remove from favourites: ':'Favourite: ')+fd.n);fv.onclick=()=>{meta(fd.id).fav=!fd.fav;save();renderAdd()}}}
@@ -4004,9 +4008,10 @@ function wMealLine(items){const m=wMealSeeds(items),kn=k=>kindInfo(k).name.toLow
  if(m.wait.length)out.push(`${L(m.wait.slice(0,2).map(kn))} waits for room`);return out.join(' · ')}
 function adFoot(s,sl){const f=$('ad-foot'),v=AD.view;
  if(v==='dish'){const d=dish(AD.dish);f.hidden=!d;if(!d)return;f.className='adfoot two';f.innerHTML=`<button class="btn" type="button" id="ad-rcp">${hasRcp(d.id)?'Recipe':'Find a recipe'}</button><button class="btn primary" type="button" id="ad-put">Put on plate</button>`;
-  $('ad-rcp').onclick=()=>openRecipe(d.id,AD.slot);$('ad-put').onclick=()=>{putDish(AD.slot,d);adPulse();save();AD.view='main';AD.q='';render();$('ad-body').scrollTop=0};return}
+  $('ad-rcp').onclick=()=>openRecipe(d.id,AD.slot);$('ad-put').onclick=()=>adJust(AD.slot,()=>putDish(AD.slot,d),2);return}
  if(v==='out'){const d=AD.os&&dish(AD.os);f.hidden=false;f.className='adfoot';f.innerHTML=`<button class="btn primary wide" type="button" id="ad-oadd"${d?'':' disabled'}>Add to ${s.t==='s'?'snacks':s.n.toLowerCase()}</button>`;
   $('ad-oadd').onclick=()=>{if(!d)return;const fd=dishFit(d)||d,it=fd.it.map(([id,g,st])=>st?[id,Math.round(g*AD.oz),st]:[id,Math.round(g*AD.oz)]);putOn(AD.slot,it,d.n,d.id,{est:1});save();toast(`Added ${d.n}, estimated`);closeAdd()};return}
+ if(v==='plate'&&AD.just){f.hidden=false;f.className='adfoot';f.innerHTML=`<button class="btn primary wide" type="button" id="ad-jadd">Add to ${s.t==='s'?'snacks':s.n.toLowerCase()}</button>`;$('ad-jadd').onclick=()=>adJustOut(false);return}
  if(v==='plate'){f.hidden=false;f.className='adfoot';f.innerHTML=`<button class="btn primary wide" type="button" id="ad-done">Done</button>`;$('ad-done').onclick=closeAdd;return}
  if(!sl.it.length){f.hidden=true;f.innerHTML='';return}
  const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.slot),val,1),pu=Date.now()-AD.pulse<700;f.hidden=false;f.className='adfoot plate';
@@ -4911,16 +4916,22 @@ function adMore(b,s,T,D0){const m=AD.more,ttl={meals:'Recent',pantry:'From my pa
   F.filter(f=>!f.hide&&!f.gb&&(f.src!=='usda'||f.common)&&(AD.cat==='All'?f.cat!=='My foods':f.cat===AD.cat)).slice(0,120).map(f=>foodItem(f,T)).join('')+'<p class="empty2">Search to find over 1,100 more foods.</p>'}
  return h}
 
+/* after a pick: "How much?" for the food (just 1) or the portion of a dish or meal (just 2), then back to the list; Back undoes the pick */
+function adJust(sl,fn,kind){const snap=JSON.stringify(S.plan[sl]),n0=S.plan[sl].it.length,old=S.plan[sl].it.map(x=>x[0]+':'+x[1]).join(',');fn();save();render();
+ const it=S.plan[sl].it,keep=n0&&it.length>=n0&&it.slice(0,n0).map(x=>x[0]+':'+x[1]).join(',')===old,from=keep?n0:0;
+ AD.q='';const q=$('ad-q');if(q)q.value='';if(!it.length){adView('main');return}
+ if(kind===1)adView('plate',{open:it.length-1,just:1,snap,from});else adView('plate',{open:null,just:2,snap,from,jz:1})}
+function adJustOut(cancel){if(cancel&&AD.snap){S.plan[AD.slot]=JSON.parse(AD.snap);edited(AD.slot);save();render()}else adPulse();adView('main',{just:0,snap:null,open:null})}
 function adBind(b,s){const sl=AD.slot,re=()=>{render()};
  b.querySelectorAll('[data-adpf]').forEach(x=>tapBind(x,()=>{const id=x.dataset.adpf,i=S.plan[sl].it.findIndex(it=>it[0]===id);
   if(i>=0){adView('plate',{open:i});return}
-  addFood(sl,id);adPulse();AD.q='';save();re();const q=$('ad-q');if(q&&document.activeElement===q){q.value=''}$('ad-body').scrollTop=0}));
- b.querySelectorAll('[data-adpd]').forEach(x=>tapBind(x,()=>{putDish(sl,dish(x.dataset.adpd));adPulse();AD.q='';save();re();$('ad-body').scrollTop=0}));
+  adJust(sl,()=>addFood(sl,id),1)}));
+ b.querySelectorAll('[data-adpd]').forEach(x=>tapBind(x,()=>adJust(sl,()=>putDish(sl,dish(x.dataset.adpd)),2)));
  b.querySelectorAll('[data-add]').forEach(x=>tapBind(x,()=>adView('dish',{dish:x.dataset.add})));
- b.querySelectorAll('[data-adrc]').forEach(x=>tapBind(x,()=>{const a=AD.rc[+x.dataset.adrc];if(!a)return;useAgain(sl,a);adPulse();save();re()}));
+ b.querySelectorAll('[data-adrc]').forEach(x=>tapBind(x,()=>{const a=AD.rc[+x.dataset.adrc];if(!a)return;adJust(sl,()=>useAgain(sl,a),2)}));
  b.querySelectorAll('[data-adgx]').forEach(x=>x.onclick=()=>{const k=x.dataset.adgx;AD.gx=AD.gx.includes(k)?AD.gx.filter(y=>y!==k):[...AD.gx,k];renderAdd()});
- b.querySelectorAll('[data-adag]').forEach(x=>tapBind(x,()=>{const a=AD.ag[+x.dataset.adag];if(!a)return;useAgain(sl,a);adPulse();save();re()}));
- b.querySelectorAll('[data-adsn]').forEach(x=>tapBind(x,()=>{const o=AD.sn[+x.dataset.adsn];if(!o)return;if(o.food)addFood(sl,o.food.id,o.food.por);else putDish(sl,o.d);adPulse();save();re()}));
+ b.querySelectorAll('[data-adag]').forEach(x=>tapBind(x,()=>{const a=AD.ag[+x.dataset.adag];if(!a)return;adJust(sl,()=>useAgain(sl,a),2)}));
+ b.querySelectorAll('[data-adsn]').forEach(x=>tapBind(x,()=>{const o=AD.sn[+x.dataset.adsn];if(!o)return;if(o.food)adJust(sl,()=>addFood(sl,o.food.id,o.food.por),1);else adJust(sl,()=>putDish(sl,o.d),2)}));
  b.querySelectorAll('[data-fx]').forEach(x=>x.onclick=()=>{const k=x.dataset.fx;AD.focus=!k?[]:AD.focus.includes(k)?AD.focus.filter(z=>z!==k):[...AD.focus,k];renderAdd()});
  b.querySelectorAll('[data-admore]').forEach(x=>x.onclick=()=>{AD.more=x.dataset.admore||null;renderAdd();$('ad-body').scrollTop=0});
  b.querySelectorAll('[data-adcat]').forEach(x=>x.onclick=()=>{AD.cat=x.dataset.adcat;renderAdd()});
@@ -4932,6 +4943,10 @@ function adBind(b,s){const sl=AD.slot,re=()=>{render()};
  b.querySelectorAll('[data-gbld]').forEach(x=>tapBind(x,()=>{const k=x.dataset.gbld;closeAdd();openGran(null,sl,k)}))}
 
 /* the plate: the meal's foods, one line each; the row you tap opens its amount, units and cooked or raw */
+function adJustPlate(b,s,sl){const it=sl.it,from=AD.from||0,cz=AD.jz||1;
+ const head=`<p class="adq">How much did you eat?</p>`;
+ if(AD.just===1){const i=AD.open;return head+'@ROW'+i+'@'}
+ return head+`<div class="seg adsz" role="group" aria-label="Portion">${[[.5,'Half'],[.75,'Small'],[1,'Normal'],[1.4,'Large']].map(([x,l])=>`<button type="button" data-jz="${x}" aria-pressed="${cz===x}">${l}</button>`).join('')}</div>`+it.map((t,i)=>i>=from?'@ROW'+i+'@':'').join('')}
 function adPlate(b,s,sl,mine){const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.slot),val,3),ty=typeOf(S.plan,AD.slot),def=ty==='s'?'My snack':'My '+TY[ty].n.toLowerCase(),had=!mine&&sl.it.length>1?timesHad(AD.slot):0,d=sl.did?dish(sl.did):null;
  const row=([id,gr,st],i)=>{const f=FM[id],iv=itemV([id,gr,st]);if(AD.open!==i)return `<div class="prow"><button class="pmain" type="button" data-pop="${i}"><span class="ficon em">${fIcon(id)}</span><span class="nm">${esc(f.n.split(',')[0])}${sl.est?'':wItemTag(id,gr)}</span><span class="amt num">${amtTxt(id,gr)}</span></button><button class="rm" type="button" data-prm="${i}" aria-label="Remove ${esc(f.n)}">${XIC}</button></div>`;
   return `<div class="item popen"><div class="top"><span class="ficon em">${fIcon(id)}</span><button class="nmbtn" type="button" data-food="${id}" style="min-width:0;flex:1"><span class="nm">${esc(f.n)}</span><span class="sub num" style="display:block">${ENs(iv[0])}${fmt(iv[1])} g protein · <span style="color:var(--accent)">${f.parts?'edit mix':'details'}</span></span></button><button class="rm" type="button" data-prm="${i}" aria-label="Remove ${esc(f.n)}">${XIC}</button></div>
@@ -4943,7 +4958,8 @@ function adPlate(b,s,sl,mine){const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.
    ${f.pack?`<div class="packbtns">${[[.25,'¼ pack'],[1/3,'⅓ pack'],[.5,'½ pack'],[1,'Whole pack']].map(([x,l])=>`<button type="button" data-pack="${i}:${x}">${l}</button>`).join('')}</div>`:''}</div>`};
  const cz=sl.sz||1,szh=sl.did||sl.it.length>1?`<div class="seg adsz" role="group" aria-label="Portion size">${[[.7,'Small'],[1,'Normal'],[1.4,'Large']].map(([x,l])=>`<button type="button" data-sz="${x}" aria-pressed="${cz===x}">${l}</button>`).join('')}</div>`:'';
  const nmh=sl.it.length?`<div class="adname">${AD.edit?`<input type="text" id="ad-name" value="${esc(sl.t||'')}" placeholder="${esc(def)}" aria-label="Meal name" enterkeyhint="done" autocomplete="off">`:`<button class="nmt${sl.t?'':' ph'}" type="button" id="ad-nmb">${esc(sl.t||'Name this meal')}</button>`}<button class="iconbtn" type="button" id="ad-pen" aria-label="Rename">${PENI}</button><button class="iconbtn" type="button" id="ad-bm" aria-pressed="${!!mine}" aria-label="${mine?'Saved to your dishes':'Save to your dishes'}">${BMI}</button></div>`:'';
- b.innerHTML=nmh+(mine?`<div class="photorow">${PH[mine.id]?`<img class="mphoto" src="${PH[mine.id]}" alt="Photo of ${esc(mine.n)}">`:''}<div class="btnrow"><label class="btn sm" for="ad-file">${PH[mine.id]?'Change photo':'Add photo'}</label><input type="file" id="ad-file" accept="image/*" hidden>${PH[mine.id]?'<button class="btn sm ghost" type="button" id="ad-delph" style="color:var(--low)">Remove photo</button>':''}</div></div>`:'')+
+ if(AD.just){b.innerHTML=adJustPlate(b,s,sl).replace(/@ROW(\d+)@/g,(m,i)=>sl.it[+i]?row(sl.it[+i],+i):'')+`<button type="button" id="ad-more" hidden></button><button class="linkbtn" type="button" id="ad-meas">${INFO} How much is a spoon, a cup or a handful?</button>`}
+ else b.innerHTML=nmh+(mine?`<div class="photorow">${PH[mine.id]?`<img class="mphoto" src="${PH[mine.id]}" alt="Photo of ${esc(mine.n)}">`:''}<div class="btnrow"><label class="btn sm" for="ad-file">${PH[mine.id]?'Change photo':'Add photo'}</label><input type="file" id="ad-file" accept="image/*" hidden>${PH[mine.id]?'<button class="btn sm ghost" type="button" id="ad-delph" style="color:var(--low)">Remove photo</button>':''}</div></div>`:'')+
   (sl.it.length?szh+sl.it.map(row).join(''):'<p class="empty2">Nothing on the plate yet.</p>')+
   `<button class="btn wide addmorebtn" type="button" id="ad-more">${PLUS}Add more</button>`+
   (sl.it.length?`<div class="ptot"><b class="num">${ENs(val[0])}${Math.round(val[1])} g protein</b>${g||sl.est?`<span class="cap num">${sl.est?lab('Estimate','est'):''}${g}</span>`:''}${(ml=>ml?`<span class="pbg">${esc(ml)}</span>`:'')(sl.est?'':wMealLine(sl.it))}</div>`:'')+
@@ -4952,7 +4968,7 @@ function adPlate(b,s,sl,mine){const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.
   `<button class="linkbtn" type="button" id="ad-meas">${INFO} How much is a spoon, a cup or a handful?</button>`;
  const it=()=>S.plan[AD.slot].it,ch=()=>{edited(AD.slot);save();render()};
  b.querySelectorAll('[data-pop]').forEach(x=>x.onclick=()=>{AD.open=+x.dataset.pop;renderAdd()});
- b.querySelectorAll('[data-prm]').forEach(x=>x.onclick=()=>{const i=+x.dataset.prm;it().splice(i,1);AD.open=null;ch()});
+ b.querySelectorAll('[data-prm]').forEach(x=>x.onclick=()=>{const i=+x.dataset.prm;it().splice(i,1);AD.open=null;if(AD.just===1){edited(AD.slot);save();render();adView('main',{just:0,snap:null});return}ch()});
  b.querySelectorAll('[data-q]').forEach(x=>x.onclick=()=>{const [i,dd]=x.dataset.q.split(':'),t=it()[i],f=FM[t[0]],step=f.por>=100?25:f.por>=30?10:5;t[1]=Math.max(0,t[1]+step*dd);noteAmt(t[0],t[1]);ch()});
  b.querySelectorAll('[data-qi]').forEach(x=>x.onchange=()=>{const t=it()[x.dataset.qi];t[1]=Math.max(0,Math.round(+x.value||0));noteAmt(t[0],t[1]);ch()});
  b.querySelectorAll('[data-unit]').forEach(x=>x.onclick=()=>{const [i,gg]=x.dataset.unit.split(':'),t=it()[i];t[1]=+gg;noteAmt(t[0],t[1]);ch()});
@@ -4962,6 +4978,7 @@ function adPlate(b,s,sl,mine){const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.
  $('ad-more').onclick=()=>{adView('main');const q=$('ad-q');if(q)q.focus()};$('ad-meas').onclick=openMeasures;
  if($('ad-prcp'))$('ad-prcp').onclick=()=>openRecipe(d.id,AD.slot);
  b.querySelectorAll('[data-sz]').forEach(x=>x.onclick=()=>{setSz(AD.slot,+x.dataset.sz);ch()});
+ b.querySelectorAll('[data-jz]').forEach(x=>x.onclick=()=>{const z=+x.dataset.jz,f=z/(AD.jz||1);it().forEach((t,i)=>{if(i>=(AD.from||0))t[1]=Math.max(1,Math.round(t[1]*f))});AD.jz=z;ch()});
  b.querySelectorAll('[data-fz]').forEach(x=>x.onclick=()=>{const [i,gg]=x.dataset.fz.split(':');it()[i][1]=+gg;ch()});
  const nmEdit=()=>{AD.edit=1;renderAdd();const n=$('ad-name');if(n){n.focus();n.select()}};
  if($('ad-nmb'))$('ad-nmb').onclick=nmEdit;
@@ -5507,8 +5524,8 @@ function fitDialogs(){const v=window.visualViewport,act=document.activeElement;l
  document.documentElement.classList.toggle('modal-open',any);
  const kb=v?Math.max(0,window.innerHeight-v.height-v.offsetTop):0;document.body.classList.toggle('kbopen',kb>80||(!!act&&act.matches&&act.matches(TYPING)&&!document.querySelector('dialog[open]')))}
 if(window.visualViewport){visualViewport.addEventListener('resize',fitDialogs);visualViewport.addEventListener('scroll',fitDialogs)}
-document.addEventListener('focusin',e=>{fitDialogs();const t=e.target;if(t&&t.matches&&t.matches(TYPING)&&!t.closest('dialog'))setTimeout(()=>{try{t.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}},300)});
-document.addEventListener('focusout',()=>setTimeout(fitDialogs,60));
+document.addEventListener('focusin',e=>{const t=e.target;if(t&&t.matches&&t.matches(TYPING))fitDialogs();else setTimeout(fitDialogs,300);if(t&&t.matches&&t.matches(TYPING)&&!t.closest('dialog'))setTimeout(()=>{try{t.scrollIntoView({block:'center',behavior:'smooth'})}catch(x){}},300)});
+document.addEventListener('focusout',()=>setTimeout(fitDialogs,300));
 new MutationObserver(fitDialogs).observe(document.body,{subtree:true,attributes:true,attributeFilter:['open']});
 /* ---------- history: a square per day, colored by how much of your needs the day covered ---------- */
 /* a day's square shows where you stood that day in Mixed: each nutrient over the time your body stores it, so one weak day for B12 barely shows and a week without zinc does */
@@ -5796,7 +5813,7 @@ function wShell(){const v=S.view,on=WSHEETS.includes(v);document.documentElement
  WSHEETS.forEach(x=>{const s=$('v-'+x);if(s)s.classList.toggle('wsheet',x===v)});
  if(v!==WLASTV){const s=$('v-'+v);if(s&&on){s.scrollTop=0;if(!WSHEETS.includes(WLASTV)&&!GSTILL()){const hh=$('wsheet-h');[s,hh].forEach(e=>{if(!e)return;e.classList.remove('win');void e.offsetWidth;e.classList.add('win')});setTimeout(()=>[s,hh].forEach(e=>e&&e.classList.remove('win')),320)}}WLASTV=v}
  let w=null;try{w=wScore()}catch(e){w={sc:0,empty:true}}
- wTop(w);wDock();wHead(v);wNoneSync();wTort();let wgr=false,wun=false;try{wun=wWishUndo();wgr=wWishCheck()}catch(e){}try{wImpact(wgr,wun)}catch(e){}if(WLINE)setTimeout(wLineFlush,450);wGreet();wMirror();if(v==='profile'&&PS==='voice')wVoiceRender();if(G&&S.garden)wBoard()}
+ wTop(w);wDock();wHead(v);wNoneSync();wTort();let wgr=false,wun=false;try{wun=wWishUndo();wgr=wWishCheck()}catch(e){}try{wImpact(wgr,wun)}catch(e){}if(WLINE)setTimeout(wLineFlush,450);if(v==='garden'&&wCheckNext())wCheckAuto();wGreet();wMirror();if(v==='profile'&&PS==='voice')wVoiceRender();if(G&&S.garden)wBoard()}
 /* ---------- food group beds: each bed is a group of plant foods; a group not eaten lately shows as an open invitation ---------- */
 const GBEDS=['f','n','v','k','c','l','h','b'];
 const GBEDFG={f:['fruit'],b:['fruit'],c:['whole'],l:['leg'],n:['nuts'],k:['green','cruc'],v:[],h:[]};
@@ -5961,7 +5978,7 @@ function wSay(t,mood){const el=$('wtort');if(!el||!t)return;const b=el.querySele
  const m=el.querySelector('.tmas');if(m)m.className='tmas '+(mood||'idle');clearTimeout(WTT);WTT=setTimeout(()=>{el.classList.remove('talk');if(m)m.className='tmas idle'},5200)}
 function wTort(){let el=$('wtort');if(!el){el=document.createElement('div');el.id='wtort';el.className='wtort';el.innerHTML=`<span class="wtb" role="status"></span><button class="wtbtn" type="button" aria-label="The tortoise"><span class="tmas idle">${TORTV()}</span></button>`;document.body.appendChild(el);
   el.querySelector('.wtbtn').onclick=()=>{if(!wGuide(false))wSay(wPick('tap'),'waving')}}
- el.hidden=S.view!=='garden'||!!(G&&G.ed);el.classList.toggle('has',!!wNext());const tb=el.querySelector('.wtbtn');if(tb)tb.setAttribute('aria-label',wNext()?'The tortoise has a suggestion':'The tortoise')}
+ el.hidden=S.view!=='garden'||!!(G&&G.ed);el.classList.toggle('has',!!(wNext()||wCheckNext()));const tb=el.querySelector('.wtbtn');if(tb)tb.setAttribute('aria-label',(wNext()||wCheckNext())?'The tortoise has a suggestion':'The tortoise')}
 /* once a day, a hello; after days away, the away line */
 function wGreet(){const g=S.garden;if(!g||S.view!=='garden'||WTI>=0)return;const nx=wNext(),key=TODAY+':'+nx;
  if(!g.tour&&S.onb&&!(G&&G.ed)){g.tour=1;g.vhi=TODAY;g.vlast=TODAY;g.vpo=TODAY;if(nx)g.vask=key;save();setTimeout(wTour,900);return}
@@ -5998,7 +6015,7 @@ function wMirror(){clearTimeout(WMT);WMT=setTimeout(()=>{try{const g=S.garden;if
   open=[...'bld'].filter(t=>{if(!p)return true;const ks=mealKeys(p).filter(k=>typeOf(p,k)===t);return !ks.some(k=>p[k].it.length||p[k].skip)}),
   kinds=new Set();for(let i=0;i<7;i++)(g.seen[shift(TODAY,-i)]||[]).forEach(k=>kinds.add(k));let low=[];try{low=fgLow(TODAY).map(x=>x.k)}catch(e){}
   const pools={};['nag','nagE','done','away','ripe','recap'].forEach(c=>pools[c]=wPool(c,mode));
-  wIdb('readwrite',s=>s.put({v:1,mode,today:TODAY,lastOpen:g.vlast||TODAY,open,closed:wClosed(TODAY),ripe:g.plants.filter(gReady).length,kinds:kinds.size,low,recap:wPushCfg().recap?1:0,pools},'m')).catch(()=>{})}catch(e){}},600)}
+  wIdb('readwrite',s=>s.put({v:1,mode,today:TODAY,lastOpen:g.vlast||TODAY,open,closed:wClosed(TODAY),ripe:g.plants.filter(gReady).length,kinds:kinds.size,low,recap:wPushCfg().recap?1:0,pools,sup:(S.sups||[]).filter(s=>s.freq!=='d'&&s.freq!=='o'&&sCurrent(s)&&!(s.end&&s.end<=TODAY)).map(s=>({n:sName(s),due:sNextDue(s)}))},'m')).catch(()=>{})}catch(e){}},600)}
 function wPushHTML(){if(!(WPUSH.url&&WPUSH.key))return '';const ios=wIOS()&&!wStandalone();
  if(!ios&&!wPushOK())return `<div class="wpush"><h3>Reminders</h3><p class="cap">This browser cannot show reminders. On a phone, open the app from its home screen icon.</p></div>`;
  if(ios&&!wPushOK())return `<div class="wpush"><h3>Reminders</h3><p class="cap">On iPhone, reminders work once the app is on your home screen: tap Share in Safari, then Add to Home Screen, then open Vegful Garden from that icon and switch reminders on here.</p></div>`;
@@ -6086,7 +6103,22 @@ function wAsk(t,detail,acts,stay){const el=$('wtort');if(!el||el.hidden)return;c
  b.innerHTML=WTX+`<span>${esc(t)}</span>${detail?`<small>${esc(detail)}</small>`:''}${acts&&acts.length?`<span class="wtacts">${acts.map((a,i)=>`<button type="button" class="btn sm${i?'':' acc'}" data-wta="${i}">${esc(a[0])}</button>`).join('')}</span>`:''}`;
  b.querySelector('.wtx').onclick=e=>{e.stopPropagation();wTalkClose()};b.querySelectorAll('[data-wta]').forEach(x=>x.onclick=()=>{el.classList.remove('talk','ask');const m=el.querySelector('.tmas');if(m)m.className='tmas idle';acts[+x.dataset.wta][1]()});
  el.classList.add('talk','ask');const m=el.querySelector('.tmas');if(m)m.className='tmas waving';clearTimeout(WTT);if(!stay)WTT=setTimeout(()=>{el.classList.remove('talk','ask');if(m)m.className='tmas idle'},14000)}
-function wGuide(auto){const g=S.garden;if(!g||S.view!=='garden')return false;const nx=wNext();
+/* the day's check-ins, asked by the tortoise: a weekly or every few days supplement that is due, and from 18:00 (or once dinner is in) how active today was.
+   Each is asked by itself once a day; until answered the tortoise keeps its mark and asks when tapped. */
+function wSupDue(){if(!S.sups||!S.sups.length)return [];const T=targets();return S.sups.filter(s=>s.freq!=='d'&&s.freq!=='o').filter(s=>{const st=sStatus(s,TODAY,T);return st&&st.due})}
+function wActOpen(){const p=S.days[TODAY],g=S.garden;if(!p||!g||!logged(p)||p.act||g.actok===TODAY)return false;return new Date().getHours()>=18||!!(p.d&&p.d.it&&p.d.it.length)}
+function wCheckNext(){if(S.date!==TODAY)return null;const d=wSupDue();if(d.length)return {k:'sup',s:d[0]};if(wActOpen())return {k:'act'};return null}
+function wSupAsk(s){const n=sName(s);WHOLDT=Date.now()+20000;wAsk(`${n} is due today`,'',[['Taken',()=>{s.takes=s.takes||[];if(!s.takes.includes(TODAY))s.takes.push(TODAY);save();render();WHOLDT=0;toast(`${n}: taken`)}],['Later',()=>{WHOLDT=0}]],true)}
+function wActAsk(){const base=String(S.prof.act||'1.6'),i=Math.max(0,ACTS.findIndex(a=>a[0]===base)),seen=new Set();
+ const O=[['Usual',i],['Less',i-1],['More',i+1],['A lot more',i+2]].filter(([,j])=>j>=0&&j<ACTS.length&&!seen.has(j)&&seen.add(j));
+ WHOLDT=Date.now()+20000;wAsk('How active was today?','',O.map(([t,j])=>[t,()=>{const p=S.days[TODAY];if(!p)return;const v=ACTS[j][0];if(v===base)delete p.act;else p.act=v;S.garden.actok=TODAY;save();render();WHOLDT=0;toast(`Today: ${actName(v).toLowerCase()}`)}]),true)}
+function wCheckIn(auto){const c=wCheckNext();if(!c)return false;const g=S.garden;
+ if(auto){g.vchk=g.vchk||{};const key=c.k==='sup'?'s'+c.s.id:'act';if(g.vchk[key]===TODAY)return false;g.vchk[key]=TODAY;save()}
+ if(c.k==='sup')wSupAsk(c.s);else wActAsk();return true}
+let WCHKT=0;
+function wCheckAuto(){clearTimeout(WCHKT);WCHKT=setTimeout(()=>{try{if(!G||S.view!=='garden'||!wCheckNext())return;if(G.ed||document.querySelector('dialog[open]')||(typeof WTI!=='undefined'&&WTI>=0&&$('wtort')&&$('wtort').classList.contains('talk'))){WCHKT=setTimeout(wCheckAuto,4000);return}
+ if(typeof WLINE!=='undefined'&&WLINE){wCheckAuto();return}const el=$('wtort');if(Date.now()<WHOLDT||(el&&el.classList.contains('ask'))){WCHKT=setTimeout(wCheckAuto,Math.max(1500,WHOLDT-Date.now()+800));return}wCheckIn(true)}catch(e){}},1600)}
+function wGuide(auto){const g=S.garden;if(!g||S.view!=='garden')return false;if(!auto&&wCheckIn(false))return true;const nx=wNext();
  if(nx){const meal=wMealN(nx).toLowerCase();let ag=null;try{ag=againList(nx,3)[0]||null}catch(e){}
   if(ag){const w=whenTxt(ag.d);wAsk(wPick('again',{meal,when:w==='Yesterday'?'yesterday':w}),ag.n,[['Add',()=>{useAgain(nx,ag);save();render()}],['Something else',()=>startMeal(nx)]]);return true}
   wAsk(wPick('nag',{meal}),'',[['Add '+meal,()=>startMeal(nx)]]);return true}
