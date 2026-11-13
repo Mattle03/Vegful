@@ -1573,6 +1573,22 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 .wtx svg{width:16px;height:16px;fill:none;stroke:currentColor;stroke-width:2.4;stroke-linecap:round}
 .wtx:active{background:var(--surface2)}
 @media (prefers-reduced-motion:reduce){.gplot.fed>svg,.gplot.fed .gcrop,.gplot.rest::after,.wthought{animation:none}}
+/* the request as three steps */
+.greq{display:block!important}
+.rqh{display:grid;grid-template-columns:auto 1fr auto;gap:10px;align-items:start}
+.rqh .otx{display:flex;flex-direction:column;gap:2px;min-width:0}
+.rqsteps{list-style:none;margin:12px 0 4px;padding:0;display:flex;flex-direction:column;gap:10px}
+.rqsteps li{display:flex;gap:10px;align-items:flex-start;color:var(--muted)}
+.rqsteps li b{display:block;font-size:14px;color:var(--muted)}
+.rqsteps li small{display:block;font-size:12.5px;margin-top:1px}
+.rqsteps li.on b,.rqsteps li.ok b{color:var(--ink)}
+.rqsteps .rqn{flex:none;width:24px;height:24px;border-radius:50%;border:2px dashed #C9B48E;display:grid;place-items:center;box-sizing:border-box;margin-top:1px}
+.rqsteps li.on .rqn{border:2px solid #E9B23A;background:#FFF1C2}
+.rqsteps li.ok .rqn{border:0;background:#6DBB63;color:#fff}
+.rqsteps .rqn svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.rqsteps .btn{margin-top:6px;width:auto;min-width:0}
+.rqnote{margin:8px 0 0}
+#greq-give{margin-top:10px}
 </style>
 </head>
 <body>
@@ -6005,11 +6021,16 @@ function wReq(){const g=S.garden;if(!g)return null;const r=g.req;if(r&&!r.done&&
  g.req={k,n:w.n,id:w.foods.find(id=>plantKinds(id).includes(k)),made:TODAY,until:shift(TODAY,4),done:0,pay:Math.max(12,gPrice(k)*3)};return g.req}
 function wReqGive(){const g=S.garden,r=wReq();if(!r||!(g.bag[r.k]>0))return 0;g.bag[r.k]--;if(!g.bag[r.k]){delete g.bag[r.k];delete g.bagT[r.k]}r.done=1;gEarn(r.pay);return r.pay}
 function wReqBubble(){const r=wReq();if(!r)return '';const have=S.garden.bag[r.k]>0,dl=dayDiff(TODAY,r.until),I=kindInfo(r.k);
- return `<span class="wthought${have?' have':''}" aria-hidden="true"><i class="wtd1"></i><i class="wtd2"></i><span class="wtico">${I.icon}</span><b class="num">${have?'Ready':dl<=0?'Today':dl+(dl===1?' day':' days')}</b></span>`}
-function wReqCard(){const r=wReq();if(!r)return '';const g=S.garden,have=g.bag[r.k]>0,dl=dayDiff(TODAY,r.until),I=kindInfo(r.k),bf=WBEDFOOD[gBedOf(r.k)]||'its bed',grow=g.plants.find(p=>p.k===r.k),sl=wEnsure(wNext()||wSlotNow());
- const step=have?'Ready to give.':grow?(gReady(grow)?'It is ripe: harvest it with the sickle.':`It is growing: ${gEta(grow).toLowerCase()}`):`Eat some ${esc(I.name.toLowerCase())} to plant it; it grows on days you eat ${bf}.`;
- return `<div class="greq${have?' have':''}"><span class="thumb em">${I.icon}</span><span class="otx"><b>The market would like ${esc(I.name.toLowerCase())}</b><span class="cap">Rich in ${nlow(r.n)}, which is low lately. ${step} ${dl<=0?'Last day.':dl+' days left.'}</span>
-  ${have?'':grow?'':`<button class="btn sm" type="button" id="greq-add">Add ${esc(FM[r.id]?FM[r.id].n.split(',')[0].toLowerCase():I.name.toLowerCase())} to ${wMealN(sl).toLowerCase()}</button>`}</span><span class="gprice num">${COINI}${r.pay}</span>${have?'<button class="btn sm acc" type="button" id="greq-give">Give</button>':''}</div>`}
+ return `<span class="wthought${have?' have':''}" aria-hidden="true"><i class="wtd1"></i><i class="wtd2"></i><span class="wtico">${I.icon}</span><b>${have?'Ready to give':dl<=0?'by today':'by '+wDay(r.until,1)}</b></span>`}
+const wDay=(d,short)=>d===TODAY?'today':d===shift(TODAY,1)?'tomorrow':new Date(d+'T12:00').toLocaleDateString('en-GB',{weekday:short?'short':'long'});
+function wReqCard(){const r=wReq();if(!r)return '';const g=S.garden,have=g.bag[r.k]>0,I=kindInfo(r.k),bed=gBedOf(r.k),bf=WBEDFOOD[bed]||'food from its bed',grow=g.plants.find(p=>p.k===r.k),sl=wEnsure(wNext()||wSlotNow()),fn=FM[r.id]?FM[r.id].n.split(',')[0].toLowerCase():I.name.toLowerCase();
+ const need=grow?grow.need:I.need,done1=have||!!grow,prog=grow?Math.min(need,Math.floor(gProgress(grow)+1e-6)):have?need:0,done2=have||(grow&&gReady(grow));
+ const st=(ok,on,t,sub,extra)=>`<li class="${ok?'ok':on?'on':''}"><span class="rqn" aria-hidden="true">${ok?WTICK:''}</span><span><b>${t}</b>${sub?`<small>${sub}</small>`:''}${extra||''}</span></li>`;
+ return `<div class="greq${have?' have':''}"><div class="rqh"><span class="thumb em">${I.icon}</span><span class="otx"><b>Bring ${esc(I.name.toLowerCase())} by ${wDay(r.until)}</b><span class="cap">Rich in ${nlow(r.n)}, which is low lately.</span></span><span class="gprice num">${COINI}${r.pay}</span></div>
+  <ol class="rqsteps">${st(done1,!done1,'Plant it: eat some '+esc(fn),done1?'Planted':'Any amount, any meal',done1?'':`<button class="btn sm" type="button" id="greq-add">Add to ${wMealN(sl).toLowerCase()}</button>`)}
+  ${st(done2,done1&&!done2,`Grow it: eat ${bf} on ${need} day${need>1?'s':''}`,`${prog} of ${need} day${need>1?'s':''}${grow&&!done2?(gFed(TODAY,grow.b)?' · today counted':' · '+bf+' today will count'):''}`)}
+  ${st(!!r.done,done2,'Bring it: harvest and give it',have?'In your basket':done2?'Ripe: drag the sickle over it':'')}</ol>
+  ${have?'<button class="btn primary wide" type="button" id="greq-give">Give and get '+r.pay+' coins</button>':`<p class="cap rqnote">If it is not ready by ${wDay(r.until)}, no problem: a new request comes.</p>`}</div>`}
 function render(){FEDC.clear();const o=PROJ;PROJ=S.date>TODAY;if(PROJ&&S.plan)mealKeys(S.plan).forEach(k=>{if(S.plan[k].it.length)S.plan[k].pl=1});try{return render0()}finally{PROJ=o}}
 function render0(){
  _VC=null;supMigrate();
