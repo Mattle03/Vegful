@@ -1598,6 +1598,9 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 .wspt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05}
 .wspt small{font-size:12.5px;font-weight:700;margin-top:2px;opacity:.85}
 .wsign.empty .wsp{outline:3px dashed #C99A1E;outline-offset:-3px}
+.wbwat{font-size:15px}.wbwat b{font-size:22px;font-weight:800;margin-right:2px}
+.wbwbar{display:block;height:8px;border-radius:4px;background:#E9DDC4;overflow:hidden}.wbwbar i{display:block;height:100%;background:#7CC4F2;border-radius:4px}
+.wbn .wbchip[data-bb]{align-self:flex-start;margin-top:2px}
 </style>
 </head>
 <body>
@@ -5977,9 +5980,13 @@ function wBigBoard(){wBigClose(true);if(!S.garden)return;const w=wScore(),any=wH
   <button class="wbn wide" type="button" data-bb="today" style="--r:.9deg">${pin('#7CC4F2')}${h(isT?'Meals today':'Meals')}<span class="wbms">${['b','l','d','s'].map(mt).join('')}</span></button>
   <div class="wbn wide" style="--r:-.7deg">${pin('#B79BE0')}${h('Beds')}<span class="wbfg">${fg.map(x=>`<button class="wbchip${x.low?' low':''}" type="button" data-bb="fg" data-k="${x.k}" aria-label="${GFGN[x.k]}${x.low?', would like a visit':''}">${GFGN[x.k]}</button>`).join('')}</span></div>
   <button class="wbn wide" type="button" data-bb="hist" style="--r:.6deg">${pin('#F2C14E')}${h('This week')}<span class="wbwk"><span><b class="num">${kinds}</b> kinds of plants</span><span><b class="num">${ld}</b> of 7 days with meals</span></span></button>
+  ${(()=>{const wo=WON(),lo=WLON();if(!wo&&!lo)return '';const one=wo!==lo;let o='';
+   if(wo){const p=S.days[TODAY]||{},tot=wTotal(p),tg=wTarget(),f=Math.min(1,tot/tg);o+=`<div class="wbn${one?' wide':''}" style="--r:-.8deg">${pin('#7CC4F2')}${h('Water')}<span class="wbwat"><b class="num">${wL(tot)}</b> <span class="num">of ${wL(tg)}</span></span><span class="wbwbar"><i style="width:${(f*100).toFixed(0)}%"></i></span><button class="wbchip" type="button" data-bb="water">+ Glass</button></div>`}
+   if(lo){const ds=wDates().filter(x=>x<=TODAY),last=ds[ds.length-1];o+=`<div class="wbn${one?' wide':''}" style="--r:.9deg">${pin('#B8B08F')}${h('Weight')}${last?`<span class="wbwat"><b class="num">${fmtKg(+S.weights[last])} kg</b></span><span class="wbs">${last===TODAY?'Today':fdS(last)}</span>`:'<span class="wbs">Nothing logged yet</span>'}<button class="wbchip" type="button" data-bb="weight">Log weight</button></div>`}
+   return o})()}
  </div></div>`;
  document.body.appendChild(el);
- el.querySelectorAll('[data-bb]').forEach(b=>b.onclick=e=>{e.stopPropagation();const a=b.dataset.bb,k=b.dataset.k;wBigClose(true);
+ el.querySelectorAll('[data-bb]').forEach(b=>b.onclick=e=>{e.stopPropagation();const a=b.dataset.bb,k=b.dataset.k;if(a==='water'){const sd=S.date;if(sd!==TODAY)setDate(TODAY);wAdd(250);save();if(sd!==TODAY)setDate(sd);toast('+ 250 ml');wBigBoard();return}wBigClose(true);if(a==='weight'){openWeight();return}
   if(a==='nutr'||a==='ring'){S.nsub='over';go('nutr')}else if(a==='imp'){S.nsub='imp';go('nutr')}else if(a==='hist'){S.nsub='hist';go('nutr')}
   else if(a==='gap')selectNut(k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(k));else if(a==='today')go('today');
   else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(k)&&gLand().sec[x]);if(bd){G.sb=bd;G.bmt=null;gView('bed')}else go('today')}});
