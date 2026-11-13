@@ -6052,8 +6052,9 @@ function wImpact(silent){const p=S.days[TODAY];if(!p){WIMP=null;return}const o=P
  const t=done.length?`That covers your ${done.map(x=>nlow(x.k)).join(' and ')} for today.`:`That brought ${gs.slice(0,2).map(x=>nlow(x.k)+' to '+pc(x)+' %').join(' and ')} of today's need.`;
  WHOLDT=Date.now()+9000;setTimeout(()=>{if(S.view==='garden'&&!document.querySelector('dialog[open]'))wSay(t,'pleased')},900)}
 /* the garden grows with your variety: new patches open by themselves */
-const WUNL=[['h',20,'A herb patch opened','You have grown 20 different plants. Herbs and spices you eat now grow in their own patch.'],['b',40,'A berry patch opened','40 different plants grown. Berries and grapes now get their own patch.']];
-function wUnlocks(){const g=S.garden,L=gLand();let out=null;WUNL.forEach(([b,n,t,d])=>{if(L.sec[b]||(g.ever||[]).length<n)return;const B=gBld(),near=B.shed?[B.shed[0]+1,B.shed[1]+5]:[2,4];if(gRoom(b,{c:0,r:0,rot:0,rows:2},near[0],near[1])){gResort();gRefill();out=[t,d]}});if(out){g.unl=out;save()}return out}
+/* no herb patch (herbs are not worth logging); new patches wait for the new map */
+const WUNL=[];
+function wUnlocks(){const g=S.garden,L=gLand();let out=null;if(L.sec.h){const hp=g.plants.filter(p=>p.b==='h');delete L.sec.h;hp.forEach(p=>{const nb=gBedOf(p.k),pos=gFreePos(nb);if(pos>=0){p.b=nb;p.pos=pos}else{g.tray.push({k:p.k,b:nb,s:p.s||TODAY});p.gone=1}});g.plants=g.plants.filter(p=>!p.gone);save()}WUNL.forEach(([b,n,t,d])=>{if(L.sec[b]||(g.ever||[]).length<n)return;const B=gBld(),near=B.shed?[B.shed[0]+1,B.shed[1]+5]:[2,4];if(gRoom(b,{c:0,r:0,rot:0,rows:2},near[0],near[1])){gResort();gRefill();out=[t,d]}});if(out){g.unl=out;save()}return out}
 function render(){FEDC.clear();const o=PROJ;PROJ=S.date>TODAY;if(PROJ&&S.plan)mealKeys(S.plan).forEach(k=>{if(S.plan[k].it.length)S.plan[k].pl=1});try{return render0()}finally{PROJ=o}}
 function render0(){
  _VC=null;supMigrate();
