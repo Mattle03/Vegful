@@ -1629,6 +1629,11 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 .wgi.gold{border-color:#E9B23A}.wgx{font-style:normal;font-size:11px;font-weight:800;color:#B9831C;margin-left:3px}
 .gdem{display:grid;grid-template-columns:auto 1fr;gap:10px;align-items:start;padding:12px;border-radius:14px;background:var(--surface);border:2px solid #E9B23A;margin:4px 0 8px}
 .gdem .otx{display:flex;flex-direction:column;gap:3px}.gdx{display:grid;place-items:center;width:42px;height:42px;border-radius:50%;background:#F2C14E;color:#3B2A18;font-weight:800;font-size:15px;box-shadow:0 2px 0 #B9831C}
+/* the add sheet: what a food does for the garden */
+.adseed{display:inline-block;margin-left:6px;padding:1px 7px;border-radius:999px;font-size:11px;font-weight:800;line-height:1.5;vertical-align:2px;white-space:nowrap;background:#DDEFD9;color:#24603A}
+.adseed.gold{background:#F2C14E;color:#3B2A18}.adseed.grow{background:transparent;color:var(--muted);border:1px solid var(--line);font-weight:700}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .adseed{background:#24432D;color:#BFE6C6}:root:not([data-theme="light"]) .adseed.gold{background:#F2C14E;color:#3B2A18}:root:not([data-theme="light"]) .adseed.grow{background:transparent;color:var(--muted)}}
+:root[data-theme="dark"] .adseed{background:#24432D;color:#BFE6C6}:root[data-theme="dark"] .adseed.gold{background:#F2C14E;color:#3B2A18}:root[data-theme="dark"] .adseed.grow{background:transparent;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -3968,7 +3973,8 @@ const BASKI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10h17l-1.
 const gCanSvg=wf=>{const h=Math.round(18*Math.max(0,Math.min(1,wf))*10)/10;return `<svg viewBox="0 0 48 40" aria-hidden="true"><path d="M30 16l13-8 2 3-12 10" fill="none" stroke="var(--g-can)" stroke-width="3" stroke-linejoin="round"/><path d="M13 12a6 5 0 0 1 12 0" fill="none" stroke="var(--g-can)" stroke-width="3"/><rect x="6" y="12" width="26" height="24" rx="5" fill="var(--g-can)"/><rect x="9" y="15" width="20" height="18" rx="3" fill="var(--g-canin)"/>${h?`<rect x="9" y="${33-h}" width="20" height="${h}" rx="3" fill="var(--water)"/>`:''}</svg>`};
 
 function seedSet(dates){const set=new Set();dates.forEach(d=>{const p=S.days[d];if(!p)return;eatK(p).forEach(k=>{const sl=p[k];if(!sl||sl.est)return;const no=new Set(sl.nos||[]);
- sl.it.forEach(([id,g])=>{if(g<=0||no.has(id)||String(id).startsWith('c_'))return;const f=FM[id];if(!(PLANTS[id]||(f&&f.pk&&!f.ing&&!f.parts)))return;plantKinds(id).forEach(x=>set.add(x))})})});return set}
+ sl.it.forEach(([id,g])=>{if(g<=0||no.has(id))return;seedKinds(id).forEach(x=>set.add(x))})})});return set}
+function seedKinds(id){if(String(id).startsWith('c_'))return [];const f=FM[id];if(!(PLANTS[id]||(f&&f.pk&&!f.ing&&!f.parts)))return [];return plantKinds(id)}
 function plantKinds(id){const f=FM[id],pk=q=>PLANTS[q]||(FM[q]&&FM[q].pk?[FM[q].pk]:[]);
  if(PLANTS[id])return PLANTS[id];if(f&&f.pk)return [f.pk];
  if(f&&f.ing)return f.ing.filter(x=>x[1]>=2&&FM[x[0]]&&FM[x[0]].cat!=='Oils and other').flatMap(([q])=>pk(q));
@@ -4025,12 +4031,16 @@ function gardenTick(){FEDC.clear();const g=S.garden;if(g.tick===TODAY)return;if(
  for(;x<TODAY;x=shift(x,1)){g.plants.forEach(p=>{if(p.d<=x)p.gp=Math.min(p.need,Math.round((p.gp+1)*1000)/1000)})}
  g.tick=TODAY}finally{PROJ=o}}
 /* sowing: a kind eaten in the last 7 days is credited once per day; it sows a seed when none of its kind grows or waits */
-var WSOWN=[];
+var WSOWN=[],WUNSOWN=[];
 function gardenSync(){const g=S.garden,o=PROJ;PROJ=false;try{
- for(let i=GCFG.seenDays-1;i>=0;i--){const d=shift(TODAY,-i),ks=[...seedSet([d])];let sn=g.seen[d];
-  if(!i&&sn)sn.slice().forEach(k=>{if(ks.includes(k))return;sn.splice(sn.indexOf(k),1);
-   const pi=g.plants.findIndex(p=>p.k===k&&p.s===TODAY&&p.d===TODAY&&!(p.gp>0));if(pi>=0){g.plants.splice(pi,1);gRefill()}else{const ti=g.tray.findIndex(t=>t.k===k&&t.s===TODAY);if(ti>=0)g.tray.splice(ti,1)}});
-  ks.forEach(k=>{sn=g.seen[d]||(g.seen[d]=[]);if(sn.includes(k))return;sn.push(k);if(g.plants.some(p=>p.k===k)||g.tray.some(t=>t.k===k))return;gSow(k,d);if(d===TODAY)WSOWN.push(k)});
+ const KS={};for(let i=GCFG.seenDays-1;i>=0;i--){const d=shift(TODAY,-i);KS[d]=[...seedSet([d])]}
+ for(let i=GCFG.seenDays-1;i>=0;i--){const d=shift(TODAY,-i),ks=KS[d];let sn=g.seen[d];
+  if(sn)sn.slice().forEach(k=>{if(ks.includes(k))return;sn.splice(sn.indexOf(k),1);
+   const other=Object.keys(KS).find(d2=>d2!==d&&KS[d2].includes(k));
+   if(other){g.plants.forEach(p=>{if(p.k===k&&p.s===d)p.s=other});g.tray.forEach(t=>{if(t.k===k&&t.s===d)t.s=other});return}
+   const pi=g.plants.findIndex(p=>p.k===k&&p.s===d);let gone=false;if(pi>=0){g.plants.splice(pi,1);gRefill();gone=true}else{const ti=g.tray.findIndex(t=>t.k===k&&t.s===d);if(ti>=0){g.tray.splice(ti,1);gone=true}}
+   if(gone){if(g.goldK)delete g.goldK[k];if(g.wglow)delete g.wglow[k];WUNSOWN.push(k);const ni=WSOWN.indexOf(k);if(ni>=0)WSOWN.splice(ni,1)}});
+  ks.forEach(k=>{sn=g.seen[d]||(g.seen[d]=[]);if(sn.includes(k))return;sn.push(k);if(g.plants.some(p=>p.k===k)||g.tray.some(t=>t.k===k))return;gSow(k,d);WSOWN.push(k)});
   if(sn&&!sn.length)delete g.seen[d]}
  Object.keys(g.seen).forEach(d=>{if(d>TODAY||dayDiff(d,TODAY)>8)delete g.seen[d]})}finally{PROJ=o}}
 /* what a plant shows: stored growth plus today's water in bottle mode */
@@ -4800,11 +4810,14 @@ function panSlot(){const h=new Date().getHours(),want=h<10?'b':h<15?'l':h<21?'d'
 function panDishes(t){const have=panAll();return allDishes(t).map(d=>dishFit(d)).filter(Boolean).map(d=>{const need=d.it.filter(([id])=>FM[id]&&!AT_HOME(id)),ok=need.filter(([id,g])=>(have[id]||0)>=g*.8);return {d,n:need.length,ok:ok.length,miss:need.filter(x=>!ok.includes(x)).map(([id])=>FM[id].n.split(',')[0].toLowerCase())}})
  .filter(x=>x.n&&x.ok/x.n>=.6).sort((a,b)=>(b.ok/b.n)-(a.ok/a.n)||b.ok-a.ok)}
 
-function adRow(o){return `<div class="adr"><button class="adm" type="button" ${o.main}><span class="thumb em">${o.ic}</span><span class="otx"><span class="t">${esc(o.n)}${o.lab||''}</span><span class="s num">${o.sub}</span></span></button>${o.plus?`<button class="adplus${o.on?' on':''}" type="button" ${o.plus} aria-label="${o.on?'On the plate: ':'Put on plate: '}${esc(o.n)}">${o.on?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>':PLUS}</button>`:''}</div>`}
+function wSeedTag(items){try{if(!GON()||!S.garden||S.date>TODAY||dayDiff(S.date,TODAY)>=GCFG.seenDays)return '';const g=S.garden,ks=[...new Set((items||[]).flatMap(([id,q])=>q>0?seedKinds(id):[]))];if(!ks.length)return '';
+ const nw=ks.filter(k=>!g.plants.some(p=>p.k===k)&&!g.tray.some(t=>t.k===k)),gn=nw.filter(k=>{try{return wGoldNow(k)}catch(e){return false}}).length,n=nw.length;
+ if(n)return `<span class="adseed${gn?' gold':''}">${n===1?(gn?'Golden seed':'New seed'):n+' new seeds'+(gn?(gn===n?', golden':`, ${gn} golden`):'')}</span>`;return `<span class="adseed grow">Growing</span>`}catch(e){return ''}}
+function adRow(o){return `<div class="adr"><button class="adm" type="button" ${o.main}><span class="thumb em">${o.ic}</span><span class="otx"><span class="t">${esc(o.n)}${o.lab||''}${o.gt||''}</span><span class="s num">${o.sub}</span></span></button>${o.plus?`<button class="adplus${o.on?' on':''}" type="button" ${o.plus} aria-label="${o.on?'On the plate: ':'Put on plate: '}${esc(o.n)}">${o.on?'<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12l5 5 9-10"/></svg>':PLUS}</button>`:''}</div>`}
 function foodItem(f,T){const on=S.plan[AD.slot].it.some(x=>x[0]===f.id),g=lastG(f.id),v=itemV([f.id,g]),had=S.lastAmt&&S.lastAmt[f.id];
- return adRow({main:`data-adpf="${f.id}"`,plus:`data-adpf="${f.id}"`,on,ic:fIcon(f.id),n:f.n,lab:f.cat==='My foods'?lab(f.parts?'Your mix':'Your product','pr'):'',sub:`${had?'Last time ':''}${amtTxt(f.id,g)} · ${ENs(v[0])}${fmt(v[1])} g protein`})}
+ return adRow({gt:wSeedTag([[f.id,g]]),main:`data-adpf="${f.id}"`,plus:`data-adpf="${f.id}"`,on,ic:fIcon(f.id),n:f.n,lab:f.cat==='My foods'?lab(f.parts?'Your mix':'Your product','pr'):'',sub:`${had?'Last time ':''}${amtTxt(f.id,g)} · ${ENs(v[0])}${fmt(v[1])} g protein`})}
 function dishItem(d,D0){const ph=PH[d.id],add=d.it.reduce((a,it)=>addv(a,itemR(it)),z()),g=gainTxt(D0,add);
- return adRow({main:`data-add="${d.id}"`,plus:`data-adpd="${d.id}"`,ic:ph?`<img src="${ph}" alt="">`:dIcon(d),n:d.n+(d.minus?', '+minusTxt(d):''),lab:d.gran?lab('Builder','bld'):d.own?lab('Your dish','own'):lab('Dish','dsh'),sub:`${ENs(add[0])}${Math.round(add[1])} g protein${g?' · '+g:''}`})}
+ return adRow({gt:wSeedTag(d.it),main:`data-add="${d.id}"`,plus:`data-adpd="${d.id}"`,ic:ph?`<img src="${ph}" alt="">`:dIcon(d),n:d.n+(d.minus?', '+minusTxt(d):''),lab:d.gran?lab('Builder','bld'):d.own?lab('Your dish','own'):lab('Dish','dsh'),sub:`${ENs(add[0])}${Math.round(add[1])} g protein${g?' · '+g:''}`})}
 
 function adMain(b,s){const T=targets(),q=fold(AD.q).trim(),D0=dayMinus(AD.slot);let h='';
  if(q){const mq=d=>fold(d.n).includes(q)||d.it.some(([id])=>FM[id]&&fmatch(FM[id],q)),nm=d=>fold(d.n).includes(q);
@@ -4819,18 +4832,18 @@ function adMain(b,s){const T=targets(),q=fold(AD.q).trim(),D0=dayMinus(AD.slot);
  else if(AD.more)h=adMore(b,s,T,D0);
  else{const ag=againList(AD.slot,2);AD.ag=ag;
   h+=`<div class="chips adquick" role="group" aria-label="Shortcuts">${[['meals','Recent'],['fav','Favourites'],['mine','Your dishes']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}</div>`;
-  if(ag.length)h+=`<h3 class="adh">Again</h3>`+ag.map((a,i)=>adRow({main:`data-adag="${i}"`,plus:`data-adag="${i}"`,ic:slotIcon({did:a.did,it:a.it},typeOf(S.plan,AD.slot)),n:a.n,lab:a.est?lab('Estimate','est'):'',sub:`${whenTxt(a.d)} · ${ENs(a.v[0])}${Math.round(a.v[1])} g protein`})).join('');
+  if(ag.length)h+=`<h3 class="adh">Again</h3>`+ag.map((a,i)=>adRow({gt:a.est?'':wSeedTag(a.it),main:`data-adag="${i}"`,plus:`data-adag="${i}"`,ic:slotIcon({did:a.did,it:a.it},typeOf(S.plan,AD.slot)),n:a.n,lab:a.est?lab('Estimate','est'):'',sub:`${whenTxt(a.d)} · ${ENs(a.v[0])}${Math.round(a.v[1])} g protein`})).join('');
   const LO=lowList(T);AD.focus=AD.focus.filter(k=>LO.some(x=>x.k===k));
   const I=s.t==='s'?[]:slotIdeas(AD.slot,AD.focus.length?12:8,AD.focus);
-  if(s.t==='s'){const SG=computeSugg();AD.sn=SG.snacks;if(SG.snacks.length)h+=`<h3 class="adh" id="ad-ideas">Ideas</h3>`+SG.snacks.slice(0,8).map((x,i)=>x.food?adRow({main:`data-adsn="${i}"`,plus:`data-adsn="${i}"`,ic:fIcon(x.food.id),n:x.food.n.split(',')[0],sub:`${amtTxt(x.food.id,x.food.por)} · ${ENs(x.add[0])}${Math.round(x.add[1])} g protein${(g=>g?' · '+g:'')(gainTxt(D0,x.add))}`}):dishItem(x.d,D0)).join('')}
+  if(s.t==='s'){const SG=computeSugg();AD.sn=SG.snacks;if(SG.snacks.length)h+=`<h3 class="adh" id="ad-ideas">Ideas</h3>`+SG.snacks.slice(0,8).map((x,i)=>x.food?adRow({gt:wSeedTag([[x.food.id,x.food.por]]),main:`data-adsn="${i}"`,plus:`data-adsn="${i}"`,ic:fIcon(x.food.id),n:x.food.n.split(',')[0],sub:`${amtTxt(x.food.id,x.food.por)} · ${ENs(x.add[0])}${Math.round(x.add[1])} g protein${(g=>g?' · '+g:'')(gainTxt(D0,x.add))}`}):dishItem(x.d,D0)).join('')}
   else{h+=`<h3 class="adh" id="ad-ideas">Ideas</h3>`+(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!AD.focus.length}">All</button>${LO.slice(0,8).map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${AD.focus.includes(x.k)}">${NUT[x.k].n}</button>`).join('')}</div>`:'')+
    (I.map(x=>dishItem(x.d,D0).replace(lab('Dish','dsh'),'')).join('')||`<p class="empty2">${AD.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No idea fits.'}</p>`)}
   h+=`<h3 class="adh">More</h3><div class="chips wrap admore">${[...(Object.keys(S.pantry||{}).length?[['pantry','From my pantry']]:[]),['recent','Recent foods'],['prod','Your products'],['dishes','All dishes'],['foods','All foods']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}<button class="chip" type="button" id="ad-out">Ate out</button></div>`}
  b.innerHTML=h;adBind(b,s)}
 
 function adMore(b,s,T,D0){const m=AD.more,ttl={meals:'Recent',pantry:'From my pantry',recent:'Recent foods',fav:'Favourites',mine:'Your dishes',prod:'Your products',dishes:'All dishes',foods:'All foods'}[m];let h=`<div class="admhead"><button class="chip" type="button" data-admore="">${BACKI}Back</button><h3>${ttl}</h3></div>`;
- if(m==='pantry'){const L=panDishes(s.t);h+=L.map(x=>{const add=x.d.it.reduce((a,it)=>addv(a,itemV(it)),z());return adRow({main:`data-add="${x.d.id}"`,plus:`data-adpd="${x.d.id}"`,ic:PH[x.d.id]?`<img src="${PH[x.d.id]}" alt="">`:dIcon(x.d),n:x.d.n,sub:`${x.ok===x.n?'Everything at home':x.ok+' of '+x.n+' at home · no '+x.miss.slice(0,2).join(', ')} · ${ENs(add[0])}${Math.round(add[1])} g protein`})}).join('')||'<p class="empty2">Nothing fits what is at home yet. Fill your pantry from Scan/Shop.</p>'}
- else if(m==='meals'){const L=recentMeals(AD.slot);AD.rc=L;h+=L.map((a,i)=>adRow({main:`data-adrc="${i}"`,plus:`data-adrc="${i}"`,ic:slotIcon({did:a.did,it:a.it},a.ty),n:a.n,lab:a.est?lab('Estimate','est'):'',sub:`${whenTxt(a.d)}, ${TY[a.ty].n.toLowerCase()} · ${ENs(a.v[0])}${Math.round(a.v[1])} g protein`})).join('')||'<p class="empty2">Meals you log show up here.</p>'}
+ if(m==='pantry'){const L=panDishes(s.t);h+=L.map(x=>{const add=x.d.it.reduce((a,it)=>addv(a,itemV(it)),z());return adRow({gt:wSeedTag(x.d.it),main:`data-add="${x.d.id}"`,plus:`data-adpd="${x.d.id}"`,ic:PH[x.d.id]?`<img src="${PH[x.d.id]}" alt="">`:dIcon(x.d),n:x.d.n,sub:`${x.ok===x.n?'Everything at home':x.ok+' of '+x.n+' at home · no '+x.miss.slice(0,2).join(', ')} · ${ENs(add[0])}${Math.round(add[1])} g protein`})}).join('')||'<p class="empty2">Nothing fits what is at home yet. Fill your pantry from Scan/Shop.</p>'}
+ else if(m==='meals'){const L=recentMeals(AD.slot);AD.rc=L;h+=L.map((a,i)=>adRow({gt:a.est?'':wSeedTag(a.it),main:`data-adrc="${i}"`,plus:`data-adrc="${i}"`,ic:slotIcon({did:a.did,it:a.it},a.ty),n:a.n,lab:a.est?lab('Estimate','est'):'',sub:`${whenTxt(a.d)}, ${TY[a.ty].n.toLowerCase()} · ${ENs(a.v[0])}${Math.round(a.v[1])} g protein`})).join('')||'<p class="empty2">Meals you log show up here.</p>'}
  else if(m==='recent')h+=S.recentFoods.map(id=>FM[id]).filter(Boolean).map(f=>foodItem(f,T)).join('')||'<p class="empty2">Foods you add show up here.</p>';
  else if(m==='fav'){const dd=allDishes().filter(d=>d.fav).map(d=>dishFit(d)||d),ff=S.favFoods.map(id=>FM[id]).filter(Boolean);h+=dd.map(d=>dishItem(d,D0)).join('')+ff.map(f=>foodItem(f,T)).join('')||'<p class="empty2">Tap the star on a dish to keep it here.</p>'}
  else if(m==='mine')h+=adDishRows(allDishes().filter(d=>d.own).sort((a,b)=>(b.t===s.t)-(a.t===s.t)||(b.used||0)-(a.used||0)).map(d=>dishFit(d)||d),D0)||'<p class="empty2">Save a meal from its plate to keep it here.</p>';
@@ -5725,7 +5738,7 @@ function wShell(){const v=S.view,on=WSHEETS.includes(v);document.documentElement
  WSHEETS.forEach(x=>{const s=$('v-'+x);if(s)s.classList.toggle('wsheet',x===v)});
  if(v!==WLASTV){const s=$('v-'+v);if(s&&on){s.scrollTop=0;if(!WSHEETS.includes(WLASTV)&&!GSTILL()){const hh=$('wsheet-h');[s,hh].forEach(e=>{if(!e)return;e.classList.remove('win');void e.offsetWidth;e.classList.add('win')});setTimeout(()=>[s,hh].forEach(e=>e&&e.classList.remove('win')),320)}}WLASTV=v}
  let w=null;try{w=wScore()}catch(e){w={sc:0,empty:true}}
- wTop(w);wDock();wHead(v);wNoneSync();wTort();let wgr=false;try{wgr=wWishCheck()}catch(e){}try{wImpact(wgr)}catch(e){}wGreet();wMirror();if(v==='profile'&&PS==='voice')wVoiceRender();if(G&&S.garden)wBoard()}
+ wTop(w);wDock();wHead(v);wNoneSync();wTort();let wgr=false,wun=false;try{wun=wWishUndo();wgr=wWishCheck()}catch(e){}try{wImpact(wgr,wun)}catch(e){}if(WLINE)setTimeout(wLineFlush,450);wGreet();wMirror();if(v==='profile'&&PS==='voice')wVoiceRender();if(G&&S.garden)wBoard()}
 /* ---------- food group beds: each bed is a group of plant foods; a group not eaten lately shows as an open invitation ---------- */
 const GBEDS=['f','n','v','k','c','l','h','b'];
 const GBEDFG={f:['fruit'],b:['fruit'],c:['whole'],l:['leg'],n:['nuts'],k:['green','cruc'],v:[],h:[]};
@@ -6114,10 +6127,11 @@ function wWishFoods(n){const i=K.indexOf(n),T=targets(),sc=f=>(f.v[i]||0)*(f.por
 function wWish(){const g=S.garden;if(!g)return null;if(g.wish&&g.wish.d===TODAY)return g.wish.n?g.wish:null;let w=null;
  if(wHasData())try{const o=PROJ;PROJ=false;try{const sd=S.date;S.date=TODAY;const s0=wScore();S.date=sd;const x=issues(s0.DS,s0.T).filter(q=>!q.s.over&&!WISHX.includes(q.k))[0];if(x){const foods=wWishFoods(x.k);if(foods.length)w={d:TODAY,n:x.k,p:Math.round(x.s.p),foods,done:0}}}finally{PROJ=o}}catch(e){}
  g.wish=w||{d:TODAY,n:null};return w}
+function wWishUndo(){const g=S.garden,w=g&&g.wish;if(!w||w.d!==TODAY||!w.done||!w.by)return false;const p=S.days[TODAY];if(p&&eatK(p).some(k=>(p[k].it||[]).some(it=>it[0]===w.by&&it[1]>0)))return false;w.done=0;delete w.by;save();return true}
 function wWishCheck(){const w=wWish();if(!w||w.done)return false;const p=S.days[TODAY];if(!p)return;const i=K.indexOf(w.n),T=targets();let hit=null;
  eatK(p).forEach(k=>(p[k].it||[]).forEach(it=>{if(hit)return;let v=null;try{v=itemV(it)}catch(e){}if(w.foods.includes(it[0])||(v&&(v[i]||0)>=T[w.n]*.15))hit=it[0]}));if(!hit)return false;
- const g=S.garden;w.done=1;w.by=hit;gEarn(GWISH);WHOLDT=Date.now()+15000;g.wglow=g.wglow||{};plantKinds(hit).forEach(k=>g.wglow[k]=TODAY);save();const nm=(FM[hit]?FM[hit].n:hit).split(',')[0];
- setTimeout(()=>{if(S.view==='garden'&&$('wtort')){WHOLDT=Date.now()+15000;wAsk(`${nm} brings your ${nlow(w.n)} up.`,`That covers today's focus: ${GWISH} coins`+(plantKinds(hit).length?', and it grows golden: double coins at harvest.':'.'),[['Nice',()=>{WHOLDT=0}]],true);try{const m=document.querySelector('#wtort .tmas');if(m)m.className='tmas pleased'}catch(e){}}else toast(`Today's focus covered: ${nlow(w.n)}. ${GWISH} coins`)},600);return true}
+ const g=S.garden,first=!w.paid;w.done=1;w.by=hit;if(first){w.paid=1;gEarn(GWISH)}WHOLDT=Date.now()+15000;g.wglow=g.wglow||{};plantKinds(hit).forEach(k=>g.wglow[k]=TODAY);save();const nm=(FM[hit]?FM[hit].n:hit).split(',')[0];
+ setTimeout(()=>{if(!w.done)return;if(S.view==='garden'&&$('wtort')){WHOLDT=Date.now()+15000;wAsk(`${nm} brings your ${nlow(w.n)} up.`,(first?`That covers today's focus: ${GWISH} coins`:`That covers today's focus again`)+(seedKinds(hit).length?', and it grows golden: double coins at harvest.':'.'),[['Nice',()=>{WHOLDT=0}]],true);try{const m=document.querySelector('#wtort .tmas');if(m)m.className='tmas pleased'}catch(e){}}else toast(`Today's focus covered: ${nlow(w.n)}. ${GWISH} coins`)},600);return true}
 function wWishSay(){const w=wWish();if(!w||w.done)return;const nm=id=>FM[id].n.split(',')[0],sl=wEnsure(wNext()||wSlotNow());
  const fl=w.foods.map(id=>nm(id).toLowerCase()),fs=(fl.length>1?fl.slice(0,-1).join(', ')+' or '+fl[fl.length-1]:fl[0]).replace(/^./,c=>c.toUpperCase());
  wAsk(`Today's focus: ${nlow(w.n)}, at ${w.p} % lately.`,`${fs} would bring it up, and they grow golden: double coins at harvest. Tap one to add it to ${wMealN(sl).toLowerCase()}.`,
@@ -6126,7 +6140,7 @@ function wReport(wn){const t=wn.old?`${wn.c} coins from earlier weeks are yours 
  const d=wn.old?'':[wn.good&&wn.good.length?'Well covered: '+wn.good.map(nlow).join(', ')+'.':'',wn.look&&wn.look.length?'Worth a look: '+wn.look.map(nlow).join(', ')+'.':'',wn.c?`${wn.c} coins${wn.d?' and a '+wn.d.toLowerCase():''} for the variety.`:''].filter(Boolean).join(' ');
  if(S.view==='garden'&&$('wtort')){WHOLDT=Date.now()+25000;wAsk(t,d,[['Thanks',()=>{WHOLDT=0}]],true)}else toast(t)}
 /* the market's request: a crop rich in today's focus nutrient, within four days, for triple coins; it leaves quietly when the time is up */
-function wReq(){const g=S.garden;if(!g)return null;const r=g.req;if(r&&!r.done){if(!r.planted&&(g.plants.some(p=>p.k===r.k)||g.bag[r.k]>0))r.planted=TODAY;if(r.planted||r.until>=TODAY)return r}if(r&&r.made===TODAY)return null;
+function wReq(){const g=S.garden;if(!g)return null;const r=g.req;if(r&&!r.done){const grown=g.plants.some(p=>p.k===r.k)||g.tray.some(t=>t.k===r.k)||(g.bag&&g.bag[r.k]>0);if(!r.planted&&grown)r.planted=TODAY;else if(r.planted&&!grown)delete r.planted;if(r.planted||r.until>=TODAY)return r}if(r&&r.made===TODAY)return null;
  const w=wWish();if(!w)return null;const ks=[];w.foods.forEach(id=>plantKinds(id).forEach(k=>{if(!ks.includes(k))ks.push(k)}));const k=ks.find(x=>!(g.bag[x]>0)&&!g.plants.some(p=>p.k===x));if(!k)return null;
  g.req={k,n:w.n,id:w.foods.find(id=>plantKinds(id).includes(k)),made:TODAY,until:shift(TODAY,3),done:0,pay:Math.max(30,gPrice(k)*3)};return g.req}
 function wReqGive(){const g=S.garden,r=wReq();if(!r||!(g.bag[r.k]>0))return 0;g.bag[r.k]--;if(!g.bag[r.k]){delete g.bag[r.k];delete g.bagT[r.k]}r.done=1;gEarn(r.pay);return r.pay}
@@ -6140,9 +6154,16 @@ function wReqCard(){const r=wReq();if(!r)return '';const g=S.garden,I=kindInfo(r
  return `<div class="greq${pl&&gReady(pl)?' have':''}"><div class="rqh"><span class="thumb em">${I.icon}</span><span class="otx"><b>${t}</b><span class="cap">${d}</span>${act}</span><span class="gprice num">${COINI}${r.pay}</span></div></div>`}
 /* after logging: what the food did for today, in one line */
 let WIMP=null;
-function wImpact(silent){const p=S.days[TODAY];if(!p){WIMP=null;return}const o=PROJ;PROJ=false;let v,sig;try{v=planV(p);sig=eatK(p).map(k=>p[k].it.map(x=>x[0]+':'+x[1]).join(',')).join('|')}finally{PROJ=o}
- const prev=WIMP;WIMP={d:TODAY,sig,v:v.slice()};if(!prev||prev.d!==TODAY||prev.sig===sig||S.view!=='garden'||silent)return;
- const sown=WSOWN.splice(0),ps=(prev.sig||'').split(/[|,]/),added=sig.split(/[|,]/).filter(x=>x&&!ps.includes(x));if(!added.length)return;
+/* the tortoise's answer to a log waits until the sheet is closed and the garden is in view; a newer answer replaces it */
+var WLINE=null;
+function wLine(t,mood,ms){WLINE={t,mood,at:Date.now()};setTimeout(wLineFlush,ms||600)}
+function wLineFlush(){const L=WLINE;if(!L)return;if(Date.now()-L.at>90000){WLINE=null;return}if(S.view!=='garden'||document.querySelector('dialog[open]')||!$('wtort'))return;WLINE=null;const el=$('wtort');el.classList.remove('ask');WHOLDT=Date.now()+9000;wSay(L.t,L.mood)}
+function wImpact(silent,wun){const p=S.days[TODAY];if(!p){WIMP=null;return}const o=PROJ;PROJ=false;let v,sig;try{v=planV(p);sig=eatK(p).map(k=>p[k].it.map(x=>x[0]+':'+x[1]).join(',')).join('|')}finally{PROJ=o}
+ const prev=WIMP;WIMP={d:TODAY,sig,v:v.slice()};if(!prev||prev.d!==TODAY||prev.sig===sig||S.view!=='garden'||silent){WSOWN=[];WUNSOWN=[];return}
+ const sown=WSOWN.splice(0),gone=WUNSOWN.splice(0),ps=(prev.sig||'').split(/[|,]/),ns=sig.split(/[|,]/),added=ns.filter(x=>x&&!ps.includes(x));
+ if(!added.length){const kn0=k=>kindInfo(k).name.toLowerCase(),rm=ps.filter(x=>x&&!ns.includes(x));if(!rm.length||(!gone.length&&!wun))return;
+  const t=[gone.length?`Taken off, so ${gone.length>1?'those seeds are':'the '+kn0(gone[0])+' seed is'} gone too.`:'',wun?"Today's focus is open again.":''].filter(Boolean).join(' ');
+  wLine(t,'idle',500);return}
  const T=targets(),gs=ALLK.filter(k=>T[k]>0).map(k=>{const i=K.indexOf(k);return {k,a:(prev.v[i]||0)/T[k],b:(v[i]||0)/T[k]}}).filter(x=>x.b-x.a>=.1).sort((x,y)=>(y.b-y.a)-(x.b-x.a));
  const g=S.garden,lst=a=>a.length>1?a.slice(0,-1).join(', ')+' and '+a[a.length-1]:a[0],up=x=>x.replace(/^./,c=>c.toUpperCase()),kn=k=>kindInfo(k).name.toLowerCase();
  let pl='';if(sown.length){const ks=sown.slice(0,3),gold=ks.some(k=>g.goldK&&g.goldK[k]);pl=`${up(lst(ks.map(kn)))}${sown.length>3?' and more':''} ${ks.length>1||sown.length>3?'are':'is'} planted${gold?', golden':''}.`}
@@ -6150,7 +6171,7 @@ function wImpact(silent){const p=S.days[TODAY];if(!p){WIMP=null;return}const o=P
  const done=gs.filter(x=>x.a<1&&x.b>=1).slice(0,2),pc=x=>Math.round(Math.min(x.b,9.99)*100);
  const nu=!gs.length?'':done.length?`That covers your ${done.map(x=>nlow(x.k)).join(' and ')} for today.`:`That brought ${gs.slice(0,2).map(x=>nlow(x.k)+' to '+pc(x)+' %').join(' and ')} of today's need.`;
  const t=[pl,nu].filter(Boolean).join(' ')||'Noted for today.';
- WHOLDT=Date.now()+9000;setTimeout(()=>{if(S.view==='garden'&&!document.querySelector('dialog[open]'))wSay(t,'pleased')},900)}
+ wLine(t,'pleased',900)}
 /* the garden grows with your variety: new patches open by themselves */
 /* no herb patch (herbs are not worth logging); new patches wait for the new map */
 const WUNL=[];
