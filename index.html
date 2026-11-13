@@ -1454,6 +1454,7 @@ button.wbn{cursor:pointer}button.wbn:active{transform:rotate(var(--r,0deg)) scal
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .app>section.view.wsheet .seg{background:#1F1912;box-shadow:inset 0 2px 0 rgba(0,0,0,.35)}:root:not([data-theme="light"]) .app>section.view.wsheet .seg button{color:#C9BBA3}:root:not([data-theme="light"]) .app>section.view.wsheet .seg button[aria-pressed="true"]{background:#54473A;color:#FFF4DC;box-shadow:0 2px 0 #1A140E}}
 :root[data-theme="dark"] .app>section.view.wsheet .seg{background:#1F1912;box-shadow:inset 0 2px 0 rgba(0,0,0,.35)}:root[data-theme="dark"] .app>section.view.wsheet .seg button{color:#C9BBA3}:root[data-theme="dark"] .app>section.view.wsheet .seg button[aria-pressed="true"]{background:#54473A;color:#FFF4DC;box-shadow:0 2px 0 #1A140E}
 .app>section.view.wsheet .scanbox{border:8px solid #93623A;box-shadow:inset 0 0 0 2px rgba(0,0,0,.25),0 3px 0 #6E4A2A;border-radius:18px;box-sizing:border-box}
+.scphoto{display:flex;width:100%;margin-top:10px;box-sizing:border-box;cursor:pointer}
 </style>
 </head>
 <body>
@@ -2984,7 +2985,22 @@ function ingVec(ing,kcal){const v=K.map(()=>0);ing.forEach(([f,p])=>FM[f]&&FM[f]
 const ingUsable=P=>P.ing&&P.ing.length&&P.share>=40;
 function fromOFF(code,p){const P=fromOFF0(code,p);const x=P.ingx;delete P.ingx;P.ing=x.ing;P.share=x.share;P.unk=x.unk.slice(0,8);
  P.src=ingUsable(P)&&P.ing.length>=2?'ing':'base';if(!P.base&&P.ing.length)P.base=P.ing[0][0];return P}
-let SC={},SCAN={stream:null,zx:null,loop:0,busy:false};
+let SC={},SCAN={stream:null,zx:null,loop:0,busy:false,cam:null,camT:0};
+let WVER='';try{caches.keys().then(k=>{const v=k.find(x=>/^vgarden-v\d+$/.test(x));if(v)WVER=v.slice(9)}).catch(()=>{})}catch(e){}
+function wUpdNow(){toast('Loading the newest version');const r=window.VGREG;Promise.resolve(r&&r.update&&r.update()).catch(()=>{}).then(()=>setTimeout(()=>location.reload(),700))}
+const camLive=()=>SCAN.cam&&SCAN.cam.getVideoTracks().some(t=>t.readyState==='live');
+async function camGet(){clearTimeout(SCAN.camT);if(camLive()){SCAN.cam.getVideoTracks().forEach(t=>t.enabled=true);return SCAN.cam}
+ SCAN.cam=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});return SCAN.cam}
+function camRelease(){clearTimeout(SCAN.camT);if(SCAN.cam){SCAN.cam.getTracks().forEach(t=>t.stop());SCAN.cam=null}}
+function camPark(){if(!SCAN.cam)return;SCAN.cam.getVideoTracks().forEach(t=>t.enabled=false);clearTimeout(SCAN.camT);SCAN.camT=setTimeout(camRelease,3*60*1000)}
+document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){stopCamera();camRelease()}});
+const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+/* a photo of the barcode: the phone's own camera, no permission asked */
+function photoBtn(id){return IOS?`<label class="btn ghost scphoto" for="${id}">Take a photo of the barcode</label><input type="file" accept="image/*" capture="environment" id="${id}" hidden>`:''}
+function photoBind(id){const inp=$(id);if(!inp)return;inp.onchange=async()=>{const f=inp.files&&inp.files[0];inp.value='';if(!f)return;scStatus('Reading the photo…');const url=URL.createObjectURL(f);
+ try{await loadZX();const hints=new Map();hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E]);hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
+  const res=await new ZXing.BrowserMultiFormatReader(hints).decodeFromImageUrl(url);SCAN.busy=false;onCode(res.getText())}
+ catch(e){scStatus('No barcode found in that photo. Hold the phone closer and keep it steady, or type the number.')}finally{URL.revokeObjectURL(url)}}}
 function openScan(slot,mode){SC={slot:slot===null?null:(slot||S.addto||'s'),stage:mode==='label'?'review':'scan',prod:mode==='label'?{code:'',n:'',lab:{},vegan:'unknown',base:'',pack:'',por:'',found:false}:null,msg:''};
  const d=$('scan');renderScan();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}if(SC.stage==='scan')startCamera()}
 function closeScan(){stopCamera();const d=$('scan');d.close?d.close():d.removeAttribute('open')}
@@ -2997,17 +3013,17 @@ async function startCamera(vid){
  if(!(navigator.mediaDevices&&navigator.mediaDevices.getUserMedia)){scStatus('No camera access in this view. Type the number under the barcode instead.');return}
  try{
   if('BarcodeDetector' in window){const fm=await BarcodeDetector.getSupportedFormats();if(fm.includes('ean_13')){
-   SCAN.stream=await navigator.mediaDevices.getUserMedia({video:{facingMode:'environment'},audio:false});video.srcObject=SCAN.stream;await video.play();
+   SCAN.stream=await camGet();video.srcObject=SCAN.stream;video.setAttribute('playsinline','');await video.play();
    const det=new BarcodeDetector({formats:['ean_13','ean_8','upc_a','upc_e']});const id=++SCAN.loop;scStatus('Point the camera at the barcode.');
    const tick=async()=>{if(id!==SCAN.loop)return;try{const r=await det.detect(video);if(r.length){onCode(r[0].rawValue);return}}catch(e){}setTimeout(tick,200)};tick();return}}
   scStatus('Starting camera…');await loadZX();
   const hints=new Map();hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E]);
   SCAN.zx=new ZXing.BrowserMultiFormatReader(hints);
-  await SCAN.zx.decodeFromConstraints({video:{facingMode:'environment'},audio:false},video,res=>{if(res)onCode(res.getText())});
+  video.setAttribute('playsinline','');SCAN.stream=await camGet();await SCAN.zx.decodeFromStream(SCAN.stream,video,res=>{if(res)onCode(res.getText())});
   scStatus('Point the camera at the barcode.');
  }catch(e){scStatus(e&&e.name==='NotAllowedError'?'Camera permission was refused. Allow camera access for this app in your settings, or type the number under the barcode.':'The camera is not available here (it works in the installed app). Type the number under the barcode instead.')}
 }
-function stopCamera(){SCAN.loop++;if(SCAN.zx){try{SCAN.zx.reset()}catch(e){}SCAN.zx=null}if(SCAN.stream){SCAN.stream.getTracks().forEach(t=>t.stop());SCAN.stream=null}}
+function stopCamera(){SCAN.loop++;if(SCAN.zx){try{SCAN.zx.stopContinuousDecode()}catch(e){}SCAN.zx=null}if(SCAN.stream){SCAN.stream=null;camPark()}}
 function onCode(code){if(SCAN.busy)return;SCAN.busy=true;if(navigator.vibrate)navigator.vibrate(60);const tab=SCAN.tab;stopCamera();if(tab)tabLookup(code);else lookup(code)}
 async function lookup(code){
  code=String(code).replace(/\D/g,'');if(code.length<8){scStatus('That number looks too short. Barcodes have 8 or 13 digits.');SCAN.busy=false;return}
@@ -3028,9 +3044,9 @@ function renderScan(){
   $('sc-title').textContent='Scan barcode';
   b.innerHTML=`<div class="scanbox"><video id="sc-video" playsinline muted></video></div><p class="scanstat" id="sc-stat">Starting camera…</p>
    <div class="lbl" style="margin-bottom:6px">Or type the barcode number</div>
-   <div style="display:flex;gap:8px"><input id="sc-code" type="text" inputmode="numeric" placeholder="e.g. 5411188112709" style="flex:1;font-size:16px;padding:8px"><button class="btn primary" type="button" id="sc-go">Look up</button></div>
+   <div style="display:flex;gap:8px"><input id="sc-code" type="text" inputmode="numeric" placeholder="e.g. 5411188112709" style="flex:1;font-size:16px;padding:8px"><button class="btn primary" type="button" id="sc-go">Look up</button></div>${photoBtn('sc-photo')}
    <button class="btn" type="button" id="sc-label" style="margin-top:12px">No barcode: enter from label</button>`;
-  $('sc-go').onclick=()=>{SCAN.busy=false;onCode($('sc-code').value)};
+  $('sc-go').onclick=()=>{SCAN.busy=false;onCode($('sc-code').value)};photoBind('sc-photo');
   $('sc-code').onkeydown=e=>{if(e.key==='Enter')$('sc-go').click()};
   $('sc-label').onclick=()=>{stopCamera();SC.stage='review';SC.prod={code:'',n:'',lab:{},vegan:'unknown',base:'',pack:'',por:'',found:false};renderScan()};
   return;
@@ -3103,7 +3119,7 @@ function renderScanTab(){
  const hist=H.length?`<div class="card"><h2 style="margin-bottom:6px">Recently scanned</h2>${H.map((h,i)=>{const c=vInfo(h.vegan);return `<button class="histrow" type="button" data-h="${i}">${h.img?`<img src="${esc(h.img)}" alt="">`:`<span class="thumb em">${EMO['1f37d']}</span>`}<span style="flex:1;min-width:0"><span class="hn">${esc(h.n)}</span><span class="vdot" style="color:${c[0]}">● ${c[1]}</span></span>${CHEV}</button>`}).join('')}</div>`:'';
  if(ST.state==='cam'){
   v.innerHTML=head+`<div class="card"><div class="scanbox"><video id="st-video" playsinline muted></video></div><p class="scanstat" id="st-stat">${ST.msg||'Starting camera…'}</p>
-   <div style="display:flex;gap:8px"><input id="st-code" type="text" inputmode="numeric" placeholder="Or type the barcode number" style="flex:1"><button class="btn" type="button" id="st-go">Look up</button></div></div>${hist}`;
+   <div style="display:flex;gap:8px"><input id="st-code" type="text" inputmode="numeric" placeholder="Or type the barcode number" style="flex:1"><button class="btn" type="button" id="st-go">Look up</button></div>${photoBtn('st-photo')}</div>${hist}`;photoBind('st-photo');
   ST.msg='';
   $('st-go').onclick=()=>{SCAN.busy=false;stopCamera();tabLookup($('st-code').value)};
   $('st-code').onkeydown=e=>{if(e.key==='Enter')$('st-go').click()};
@@ -4759,8 +4775,8 @@ function bindSup(root){root.querySelectorAll('[data-sup]').forEach(cb=>cb.onchan
 function targetBoxes(T){return `${HK()?'':`<div><span>Energy</span><b>${EN(T.kcal)}</b></div>`}<div><span>Protein</span><b>${Math.round(T.p)} g</b></div><div><span>Fiber</span><b>${Math.round(T.fib)} g</b></div>`}
 /* profile: a menu of sections; each opens on its own with a back button */
 let PS=null;
-const PSECS=[['you','About you','<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'],['targets','Targets','<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/>'],['sup','Supplements','<rect x="3.5" y="9" width="17" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M9.2 9.2l5.6 5.6"/>'],['dis','Foods I don\'t eat','<circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/>'],['track','Tracking','<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/>'],['tour','Garden tour','<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>'],['voice','Voice and reminders','<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>'],['look','Look','<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'],['data','Backup and setup','<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>']];
-function psSum(k){if(k==='tour')return 'The tortoise shows every building';if(k==='voice')return wVoiceSum();const P=S.prof,T=targets();
+const PSECS=[['you','About you','<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'],['targets','Targets','<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/>'],['sup','Supplements','<rect x="3.5" y="9" width="17" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M9.2 9.2l5.6 5.6"/>'],['dis','Foods I don\'t eat','<circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/>'],['track','Tracking','<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/>'],['upd','App version','<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>'],['tour','Garden tour','<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>'],['voice','Voice and reminders','<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>'],['look','Look','<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'],['data','Backup and setup','<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>']];
+function psSum(k){if(k==='upd')return (WVER?'Version '+WVER+'. ':'')+'Tap to load the newest version';if(k==='tour')return 'The tortoise shows every building';if(k==='voice')return wVoiceSum();const P=S.prof,T=targets();
  if(k==='you')return `${P.sex==='f'?'Female':'Male'}, ${P.age} · ${P.ht} cm · ${P.wt} kg`;
  if(k==='targets')return `${{efsa:'EFSA',dge:'DGE',nih:'NIH'}[P.ref||'efsa']} reference values${HK()?'':' · '+EN(T.kcal)}`;
  if(k==='sup'){const L=(S.sups||[]).filter(x=>sCurrent(x)&&!(x.end&&x.end<=TODAY)).map(sName);return L.length?L.join(', '):'None yet'}
@@ -4774,7 +4790,7 @@ function renderProfileView(){
  if($('p-back'))$('p-back').onclick=()=>{PS=null;render();scrollTo({top:0})};
  $('p-menu').hidden=!!sec;document.querySelectorAll('#v-profile .psec').forEach(el=>el.hidden=!sec||el.dataset.ps!==PS);
  if(!sec){$('p-menu').innerHTML=PSECS.map(([k,t,ic])=>`<button class="prow2" type="button" data-psec="${k}"><span class="pico"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg></span><span class="ptx"><b>${t}</b><span class="cap">${esc(psSum(k))}</span></span>${CHEV}</button>`).join('');
-  $('p-menu').querySelectorAll('[data-psec]').forEach(b=>b.onclick=()=>{if(b.dataset.psec==='tour'){PS=null;S.view='garden';render();setTimeout(wTour,350);return}PS=b.dataset.psec;render();scrollTo({top:0})})}
+  $('p-menu').querySelectorAll('[data-psec]').forEach(b=>b.onclick=()=>{if(b.dataset.psec==='tour'){PS=null;S.view='garden';render();setTimeout(wTour,350);return}if(b.dataset.psec==='upd'){wUpdNow();return}PS=b.dataset.psec;render();scrollTo({top:0})})}
  if($('logo-prof'))$('logo-prof').innerHTML=LOGO;
  document.querySelectorAll('#p-anim [data-anim]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.anim||'auto')===b.dataset.anim);b.onclick=()=>{S.prof.anim=b.dataset.anim;applyTheme();render()}});
  document.querySelectorAll('#p-mode [data-mode]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.mode||'auto')===b.dataset.mode);b.onclick=()=>{S.prof.mode=b.dataset.mode;applyTheme();render()}});
@@ -5810,7 +5826,7 @@ loadPhotos();
 
 <script>
 try{if(S.onb){S.view='garden';render()}}catch(e){}
-if('serviceWorker' in navigator){addEventListener('load',()=>navigator.serviceWorker.register('sw.js').catch(()=>{}))}
+if('serviceWorker' in navigator){const had=!!navigator.serviceWorker.controller;let want=0;const calm=()=>{try{return !!S.onb&&S.view==='garden'&&!document.querySelector('dialog[open]')&&!document.getElementById('wbig')&&!(window.G&&G.ed)}catch(e){return false}};const go=()=>{if(document.visibilityState==='hidden'||calm())location.reload();else setTimeout(go,3000)};navigator.serviceWorker.addEventListener('controllerchange',()=>{if(!had||want)return;want=1;go()});addEventListener('load',()=>navigator.serviceWorker.register('sw.js',{updateViaCache:'none'}).then(r=>{window.VGREG=r;document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')r.update().catch(()=>{})});setInterval(()=>r.update().catch(()=>{}),30*60*1000)}).catch(()=>{}))}
 </script>
 </body>
 </html>
