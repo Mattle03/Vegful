@@ -1682,7 +1682,7 @@ html.still .wbird,html.still .wbird *,html.still .wbrip,html.still .wsplash{anim
     <div class="seg" id="nsub-seg"><button data-ns="over">Overview</button><button data-ns="imp">Improve</button><button data-ns="hist">History</button></div>
     <div id="n-over" class="view">
     <div class="seg" id="range-seg"><button data-r="0">Mixed</button><button data-r="1">Day</button><button data-r="7">7 days</button><button data-r="30">30 days</button></div>
-    <details class="why"><summary><span class="whyi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></span>How to read this<svg class="whyc" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><p class="cap">Mixed is the default. Your body stores some nutrients for days and others for weeks, so Mixed looks at each one over its own time: energy only today; protein, fiber and potassium about 3 days; zinc and vitamin K about a week; vitamin C, magnesium and omega 3 about 2 weeks; B12, vitamin D, iron, calcium and iodine about a month. Recent days count most and older days fade out slowly, so one weak day barely moves a stored nutrient, and a vitamin D pill keeps counting for a while after its days run out. Days you did not log are left out, not counted as zero. Day, 7 days and 30 days instead show one plain average for everything.</p><div class="legend" id="legend" style="margin-top:10px"></div><p class="cap" style="margin-top:6px">Bar colors show which meal a nutrient came from. The line marks 100 %. Tap a nutrient for details.</p></details>
+    <details class="why"><summary><span class="whyi"><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7.5v.5"/></svg></span>How to read this<svg class="whyc" viewBox="0 0 24 24"><path d="M6 9l6 6 6-6"/></svg></summary><p class="cap">Mixed looks at each nutrient over the time your body stores it, from one day for energy to a month for B12, vitamin D, iron, calcium and iodine. Recent days count most. Days you did not log are left out.</p><div class="legend" id="legend" style="margin-top:10px"></div><p class="cap" style="margin-top:6px">Colors show the meal. The line marks 100 %.</p></details>
     <div id="nutrients" class="view"></div>
     </div>
     <div id="n-hist" class="view" hidden></div>
@@ -1732,10 +1732,10 @@ html.still .wbird,html.still .wbird *,html.still .wbrip,html.still .wsplash{anim
         <label>Age<input id="p-age" type="number" min="18" max="100" inputmode="numeric"></label>
         <label>Height cm<input id="p-ht" type="number" min="130" max="220" inputmode="numeric"></label>
         <label>Weight kg<input id="p-wt" type="number" min="35" max="200" inputmode="decimal"></label>
-        <label class="full">Usual activity<small class="cap" style="display:block;font-weight:400;margin:-2px 0 2px">Your normal day. To change a single day, use the activity button on Today.</small><select id="p-act"><option value="1.4">Mostly sitting</option><option value="1.6">Some walking or cycling</option><option value="1.8">Active job or daily sport</option><option value="2.0">Very active, hard training</option></select></label>
+        <label class="full">Usual activity<small class="cap" style="display:block;font-weight:400;margin:-2px 0 2px">Your normal day.</small><select id="p-act"><option value="1.4">Mostly sitting</option><option value="1.6">Some walking or cycling</option><option value="1.8">Active job or daily sport</option><option value="2.0">Very active, hard training</option></select></label>
         <div class="full" id="p-pgs"></div>
       </div>
-      <label class="suprow" for="p-hk" style="margin-top:14px"><span class="supname">Show calories</span><span class="switch"><input type="checkbox" id="p-hk"><i></i></span><small>Turn off to hide energy numbers everywhere. The app still checks in the background that a day is not far too light.</small></label>
+      <label class="suprow" for="p-hk" style="margin-top:14px"><span class="supname">Show calories</span><span class="switch"><input type="checkbox" id="p-hk"><i></i></span><small>Turn off to hide energy numbers.</small></label>
     </div>
     <div class="card psec" data-ps="targets" hidden>
       <h2>Targets</h2>
@@ -1761,13 +1761,13 @@ html.still .wbird,html.still .wbird *,html.still .wbrip,html.still .wsplash{anim
     </div>
     <div class="card psec keeph" data-ps="sup" hidden style="order:2">
       <h2>Reminders</h2>
-      <p class="cap" style="margin:4px 0 10px">Adds a repeating event to your phone's calendar for a supplement you take daily, weekly or every few days. Your calendar reminds you even when the app is closed.</p>
+      <p class="cap" style="margin:4px 0 10px">Adds a repeating reminder to your phone's calendar.</p>
       <div id="p-rem"></div>
     </div>
     <div class="card psec" data-ps="track" hidden>
       <h2>Tracking</h2>
-      <label class="suprow" for="p-water" style="margin-top:10px"><span class="supname">Water bottle</span><span class="switch"><input type="checkbox" id="p-water"><i></i></span><small>Shows a bottle on Today. Hold it to log a filled bottle; it empties at the pace you should drink.</small></label>
-      <label class="suprow" for="p-wlog" style="margin-top:10px"><span class="supname">Weight log</span><span class="switch"><input type="checkbox" id="p-wlog"><i></i></span><small>Log your weight when you like. Each value counts from that day on and keeps your energy and protein targets current. Shows a trend graph.</small></label>
+      <label class="suprow" for="p-water" style="margin-top:10px"><span class="supname">Water bottle</span><span class="switch"><input type="checkbox" id="p-water"><i></i></span><small>Tap the bird bath to log a glass.</small></label>
+      <label class="suprow" for="p-wlog" style="margin-top:10px"><span class="supname">Weight log</span><span class="switch"><input type="checkbox" id="p-wlog"><i></i></span><small>Your energy and protein targets follow it.</small></label>
       <div class="full" style="margin-top:12px"><span class="lbl">Meal reminder</span><div class="pnedrow" style="margin-top:6px"><input type="time" id="p-mrem" value="20:00" aria-label="Reminder time"><button class="btn sm" type="button" id="p-mrem-add">Add to calendar</button></div></div>
       <label class="suprow" for="p-garden" style="margin-top:10px"><span class="supname">Garden</span><span class="switch"><input type="checkbox" id="p-garden"><i></i></span><small>Every plant you eat sows a seed in its bed.</small></label>
       <div class="full" id="p-gwater" hidden style="margin-top:12px"><span class="lbl">Watering</span><div class="seg" id="p-gw" style="margin-top:6px"><button type="button" data-gw="bottle">With the bottle</button><button type="button" data-gw="auto">Grows overnight</button></div></div>
@@ -2603,13 +2603,13 @@ function wChart(n){const end=TODAY,start=shift(end,-(n-1)),ds=wDates().filter(x=
   <path d="${line}" class="wline"/>
   ${ds.map(x=>`<circle cx="${xs(x).toFixed(1)}" cy="${ys(+S.weights[x]).toFixed(1)}" r="3.2" class="wdot"/>`).join('')}
   <text x="${pl}" y="${H-5}" class="wlab">${fd(start)}</text><text x="${W-pr}" y="${H-5}" text-anchor="end" class="wlab">${fd(end)}</text></svg>
-  <p class="cap" style="margin:4px 0 0">Dots: your entries. Line: 7 day average, which shows the trend better than single days; daily weight moves 1 to 2 kg with water and food.</p>`}
+  <p class="cap" style="margin:4px 0 0">Dots: your entries. Line: 7 day average.</p>`}
 function openWeight(){let d=$('wtd');if(!d){document.body.insertAdjacentHTML('beforeend',`<dialog id="wtd"><div class="pk"><div class="pk-head"><div class="row"><h2>Weight</h2><button class="btn sm" id="wt-close" type="button">Done</button></div></div><div class="pk-list" id="wt-body" style="padding:14px 16px 22px"></div></div></dialog>`);d=$('wtd');$('wt-close').onclick=()=>{d.close?d.close():d.removeAttribute('open');render()}}
  renderWeight();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}}
 function renderWeight(){const b=$('wt-body');if(!b)return;const isT=S.date===TODAY,v=S.weights&&S.weights[S.date],ds=wDates();
  b.innerHTML=`<label class="amtrow" style="grid-template-columns:1fr 120px auto"><span>${isT?'Today':kdate(S.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span><input type="number" id="wt-in" inputmode="decimal" step="0.1" min="30" max="300" value="${v?fmtKg(v):fmtKg(wtAt(S.date))}"><span class="cap">kg</span></label>
  <button class="btn primary" type="button" id="wt-save" style="width:100%;margin-top:10px">${v?'Update':'Save'}</button>
- <p class="cap" style="margin:8px 0 0">Counts from this day on; your energy and protein targets follow it. Days before keep their weight.</p>
+ <p class="cap" style="margin:8px 0 0">Your targets follow it. Days before keep their weight.</p>
  <div class="seg sm" id="wt-r" style="margin:18px 0 6px">${[[30,'30 days'],[90,'90 days'],[365,'1 year']].map(([n,l])=>`<button type="button" data-wr="${n}" aria-pressed="${WTR===n}">${l}</button>`).join('')}</div>
  ${wChart(WTR)}
  ${ds.length?`<div class="lbl" style="margin:16px 0 4px">Entries</div>${ds.slice().reverse().slice(0,6).map(x=>`<div class="dishrow"><span style="flex:1">${kdate(x).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span><b style="margin-right:6px">${fmtKg(+S.weights[x])} kg</b><button class="btn sm ghost" type="button" data-wdel="${x}">Remove</button></div>`).join('')}`:''}`;
@@ -3120,12 +3120,12 @@ function planTips(T,D){
 /* ---------- food groups in the background: alert only when a group has been missing for a while ---------- */
 /* windows are counted in logged days, so days without logging never count as a miss */
 const FG={
- whole:{n:'whole grains',t:'Whole grains',min:30,w:3,why:'Low whole grain intake is the top diet risk in the Global Burden of Disease study. Whole grains bring fiber, iron, zinc and magnesium.',sug:['oats','brownrice','wwpasta','buckwheat','quinoa','bread']},
- leg:{n:'legumes',t:'Legumes',min:60,w:3,why:'Beans, lentils and soy are your main source of lysine, iron and zinc, and are linked to lower heart disease risk.',sug:['chickpeas','lentils','tofu','redlentils','blackbeans','tempeh']},
- nuts:{n:'nuts or seeds',t:'Nuts and seeds',min:15,w:3,why:'A handful a day is linked to lower heart disease risk in large studies, and brings vitamin E, magnesium and zinc.',sug:['walnuts','almonds','pumpkin','sunflower','flax','pb']},
- fruit:{n:'fruit',t:'Fruit',min:80,w:3,why:'Low fruit intake is one of the top three diet risks in the Global Burden of Disease study. Whole fruit brings fiber, vitamin C and potassium.',sug:['berries','apple','orange','kiwi','banana','strawberries']},
- green:{n:'leafy greens',t:'Leafy greens',min:30,w:4,why:'Leafy greens bring folate, vitamin K, calcium and nitrate. Nitrate from vegetables helps lower blood pressure.',sug:['spinach','kale','u11959','u11251']},
- cruc:{n:'cruciferous vegetables',t:'Cruciferous vegetables',min:50,w:7,why:'Broccoli, cabbage, cauliflower and kale bring vitamin C, K and folate, and are linked to lower risk of some cancers in large studies.',sug:['broccoli','brussels','cauliflower','kale','sauerkraut']}
+ whole:{n:'whole grains',t:'Whole grains',min:30,w:3,why:'Fiber, iron, zinc and magnesium.',sug:['oats','brownrice','wwpasta','buckwheat','quinoa','bread']},
+ leg:{n:'legumes',t:'Legumes',min:60,w:3,why:'Your main source of lysine, iron and zinc.',sug:['chickpeas','lentils','tofu','redlentils','blackbeans','tempeh']},
+ nuts:{n:'nuts or seeds',t:'Nuts and seeds',min:15,w:3,why:'Vitamin E, magnesium and zinc. A handful a day is enough.',sug:['walnuts','almonds','pumpkin','sunflower','flax','pb']},
+ fruit:{n:'fruit',t:'Fruit',min:80,w:3,why:'Fiber, vitamin C and potassium.',sug:['berries','apple','orange','kiwi','banana','strawberries']},
+ green:{n:'leafy greens',t:'Leafy greens',min:30,w:4,why:'Folate, vitamin K and calcium.',sug:['spinach','kale','u11959','u11251']},
+ cruc:{n:'cruciferous vegetables',t:'Cruciferous vegetables',min:50,w:7,why:'Vitamin C, K and folate.',sug:['broccoli','brussels','cauliflower','kale','sauerkraut']}
 };
 const FGK=Object.keys(FG);
 const FGID={oats:'whole',granola:'whole',brownrice:'whole',wwpasta:'whole',buckwheat:'whole',quinoa:'whole',bread:'whole',popcorn:'whole',hppasta:'leg',hummus:'leg',falafel:'leg',soymilk:'leg',soyyog:'leg',alprosoy:'leg',alprosoy0:'leg',biosoy:'leg',biosoyca:'leg',alproyog0:'leg',spinach:'green',kale:'green',broccoli:'cruc',brussels:'cruc',cauliflower:'cruc',sauerkraut:'cruc'};
@@ -3475,8 +3475,8 @@ function renderPicker(){
   if(PK.part)fs=fs.filter(f=>f.id!==PK.part&&!f.parts);if(PK.pick)fs=fs.filter(f=>!f.gb);
   const more=fs.length>80;fs=fs.slice(0,80);
   html=(PK.part||q?'':`<div class="scanrow"><button class="btn scanbtn" type="button" id="pk-scan">${SCANI}Scan a barcode</button></div>`)+
-   (fs.map(f=>foodRow(f,T)).join('')||`<p class="empty2">${fm==='recent'?'Foods you add show up here.':fm==='fav'?'Tap the star on a food to keep it here.':fm==='mine'?'Scan a product, enter one from a label, or make a mix like your own frozen vegetables.':'No match.'}</p>`)+
-   (more?'<p class="empty2">Showing the first 80. Type more to narrow it down.</p>':'')+(fm==='all'&&!q&&PK.cat==='All'?'<p class="empty2">Type to search over 1,100 more foods from the USDA database.</p>':'');
+   (fs.map(f=>foodRow(f,T)).join('')||`<p class="empty2">${fm==='recent'?'Foods you add show up here.':fm==='fav'?'Tap the star on a food to keep it here.':fm==='mine'?'Scan a product, enter a label, or make a mix.':'No match.'}</p>`)+
+   (more?'<p class="empty2">Showing 80. Type more to narrow it down.</p>':'')+(fm==='all'&&!q&&PK.cat==='All'?'<p class="empty2">Type to search over 1,100 more foods from the USDA database.</p>':'');
  }
  if(!isD)html+=`<button class="linkbtn" type="button" id="pk-meas">${INFO} How much is a spoon, a cup or a handful?</button>`;
  if(!PK.part&&!PK.pick&&shRow(q))html=shRow(q)+html;if(!PK.part&&!PK.pick&&paRow(q))html=paRow(q)+html;
@@ -4142,7 +4142,7 @@ const secWH=s=>s.rot?[s.rows,4]:[4,s.rows];
 function secTiles(s){const [w,h]=secWH(s),o=[];for(let y=0;y<h;y++)for(let x=0;x<w;x++)o.push((s.c+x)+','+(s.r+y));return o}
 /* ---------- the world around the farm: hills and a mountain behind, a river with a bridge in front, a forest on the side,
    and land under clouds that opens as you grow more different plants (riverbank at 30, meadow at 45) ---------- */
-const WLAND=[['river','The riverbank',60,'You have grown 60 different plants. The riverbank is yours: room to decorate, and a willow tree as a gift.','willow',[5,25]],['meadow','The meadow by the forest',100,'100 different plants grown. The meadow by the forest is yours, with a beehive as a gift.','hive',[20,6]]];
+const WLAND=[['river','The riverbank',60,'60 different plants grown. The riverbank is yours, with a willow tree.','willow',[5,25]],['meadow','The meadow by the forest',100,'100 different plants grown. The meadow is yours, with a beehive.','hive',[20,6]]];
 const wRiverR=r=>r===21||r===22;
 const wLandIs=k=>!!(S.garden&&S.garden.land2&&S.garden.land2[k]);
 const wLockT=(c,r)=>(r>=23&&!wLandIs('river'))||(c>=18&&!wLandIs('meadow'));
@@ -4632,8 +4632,8 @@ function gPanel(v,b){const g=S.garden;if(v==='bed')return wBedPanel(G.sb,b);
   if($('gs-big'))$('gs-big').onclick=()=>{const c0=g.coins;if(gBuyUp('rows:'+bd)){save();renderGarden();gCount(c0,g.coins);toast('Bigger '+GSECN[bd].toLowerCase())}else toast('No room there')};
   $('gs-move').onclick=()=>{G.view='main';G.ed='sec';G.es=bd;renderGarden()};return}
  if(v==='sell'){const w=wWish(),nm=id=>FM[id].n.split(',')[0].toLowerCase(),wk=gPx().wk;
-  b.innerHTML=`<h3 class="rh">In demand now</h3>`+(w?`<div class="gdem"><span class="gdx">× 2</span><span class="otx"><b>${esc(NUT[w.n].n)} is low lately</b><span class="cap">Foods rich in it grow golden and pay double when you harvest them: ${w.foods.map(nm).join(', ')}.</span></span></div>`:`<p class="cap">Nothing is low right now, so every harvest pays its normal price.</p>`)+
-   `<p class="cap gmto">Harvests pay right away${wk>1?`, and your healthy week adds × ${wk}`:''}. Golden plants pay double.</p>`;return}
+  b.innerHTML=`<h3 class="rh">In demand now</h3>`+(w?`<div class="gdem"><span class="gdx">× 2</span><span class="otx"><b>${esc(NUT[w.n].n)} is low lately</b><span class="cap">Grow golden, × 2: ${w.foods.map(nm).join(', ')}.</span></span></div>`:`<p class="cap">Nothing is low right now.</p>`)+
+   `<p class="cap gmto">Harvests pay right away${wk>1?`, and your healthy week adds × ${wk}`:''}.</p>`;return}
  if(v==='shop'){const card=(id,n,pr,own,bg)=>{const cnt=bg?0:gDecN(id);return `<button class="gsh${bg&&own?' own':''}${G.buy===id?' on':''}" type="button" data-gs="${id}" aria-pressed="${bg?g.decor.bg===id:G.buy===id}"><span class="gshp${bg?' bgprev bg-'+id:''}">${bg?'':gDec(id)}</span><b>${n}</b>${cnt?`<span class="gown num">You have ${cnt}</span>`:''}<span class="gprice num">${bg&&own?(g.decor.bg===id?'In use':'✓'):pr?COINI+pr:'Free'}</span></button>`};
   const it=G.buy&&(G.buy.startsWith('up:')?(()=>{const u=GUP.find(x=>'up:'+x[0]===G.buy);return u?[G.buy,u[1],gUpPrice(u[0])]:null})():(GDEC.find(x=>x[0]===G.buy)||GBG.find(x=>x[0]===G.buy)));
   const upcX=GUP.map(([id,n,ps])=>{const lv=gUp(id),pr=ps[lv],own=!pr;return `<button class="gsh${own?' own':''}${G.buy==='up:'+id?' on':''}" type="button" data-gs="up:${id}" aria-pressed="${G.buy==='up:'+id}"${own?' disabled':''}><span class="gshp">${gUpIc(id)}</span><b>${n}${ps.length>1&&lv?' '+(lv+1):''}</b><span class="gprice num">${own?'✓':COINI+pr}</span></button>`}).join('');
@@ -5089,10 +5089,10 @@ function renderLibDishes(){
  const gv=lt!=='fav'?granVersions().filter(c=>(lt==='all'||gTpl(c.gb).t===lt)&&(!q||fold(c.n).includes(q)||c.parts.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q)))):[];
  const grow=c=>{const f=FM[c.id],v=itemV([c.id,f.por]),open=LX===c.id;return `<div class="ldish"><button class="ldhead" type="button" data-lx="${c.id}" aria-expanded="${open}"><span class="thumb em">${fIcon(c.id)}</span><span class="sgt"><b>${esc(c.n)}${lab('Builder','bld')}</b><span class="cap num">${f.por} g · ${ENs(v[0])}${Math.round(v[1])} g protein</span></span>${CHEV}</button>
   ${open?`<div class="ldbody"><div class="btnrow"><button class="btn sm" type="button" data-gedit="${c.id}">Edit</button><button class="btn sm" type="button" data-grcp="${c.id}">Recipe</button>${(gTpl(c.gb).t==='b'?['b']:gTpl(c.gb).t==='s'?['s']:['l','d']).map(t=>`<button class="btn sm" type="button" data-gbf="${c.id}:${t}">Add to ${TY[t].n.toLowerCase()}</button>`).join('')}</div></div>`:''}</div>`};
- $('lib-mine').innerHTML=mine.length||gv.length||(!q&&lt!=='fav')?`<div class="card" style="padding-top:4px"><div class="row" style="margin:10px 0 2px"><h2 style="margin:0">Your dishes</h2><button class="btn sm" type="button" id="lib-gran">Recipe builder</button></div>${mine.length||gv.length?'':'<p class="cap" style="margin:4px 0 12px">Dishes you build or change are saved here when you leave Edit.</p>'}${q?gv.map(grow).join(''):TPLK.map(k=>{const G=gv.filter(c=>(TPL[c.gb.tpl]?c.gb.tpl:'granola')===k).sort(byUsed);if(!G.length)return '';if(G.length===1)return grow(G[0]);const T=TPL[k],open=GX.has(k);
+ $('lib-mine').innerHTML=mine.length||gv.length||(!q&&lt!=='fav')?`<div class="card" style="padding-top:4px"><div class="row" style="margin:10px 0 2px"><h2 style="margin:0">Your dishes</h2><button class="btn sm" type="button" id="lib-gran">Recipe builder</button></div>${mine.length||gv.length?'':'<p class="cap" style="margin:4px 0 12px">Your own dishes.</p>'}${q?gv.map(grow).join(''):TPLK.map(k=>{const G=gv.filter(c=>(TPL[c.gb.tpl]?c.gb.tpl:'granola')===k).sort(byUsed);if(!G.length)return '';if(G.length===1)return grow(G[0]);const T=TPL[k],open=GX.has(k);
   return `<div class="ldish"><button class="ldhead" type="button" data-lgx="${k}" aria-expanded="${open}"><span class="thumb em">${EMO[T.ic]}</span><span class="sgt"><b>${T.n}${lab('Builder','bld')}</b><span class="cap">${G.length} versions</span></span>${CHEV}</button>${open?`<div class="ldgrp">${G.map(grow).join('')}</div>`:''}</div>`}).join('')}${mine.map(row).join('')}</div>`:'';
  $('lib-allh').textContent=mine.length||gv.length?'All dishes':'Dishes';
- $('lib-list').innerHTML=paRow(q)+shRow(q)+gbRows(q)+(gbRows(q)&&!rest.length?'':rest.length?rest.map(row).join(''):`<p class="cap">${lt==='fav'&&!q?(mine.length?'No other favourites.':'No favourites yet. Tap a dish, then Add to favourites. The star in the add menu works too.'):'No match.'}</p>`);
+ $('lib-list').innerHTML=paRow(q)+shRow(q)+gbRows(q)+(gbRows(q)&&!rest.length?'':rest.length?rest.map(row).join(''):`<p class="cap">${lt==='fav'&&!q?(mine.length?'No other favourites.':'No favourites yet. Tap the star on a dish to keep it here.'):'No match.'}</p>`);
  const v=$('lib-dishes');v.querySelectorAll('[data-gshop]').forEach(b=>b.onclick=openShop);v.querySelectorAll('[data-gplan]').forEach(b=>b.onclick=openPlan);v.querySelectorAll('[data-gbld]').forEach(b=>b.onclick=()=>openGran(null,null,b.dataset.gbld));
  v.querySelectorAll('[data-lx]').forEach(b=>b.onclick=()=>{LX=LX===b.dataset.lx?null:b.dataset.lx;renderLibDishes()});
  v.querySelectorAll('[data-lgx]').forEach(b=>b.onclick=()=>{const k=b.dataset.lgx;GX.has(k)?GX.delete(k):GX.add(k);renderLibDishes()});
@@ -5137,7 +5137,7 @@ function renderProfileView(){
  $('p-acc').querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>{S.prof.acc=b.dataset.acc;applyTheme();render()});
  if(document.activeElement===null||!document.activeElement.classList.contains('pgr')){$('p-pgs').innerHTML=protSlider();bindProt($('p-pgs'))}
  {const L=(S.sups||[]).filter(x=>x.freq!=='o'&&sCurrent(x)&&!(x.end&&x.end<=TODAY));
-  $('p-rem').innerHTML=L.length?`<div class="amtrow" style="grid-template-columns:auto 1fr;margin-bottom:6px"><span>Time</span><input type="time" id="p-remt" value="${S.prof.remt||'09:00'}"></div>`+L.map(x=>`<div class="dishrow"><span style="flex:1;min-width:0"><span style="font-weight:600">${esc(sName(x))}</span><br><span class="cap">${sSched(x)}${x.freq==='d'?'':' · next '+kdate(sNextDue(x)<TODAY?TODAY:sNextDue(x)).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span></span><button class="btn sm" type="button" data-prem="${x.id}">Add to calendar</button></div>`).join('')+`<p class="cap" style="margin:8px 0 0">Changed a schedule? Add it again and delete the old event in your calendar.</p>`
+  $('p-rem').innerHTML=L.length?`<div class="amtrow" style="grid-template-columns:auto 1fr;margin-bottom:6px"><span>Time</span><input type="time" id="p-remt" value="${S.prof.remt||'09:00'}"></div>`+L.map(x=>`<div class="dishrow"><span style="flex:1;min-width:0"><span style="font-weight:600">${esc(sName(x))}</span><br><span class="cap">${sSched(x)}${x.freq==='d'?'':' · next '+kdate(sNextDue(x)<TODAY?TODAY:sNextDue(x)).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span></span><button class="btn sm" type="button" data-prem="${x.id}">Add to calendar</button></div>`).join('')+`<p class="cap" style="margin:8px 0 0"></p>`
    :'<p class="cap">No supplements yet. Add one in Supplements on Today.</p>';
   if($('p-remt'))$('p-remt').onchange=e=>{if(/^\d\d:\d\d$/.test(e.target.value))S.prof.remt=e.target.value;save()};
   $('p-rem').querySelectorAll('[data-prem]').forEach(b=>b.onclick=()=>{const x=S.sups.find(y=>y.id===b.dataset.prem);if(x)addReminder(x,S.prof.remt||'09:00')})}
@@ -5148,7 +5148,7 @@ function renderProfileView(){
  const ks=['b12','d','iod','epa'];
  $('prof-cov').innerHTML=`<div class="lbl" style="margin-bottom:6px">From supplements alone</div><div class="covchips">${ks.map(k=>{const p=sv[K.indexOf(k)]/T[k]*100;const c=p>=100?'var(--ok)':p>0?'var(--mid)':'var(--muted)';
    return `<span style="color:${c};background:color-mix(in srgb,${c} 14%,transparent)">${NUT[k].n} ${p>=100?'covered':p>0?Math.round(p)+' %':'none'}</span>`}).join('')}</div>
-   <p class="muted" style="font-size:12.5px;margin:8px 0 0">Covered means the target is reached no matter what you eat. ${(()=>{const cur=(S.sups||[]).filter(sCurrent);return [...new Set(cur.flatMap(x=>sWarn(x,T,cur)))].join(' ')})()} For doses and schedules, open Supplements on Today.</p>`;
+   <p class="muted" style="font-size:12.5px;margin:8px 0 0">Covered means the target is reached whatever you eat. ${(()=>{const cur=(S.sups||[]).filter(sCurrent);return [...new Set(cur.flatMap(x=>sWarn(x,T,cur)))].join(' ')})()} For doses and schedules, open Supplements on Today.</p>`;
 }
 function renderDislikes(){
  const L=DL();$('prof-dis').innerHTML=L.length?L.filter(id=>FM[id]).map(id=>`<button class="chip" type="button" data-undis="${id}" aria-label="Remove ${esc(FM[id].n)}">${esc(FM[id].n.split(',')[0])} ✕</button>`).join(''):'<p class="muted" style="margin:0;font-size:14px">None yet.</p>';
@@ -5174,35 +5174,35 @@ function openAct(){let d=$('actd');if(!d){document.body.insertAdjacentHTML('befo
  $('act-body').innerHTML=`<p class="cap" style="margin:0 0 12px">Changes your energy and water target for ${isT?'today':'this day'}.</p><div class="choices">${ACTS.map(([v,t,sub])=>`<button class="choice" type="button" data-act="${v}" aria-pressed="${+v===cur}"><b>${t}</b><span>${sub}</span></button>`).join('')}</div>`;
  $('act-body').querySelectorAll('[data-act]').forEach(b=>b.onclick=()=>{const v=b.dataset.act;if(+v===+S.prof.act)delete S.plan.act;else S.plan.act=v;d.close?d.close():d.removeAttribute('open');render();toast(`${isT?'Today':'This day'}: ${actName(v).toLowerCase()}`)});
  if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}}
-const WOBSAY=['Hi. I look after this garden. Everything you eat that grows on a plant gets a seed here.','First, a little about you. It sets your daily targets.','How busy is a normal day? Pick your usual one.','Anything you already take? I only keep track. I never push pills.','Anything you never eat? I will leave it out of every idea.','A few extras, and how I should talk to you.','All set. Your garden is ready.'];
-function wObPush(){if(!(WPUSH.url&&WPUSH.key))return '';if(wIOS()&&!wStandalone())return '<p class="cap">Want reminders? On iPhone, add the app to your home screen first: Share, then Add to Home Screen.</p>';if(!wPushOK()||wPushOn())return '';return '<button class="btn wide" type="button" id="o-push">Turn on reminders</button><p class="cap" style="margin-top:-6px">A short line from me at meal times. You can change the times later.</p>'}
+const WOBSAY=['Hi. I look after this garden. What you eat grows here.','First, a little about you.','How active is a normal day?','Anything you already take? I only keep track.','Anything you never eat?','A few extras, and how I should talk to you.','All set. Your garden is ready.'];
+function wObPush(){if(!(WPUSH.url&&WPUSH.key))return '';if(wIOS()&&!wStandalone())return '<p class="cap">Want reminders? On iPhone, first add the app to your home screen.</p>';if(!wPushOK()||wPushOn())return '';return '<button class="btn wide" type="button" id="o-push">Turn on reminders</button><p class="cap" style="margin-top:-6px">A short line from me at meal times.</p>'}
 function renderOnb(){
  const P=S.prof,T=withAct(S.prof.act,()=>targets()),N=7;
  const ch=(path,val,title,sub)=>{const [o,k]=path.split('.');return `<button class="choice" type="button" data-set="${path}:${val}" aria-pressed="${S[o][k]===val}"><b>${title}</b>${sub?`<span>${sub}</span>`:''}</button>`};
- const supStep=()=>`<h2>Supplements</h2><p class="info">What do you already take? Tap to switch on, then say how often. Exact doses and more supplements: Supplements on Today.</p>
+ const supStep=()=>`<h2>Supplements</h2><p class="info">Tap what you take, then how often.</p>
   <div class="choices">${OBSUP.map(([k,fr])=>{const u=ONE[k],r=obRec(k),on=!!r;
    return `<div class="choice obsup${on?' on':''}"><button class="obhead" type="button" data-obs="${k}" aria-pressed="${on}"><span style="min-width:0"><b>${u.n}</b><span>${k==='b12'?'Needed by every vegan.':k==='d'?'Depends on how much sun you get.':k==='salt'?'Iodized salt in your cooking every day.':k==='multi'?'Covers B12, vitamin D and iodine.':k==='epa'?'Optional with daily flax, chia or walnuts.':'Tablet or drops.'}</span></span><span class="switch"><input type="checkbox" tabindex="-1" ${on?'checked':''}><i></i></span></button>
    ${on&&r.ob&&fr.length>1?`<div class="seg sm obfreq">${fr.map(q=>`<button type="button" data-obf="${k}:${q}" aria-pressed="${r.freq===q}">${q==='d'?'Daily':q==='w'?'Weekly':'Every 20 days'}</button>`).join('')}</div>
     ${r.freq!=='d'?`<label class="amtrow"><span>Last taken</span><input type="date" data-obt="${k}" value="${sLast(r,TODAY)||''}" max="${TODAY}"></label><p class="cap">${r.freq==='n'?'For a high dose capsule, usually 20 000 IU.':'A weekly dose is usually 1000 to 2000 µg.'}</p>`:''}`:''}
    ${on&&!r.ob?'<p class="cap">Already set up. Change it in Supplements on Today.</p>':''}</div>`}).join('')}</div>
   <p class="muted" style="font-size:12.5px;margin:0">Do not start supplements because of this app, apart from B12. A blood test shows what you need.</p>`;
- const disStep=()=>{const L=DL();return `<h2>Foods you don't eat</h2><p class="info">Ideas, swaps and dish lists leave these out, in every form (raw, cooked, canned). Skip this if you eat everything.</p>
+ const disStep=()=>{const L=DL();return `<h2>Foods you don't eat</h2><p class="info">Left out of all ideas.</p>
   <div class="chips wrap">${OBDIS.filter(id=>FM[id]).map(id=>`<button class="chip${L.includes(id)?' on':''}" type="button" data-obd="${id}"><span class="ficon em" style="width:20px;height:20px;display:inline-block;vertical-align:middle;margin-right:6px">${fIcon(id)}</span>${esc(OBDN[id]||FM[id].n.split(',')[0])}</button>`).join('')}</div>
   <input type="search" id="o-dis" placeholder="Search more, e.g. olives" autocomplete="off"><div id="o-dis-res" class="disres"></div>
   ${L.filter(id=>!OBDIS.includes(id)&&FM[id]).length?`<div class="chips wrap">${L.filter(id=>!OBDIS.includes(id)&&FM[id]).map(id=>`<button class="chip on" type="button" data-obd="${id}">${esc(FM[id].n.split(',')[0])} ✕</button>`).join('')}</div>`:''}
-  <p class="muted" style="font-size:12.5px;margin:0">For allergies, check every label yourself. Food data can be incomplete.</p>`};
- const extraStep=()=>`<h2>Extras</h2><p class="info">Optional. You can change this later in Profile.</p>
-  <label class="suprow" for="o-water"><span class="supname">Water bottle</span><span class="switch"><input type="checkbox" id="o-water" ${WON()?'checked':''}><i></i></span><small>Shows a bottle on Today. Hold it when you fill your bottle; it empties at the pace you should drink.</small></label>
-  <label class="suprow" for="o-wlog"><span class="supname">Weight log</span><span class="switch"><input type="checkbox" id="o-wlog" ${WLON()?'checked':''}><i></i></span><small>Log your weight when you like; your targets follow it and you see a trend graph.</small></label>
+  <p class="muted" style="font-size:12.5px;margin:0">For allergies, always check the label.</p>`};
+ const extraStep=()=>`<h2>Extras</h2><p class="info">Optional.</p>
+  <label class="suprow" for="o-water"><span class="supname">Water bottle</span><span class="switch"><input type="checkbox" id="o-water" ${WON()?'checked':''}><i></i></span><small>Tap the bird bath to log a glass.</small></label>
+  <label class="suprow" for="o-wlog"><span class="supname">Weight log</span><span class="switch"><input type="checkbox" id="o-wlog" ${WLON()?'checked':''}><i></i></span><small>Your targets follow your weight.</small></label>
   <div class="lbl">How should I talk to you?</div><div class="seg sm">${[['kind','Kind'],['guilt','Guilt']].map(([k,l])=>`<button type="button" data-obv="${k}" aria-pressed="${wVoice()===k}">${l}</button>`).join('')}</div><p class="cap" style="margin:-6px 0 0">${WVTXT[wVoice()]} Guilt 18+ waits in Profile.</p>
   ${WON()?`<label class="amtrow"><span>Bottle size</span><input type="number" id="o-btl" min="100" max="3000" step="50" inputmode="numeric" value="${BTL()}"><span class="cap">ml</span></label>`:''}`;
  const steps=[
-  ()=>`<h2>Welcome to your garden</h2><p class="info">Log what you eat and every plant food grows here as a seed. The beds show which food groups you had lately, the board shows your nutrients. A few quick steps; you can change everything later in Profile.</p>
+  ()=>`<h2>Welcome to your garden</h2><p class="info">Log what you eat and it grows here. A few quick steps.</p>
     <div class="safe"><b>Good to know</b><ul style="margin:6px 0 0;padding-left:18px;display:flex;flex-direction:column;gap:4px">
     <li>Targets follow the European EFSA reference values, adjusted for vegan eating.</li>
-    <li>Numbers are estimates from typical food values. A gap here is a reason to eat differently, not to take pills.</li>
-    <li>The only supplement every vegan needs is B12. Anything else: check with a blood test or your doctor.</li>
-    <li>Made for healthy adults. If you are pregnant, breastfeeding, under 18 or have a health condition, ask a doctor or dietitian.</li></ul></div>`,
+    <li>Numbers are estimates. A gap is a reason to eat differently, not to take pills.</li>
+    <li>The only supplement every vegan needs is B12. For anything else, ask your doctor.</li>
+    <li>Made for healthy adults. Pregnant, breastfeeding, under 18 or a health condition? Ask a doctor.</li></ul></div>`,
   ()=>`<h2>About you</h2><p class="info">Used for your energy and protein targets.</p>
     <div class="segrow">${ch('prof.sex','m','Male')}${ch('prof.sex','f','Female')}</div>
     <div class="form"><label>Age<input id="o-age" type="number" inputmode="numeric" min="18" max="100" value="${P.age}"></label>
@@ -5210,16 +5210,16 @@ function renderOnb(){
     <label class="full">Weight kg<input id="o-wt" type="number" inputmode="decimal" min="35" max="200" value="${P.wt}"></label></div>`,
   ()=>`<h2>Activity and goal</h2><div class="lbl">How active is a normal day?</div><div class="choices">
     ${ch('prof.act','1.4','Mostly sitting','Desk work, little walking')}${ch('prof.act','1.6','Some walking or cycling','Commute by bike or on foot')}${ch('prof.act','1.8','Active','Standing job or daily sport')}${ch('prof.act','2.0','Very active','Physical job or hard training')}</div>
-    <p class="cap" style="margin:-6px 0 0">Pick your usual day. On Today you can change it for a single day.</p>
+    <p class="cap" style="margin:-6px 0 0">Your usual day.</p>
     <div id="o-pgs">${protSlider()}</div>
-    <div class="lbl">Show calories?</div><div class="segrow">${ch('prof.hidekcal','0','Show')}${ch('prof.hidekcal','1','Hide')}</div><p class="cap" style="margin:-6px 0 0">Some people prefer a nutrition app without calorie numbers.</p>`,
+    <div class="lbl">Show calories?</div><div class="segrow">${ch('prof.hidekcal','0','Show')}${ch('prof.hidekcal','1','Hide')}</div><p class="cap" style="margin:-6px 0 0">Hide energy numbers.</p>`,
   supStep,disStep,extraStep,
   ()=>`<h2>All set</h2><p class="info">Your daily targets:</p><div class="targets">${targetBoxes(T)}</div>
     <ul class="obhow">
-    <li><span class="obi obk">${SHOPI}</span><span><b>Scan and shop</b>Scan a product, keep your shopping list and pantry. The plates beside it are your meals.</span></li>
-    <li><span class="obi">${WSEED}</span><span><b>The beds</b>One per food group. A dashed sign means that group would like a visit.</span></li>
-    <li><span class="obi">${WRING(70,8)}</span><span><b>The board</b>How well you are covered, what is low, what is next. Tap it to open it big.</span></li>
-    <li><span class="obi">${TORTV()}</span><span><b>Me</b>Tap me for the next step, like the same breakfast as yesterday.</span></li></ul>
+    <li><span class="obi obk">${SHOPI}</span><span><b>Scan and shop</b>Scan products, shopping list and pantry. The plates are your meals.</span></li>
+    <li><span class="obi">${WSEED}</span><span><b>The beds</b>One per food group.</span></li>
+    <li><span class="obi">${WRING(70,8)}</span><span><b>The board</b>What is covered, what is low, what is next.</span></li>
+    <li><span class="obi">${TORTV()}</span><span><b>Me</b>Tap me for the next step.</span></li></ul>
     ${wObPush()}`
  ];
  $('onb').innerHTML=`<div class="onb-in"><div class="dots">${Array.from({length:N},(_,i)=>`<i class="${i<=OS?'on':''}"></i>`).join('')}</div>${steps[OS]()}
@@ -5397,7 +5397,7 @@ function swapCard(x,i,kind){
  const body=`<p class="sw-why">${kind==='up'?(UPGWHY[x.to[0]]||'More nutritious at about the same energy')+'.':why(u)}</p>${swapBars(SW.D,x.D1||SW.D,SW.T,u)}`;
  return `<div class="sw"><div class="sw-top"><span class="ficon em" style="width:36px;height:36px">${ic}</span><span class="slotchip" style="--c:${sl.c}">${sl.n}</span><span class="muted num" style="font-size:13px">${sub}${ek}</span></div>
   <div class="sw-title">${title}</div>${body}
-  <div class="sw-foot">${srcLinks([...u.gains,...u.losses].filter(c=>c.gap||c.hurt).map(c=>c.k).concat(kind==='up'?x.gainAbs.map(a=>a.k):[]),'Calculated from typical food values per 100 g and your daily targets. Percentages compare your whole day before and after.')}<button class="btn primary sm" type="button" data-sw="${kind}:${i}">${kind==='add'?'Add':'Swap'}</button></div></div>`;
+  <div class="sw-foot">${srcLinks([...u.gains,...u.losses].filter(c=>c.gap||c.hurt).map(c=>c.k).concat(kind==='up'?x.gainAbs.map(a=>a.k):[]),'Percentages compare your whole day before and after.')}<button class="btn primary sm" type="button" data-sw="${kind}:${i}">${kind==='add'?'Add':'Swap'}</button></div></div>`;
 }
 /* ---------- impact bars: % of daily need before and after ---------- */
 const pc2=x=>x>=200?'200+':Math.round(x);
@@ -5471,7 +5471,7 @@ function renderSugg(){
  SG=computeSugg();const fl=f=>f.length?`<span class="fills">${f.map(x=>`<span>${NUT[x.k].n} +${Math.round(x.v*100)} %</span>`).join('')}</span>`:'<span class="cap">Balanced, no big gap to close</span>';
  const kc=a=>HK()?'':EN(a[0])+' · ';
  let h='';
- if(SG.meals.length)h+=`<div class="card sugg"><h2>Meal ideas for ${S.date===TODAY?'today':'this day'}</h2><p class="cap" style="margin:4px 0 6px">Picked for what you still need this week. Each next meal assumes you take the first idea before it.</p>
+ if(SG.meals.length)h+=`<div class="card sugg"><h2>Meal ideas for ${S.date===TODAY?'today':'this day'}</h2><p class="cap" style="margin:4px 0 6px">Picked for what you still need this week.</p>
   ${SG.meals.map((m,mi)=>{const sl=SLOTS.find(x=>x.id===m.slot);return `<div class="sgslot"><span class="slotchip" style="--c:${sl.c}">${sl.n}</span>${m.opts.slice(0,3).map((o,oi)=>`<div class="sgrow"><span class="thumb em">${PH[o.d.id]?`<img src="${PH[o.d.id]}" alt="">`:dIcon(o.d)}</span><span class="sgt"><b>${esc(o.d.n)}</b><span class="cap num">${kc(o.add)}${Math.round(o.add[1])} g protein${o.d.min?' · '+o.d.min+' min':''}</span>${fl(o.fills)}</span><button class="btn sm" type="button" data-sgm="${mi}:${oi}">Add</button></div>`).join('')}</div>`}).join('')}</div>`;
  if(SG.snacks.length)h+=`<div class="card sugg"><h2>Snack ideas</h2><p class="cap" style="margin:4px 0 6px">${logged(S.plan)?'Small things that close what is left today':'Easy extras that fit your week so far'}</p>
   ${SG.snacks.map((x,i)=>{const nm=x.food?`${x.food.n.split(',')[0]}${x.food.pl?` (${x.food.pl}, ${x.food.por} g)`:` (${x.food.por} g)`}`:x.d.n;return `<div class="sgrow"><span class="thumb em">${x.food?fIcon(x.food.id):dIcon(x.d)}</span><span class="sgt"><b>${esc(nm)}</b><span class="cap num">${kc(x.add)}${fmt(x.add[1])} g protein</span>${fl(x.fills)}</span><button class="btn sm" type="button" data-sgs="${i}">Add</button></div>`}).join('')}</div>`;
@@ -5611,7 +5611,7 @@ function openReport(){let d=$('repd');if(!d){document.body.insertAdjacentHTML('b
    const fn=`vegful-report-${S.date}.png`;
    body.innerHTML=`<img src="${REP.url}" alt="Vegful report for the last ${REP.n} days" class="repimg">
    <div class="acts" style="display:flex;gap:8px;flex-wrap:wrap;margin-top:12px">${navigator.canShare?'<button class="btn primary" type="button" id="rep-share">Share</button>':''}<a class="btn${navigator.canShare?'':' primary'}" id="rep-save" href="${REP.url}" download="${fn}">Save image</a><button class="btn" type="button" id="rep-print">Print or PDF</button></div>
-   <p class="cap" style="margin:10px 0 0">The report stays on your phone until you share it.</p>`;
+   <p class="cap" style="margin:10px 0 0"></p>`;
    const sh=$('rep-share');if(sh)sh.onclick=async()=>{try{const f=new File([REP.blob],fn,{type:'image/png'});if(navigator.canShare({files:[f]}))await navigator.share({files:[f],title:'Vegful report'});else $('rep-save').click()}catch(e){}};
    $('rep-print').onclick=()=>{document.body.classList.add('printrep');setTimeout(()=>{window.print();setTimeout(()=>document.body.classList.remove('printrep'),500)},50)}
   },'image/png')};
@@ -5633,7 +5633,7 @@ function renderHistory0(T){
    <div class="hmonths" style="grid-template-columns:repeat(${W},14px)">${months.map(([c,m])=>`<span style="grid-column:${c+1}">${m}</span>`).join('')}</div>
    <div class="hgrid" style="grid-template-columns:repeat(${W},14px)">${cells.map(c=>c.fut?'<i class="hf"></i>':`<button type="button" class="hc l${c.l}${c.k===sel?' sel':''}" data-hd="${c.k}" aria-label="${kdate(c.k).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}${c.l<0?', nothing logged':''}"></button>`).join('')}</div></div></div>
    <div class="hlegend"><span>Less</span><i class="hc l-1"></i><i class="hc l0"></i><i class="hc l1"></i><i class="hc l2"></i><i class="hc l3"></i><i class="hc l4"></i><span>More covered</span></div>
-   <p class="cap" style="margin-top:6px">Each square is one day, colored by where you stood that day: each nutrient over the time your body stores it, like Mixed. A single weak day barely shows; several in a row do. Swipe left for earlier days, back to your first logged day. Tap a day to see it.</p></div>
+   <p class="cap" style="margin-top:6px">Each square is one day: each nutrient over the time your body stores it, like Mixed. A single weak day barely shows; several in a row do. Swipe for earlier days. Tap a day to see it.</p></div>
   <div class="card"><div class="card-head"><div><h2>${kdate(sel).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'})}</h2><p class="cap">${sl<0?'Nothing logged':histScore(sel,T,HV)+' % covered, mixed · this day alone '+dayScore(planV(sp),T)+' %'}</p></div><button class="btn sm primary" type="button" id="h-open">Open day</button></div>
    ${sl<0?'':`<div class="hmeals">${eatK(sp).filter(k=>sp[k].it.length).map(k=>{const ty=typeOf(sp,k);return `<div class="hmeal"><span class="dotst" style="background:${TY[ty].c}"></span><span><b>${TY[ty].n}</b> ${esc(sp[k].t||sp[k].it.map(([id])=>FM[id]?FM[id].n.split(',')[0]:id).slice(0,3).join(', '))}</span></div>`}).join('')}</div>`}</div>`;
  const sc=$('hscroll');sc.scrollLeft=sc.scrollWidth;
@@ -5686,7 +5686,7 @@ function renderSupD(){const T=targets(),body=$('supd-body');
  if(SUPD.v==='list'){
   const cur=(S.sups||[]).filter(sCurrent),old=(S.sups||[]).filter(s=>!sCurrent(s)).sort((a,b)=>(b.end||sLast(b,TODAY)||'')<(a.end||sLast(a,TODAY)||'')?-1:1).slice(0,8);
   const row=s=>`<div class="dishrow"><span style="min-width:0;flex:1"><span style="font-weight:600">${esc(sName(s))}</span>${sInfoBtn(s.kind)}<br><span class="cap">${sSched(s)} · ${sDose(s)}${s.freq!=='d'&&sLast(s,TODAY)?' · '+agoTxt(dayDiff(sLast(s,TODAY),TODAY)):''}${s.end&&s.end<=TODAY?' · stopped '+kdate(s.end).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):''}</span></span><button class="btn sm" type="button" data-sedit="${s.id}">Edit</button></div>`;
-  body.innerHTML=`<p class="cap" style="margin:0 0 10px">Add what you take and how often. Daily ones count by themselves; tap Skip on Today if you miss one. For the others, tap Taken on the day you take them.</p>
+  body.innerHTML=`<p class="cap" style="margin:0 0 10px">Daily ones count by themselves. For the others, tap Taken.</p>
   ${cur.length?cur.map(row).join(''):'<p class="cap">Nothing added yet.</p>'}
   <button class="btn primary" type="button" id="s-new" style="width:100%;margin-top:12px">Add a supplement</button>
   ${old.length?`<div class="lbl" style="margin:22px 0 4px">Earlier</div>${old.map(row).join('')}`:''}
@@ -5898,7 +5898,7 @@ function gRefill(){const g=S.garden;if(!g)return;g.tray.slice().forEach(t=>{cons
 const wShedNew=()=>{const g=S.garden;if(!g)return 0;if(!Array.isArray(g.colSeen))g.colSeen=g.ever.slice();return g.ever.filter(k=>!g.colSeen.includes(k)).length};
 function wShedPanel(el){const g=S.garden,ev=g.ever.slice(),nw=new Set(ev.filter(k=>!(g.colSeen||[]).includes(k)));g.colSeen=ev.slice();save();
  const ripe=g.plants.filter(gReady).length;
- if(!ev.length){el.innerHTML=`<div class="wbed"><p class="gempty">${ripe?'Harvest a ripe plant with the scythe and it is kept here':'Ripe plants you harvest are kept here, one of each kind'}</p></div>`;return}
+ if(!ev.length){el.innerHTML=`<div class="wbed"><p class="gempty">${ripe?'Harvested plants are kept here':'Harvested plants are kept here'}</p></div>`;return}
  const by={};ev.forEach(k=>{const b=kindInfo(k).bed;(by[b]=by[b]||[]).push(k)});
  el.innerHTML=`<div class="wbed"><p class="cap num">${ev.length} kind${ev.length===1?'':'s'} grown${ripe?` · ${ripe} ripe now`:''}</p>
  ${GBEDS.filter(b=>by[b]).map(b=>`<div class="wcolg"><h3>${GSECN[b]}</h3><div class="wcol">${by[b].sort((x,y)=>kindInfo(x).name.localeCompare(kindInfo(y).name)).map(k=>{const I=kindInfo(k);return `<span class="wcolk${nw.has(k)?' new':''}"><span class="em">${I.icon}</span><b>${esc(I.name)}</b></span>`}).join('')}</div></div>`).join('')}</div>`}
@@ -6059,7 +6059,7 @@ const GB_MAIL='<svg viewBox="0 -16 120 128" aria-hidden="true"><polygon points="
 const WGMAX=4,wGrowCost=b=>{const s=gLand().sec[b];return !s||s.rows>=WGMAX?0:s.rows<=2?100:200};
 /* 1 grown, 0 no room, -1 not enough coins */
 function wGrow(b){const s=gLand().sec[b];if(!s||s.rows>=WGMAX)return 0;const c=wGrowCost(b);if(S.garden.coins<c)return -1;if(!gSetSec(b,Object.assign({},s,{rows:s.rows+1})))return 0;S.garden.coins-=c;gRefill();save();return 1}
-const wGrowSay=(b,r)=>r===1?GSECN[b]+' has '+gPlots(b)+' plots now':r===-1?`That costs ${wGrowCost(b)} coins and you have ${S.garden.coins}. Sell your harvest at the market.`:'Something is in the way. Move it, or move the bed.'
+const wGrowSay=(b,r)=>r===1?GSECN[b]+' has '+gPlots(b)+' plots now':r===-1?`That costs ${wGrowCost(b)} coins and you have ${S.garden.coins}. Harvests earn coins.`:'Something is in the way. Move it, or move the bed.'
 function wGrowNext(b){const s=gLand().sec[b];if(!s||s.rows>=WGMAX)return null;const n=Object.assign({},s,{rows:s.rows+1}),old=new Set(secTiles(s));return {n,tiles:secTiles(n).filter(t=>!old.has(t))}}
 /* where a bed can grow: in edit mode for the chosen bed; in the garden when a bed is full and the silo holds seeds for it */
 function wGrowSpots(ed){const g=S.garden;return gBeds().map(([b])=>{const x0=wGrowNext(b);if(!x0)return '';
@@ -6069,7 +6069,7 @@ function wGrowSpots(ed){const g=S.garden;return gBeds().map(([b])=>{const x0=wGr
   `<button class="wgrow${room?'':' no'}${rich?'':' poor'}" type="button" data-wgrow="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}" aria-label="Make ${esc(GSECN[b].toLowerCase())} bigger: 4 more plots for ${cost} coins${room?'':', but something is in the way'}"><b>+4</b><span class="num">${COINI}${cost}</span></button>`}).join('')}
 function wGrowBtn(b,id){const s=gLand().sec[b];if(!s||s.rows>=WGMAX)return '';return `<button class="btn wide" type="button" data-grow="${b}"${id?` id="${id}"`:''}>Make ${esc(GSECN[b].toLowerCase())} bigger, ${4*(s.rows+1)} plots · ${wGrowCost(b)} coins</button>`}
 function wGrowBind(el){el.querySelectorAll('[data-grow]').forEach(x=>x.onclick=()=>{const r=wGrow(x.dataset.grow);toast(wGrowSay(x.dataset.grow,r));if(r===1){gSheetClose();render()}})}
-function wSiloPanel(el){const g=S.garden;if(!g.tray.length){el.innerHTML=`<div class="wbed"><p class="gempty">Seeds wait here when their bed is full. Right now every seed has a plot.</p></div>`;return}
+function wSiloPanel(el){const g=S.garden;if(!g.tray.length){el.innerHTML=`<div class="wbed"><p class="gempty">Seeds wait here when their bed is full.</p></div>`;return}
  const by={};g.tray.forEach(t=>{const b=gBedOf(t.k);(by[b]=by[b]||[]).push(t.k)});
  el.innerHTML=`<div class="wbed"><p class="cap num">${g.tray.length} seed${g.tray.length===1?'':'s'} waiting. They plant themselves when a plot frees up.</p>
  ${GBEDS.filter(b=>by[b]).map(b=>`<div class="wcolg"><h3>${GSECN[b]}</h3><div class="wcol">${[...new Set(by[b])].map(k=>{const I=kindInfo(k);return `<span class="wcolk"><span class="em">${I.icon}</span><b>${esc(I.name)}</b></span>`}).join('')}</div>${wGrowBtn(b)}</div>`).join('')}</div>`;wGrowBind(el)}
@@ -6097,20 +6097,20 @@ function wPushOffer(auto){const g=S.garden;if(g.vpush||wPushOn()||!(WPUSH.url&&W
  wAsk(wPick('push'),ios?'On iPhone: Share, Add to Home Screen, then open the app from there.':'',ios?[['Got it',()=>{g.vpush=1;save()}]]:[['Yes please',async()=>{g.vpush=1;save();try{await wPushSub();toast('Reminders are on. Change the times in Profile, Voice and reminders.')}catch(e){toast('Notifications are blocked for this app in your phone settings.')}}],['Not now',()=>{g.vpush=1;save()}]]);return true}
 /* the tortoise shows the garden: the view glides to each place and it says what it is */
 const WTOUR=[
- [null,'Let me show you around. It takes half a minute.'],
- ['#wboard','The notice board. Tap it anywhere to open it big: what is covered, what is low, your meals, your beds and the next step.'],
- ['#gd-world [data-wsb]','One place per food group: the orchard, the nut grove, the wheat field, the bean poles and the kitchen garden with greens and vegetables. Eating a plant food plants its seed there, and it grows by itself. An empty place means you have not eaten that group lately.'],
- ['#w-ring','This ring is how well your nutrients are covered lately. The light in your garden follows it: sunny when you are well covered, cloudy when a few are low.'],
- ['#w-add','The middle button scans a product in the shop and keeps your shopping list and pantry. The plates beside it are your meals of the day: tap one to add food or change it.'],
- ['#gd-world [data-bld="shed"]','The barn keeps one of every plant you harvested. Drag the sickle over ripe plants to harvest them.'],
- ['#gd-world [data-bld="shop"]','The kitchen has dishes, recipes, your own foods and tips about every nutrient.'],
- ['#gd-world [data-bld="market"]','Harvests pay coins right away. The market shows what is in demand: foods rich in what you are low on grow golden and pay double, and its thought bubble asks for one crop in particular.'],
- ['#gd-world [data-bld="centre"]','The garden centre sells decorations and backdrops. Pay with the coins from the market. You get 50 to start.'],
- ['#gd-world [data-bld="silo"]','The silo keeps seeds when their bed is full. Make a bed bigger and they plant themselves.'],
- ['#gd-world [data-bld="bench"]','The workbench plans the next days. What you plan there lands on your shopping list.'],
- ['#gd-world [data-bld="mail"]','The mailbox sets how I talk to you and when I remind you.'],
- ['#gd-edit','The pencil arranges your garden. Hold anything to lift it and drag it; swipe to look around.'],
- ['#wtort .wtbtn','And me. Each day I point out the nutrient you are lowest on, with foods that bring it up. Tap me any time for the next step. You can watch this tour again in Profile.']];
+ [null,'A quick tour.'],
+ ['#wboard','The notice board. Tap it to open it.'],
+ ['#gd-world [data-wsb]','One bed per food group. What you eat grows here. An empty bed means you have not eaten that group lately.'],
+ ['#w-ring','How well your nutrients are covered. The weather follows it.'],
+ ['#w-add','Scan products, your shopping list and pantry. The plates beside it are your meals.'],
+ ['#gd-world [data-bld="shed"]','Drag the sickle over ripe plants to harvest. The barn keeps one of each.'],
+ ['#gd-world [data-bld="shop"]','Dishes, recipes, your foods and nutrient tips.'],
+ ['#gd-world [data-bld="market"]','Harvests pay coins. Golden plants pay double.'],
+ ['#gd-world [data-bld="centre"]','Spend your coins on decorations.'],
+ ['#gd-world [data-bld="silo"]','Seeds wait here when their bed is full.'],
+ ['#gd-world [data-bld="bench"]','Plan the next days. Plans go to your shopping list.'],
+ ['#gd-world [data-bld="mail"]','How I talk to you, and reminders.'],
+ ['#gd-edit','Arrange your garden.'],
+ ['#wtort .wtbtn','And me. Tap me for the next step.']];
 let WTI=-1;
 function wTourGo(i){document.querySelectorAll('.wtourhl').forEach(x=>x.classList.remove('wtourhl'));if(i>=WTOUR.length||S.view!=='garden'||!G||G.ed){WTI=-1;return}WTI=i;
  const [sel,t]=WTOUR[i],el=sel&&document.querySelector(sel),last=i===WTOUR.length-1;
@@ -6185,11 +6185,11 @@ function wBathArt(){const B=wBath(),f=B.fill,lv=44+(1-f)*7,rx=33*(.5+.5*f),ry=13
   <ellipse cx="60" cy="98" rx="34" ry="12" fill="rgba(0,0,0,.18)"/><ellipse cx="60" cy="94" rx="19" ry="7.5" fill="#A9A296"/><path d="M41 94v-4a19 7.5 0 0 0 38 0v4a19 7.5 0 0 1-38 0z" fill="#9A9387"/><ellipse cx="60" cy="90" rx="19" ry="7.5" fill="#C9C3B6"/>
   <path d="M51 90V62h18v28a9 3.6 0 0 1-18 0z" fill="#B5AE9F"/><path d="M60 93.6a9 3.6 0 0 0 9-3.6V62h-9z" fill="#9A9387"/>
   <path d="M20 44Q22 62 60 66Q98 62 100 44z" fill="#A9A296"/><path d="M60 66Q98 62 100 44H60z" fill="#958E82"/><ellipse cx="60" cy="44" rx="40" ry="16" fill="#D6D0C3"/><ellipse cx="60" cy="44.6" rx="34" ry="13.2" fill="#8E877B"/>${water}</svg>${birds}<span class="wsplash" aria-hidden="true"></span>`}
-function wBathTap(){const g=S.garden;if(!WON()){WHOLDT=Date.now()+9000;wSay('Birds stop by for a drink and a bath. Turn on water in your profile, and the bath fills as you drink and slowly drains through the day.','pleased');return}
+function wBathTap(){const g=S.garden;if(!WON()){WHOLDT=Date.now()+9000;wSay('Track water in your profile and the bath fills as you drink.','pleased');return}
  const sd=S.date;if(sd!==TODAY)setDate(TODAY);wAdd(250);save();if(sd!==TODAY)setDate(sd);
  const el=document.querySelector('#gd-world .gbld[data-bld="well"]');if(el){el.classList.remove('splash');void el.offsetWidth;el.classList.add('splash');setTimeout(()=>el.classList.remove('splash'),900)}
  const B=wBath(),first=!g.vbath;if(first){g.vbath=TODAY;save()}
- const t=(B.birds>=3?'The bath is full and the birds love it.':B.birds===2?'The birds are happy.':B.birds===1?'A bird is back for a drink.':'A little more and the birds come back.')+(first?' The bath drains through the day as fast as you need to drink.':'');
+ const t=(B.birds>=3?'The bath is full.':B.birds===2?'The birds are happy.':B.birds===1?'A bird is back.':'A little more and the birds come back.')+(first?' It drains through the day at your drinking pace.':'');
  WHOLDT=Date.now()+12000;wAsk(`+ 250 ml · ${wL(B.drunk)} of ${wL(B.T)} today`,t,[['Nice',()=>{WHOLDT=0}],['Undo',()=>{const s2=S.date;if(s2!==TODAY)setDate(TODAY);wAdd(-1);save();if(s2!==TODAY)setDate(s2);WHOLDT=0}]],true)}
 /* it drains while you look: check every few minutes and redraw when the level or the birds change */
 setInterval(()=>{try{if(!G||S.view!=='garden'||document.hidden||G.ed||!WON()||document.querySelector('dialog[open]'))return;const B=wBath(),k=B.birds+':'+Math.round(B.fill*10);if(k!==WBATH.key)renderGarden()}catch(e){}},180000);
@@ -6199,7 +6199,7 @@ function wBflies(){const V=G.vit||{},L=gLand(),g=S.garden,lb=wLushBeds(),n=Math.
  lb.forEach(b=>{const s=L.sec[b];if(!s)return;const [w,hh]=secWH(s),[x,y]=isoP(s.c+(w-1)/2,s.r+(hh-1)/2);WBF.spots.push({x,y:y-24,w:1})});
  let h='';for(let i=0;i<n;i++)h+=`<span class="wbfly c${i%4}" data-bf="${i}" style="width:${pct(i%3?30:34,ISO.w)}" aria-hidden="true">${WBFLY}</span>`;return h}
 function wBfTell(){const lb=wLushBeds(),nm=b=>(GSECN[b]||b).toLowerCase(),L=a=>a.length>1?a.slice(0,-1).join(', ')+' and '+a[a.length-1]:a[0];if(!lb.length)return;
- WHOLDT=Date.now()+9000;wSay(`Butterflies come to beds you eat from on most days. ${L(lb.map(nm)).replace(/^./,c=>c.toUpperCase())} ${lb.length>1?'are':'is'} thriving, one butterfly each.`,'pleased')}
+ WHOLDT=Date.now()+9000;wSay(`Butterflies come to beds you eat from on most days. Thriving: ${L(lb.map(nm))}.`,'pleased')}
 function wBfIntro(){const g=S.garden;if(!g||g.vbf||!WBF.els.length)return;if(typeof WLINE!=='undefined'&&WLINE)return;if(Date.now()<WHOLDT)return;g.vbf=TODAY;save();
  setTimeout(()=>{if(S.view==='garden'&&!document.querySelector('dialog[open]')&&Date.now()>=WHOLDT)wBfTell()},1800)}
 function wBfPick(){const S0=WBF.spots;if(!S0.length)return {x:ISO.w/2,y:ISO.h/2};const tot=S0.reduce((a,s)=>a+s.w,0);let r=Math.random()*tot;for(const s of S0){r-=s.w;if(r<=0)return s}return S0[0]}
@@ -6223,11 +6223,11 @@ function wBfTick(now){WBF.raf=0;if(!G||S.view!=='garden'||document.hidden||GSTIL
 document.addEventListener('visibilitychange',()=>{if(!document.hidden&&G&&S.view==='garden')try{wBfStart()}catch(e){}});
 function wWeather(){if(!wHasData())return 'fair';let sc=0;try{sc=wScore().sc}catch(e){}return sc>=75?'sun':sc>=50?'fair':'soft'}
 const WXSAY={sun:'Your garden is sunny: you are well covered.',fair:'Your garden is fair.',soft:'Your garden is cloudy: a few nutrients are low.'};
-const WBEDWHY={f:FG.fruit.why,b:FG.fruit.why,c:FG.whole.why,l:FG.leg.why,n:FG.nuts.why,k:FG.green.why,v:'Vegetables bring fiber, potassium, folate and vitamins A and C; in large studies every extra portion goes with lower heart disease risk.',h:'Herbs and spices add flavour and a little of everything.'};
+const WBEDWHY={f:FG.fruit.why,b:FG.fruit.why,c:FG.whole.why,l:FG.leg.why,n:FG.nuts.why,k:FG.green.why,v:'Fiber, potassium, folate and vitamins A and C.',h:'Herbs and spices add flavour and a little of everything.'};
 function wBedGrowing(bd){const g=S.garden,ps=g.plants.filter(p=>p.b===bd).sort((a,c)=>a.pos-c.pos),wt=g.tray.filter(t=>gBedOf(t.k)===bd);if(!ps.length&&!wt.length)return '';
  return `<div class="wgrowing"><span class="lbl">Growing here</span><div class="wgl">${ps.map(p=>{const I=kindInfo(p.k),rp=gReady(p);return `<span class="wgi${rp?' ripe':''}${g.goldK&&g.goldK[p.k]?' gold':''}"><span class="em">${I.icon}</span><span><b>${esc(I.name)}${g.goldK&&g.goldK[p.k]?' <i class="wgx">× 2</i>':''}</b><small>${rp?'Ripe':gEta(p)}</small></span></span>`}).join('')}</div>${wt.length?`<p class="cap">${wt.length} more waiting in the silo</p>`:''}</div>`}
 function wBedHealth(bd){const v=(G.vit||wBedVit()||{})[bd],st=v?v.st:'fine',say={lush:'Thriving',fine:'Doing fine',dry:'Would like a visit'}[st];
- return `<div class="wbedh ${st}"><span class="wbhdot" aria-hidden="true"></span><div><b>${say}</b> <span class="cap num">${v?`· eaten on ${v.n} of the last ${v.of} logged day${v.of===1?'':'s'}`:'· log a meal to see how this bed does'}</span><p class="cap">${WBEDWHY[bd]||''}</p></div></div>`}
+ return `<div class="wbedh ${st}"><span class="wbhdot" aria-hidden="true"></span><div><b>${say}</b> <span class="cap num">${v?`· eaten on ${v.n} of the last ${v.of} logged day${v.of===1?'':'s'}`:'· log a meal to see'}</span><p class="cap">${WBEDWHY[bd]||''}</p></div></div>`}
 const WISHX=['kcal','b12','d','iod'],GWISH=10;let WHOLDT=0;
 function wWishFoods(n){const i=K.indexOf(n),T=targets(),sc=f=>(f.v[i]||0)*(f.por||100)/100,ok=f=>f&&f.v&&!f.hide&&f.src!=='usda'&&f.cat!=='My foods'&&f.cat!=='Oils and other'&&plantKinds(f.id).length&&sc(f)>=T[n]*.15;
  let E=[];try{E=[...eaten()]}catch(e){}const mine=E.map(id=>FM[id]).filter(ok).sort((a,b)=>sc(b)-sc(a)),pool=F.filter(ok).sort((a,b)=>sc(b)-sc(a));
@@ -6239,10 +6239,10 @@ function wWishUndo(){const g=S.garden,w=g&&g.wish;if(!w||w.d!==TODAY||!w.done||!
 function wWishCheck(){const w=wWish();if(!w||w.done)return false;const p=S.days[TODAY];if(!p)return;const i=K.indexOf(w.n),T=targets();let hit=null;
  eatK(p).forEach(k=>(p[k].it||[]).forEach(it=>{if(hit)return;let v=null;try{v=itemV(it)}catch(e){}if(w.foods.includes(it[0])||(v&&(v[i]||0)>=T[w.n]*.15))hit=it[0]}));if(!hit)return false;
  const g=S.garden,first=!w.paid;w.done=1;w.by=hit;if(first){w.paid=1;gEarn(GWISH)}WHOLDT=Date.now()+15000;g.wglow=g.wglow||{};plantKinds(hit).forEach(k=>g.wglow[k]=TODAY);save();const nm=(FM[hit]?FM[hit].n:hit).split(',')[0];
- const fshow=()=>{if(!w.done)return;if(document.querySelector('dialog[open]')){setTimeout(fshow,700);return}setTimeout(()=>{WFOCUSPL=''},50);if(S.view==='garden'&&$('wtort')){WHOLDT=Date.now()+15000;wAsk(`${nm} brings your ${nlow(w.n)} up.`,(first?`That covers today's focus: ${GWISH} coins`:`That covers today's focus again`)+(seedKinds(hit).length?', and it grows golden: double coins at harvest.':'.')+(WFOCUSPL?' '+WFOCUSPL:''),[['Nice',()=>{WHOLDT=0}]],true);try{const m=document.querySelector('#wtort .tmas');if(m)m.className='tmas pleased'}catch(e){}}else toast(`Today's focus covered: ${nlow(w.n)}`+(first?`. ${GWISH} coins`:''))};setTimeout(fshow,600);return true}
+ const fshow=()=>{if(!w.done)return;if(document.querySelector('dialog[open]')){setTimeout(fshow,700);return}setTimeout(()=>{WFOCUSPL=''},50);if(S.view==='garden'&&$('wtort')){WHOLDT=Date.now()+15000;wAsk(`${nm} brings your ${nlow(w.n)} up.`,(first?`Focus covered, + ${GWISH} coins.`:'Focus covered.')+(seedKinds(hit).length?' It grows golden.':'')+(WFOCUSPL?' '+WFOCUSPL:''),[['Nice',()=>{WHOLDT=0}]],true);try{const m=document.querySelector('#wtort .tmas');if(m)m.className='tmas pleased'}catch(e){}}else toast(`Today's focus covered: ${nlow(w.n)}`+(first?`. ${GWISH} coins`:''))};setTimeout(fshow,600);return true}
 function wWishSay(){const w=wWish();if(!w||w.done)return;const nm=id=>FM[id].n.split(',')[0],sl=wEnsure(wNext()||wSlotNow());
  const fl=w.foods.map(id=>nm(id).toLowerCase()),fs=(fl.length>1?fl.slice(0,-1).join(', ')+' or '+fl[fl.length-1]:fl[0]).replace(/^./,c=>c.toUpperCase());
- wAsk(`Today's focus: ${nlow(w.n)}, at ${w.p} % lately.`,`${fs} would bring it up, and they grow golden: double coins at harvest. Tap one to add it to ${wMealN(sl).toLowerCase()}.`,
+ wAsk(`Today's focus: ${nlow(w.n)}, ${w.p} %`,`${fs} help, and grow golden (× 2).`,
   w.foods.map(id=>[nm(id),()=>{WHOLDT=0;const s2=wEnsure(wNext()||wSlotNow());addFood(s2,id);save();render();toast(`Added ${nm(id)} to ${wMealN(s2).toLowerCase()}`)}]).concat([['Later',()=>{WHOLDT=0}]]),true)}
 function wReport(wn){const t=wn.old?`${wn.c} coins from earlier weeks are yours now.`:`Last week: ${wn.n} kinds of plants${wn.cov!=null?` and ${wn.cov} % covered`:''}.`;
  const d=wn.old?'':[wn.good&&wn.good.length?'Well covered: '+wn.good.map(nlow).join(', ')+'.':'',wn.look&&wn.look.length?'Worth a look: '+wn.look.map(nlow).join(', ')+'.':'',wn.c?`${wn.c} coins${wn.d?' and a '+wn.d.toLowerCase():''} for the variety.`:''].filter(Boolean).join(' ');
@@ -6256,9 +6256,9 @@ function wReqBubble(){const r=wReq();if(!r)return '';const have=S.garden.bag[r.k
  const pl=S.garden.plants.find(p=>p.k===r.k),ripe=pl&&gReady(pl);return `<span class="wthought${ripe?' have':''}" aria-hidden="true"><i class="wtd1"></i><i class="wtd2"></i><span class="wtico">${I.icon}</span><b>${ripe?'ripe':pl?'growing':dl<=0?'eat today':'eat by '+wDay(r.until,1)}</b></span>`}
 const wDay=(d,short)=>d===TODAY?'today':d===shift(TODAY,1)?'tomorrow':new Date(d+'T12:00').toLocaleDateString('en-GB',{weekday:short?'short':'long'});
 function wReqCard(){const r=wReq();if(!r)return '';const g=S.garden,I=kindInfo(r.k),nm=esc(I.name.toLowerCase()),pl=g.plants.find(p=>p.k===r.k),sl=wEnsure(wNext()||wSlotNow()),fn=FM[r.id]?FM[r.id].n.split(',')[0].toLowerCase():I.name.toLowerCase();
- let t,d,act='';if(pl&&gReady(pl)){t=`Your ${nm} is ripe`;d=`Drag the sickle over it and it goes straight to the market.`}
- else if(pl){t=`Looking forward to your ${nm}`;d=`${gEta(pl)}. When you harvest it, it goes straight to the market.`}
- else{t=`Eat some ${nm} by ${wDay(r.until)}`;d=`It is rich in ${nlow(r.n)}, which is low lately. Eating it plants it by itself as a golden plant; it grows in about ${I.need} days, and harvesting it pays the market's price.`;act=`<button class="btn sm" type="button" id="greq-add">Add ${esc(fn)} to ${wMealN(sl).toLowerCase()}</button><p class="cap rqnote">Not by ${wDay(r.until)}? No problem, a new request comes.</p>`}
+ let t,d,act='';if(pl&&gReady(pl)){t=`Your ${nm} is ripe`;d='Harvest it with the sickle.'}
+ else if(pl){t=`Looking forward to your ${nm}`;d=`${gEta(pl)}.`}
+ else{t=`Eat some ${nm} by ${wDay(r.until)}`;d=`Rich in ${nlow(r.n)}. Eating it plants a golden seed.`;act=`<button class="btn sm" type="button" id="greq-add">Add ${esc(fn)} to ${wMealN(sl).toLowerCase()}</button>`}
  return `<div class="greq${pl&&gReady(pl)?' have':''}"><div class="rqh"><span class="thumb em">${I.icon}</span><span class="otx"><b>${t}</b><span class="cap">${d}</span>${act}</span><span class="gprice num">${COINI}${r.pay}</span></div></div>`}
 /* after logging: what the food did for today, in one line */
 let WIMP=null;
