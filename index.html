@@ -1273,9 +1273,9 @@ html.still #wundo{transition:none}
 /* seeds fly home, the day closes, the shed collection */
 .wfly{position:fixed;z-index:70;width:40px;height:40px;pointer-events:none;filter:drop-shadow(0 4px 4px rgba(0,0,0,.25))}
 .wfly>svg,.wfly>img{width:40px;height:40px;display:block}
-.gplot.wland{animation:wland .42s ease-out}
-@keyframes wland{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
-html.still .gplot.wland{animation:none}
+.gplot.wseedin{animation:wseedin .42s ease-out}
+@keyframes wseedin{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
+html.still .gplot.wseedin{animation:none}
 .gscene.wdusk::after{content:"";position:absolute;inset:0;z-index:40;pointer-events:none;background:linear-gradient(180deg,rgba(46,40,110,.30),rgba(255,140,70,.14) 70%,rgba(46,40,110,.22))}
 .wcolg h3{font-size:15px;font-weight:800;margin:6px 0 8px}
 .wcol{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -1499,11 +1499,14 @@ html.wediting #wdock{display:none}
 .gplot.v-lush .gcrop{filter:saturate(1.15)}
 .gplot.wwish::before{content:"";position:absolute;left:4%;right:4%;bottom:0;height:42%;border-radius:50%;background:radial-gradient(closest-side,rgba(255,214,90,.85),rgba(255,214,90,0));animation:wwglow 2.6s ease-in-out infinite;pointer-events:none}
 @keyframes wwglow{0%,100%{opacity:.55;transform:scale(.92)}50%{opacity:1;transform:scale(1.06)}}
-.wbfly{position:absolute;z-index:9200;pointer-events:none;aspect-ratio:24/20;animation:wbfly 8s ease-in-out infinite}
+.wbfly{position:absolute;left:0;top:0;z-index:9200;pointer-events:none;aspect-ratio:24/20;will-change:transform;filter:drop-shadow(0 3px 2px rgba(0,0,0,.18))}
+.wbfly.c1{--bf1:#6FA8DC;--bf2:#B9DAF2;--bf3:#EAF5FF}.wbfly.c2{--bf1:#F3EFE0;--bf2:#F2D86B;--bf3:#C9B98A}.wbfly.c3{--bf1:#E58BB0;--bf2:#F5C6D8;--bf3:#FFF0F6}
 .wbfly svg{width:100%;height:100%;display:block;overflow:visible}
-.wbfly .wl,.wbfly .wr{transform-box:fill-box;animation:wflap .32s ease-in-out infinite alternate}
+.wbfly .wl,.wbfly .wr{transform-box:fill-box;animation:wflap .16s ease-in-out infinite alternate}
+.wbfly.rest .wl,.wbfly.rest .wr{animation:wrest 2.2s ease-in-out infinite alternate}
+@keyframes wrest{0%,30%{transform:scaleX(1)}100%{transform:scaleX(.55)}}
 .wbfly .wl{transform-origin:100% 50%}.wbfly .wr{transform-origin:0 50%}
-@keyframes wflap{from{transform:scaleX(1)}to{transform:scaleX(.35)}}
+@keyframes wflap{from{transform:scaleX(1)}to{transform:scaleX(.18)}}
 @keyframes wbfly{0%{transform:translate(0,0) rotate(-6deg)}25%{transform:translate(70%,-60%) rotate(8deg)}50%{transform:translate(150%,-10%) rotate(-4deg)}75%{transform:translate(60%,40%) rotate(10deg)}100%{transform:translate(0,0) rotate(-6deg)}}
 .wwx{position:absolute;inset:0;pointer-events:none;z-index:30;overflow:hidden;transition:background .8s}
 .wwx i{position:absolute;display:none;width:90vw;height:46vw;border-radius:50%;background:radial-gradient(closest-side,rgba(40,50,70,.22),rgba(40,50,70,0));animation:wcloud 70s linear infinite}
@@ -4090,7 +4093,7 @@ function gardenView(){if(!GON()){G=null;$('gd-head').innerHTML='<div class="vhea
 function openGarden(view){if(!GON())return;gStart(view);S.view='garden';render();scrollTo({top:0});}
 function closeGarden(){if($('gsheet').open)$('gsheet').close();G=null;if(S.view==='garden'){S.view='today'}render()}
 function gView(v){G.view=v;G.sel=null;G.spot=null;G.buy=null;G.nm=0;renderGarden()}
-function renderGarden(){if(!G||!S.garden)return;const o=PROJ;PROJ=false;try{renderGarden0()}finally{PROJ=o}}
+function renderGarden(){if(!G||!S.garden)return;const o=PROJ;PROJ=false;try{renderGarden0()}finally{PROJ=o}try{wBfStart()}catch(e){}}
 function gEta(p){const left=p.need-gProgress(p);if(gMode()==='auto'){const n=Math.ceil(left-1e-6);if(n<=0)return 'Ready';return n<=1?'Ready tomorrow':`Ready in ${n} days`}
  const wf=gWaterOn(TODAY);if(left<=1-wf+1e-6)return 'Ready with more water today';if(wf<=0)return 'Needs water';const n=Math.ceil(left-(1-wf)-1e-6);return n<=1?'Ready tomorrow':`Ready in about ${n} days`}
 /* ---------- the land: a tile grid you lay out yourself; sections, stone paths and decorations snap to it ----------
@@ -5849,7 +5852,7 @@ function wFly(){if(!GNEW.length||!G)return;if(wDlg()||S.view!=='garden')return;c
   c.className='wfly';c.setAttribute('aria-hidden','true');c.innerHTML=kindInfo(k).icon;document.body.appendChild(c);
   const x0=A.left+A.width/2-20,y0=A.top+A.height/2-20,x1=R.left+R.width/2-20,y1=R.top+R.height*.62-20,dx=x1-x0,dy=y1-y0;c.style.left=x0+'px';c.style.top=y0+'px';
   if(!c.animate){c.remove();return}
-  c.animate([{transform:'translate(0,0) scale(.5)',opacity:0},{transform:`translate(${dx*.5}px,${dy*.5-110}px) scale(1.1)`,opacity:1,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(.6)`,opacity:1}],{duration:600,delay:i*140,easing:'cubic-bezier(.3,.7,.4,1)',fill:'both'}).onfinish=()=>{c.remove();el.classList.remove('wland');void el.offsetWidth;el.classList.add('wland')}})};
+  c.animate([{transform:'translate(0,0) scale(.5)',opacity:0},{transform:`translate(${dx*.5}px,${dy*.5-110}px) scale(1.1)`,opacity:1,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(.6)`,opacity:1}],{duration:600,delay:i*140,easing:'cubic-bezier(.3,.7,.4,1)',fill:'both'}).onfinish=()=>{c.remove();el.classList.remove('wseedin');void el.offsetWidth;el.classList.add('wseedin');setTimeout(()=>el.classList.remove('wseedin'),500)}})};
  if(els.some(([k,e])=>vis(e))){go();return}const r=els[0][1].getBoundingClientRect(),V=$('gd-scene').getBoundingClientRect();wGlide(V.left+V.width/2-(r.left+r.width/2),V.top+V.height*.4-(r.top+r.height/2));setTimeout(go,500)}
 /* a freed plot takes the oldest seed waiting for that bed */
 function gRefill(){const g=S.garden;if(!g)return;g.tray.slice().forEach(t=>{const pos=gFreePos(gBedOf(t.k));if(pos<0)return;g.tray.splice(g.tray.indexOf(t),1);const b=gBedOf(t.k),I=kindInfo(t.k);g.plants.push({k:t.k,b,d:TODAY,gp:0,need:I.need,tier:I.tier,s:t.s,pos});GNEW.push(t.k)})}
@@ -6127,9 +6130,31 @@ const TURNI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 12a7 7 0 1
 function wTurnSpot(){if(!G.ed||G.drag||G.pm)return '';let T=null,lab='';const L=gLand();if(G.es&&L.sec[G.es]){T=secTiles(L.sec[G.es]);lab=GSECN[G.es]}else if(G.eb&&GBLD[G.eb]){T=bldTiles(G.eb);lab=GBLD[G.eb].n}if(!T||!T.length)return '';
  const cs=T.map(tileXY),cm=Math.max(...cs.map(q=>q[0])),rm=Math.min(...cs.map(q=>q[1])),[x,y]=isoP(cm+.5,rm-.5);
  return `<button class="wturn" type="button" data-wturn="1" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}" aria-label="Turn ${esc(lab)}">${TURNI}<span>Turn</span></button>`}
-const WBFLY='<svg viewBox="0 0 24 20" aria-hidden="true"><g class="wl"><path d="M12 10C8 2 1 2 2 8c1 4 6 4 10 2z" fill="#F6A33C"/><path d="M12 11c-4 1-8 4-6 7 2 2 5-2 6-7z" fill="#F2C14E"/></g><g class="wr"><path d="M12 10c4-8 11-8 10-2-1 4-6 4-10 2z" fill="#F6A33C"/><path d="M12 11c4 1 8 4 6 7-2 2-5-2-6-7z" fill="#F2C14E"/></g><path d="M12 6v10" stroke="#5E3E1F" stroke-width="1.6" stroke-linecap="round"/></svg>';
-function wBflies(){const V=G.vit||{},L=gLand();let i=0;return gBeds().map(([b])=>{if(!V[b]||V[b].st!=='lush')return '';const s=L.sec[b],[w,hh]=secWH(s),[x,y]=isoP(s.c+(w-1)/2,s.r+(hh-1)/2);
- return `<span class="wbfly" style="left:${pct(x-12,ISO.w)};top:${pct(y-62,ISO.h)};width:${pct(26,ISO.w)};animation-delay:${(i++*1.3).toFixed(1)}s" aria-hidden="true">${WBFLY}</span>`}).join('')}
+const WBFLY='<svg viewBox="0 0 24 20" aria-hidden="true"><g class="wl"><path d="M12 10C8 2 1 2 2 8c1 4 6 4 10 2z" fill="var(--bf1,#F6A33C)"/><path d="M12 11c-4 1-8 4-6 7 2 2 5-2 6-7z" fill="var(--bf2,#F2C14E)"/><circle cx="6" cy="6.6" r="1.3" fill="var(--bf3,#FFF6DD)" opacity=".85"/></g><g class="wr"><path d="M12 10c4-8 11-8 10-2-1 4-6 4-10 2z" fill="var(--bf1,#F6A33C)"/><path d="M12 11c4 1 8 4 6 7-2 2-5-2-6-7z" fill="var(--bf2,#F2C14E)"/><circle cx="18" cy="6.6" r="1.3" fill="var(--bf3,#FFF6DD)" opacity=".85"/></g><path d="M12 6v10" stroke="#5E3E1F" stroke-width="1.6" stroke-linecap="round"/></svg>';
+/* living butterflies: a few always, one more for every thriving bed (at most 6). A small loop moves them only while the garden is on screen. */
+var WBF={st:[],els:[],spots:[],raf:0,last:0,k:1};
+function wBflies(){const V=G.vit||{},L=gLand(),g=S.garden,lush=gBeds().filter(([b])=>V[b]&&V[b].st==='lush').length,n=Math.min(6,2+lush);
+ WBF.spots=(g&&g.plants||[]).map(p=>{const q=isoC(p.b,p.pos),lu=V[p.b]&&V[p.b].st==='lush';return {x:q.x,y:q.y-30,w:lu?3:1}});
+ if(!WBF.spots.length){const s0=gLand().sec;Object.keys(s0).forEach(b=>{const s=s0[b],[w,hh]=secWH(s),[x,y]=isoP(s.c+(w-1)/2,s.r+(hh-1)/2);WBF.spots.push({x,y:y-24,w:1})})}
+ let h='';for(let i=0;i<n;i++)h+=`<span class="wbfly c${i%4}" data-bf="${i}" style="width:${pct(i%3?30:34,ISO.w)}" aria-hidden="true">${WBFLY}</span>`;return h}
+function wBfPick(){const S0=WBF.spots;if(!S0.length)return {x:ISO.w/2,y:ISO.h/2};const tot=S0.reduce((a,s)=>a+s.w,0);let r=Math.random()*tot;for(const s of S0){r-=s.w;if(r<=0)return s}return S0[0]}
+function wBfStart(){WBF.els=[...document.querySelectorAll('#gd-world .wbfly')];if(!WBF.els.length){cancelAnimationFrame(WBF.raf);WBF.raf=0;return}
+ const par=WBF.els[0].offsetParent;WBF.k=par?par.offsetWidth/ISO.w:1;
+ WBF.els.forEach((e,i)=>{let st=WBF.st[i];if(!st){const s=wBfPick();st=WBF.st[i]={x:s.x+(Math.random()-.5)*60,y:s.y-20-Math.random()*40,vx:0,vy:0,t:wBfPick(),mode:'fly',until:0,ph:Math.random()*9,flip:1}}e.classList.toggle('rest',st.mode==='rest');wBfDraw(e,st)});
+ if(GSTILL()){WBF.els.forEach((e,i)=>{const st=WBF.st[i],s=WBF.spots[i%Math.max(1,WBF.spots.length)]||st;st.x=s.x;st.y=s.y;e.classList.add('rest');wBfDraw(e,st)});return}
+ if(!WBF.raf){WBF.last=performance.now();WBF.raf=requestAnimationFrame(wBfTick)}}
+function wBfDraw(e,st){const k=WBF.k,bob=st.mode==='fly'?Math.sin(st.ph*7)*3:0;e.style.transform=`translate(${((st.x-16)*k).toFixed(1)}px,${((st.y-14+bob)*k).toFixed(1)}px) scaleX(${st.flip})`}
+function wBfTick(now){WBF.raf=0;if(!G||S.view!=='garden'||document.hidden||GSTILL()||!WBF.els.length||!WBF.els[0].isConnected)return;
+ const dt=Math.min(.1,(now-WBF.last)/1000);if(dt<1/32){WBF.raf=requestAnimationFrame(wBfTick);return}WBF.last=now;
+ WBF.els.forEach((e,i)=>{const st=WBF.st[i];if(!st)return;st.ph+=dt;
+  if(st.mode==='rest'){if(now>st.until){st.mode='fly';st.t=Math.random()<.25?{x:st.x+(Math.random()-.5)*160,y:st.y-30-Math.random()*60}:wBfPick();e.classList.remove('rest')}return}
+  const dx=st.t.x-st.x,dy=st.t.y-st.y,d=Math.hypot(dx,dy)||1,sp=d<30?18+d*.8:42;
+  const wob=Math.sin(st.ph*2.3+i)*.9,ax=dx/d*sp-st.vx+Math.cos(st.ph*3.1+i*2)*26*wob,ay=dy/d*sp-st.vy+Math.sin(st.ph*2.7+i)*22;
+  st.vx+=ax*dt*2.2;st.vy+=ay*dt*2.2;st.x+=st.vx*dt;st.y+=st.vy*dt;if(Math.abs(st.vx)>4)st.flip=st.vx<0?-1:1;
+  if(d<5&&Math.abs(st.vx)+Math.abs(st.vy)<40){if(st.t.w){st.mode='rest';st.until=now+1800+Math.random()*3200;st.vx=st.vy=0;e.classList.add('rest')}else st.t=wBfPick()}
+  wBfDraw(e,st)});
+ WBF.raf=requestAnimationFrame(wBfTick)}
+document.addEventListener('visibilitychange',()=>{if(!document.hidden&&G&&S.view==='garden')try{wBfStart()}catch(e){}});
 function wWeather(){if(!wHasData())return 'fair';let sc=0;try{sc=wScore().sc}catch(e){}return sc>=75?'sun':sc>=50?'fair':'soft'}
 const WXSAY={sun:'Your garden is sunny: you are well covered.',fair:'Your garden is fair.',soft:'Your garden is cloudy: a few nutrients are low.'};
 const WBEDWHY={f:FG.fruit.why,b:FG.fruit.why,c:FG.whole.why,l:FG.leg.why,n:FG.nuts.why,k:FG.green.why,v:'Vegetables bring fiber, potassium, folate and vitamins A and C; in large studies every extra portion goes with lower heart disease risk.',h:'Herbs and spices add flavour and a little of everything.'};
