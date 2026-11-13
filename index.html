@@ -1483,6 +1483,13 @@ html.wediting #wdock{display:none}
 .wgrow:active{transform:translate(-50%,-48%)}
 @keyframes wgpulse{0%,100%{box-shadow:0 3px 0 #2F6E35,0 0 0 0 rgba(109,187,99,.55)}50%{box-shadow:0 3px 0 #2F6E35,0 0 0 9px rgba(109,187,99,0)}}
 @media (prefers-reduced-motion:reduce){.wgrow{animation:none}}
+/* prices on +4, copies in the shop */
+.wgrow{width:54px;height:54px;flex-direction:column;gap:0;line-height:1}
+.wgrow{display:flex;align-items:center;justify-content:center}
+.wgrow span{display:inline-flex;align-items:center;gap:2px;font-size:11px;font-weight:800}
+.wgrow span svg{width:11px;height:11px}
+.wgrow.poor{background:#C9D9B8;color:#2F6E35;text-shadow:none;animation:none}
+.gown{font-size:11px;font-weight:700;color:var(--muted)}
 </style>
 </head>
 <body>
@@ -3813,8 +3820,10 @@ const kName=k=>k.charAt(0).toUpperCase()+k.slice(1);
 function kindInfo(k){return kindMap()[k]||{k,bed:'c',icon:GSPR,tier:1,need:GCFG.need[1],price:GCFG.price[1],name:kName(k),id:null,sc:0}}
 
 /* create or repair the garden; a first run sows what was eaten in the last 7 days */
+/* a new garden starts with 50 coins, so the first decoration can be bought on day one */
+const GSTART=50;
 function gInit(){let g=S.garden;const fresh=!g||typeof g!=='object'||Array.isArray(g);if(fresh)g=S.garden={};
- const D={v:1,on:1,water:null,coins:0,plants:[],tray:[],bag:{},bagT:{},tick:TODAY,seen:{},wk:null,gift:0,album:[],orders:null,decor:{own:[],spot:[null,null,null,null,null,null],bg:'meadow',bgs:['meadow']},fruit:null,chest:null,badges:[],ever:[],stat:{harv:0}};
+ const D={v:1,on:1,water:null,coins:GSTART,plants:[],tray:[],bag:{},bagT:{},tick:TODAY,seen:{},wk:null,gift:0,album:[],orders:null,decor:{own:[],spot:[null,null,null,null,null,null],bg:'meadow',bgs:['meadow']},fruit:null,chest:null,badges:[],ever:[],stat:{harv:0}};
  Object.keys(D).forEach(k=>{if(g[k]===undefined)g[k]=D[k]});
  ['plants','tray','album','badges','ever'].forEach(k=>{if(!Array.isArray(g[k]))g[k]=[]});['bag','bagT','seen','stat'].forEach(k=>{if(!g[k]||typeof g[k]!=='object'||Array.isArray(g[k]))g[k]=k==='stat'?{harv:0}:{}});
  if(!(+g.coins>=0))g.coins=0;g.plants=g.plants.filter(p=>p&&p.k&&gBeds().some(b=>b[0]===p.b));
@@ -3930,9 +3939,10 @@ function isoLand(){isoGeom();const L=gLand(),occ=gOcc();
 function gSigns(ed){const L=gLand();return (ed?Object.keys(L.sec):[]).map(b=>{const s=L.sec[b],[w,hh]=secWH(s),[x,y]=isoP(s.c-.55,s.r+hh/2-.5);return `<button class="gsign" type="button" data-sb="${b}" style="left:${pct(x-18,ISO.w)};top:${pct(y-6,ISO.h)}"><b>${GSECN[b]}</b></button>`}).join('')+gParcels().map(p=>{const [x,y]=isoP(p.c+(p.id==='land'?.5:p.w/2-.5),p.r+(p.id==='sec:b'?p.h-1.2:p.id==='land'?p.h/2-.5:.3)),pr=gUpPrice(p.id);return `<button class="glock" type="button" data-ul="${p.id}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}" aria-label="Unlock ${p.n} for ${pr} coins">${GLOCKI}<span class="num">${COINI}${pr}</span></button>`}).join('')}
 function gDecs(){const L=gLand();return Object.keys(L.dec).map(t=>{const [c,r]=tileXY(t),[x,y]=isoP(c,r),id=L.dec[t];return `<span class="gspot" style="left:${pct(x-27,ISO.w)};top:${pct(y+10-54,ISO.h)};width:${pct(54,ISO.w)};z-index:${Math.round((c+r)*10)+6}" aria-label="${(GDEC.find(d=>d[0]===id)||[0,''])[1]}">${gDec(id)}</span>`}).join('')}
 /* placing */
-function gAutoPlace(id){const L=gLand();if(Object.values(L.dec).includes(id))return;const occ=gOcc();for(const [c,r] of gNear(5,2)){const t=c+','+r;if(!occ[t]&&!gInPar(t)){L.dec[t]=id;return}}}
-function gPut(t,id){const L=gLand();isoGeom();if(!gInMap(t))return 0;const o=gOcc()[t];
- if(!id){if(L.dec[t]){delete L.dec[t];return 1}return 0}if(!S.garden.decor.own.includes(id)||(o&&o!=='d'))return 0;Object.keys(L.dec).forEach(k=>{if(L.dec[k]===id)delete L.dec[k]});L.dec[t]=id;return 1}
+function gAutoPlace(id){const L=gLand();if(gDecN(id,1)>=gDecN(id))return;const occ=gOcc();for(const [c,r] of gNear(5,2)){const t=c+','+r;if(!occ[t]&&!gInPar(t)){L.dec[t]=id;return}}}
+function gPut(t,id,from){const L=gLand();isoGeom();if(!gInMap(t))return 0;const o=gOcc()[t];
+ if(!id){if(L.dec[t]){delete L.dec[t];return 1}return 0}if(!S.garden.decor.own.includes(id)||(o&&o!=='d'))return 0;if(from&&L.dec[from]===id)delete L.dec[from];else if(gDecN(id,1)>=gDecN(id)){const k=Object.keys(L.dec).find(q=>L.dec[q]===id);if(k)delete L.dec[k]}L.dec[t]=id;return 1}
+function gDecN(id,placed){return placed?Object.values(gLand().dec).filter(x=>x===id).length:S.garden.decor.own.filter(x=>x===id).length}
 function gPathT(t){const L=gLand();isoGeom();if(!gInMap(t))return 0;const o=gOcc()[t],i=L.path.indexOf(t);if(i>=0){L.path.splice(i,1);return 1}if(o)return 0;L.path.push(t);return 1}
 const gInBox=t=>{const [c,r]=tileXY(t);return c>=ISO.c0&&r>=ISO.r0&&c<ISO.c1&&r<ISO.r1};
 function gFits(b,s){const occ=gOcc(b);return secTiles(s).every(t=>gInBox(t)&&!gInPar(t)&&!/^(s|b):/.test(occ[t]||''))}
@@ -4106,7 +4116,7 @@ function gMain(g,nb){G.need=wNeedBeds();const R=g.plants.filter(gReady),wk=gWeek
   <div class="ghud hbot">${G.ed?gEditBar():gSeedBar()}</div></div>`;
  gCamGo();if(!G.cam)requestAnimationFrame(()=>{if(G)gCamGo()});
  gReapBind(b);gSeedBind(b);gCamBind();gHoldBind();
- b.querySelectorAll('[data-gv]').forEach(x=>x.onclick=()=>{if(G.ed)return;if(x.dataset.gv==='mail'){go('profile');PS='voice';render();return}if(x.dataset.gv==='album'){wBigBoard();return}if(x.dataset.gv==='plan'){openPlan();return}if(x.dataset.gv==='centre'){G.buy=null;gView('shop');return}const sv=WBLDV[x.dataset.gv];if(sv==='scan'&&S.shopSeg!=='pantry')S.shopSeg='list';if(sv)go(sv);else gView(x.dataset.gv)});b.querySelectorAll('[data-ul]').forEach(x=>x.onclick=()=>{G.ul=x.dataset.ul;gView('unlock')});b.querySelectorAll('[data-sb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.sb;gView('sec')});b.querySelectorAll('[data-wsb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.wsb;G.bmt=null;gView('bed')});document.documentElement.classList.toggle('wediting',!!G.ed);b.querySelectorAll('[data-wgrow]').forEach(x=>{x.addEventListener('pointerdown',e=>e.stopPropagation());x.onclick=e=>{e.stopPropagation();const k=x.dataset.wgrow;if(wGrow(k)){toast(GSECN[k]+' has '+gPlots(k)+' plots now');renderGarden();render()}else toast('Something is in the way. Move it, or move the bed.')}});
+ b.querySelectorAll('[data-gv]').forEach(x=>x.onclick=()=>{if(G.ed)return;if(x.dataset.gv==='mail'){go('profile');PS='voice';render();return}if(x.dataset.gv==='album'){wBigBoard();return}if(x.dataset.gv==='plan'){openPlan();return}if(x.dataset.gv==='centre'){G.buy=null;gView('shop');return}const sv=WBLDV[x.dataset.gv];if(sv==='scan'&&S.shopSeg!=='pantry')S.shopSeg='list';if(sv)go(sv);else gView(x.dataset.gv)});b.querySelectorAll('[data-ul]').forEach(x=>x.onclick=()=>{G.ul=x.dataset.ul;gView('unlock')});b.querySelectorAll('[data-sb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.sb;gView('sec')});b.querySelectorAll('[data-wsb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.wsb;G.bmt=null;gView('bed')});document.documentElement.classList.toggle('wediting',!!G.ed);b.querySelectorAll('[data-wgrow]').forEach(x=>{x.addEventListener('pointerdown',e=>e.stopPropagation());x.onclick=e=>{e.stopPropagation();const k=x.dataset.wgrow,r=wGrow(k);toast(wGrowSay(k,r));if(r===1){renderGarden();render()}}});
  if($('gd-share'))$('gd-share').onclick=gShare;$('gd-zin').onclick=()=>gZoom(1.25);$('gd-zout').onclick=()=>gZoom(.8);
  b.querySelectorAll('[data-gch]').forEach(x=>x.onclick=()=>{const c0=g.coins,r=gClaim(+x.dataset.gch);if(!r)return;save();renderGarden();gCount(c0,g.coins);gDone(`+${r.c} coins${r.d?' and a '+r.d.toLowerCase():''}`)});
  if($('gd-gift'))$('gd-gift').onclick=()=>{const c0=g.coins,r=gGift();if(!r)return;save();renderGarden();gCount(c0,g.coins);toast(`+${r.c} coins${r.d?' and '+r.d.toLowerCase():''}`)};
@@ -4186,11 +4196,11 @@ const gInMap=t=>{const [c,r]=tileXY(t);return c>=ISO.c0&&r>=ISO.r0&&c<ISO.c1&&r<
 const gInFarm=()=>false;
 function gEditLayer(){let h='';const occ=gOcc();for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++){const t=c+','+r;if(!gInMap(t))continue;const o=occ[t]||'';h+=`<polygon class="et${gInWorld(t)?'':' out'}${(G.es&&o==='s:'+G.es)||(G.eb&&o==='b:'+G.eb)?' sel':''}" data-t="${t}" points="${isoDia(c,r,.98)}"/>`}
  return `<svg class="gedit" viewBox="0 0 ${ISO.w} ${ISO.h}" role="group" aria-label="Layout: press and drag to move things">${h}</svg>`}
-function gEditBar(){const g=S.garden,placed=new Set(Object.values(gLand().dec)),free=g.decor.own.filter(id=>!placed.has(id));
+function gEditBar(){const g=S.garden,free=[...new Set(g.decor.own)].filter(id=>gDecN(id)>gDecN(id,1));
  return `<div class="gedbar"><p class="cap gedhint">${G.es?`${GSECN[G.es]}: drag, turn, or tap +4 to grow it`:G.eb&&GBLD[G.eb]?`${GBLD[G.eb].n}: drag it or turn it`:G.pm?'Tap tiles, or drag a straight path':'Hold to lift and drag. Swipe to look around.'}</p><div class="gedrow">
   ${G.eb&&GBLD[G.eb]&&!G.es?'<button class="btn sm gedturn" type="button" id="ged-bturn">Turn</button>':''}
   ${G.es?`<button class="btn sm gedturn" type="button" id="ged-turn">Turn</button>`:''}
-  <div class="gtray2" id="ged-tray"><button class="gtit${G.pm?' on':''}" type="button" data-tray="path" aria-pressed="${G.pm?'true':'false'}" aria-label="Path mode: tap tiles or drag a straight line"><span class="gtii"><svg viewBox="0 0 48 48"><path d="M4 30L24 20l20 10-20 10z" fill="var(--g-path)"/><ellipse cx="17" cy="30" rx="7" ry="3.4" fill="var(--g-stone)"/><ellipse cx="31" cy="31" rx="6" ry="3" fill="var(--g-stone)"/></svg></span><span>Path</span></button>${free.map(id=>`<button class="gtit" type="button" data-tray="${id}"><span class="gtii">${gDec(id)}</span><span>${(GDEC.find(d=>d[0]===id)||[0,id])[1]}</span></button>`).join('')}</div>
+  <div class="gtray2" id="ged-tray"><button class="gtit${G.pm?' on':''}" type="button" data-tray="path" aria-pressed="${G.pm?'true':'false'}" aria-label="Path mode: tap tiles or drag a straight line"><span class="gtii"><svg viewBox="0 0 48 48"><path d="M4 30L24 20l20 10-20 10z" fill="var(--g-path)"/><ellipse cx="17" cy="30" rx="7" ry="3.4" fill="var(--g-stone)"/><ellipse cx="31" cy="31" rx="6" ry="3" fill="var(--g-stone)"/></svg></span><span>Path</span></button>${free.map(id=>{const n=gDecN(id)-gDecN(id,1);return `<button class="gtit" type="button" data-tray="${id}"><span class="gtii">${gDec(id)}</span><span>${(GDEC.find(d=>d[0]===id)||[0,id])[1]}${n>1?` × ${n}`:''}</span></button>`}).join('')}</div>
   <button class="btn primary sm gdone" type="button" id="ged-done">Done</button></div></div>`}
 function gTileAt(x,y){const f=document.querySelector('#gd-body .gfarm');if(!f)return null;const R=f.getBoundingClientRect(),ux=(x-R.left)/R.width*ISO.w,uy=(y-R.top)/R.height*ISO.h,a=(ux-ISO.ox)/42,b=(uy-ISO.oy)/21;const c=Math.round((a+b)/2),r=Math.round((b-a)/2),t=c+','+r;return gInMap(t)?t:null}
 function gFoot(tiles,ok){document.querySelectorAll('#gd-body .gedit .et').forEach(p=>p.classList.remove('ok','bad'));(tiles||[]).forEach(t=>{const p=document.querySelector(`#gd-body .gedit [data-t="${t}"]`);if(p)p.classList.add(ok?'ok':'bad')})}
@@ -4218,7 +4228,7 @@ function gEditBind(b){if(!G.ed)return;const L=gLand(),re=()=>{save();renderGarde
   const R=x.R;if(!R||!R.ok||!x.last){if(x.last)no();renderGarden();return}
   if(x.k==='sec'){if(gSetSec(x.b,R.s)){G.es=x.b;re()}else no();return}
   if(x.k==='bld'){const q=gBld()[x.b];gBld()[x.b]=[R.p[0],R.p[1],q[2]?1:0];G.eb=x.b;re();return}
-  if(x.k==='dec'){if(gPut(x.last,x.dec))re();else no();return}
+  if(x.k==='dec'){if(gPut(x.last,x.dec,x.from))re();else no();return}
   if(x.k==='path'){if(x.from){const i=L.path.indexOf(x.from);if(i>=0)L.path.splice(i,1)}if(!gOcc()[x.last])L.path.push(x.last);re()}};
  const lay=b.querySelector('.gedit');
  const begin=(t,X,Y,id,lp)=>{const o=gOcc()[t]||'',[c,r]=tileXY(t);
@@ -4323,14 +4333,14 @@ function gPanel(v,b){const g=S.garden;if(v==='bed')return wBedPanel(G.sb,b);
   b.innerHTML=ks.length?`<h3 class="rh">Your harvest</h3><div class="gbag">${ks.map(k=>{const I=kindInfo(k);return `<div class="gbr"><span class="thumb em">${I.icon}</span><span class="otx"><b>${esc(I.name)}</b>${gNeedTag(k)}${keep[k]?'<span class="cap">Kept for an order</span>':''}</span><span class="num gbx">× ${g.bag[k]}</span><span class="gprice num">${COINI}${gPrice(k)}</span></div>`}).join('')}</div>${gPxLine()}`+
    (sell?`<button class="btn primary wide gsell" type="button" id="gd-sell">Sell the rest · ${sell} coin${sell>1?'s':''}</button>`:''):`<p class="gempty">Nothing to sell yet. Drag the sickle over ripe plants to harvest them.</p>`;
   if($('gd-sell'))$('gd-sell').onclick=()=>{const c0=g.coins,c=gSellRest();save();renderGarden();gCount(c0,g.coins);gDone(`Sold for ${c} coin${c>1?'s':''}`)};return}
- if(v==='shop'){const card=(id,n,pr,own,bg)=>`<button class="gsh${own?' own':''}${G.buy===id?' on':''}" type="button" data-gs="${id}" aria-pressed="${bg?g.decor.bg===id:G.buy===id}"><span class="gshp${bg?' bgprev bg-'+id:''}">${bg?'':gDec(id)}</span><b>${n}</b><span class="gprice num">${own?(bg&&g.decor.bg===id?'In use':'✓'):pr?COINI+pr:'Free'}</span></button>`;
+ if(v==='shop'){const card=(id,n,pr,own,bg)=>{const cnt=bg?0:gDecN(id);return `<button class="gsh${bg&&own?' own':''}${G.buy===id?' on':''}" type="button" data-gs="${id}" aria-pressed="${bg?g.decor.bg===id:G.buy===id}"><span class="gshp${bg?' bgprev bg-'+id:''}">${bg?'':gDec(id)}</span><b>${n}</b>${cnt?`<span class="gown num">You have ${cnt}</span>`:''}<span class="gprice num">${bg&&own?(g.decor.bg===id?'In use':'✓'):pr?COINI+pr:'Free'}</span></button>`};
   const it=G.buy&&(G.buy.startsWith('up:')?(()=>{const u=GUP.find(x=>'up:'+x[0]===G.buy);return u?[G.buy,u[1],gUpPrice(u[0])]:null})():(GDEC.find(x=>x[0]===G.buy)||GBG.find(x=>x[0]===G.buy)));
   const upcX=GUP.map(([id,n,ps])=>{const lv=gUp(id),pr=ps[lv],own=!pr;return `<button class="gsh${own?' own':''}${G.buy==='up:'+id?' on':''}" type="button" data-gs="up:${id}" aria-pressed="${G.buy==='up:'+id}"${own?' disabled':''}><span class="gshp">${gUpIc(id)}</span><b>${n}${ps.length>1&&lv?' '+(lv+1):''}</b><span class="gprice num">${own?'✓':COINI+pr}</span></button>`}).join('');
   b.innerHTML=`<h3 class="rh">Decorations</h3><div class="gshop">${GDEC.map(([id,n,pr])=>card(id,n,pr,g.decor.own.includes(id),0)).join('')}</div>
    <h3 class="rh">Backdrops</h3><div class="gshop">${GBG.map(([id,n,pr])=>card(id,n,pr,g.decor.bgs.includes(id),1)).join('')}</div>
    ${it?`<div class="gbuy"><span class="otx"><b>${it[1]}</b><span class="cap num">${COINI} ${it[2]}</span></span><button class="btn primary" type="button" id="gd-buy"${g.coins<it[2]?' disabled':''}>Buy</button></div>`:''}`;
   b.querySelectorAll('[data-gs]').forEach(x=>x.onclick=()=>{const id=x.dataset.gs,bg=GBG.some(d=>d[0]===id);if(id.startsWith('up:')){G.buy=G.buy===id?null:id;renderGarden();if($('gd-buy'))$('gd-buy').scrollIntoView({block:'nearest'});return}if(bg&&g.decor.bgs.includes(id)){g.decor.bg=id;G.buy=null;save();renderGarden();return}
-   if(!bg&&g.decor.own.includes(id)){G.buy=null;gView('main');return}G.buy=G.buy===id?null:id;renderGarden();if($('gd-buy'))$('gd-buy').scrollIntoView({block:'nearest'})});
+   G.buy=G.buy===id?null:id;renderGarden();if($('gd-buy'))$('gd-buy').scrollIntoView({block:'nearest'})});
   if($('gd-buy'))$('gd-buy').onclick=()=>{const id=G.buy,c0=g.coins;if(id.startsWith('up:')){if(gBuyUp(id.slice(3))){G.buy=null;save();renderGarden();gCount(c0,g.coins);toast('Upgraded')}else toast('No room there');return}if(gBuy(id)){G.buy=null;save();renderGarden();gCount(c0,g.coins);toast(GBG.some(d=>d[0]===id)?'New backdrop':'Placed in your garden')}};return}
  if(v==='album'){const wk=gWeekN(),o=PROJ,ds=[];for(let d=wkStart(TODAY);d<=TODAY;d=shift(d,1))ds.push(d);const cur={id:wkStart(TODAY),n:wk,kinds:[...plantSet(ds)].sort(),cur:1};
   const wc=a=>`<div class="galb"><span class="cap">${a.cur?'This week':'Week of '+fdS(a.id)}</span><b class="num">${a.n} plant${a.n===1?'':'s'}</b><span class="galk">${a.kinds.slice(0,12).map(k=>`<i>${kindInfo(k).icon}</i>`).join('')}</span></div>`;
@@ -4404,15 +4414,15 @@ function gGive(i){const g=S.garden,o=g.orders&&g.orders.list[i];if(!o||o.done||g
 /* weekly plants: chests at 10, 20 and 30; the week change writes the album and folds unopened chests into one */
 function gWeekTick(){const g=S.garden,id=wkStart(TODAY);if(!g.wk||!g.wk.id){g.wk={id,claimed:[],coins:0};return}if(g.wk.id>=id)return;const o=PROJ;PROJ=false;try{
  const ds=[];for(let d=g.wk.id;d<id&&ds.length<7;d=shift(d,1))ds.push(d);const set=plantSet(ds),n=set.size;
- GCFG.week.forEach(([t,c])=>{if(n>=t&&!g.wk.claimed.includes(t)){g.gift=(g.gift||0)+c;if(t===30)g.giftD=(g.giftD||0)+1}});
+ let wc=0,wd=null;GCFG.week.forEach(([t,c])=>{if(n>=t&&!g.wk.claimed.includes(t)){wc+=c;if(t===30)wd=gGiveDecor()}});if(wc)gEarn(wc);if(wc||n)g.wkNote={n,c:wc,d:wd};
  if(!g.album.some(a=>a.id===g.wk.id)){g.album.push({id:g.wk.id,n,kinds:[...set].sort().slice(0,60),coins:g.wk.coins||0});g.album=g.album.slice(-52)}
  g.wk={id,claimed:[],coins:0}}finally{PROJ=o}}
-const GDEC=[['path','Stone path',20],['pot','Flower pot',25],['can','Watering can',30],['bath','Bird bath',40],['bench','Bench',50],['lantern','Lantern',60],['scare','Scarecrow',70],['hotel','Insect hotel',80],['barrow','Wheelbarrow',90],['arch','Trellis arch',110],['pond','Pond',140],['house','Greenhouse',180]];
-const GBG=[['meadow','Meadow',0],['terrace','Terrace',150],['dusk','Dusk',220],['roof','Rooftop',300]];
+const GDEC=[['path','Stone path',30],['pot','Flower pot',40],['can','Watering can',60],['bath','Bird bath',80],['bench','Bench',100],['lantern','Lantern',120],['scare','Scarecrow',150],['hotel','Insect hotel',180],['barrow','Wheelbarrow',220],['arch','Trellis arch',280],['pond','Pond',360],['house','Greenhouse',480]];
+const GBG=[['meadow','Meadow',0],['terrace','Terrace',400],['dusk','Dusk',600],['roof','Rooftop',900]];
 function gGiveDecor(){const g=S.garden,half=GDEC.slice(0,6).filter(x=>!g.decor.own.includes(x[0]));if(!half.length){gEarn(20);return null}const x=half[gHash(TODAY+'d')%half.length];g.decor.own.push(x[0]);gAutoPlace(x[0]);return x[1]}
 function gClaim(t){const g=S.garden,w=GCFG.week.find(x=>x[0]===t);if(!w||g.wk.claimed.includes(t)||gWeekN()<t)return 0;g.wk.claimed.push(t);gEarn(w[1]);const d=t===30?gGiveDecor():null;return {c:w[1],d}}
 function gGift(){const g=S.garden,c=g.gift||0,nd=g.giftD||0;if(!c&&!nd)return 0;g.gift=0;g.giftD=0;gEarn(c);const ds=[];for(let i=0;i<nd;i++){const d=gGiveDecor();if(d)ds.push(d)}return {c,d:ds.join(', ')}}
-function gBuy(id){const g=S.garden,x=GDEC.find(d=>d[0]===id)||GBG.find(d=>d[0]===id);if(!x)return 0;const bg=GBG.some(d=>d[0]===id),own=bg?g.decor.bgs:g.decor.own;if(own.includes(id)||g.coins<x[2])return 0;
+function gBuy(id){const g=S.garden,x=GDEC.find(d=>d[0]===id)||GBG.find(d=>d[0]===id);if(!x)return 0;const bg=GBG.some(d=>d[0]===id),own=bg?g.decor.bgs:g.decor.own;if((bg&&own.includes(id))||g.coins<x[2])return 0;
  g.coins-=x[2];own.push(id);if(bg)g.decor.bg=id;else gAutoPlace(id);return 1}
 /* badges, earned once */
 const GBADGE=[['first','First harvest'],['w10','10 plants in a week'],['w20','20 plants in a week'],['w30','30 plants in a week'],['e50','50 plants ever'],['h100','100 harvests'],['bed','A full bed'],['all3','All three orders in a day']];
@@ -4421,7 +4431,7 @@ function gBadges(){const g=S.garden,wk=gWeekN(),has=b=>g.badges.includes(b),add=
  if(gBeds().some(([b])=>g.plants.filter(p=>p.b===b).length>=gPlots(b)))add('bed');if(g.orders&&g.orders.d===TODAY&&g.orders.list.length>=3&&g.orders.list.every(o=>o.done))add('all3')}
 let GNEWB=null;
 /* once a day: orders, the week, the fruit bonus */
-function gDaily(){const g=S.garden;gWeekTick();if(!g.orders||g.orders.d!==TODAY)g.orders={d:TODAY,list:gOrders()};
+function gDaily(){const g=S.garden;if((g.gift||0)>0||(g.giftD||0)>0){const c=g.gift||0;g.gift=0;g.giftD=0;if(c){gEarn(c);g.wkNote={n:0,c,old:1}}}gWeekTick();if(!g.orders||g.orders.d!==TODAY)g.orders={d:TODAY,list:gOrders()};
  if(g.fruit!==TODAY){const o=PROJ;PROJ=false;try{if([...plantSet([TODAY])].some(k=>kindInfo(k).bed==='f')){g.fruit=TODAY;gEarn(GCFG.fruit);0}}finally{PROJ=o}}
  gBadges()}
 /* the supplements chest: the full stop after the card, the same for taken and skipped */
@@ -5731,17 +5741,19 @@ const GB_BENCH='<svg viewBox="0 -16 120 140" aria-hidden="true"><polygon points=
 const GB_CENTRE='<svg viewBox="0 -16 120 128" aria-hidden="true"><polygon points="60,51.3 109.4,76 60,100.7 10.6,76" fill="#C9B48E"/><polygon points="10.6,76 60,100.7 60,103.7 10.6,79" fill="#A8916A"/><polygon points="109.4,76 60,100.7 60,103.7 109.4,79" fill="#8E7956"/><polygon points="58.4,17.8 108.4,42.8 85,28.5 35,3.5" fill="#7FB6BF"/><polygon points="104.7,77 62.1,98.4 62.1,64.4 104.7,43" fill="#D7C29C"/><polygon points="15.3,75 62.1,98.4 62.1,64.4 15.3,41" fill="#F1E3C6"/><polygon points="104.7,43 62.1,64.4 83.4,27.7" fill="#C9B48E"/><g transform="matrix(1 -.5 0 1 83.4 87.7)"><circle cx="0" cy="-41" r="6.5" fill="#FFFBEF" stroke="#6E4A2A" stroke-width="1.6"/><circle cx="0" cy="-42" r="2.2" fill="#E2483D"/><circle cx="-2.6" cy="-40.2" r="1.8" fill="#F28AA8"/><circle cx="2.6" cy="-40.2" r="1.8" fill="#F28AA8"/><path d="M0 -40v4" stroke="#4E8F45" stroke-width="1.4"/></g><g transform="matrix(1 .5 0 1 38.7 86.7)"><rect x="-20.4" y="-23" width="9" height="23" rx="1.5" fill="#3F7A5A"/><rect x="-18.9" y="-21" width="6" height="8" rx="1" fill="#A9D8E0"/><circle cx="-13.4" cy="-10" r="1" fill="#F2C14E"/><rect x="-4" y="-27" width="21" height="17" rx="1.5" fill="#A9D8E0" stroke="#6E4A2A" stroke-width="1.6"/><path d="M6.5 -27v17" stroke="#6E4A2A" stroke-width="1.2"/><path d="M-3 -14h19" stroke="#8A5E33" stroke-width="1.6"/><path d="M-1 -14l.8 -4h4l.8 4zM8 -14l.8 -4h4l.8 4z" fill="#C8673E"/><circle cx="1.4" cy="-20" r="2.6" fill="#6DBB63"/><circle cx="10.4" cy="-20.5" r="2.8" fill="#4E8F45"/><circle cx="11.3" cy="-21.5" r="1" fill="#E2483D"/><path d="M-2 -24c2-3 4-3 5 0M9 -25c1.5-2.5 3.5-2.5 4.5 0" stroke="#6DBB63" stroke-width="1.4" fill="none"/><rect x="-5" y="-9" width="23" height="5" rx="1" fill="#8A5E33"/><circle cx="-1" cy="-10" r="1.8" fill="#F28AA8"/><circle cx="4" cy="-10.4" r="1.8" fill="#F2C14E"/><circle cx="9" cy="-10" r="1.8" fill="#F28AA8"/><circle cx="14" cy="-10.4" r="1.8" fill="#B79BE0"/></g><path d="M11.6 41.2L61.6 66.2" stroke="#6E4A2A" stroke-width="2" stroke-linecap="round"/><polygon points="11.6,41.2 61.6,66.2 85,28.5 35,3.5" fill="#BFE6EE" fill-opacity=".92"/><path d="M26.2 48.5L49.6 10.8" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/><path d="M36.6 53.7L60 16" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/><path d="M47 58.9L70.4 21.2" stroke="#FFFFFF" stroke-width="1.6" stroke-linecap="round"/><path d="M24.4 21.8L74.3 46.8" stroke="#FFFFFF" stroke-width="1.4" stroke-linecap="round"/><path d="M35 3.5L85 28.5" stroke="#6E4A2A" stroke-width="2.4" stroke-linecap="round"/><path d="M61.6 66.2L85 28.5" stroke="#6E4A2A" stroke-width="2" stroke-linecap="round"/><path d="M108.4 42.8L85 28.5" stroke="#6E4A2A" stroke-width="2" stroke-linecap="round"/><path d="M11.6 41.2L35 3.5" stroke="#6E4A2A" stroke-width="2" stroke-linecap="round"/><path d="M21.9 73.3h8l-1.4 8h-5.2z" fill="#C8673E"/><circle cx="25.9" cy="71.3" r="3.4" fill="#6DBB63"/><path d="M34.4 80.1h8l-1.4 8h-5.2z" fill="#D9805A"/><circle cx="38.4" cy="78.1" r="3.4" fill="#F28AA8"/><path d="M46.6 85.7h8l-1.4 8h-5.2z" fill="#C8673E"/><circle cx="50.6" cy="83.7" r="3.4" fill="#4E8F45"/></svg>';
 const GB_MAIL='<svg viewBox="0 -16 120 128" aria-hidden="true"><polygon points="60,72 86.1,85 60,98 33.9,85" fill="rgba(0,0,0,.18)"/><polygon points="65.8,85 60,87.9 60,41.9 65.8,39" fill="#6E4826"/><polygon points="54.2,85 60,87.9 60,41.9 54.2,39" fill="#8A5C30"/><polygon points="60,36.1 65.8,39 60,41.9 54.2,39" fill="#A8743F"/><polygon points="34.5,21.8 34.6,20.2 35,18.6 35.8,17 36.7,15.3 37.8,13.8 39.1,12.5 40.5,11.3 42,10.5 43.5,9.9 44.9,9.6 46.2,9.7 47.4,10 79.8,26.2 80.8,26.9 81.5,27.9 81.9,29.1 82,30.5 82,42.5 67,50 34.5,33.8" fill="#3E7CB1"/><polygon points="34.5,33.8 67,50 67,38 34.5,21.8" fill="#4F93CE"/><polygon points="34.5,21.8 67,38 67,38 67.1,36.5 67.5,34.8 68.2,33.2 69.2,31.6 70.3,30.1 71.6,28.7 73,27.6 74.5,26.7 42,10.5 40.5,11.4 39.1,12.5 37.8,13.8 36.7,15.3 35.8,17 35.1,18.6 34.6,20.2 34.5,21.8" fill="#62A5DD"/><polygon points="82,42.5 67,50 67,38 67.1,36.5 67.5,34.8 68.2,33.2 69.2,31.6 70.3,30.1 71.6,28.7 73,27.6 74.5,26.7 76,26.1 77.4,25.8 78.7,25.9 79.8,26.3 80.8,26.9 81.5,27.9 81.9,29.1 82,30.5" fill="#2E5F8A"/><polygon points="79,41 70,45.5 70,36.5 70.1,35.3 70.6,33.9 71.3,32.7 72.2,31.5 73.3,30.5 74.5,29.7 75.7,29.3 76.8,29.2 77.7,29.5 78.4,30 78.9,30.9 79,32" fill="#244B6E"/><path d="M74.5 36.2h2.2" stroke="#E9CFA0" stroke-width="2" stroke-linecap="round"/><path d="M50.4 34.3L50.4 8.3" stroke="#5E3E1F" stroke-width="2.4" stroke-linecap="round"/><polygon points="50.4,8.3 59.1,12.7 59.1,20.7 50.4,16.3" fill="#E2483D"/></svg>';
 /* the silo keeps seeds that wait for a free plot; a bed can grow to 12 plots */
-const WGMAX=4;
-function wGrow(b){const s=gLand().sec[b];if(!s||s.rows>=WGMAX)return 0;if(!gSetSec(b,Object.assign({},s,{rows:s.rows+1})))return 0;gRefill();save();return 1}
+const WGMAX=4,wGrowCost=b=>{const s=gLand().sec[b];return !s||s.rows>=WGMAX?0:s.rows<=2?100:200};
+/* 1 grown, 0 no room, -1 not enough coins */
+function wGrow(b){const s=gLand().sec[b];if(!s||s.rows>=WGMAX)return 0;const c=wGrowCost(b);if(S.garden.coins<c)return -1;if(!gSetSec(b,Object.assign({},s,{rows:s.rows+1})))return 0;S.garden.coins-=c;gRefill();save();return 1}
+const wGrowSay=(b,r)=>r===1?GSECN[b]+' has '+gPlots(b)+' plots now':r===-1?`That costs ${wGrowCost(b)} coins and you have ${S.garden.coins}. Sell your harvest at the market.`:'Something is in the way. Move it, or move the bed.'
 function wGrowNext(b){const s=gLand().sec[b];if(!s||s.rows>=WGMAX)return null;const n=Object.assign({},s,{rows:s.rows+1}),old=new Set(secTiles(s));return {n,tiles:secTiles(n).filter(t=>!old.has(t))}}
 /* where a bed can grow: in edit mode for the chosen bed; in the garden when a bed is full and the silo holds seeds for it */
 function wGrowSpots(ed){const g=S.garden;return gBeds().map(([b])=>{const x0=wGrowNext(b);if(!x0)return '';
  if(ed?G.es!==b:!(g.plants.filter(p=>p.b===b).length>=gPlots(b)&&g.tray.some(t=>gBedOf(t.k)===b)))return '';
- const room=gFits(b,x0.n)&&x0.tiles.every(gInWorld),cs=x0.tiles.map(tileXY),c=cs.reduce((a,q)=>a+q[0],0)/cs.length,r=cs.reduce((a,q)=>a+q[1],0)/cs.length,[x,y]=isoP(c,r);
+ const room=gFits(b,x0.n)&&x0.tiles.every(gInWorld),cost=wGrowCost(b),rich=g.coins>=cost,cs=x0.tiles.map(tileXY),c=cs.reduce((a,q)=>a+q[0],0)/cs.length,r=cs.reduce((a,q)=>a+q[1],0)/cs.length,[x,y]=isoP(c,r);
  return `<svg class="wgghost${room?'':' no'}" viewBox="0 0 ${ISO.w} ${ISO.h}" aria-hidden="true">${x0.tiles.map(t=>{const [tc,tr]=tileXY(t);return `<polygon points="${isoDia(tc,tr,.94)}"/>`}).join('')}</svg>`+
-  `<button class="wgrow${room?'':' no'}" type="button" data-wgrow="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}" aria-label="Make ${esc(GSECN[b].toLowerCase())} bigger: 4 more plots${room?'':', but something is in the way'}"><b>+4</b></button>`}).join('')}
-function wGrowBtn(b,id){const s=gLand().sec[b];if(!s||s.rows>=WGMAX)return '';return `<button class="btn wide" type="button" data-grow="${b}"${id?` id="${id}"`:''}>Make ${esc(GSECN[b].toLowerCase())} bigger, ${4*(s.rows+1)} plots</button>`}
-function wGrowBind(el){el.querySelectorAll('[data-grow]').forEach(x=>x.onclick=()=>{if(wGrow(x.dataset.grow)){toast(GSECN[x.dataset.grow]+' has '+gPlots(x.dataset.grow)+' plots now');gSheetClose();render()}else toast('No room there. Move things in Edit layout first.')})}
+  `<button class="wgrow${room?'':' no'}${rich?'':' poor'}" type="button" data-wgrow="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}" aria-label="Make ${esc(GSECN[b].toLowerCase())} bigger: 4 more plots for ${cost} coins${room?'':', but something is in the way'}"><b>+4</b><span class="num">${COINI}${cost}</span></button>`}).join('')}
+function wGrowBtn(b,id){const s=gLand().sec[b];if(!s||s.rows>=WGMAX)return '';return `<button class="btn wide" type="button" data-grow="${b}"${id?` id="${id}"`:''}>Make ${esc(GSECN[b].toLowerCase())} bigger, ${4*(s.rows+1)} plots · ${wGrowCost(b)} coins</button>`}
+function wGrowBind(el){el.querySelectorAll('[data-grow]').forEach(x=>x.onclick=()=>{const r=wGrow(x.dataset.grow);toast(wGrowSay(x.dataset.grow,r));if(r===1){gSheetClose();render()}})}
 function wSiloPanel(el){const g=S.garden;if(!g.tray.length){el.innerHTML=`<div class="wbed"><p class="gempty">Seeds wait here when their bed is full. Right now every seed has a plot.</p></div>`;return}
  const by={};g.tray.forEach(t=>{const b=gBedOf(t.k);(by[b]=by[b]||[]).push(t.k)});
  el.innerHTML=`<div class="wbed"><p class="cap num">${g.tray.length} seed${g.tray.length===1?'':'s'} waiting. They plant themselves when a plot frees up.</p>
@@ -5776,7 +5788,7 @@ const WTOUR=[
  ['#gd-world [data-bld="shed"]','The barn keeps one of every plant you harvested. Drag the sickle over ripe plants to harvest them.'],
  ['#gd-world [data-bld="shop"]','The kitchen has dishes, recipes, your own foods and tips about every nutrient.'],
  ['#gd-world [data-bld="market"]','The market buys your harvest and has my orders of the day.'],
- ['#gd-world [data-bld="centre"]','The garden centre sells decorations and backdrops. Pay with the coins from the market.'],
+ ['#gd-world [data-bld="centre"]','The garden centre sells decorations and backdrops. Pay with the coins from the market. You get 50 to start.'],
  ['#gd-world [data-bld="silo"]','The silo keeps seeds when their bed is full. Make a bed bigger and they plant themselves.'],
  ['#gd-world [data-bld="bench"]','The workbench plans the next days. What you plan there lands on your shopping list.'],
  ['#gd-world [data-bld="mail"]','The mailbox sets how I talk to you and when I remind you.'],
@@ -5826,7 +5838,7 @@ function render0(){
  const v0=S.view;
  if(S.plan)mealKeys(S.plan).forEach(k=>{if(k.length>1&&!S.plan[k].it.length&&k!==MS&&!($('pk').open&&PK&&PK.slot===k))delete S.plan[k]});
  if(S.plan){normPlan(S.plan);rebuildSlots()}
- if(GON()){gInit();gardenTick();gardenSync();gDaily()}
+ if(GON()){gInit();gardenTick();gardenSync();gDaily();const wn=S.garden.wkNote;if(wn&&!wn.shown){wn.shown=1;save();setTimeout(()=>toast(wn.old?`${wn.c} coins from earlier weeks are yours now`:wn.c?`Last week: ${wn.n} kinds of plants. ${wn.c} coins${wn.d?' and a '+wn.d.toLowerCase():''}`:`Last week: ${wn.n} kinds of plants`),1600)}}
  const fid=document.activeElement&&document.activeElement.id;
  if(S.view==='ideas'){S.view='nutr';S.nsub='imp'}
  if(!['today','nutr','scan','lib','garden','profile'].includes(S.view))S.view='garden';
