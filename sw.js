@@ -1,6 +1,6 @@
 // Bump VERSION after every change so phones pick up the new files.
-const VERSION = 'vgarden-v16';
-const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'vendor/zxing.min.js'];
+const VERSION = 'vgarden-v17';
+const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/badge-96.png', 'vendor/zxing.min.js'];
 
 self.addEventListener('install', e => {
   e.waitUntil(caches.open(VERSION).then(c => c.addAll(SHELL)).then(() => self.skipWaiting()));
@@ -70,7 +70,7 @@ async function ring() {
     }
   }
   // The title stays plain so a lock screen never shows more than the app name.
-  return self.registration.showNotification('Vegful Garden', { body, icon: 'icons/icon-192.png', badge: 'icons/icon-192.png', tag: 'vgarden', data: { url: self.registration.scope } });
+  return self.registration.showNotification('Vegful Garden', { body, icon: 'icons/icon-192.png', badge: 'icons/badge-96.png', tag: 'vgarden', data: { url: self.registration.scope } });
 }
 self.addEventListener('push', e => e.waitUntil(ring()));
 self.addEventListener('notificationclick', e => {
