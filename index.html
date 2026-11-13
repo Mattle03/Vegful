@@ -1525,6 +1525,18 @@ html.wediting #wdock{display:none}
 @media (prefers-reduced-motion:reduce){.wbfly,.wbfly .wl,.wbfly .wr,.wwx i,.gplot.wwish::before{animation:none}}
 /* edit mode: the meal dock is hidden, so the edit bar sits at the very bottom */
 html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!important}
+/* the tortoise reads as a button: a raised round wooden button like the others, with a speech bubble that says it talks */
+.wtbtn{width:64px!important;height:64px!important;border-radius:50%!important;background:radial-gradient(circle at 50% 30%,#FFFBEF,#F1DFBC)!important;border:3px solid #6E4A2A!important;box-shadow:0 4px 0 #6E4A2A,0 8px 16px rgba(0,0,0,.28)!important;place-items:center!important;overflow:visible;cursor:pointer}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wtbtn{background:radial-gradient(circle at 50% 30%,#5A4B3A,#3A3127)!important;border-color:#2A1C0E!important;box-shadow:0 4px 0 #2A1C0E,0 8px 16px rgba(0,0,0,.45)!important}}
+:root[data-theme="dark"] .wtbtn{background:radial-gradient(circle at 50% 30%,#5A4B3A,#3A3127)!important;border-color:#2A1C0E!important;box-shadow:0 4px 0 #2A1C0E,0 8px 16px rgba(0,0,0,.45)!important}
+.wtbtn .tmas{width:66px!important;height:56px!important;transform:translate(3px,1px);filter:drop-shadow(0 2px 1px rgba(0,0,0,.25))!important}
+.wtbtn:active{transform:translateY(3px);box-shadow:0 1px 0 #6E4A2A,0 4px 8px rgba(0,0,0,.25)!important}
+.wtbtn::before{content:"\2026";position:absolute;z-index:2;top:-10px;left:-10px;min-width:26px;height:22px;padding:0 4px;box-sizing:border-box;border-radius:12px;background:#FFFFFF;color:#5E3E1F;border:2px solid #6E4A2A;font:900 15px/12px var(--body);display:grid;place-items:center;pointer-events:none;box-shadow:0 2px 0 rgba(0,0,0,.18)}
+.wtort.has .wtbtn::after{display:none!important}
+.wtort.has .wtbtn::before{content:"!";background:var(--coral);color:#3B2A18;font-size:15px;animation:wtpulse 2s ease-in-out infinite}
+@keyframes wtpulse{0%,100%{transform:scale(1)}50%{transform:scale(1.18)}}
+.wtort.talk .wtbtn::before,.wtort.ask .wtbtn::before{display:none}
+@media (prefers-reduced-motion:reduce){.wtort.has .wtbtn::before{animation:none}}
 </style>
 </head>
 <body>
