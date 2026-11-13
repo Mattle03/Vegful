@@ -1447,6 +1447,13 @@ button.wbn{cursor:pointer}button.wbn:active{transform:rotate(var(--r,0deg)) scal
 @keyframes wbpop{from{transform:scale(.92);opacity:0}}
 #wboard{cursor:pointer}
 @media (prefers-reduced-motion:reduce){.wbig,.wbbd,dialog[open],.app>section.view.wsheet.win,.wsheeth.win{animation:none}}
+/* inside the sheets: tabs sit in a wooden groove, the camera looks through a wooden frame */
+.app>section.view.wsheet .seg{background:#E6D6B5;box-shadow:inset 0 2px 0 rgba(110,74,42,.18)}
+.app>section.view.wsheet .seg button{color:#6B5B43}
+.app>section.view.wsheet .seg button[aria-pressed="true"]{background:#FFFAEE;color:#3B2A18;box-shadow:0 2px 0 #C9B48E}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .app>section.view.wsheet .seg{background:#1F1912;box-shadow:inset 0 2px 0 rgba(0,0,0,.35)}:root:not([data-theme="light"]) .app>section.view.wsheet .seg button{color:#C9BBA3}:root:not([data-theme="light"]) .app>section.view.wsheet .seg button[aria-pressed="true"]{background:#54473A;color:#FFF4DC;box-shadow:0 2px 0 #1A140E}}
+:root[data-theme="dark"] .app>section.view.wsheet .seg{background:#1F1912;box-shadow:inset 0 2px 0 rgba(0,0,0,.35)}:root[data-theme="dark"] .app>section.view.wsheet .seg button{color:#C9BBA3}:root[data-theme="dark"] .app>section.view.wsheet .seg button[aria-pressed="true"]{background:#54473A;color:#FFF4DC;box-shadow:0 2px 0 #1A140E}
+.app>section.view.wsheet .scanbox{border:8px solid #93623A;box-shadow:inset 0 0 0 2px rgba(0,0,0,.25),0 3px 0 #6E4A2A;border-radius:18px;box-sizing:border-box}
 </style>
 </head>
 <body>
@@ -3748,6 +3755,7 @@ const GSPROUT='<svg class="gspr" viewBox="0 0 40 40" aria-hidden="true"><path d=
 const GSTEM='<svg class="gstem" viewBox="0 0 40 46" aria-hidden="true"><path d="M4 45c4-6 28-6 32 0z" fill="var(--g-mound)"/><path d="M20 43V14" stroke="var(--g-stem)" stroke-width="2.6" stroke-linecap="round" fill="none"/><path d="M20 34c-2-6-7-8-12-7 1 5 5 8 12 7z" fill="var(--g-leaf)"/><path d="M20 28c2-6 7-8 12-7-1 5-5 8-12 7z" fill="var(--g-leaf2)"/></svg>';
 const GTREE='<svg class="gtree" viewBox="0 0 40 46" aria-hidden="true"><path d="M4 45c4-6 28-6 32 0z" fill="var(--g-mound)"/><path d="M20 43V26" stroke="var(--g-trunk)" stroke-width="4.2" stroke-linecap="round"/><circle cx="20" cy="17" r="15" fill="var(--g-crown)"/><circle cx="13.5" cy="12" r="5.5" fill="var(--g-leaf2)" opacity=".45"/></svg>';
 const COINI='<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9.5" fill="#E9B23A"/><circle cx="12" cy="12" r="6.5" fill="#F6CB5A"/><path d="M12 8.5v7" stroke="#B9831C" stroke-width="1.8" stroke-linecap="round"/></svg>';
+const SHOPI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3"/><path d="M7.5 10h9l-.7 6.4a1 1 0 0 1-1 .9H9.2a1 1 0 0 1-1-.9z"/><path d="M10 10V9a2 2 0 0 1 4 0v1"/></svg>';
 const BASKI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10h17l-1.7 8.6a2 2 0 0 1-2 1.6H7.2a2 2 0 0 1-2-1.6z"/><path d="M8 10l3-5.5M16 10l-3-5.5M9 14v3M12 14v3M15 14v3"/></svg>';
 const gCanSvg=wf=>{const h=Math.round(18*Math.max(0,Math.min(1,wf))*10)/10;return `<svg viewBox="0 0 48 40" aria-hidden="true"><path d="M30 16l13-8 2 3-12 10" fill="none" stroke="var(--g-can)" stroke-width="3" stroke-linejoin="round"/><path d="M13 12a6 5 0 0 1 12 0" fill="none" stroke="var(--g-can)" stroke-width="3"/><rect x="6" y="12" width="26" height="24" rx="5" fill="var(--g-can)"/><rect x="9" y="15" width="20" height="18" rx="3" fill="var(--g-canin)"/>${h?`<rect x="9" y="${33-h}" width="20" height="${h}" rx="3" fill="var(--water)"/>`:''}</svg>`};
 
@@ -4853,7 +4861,7 @@ function renderOnb(){
   supStep,disStep,extraStep,
   ()=>`<h2>All set</h2><p class="info">Your daily targets:</p><div class="targets">${targetBoxes(T)}</div>
     <ul class="obhow">
-    <li><span class="obi obk">${BASKI}</span><span><b>The basket</b>Add what you eat. Plates under it show your meals.</span></li>
+    <li><span class="obi obk">${SHOPI}</span><span><b>Scan and shop</b>Scan a product, keep your shopping list and pantry. The plates beside it are your meals.</span></li>
     <li><span class="obi">${WSEED}</span><span><b>The beds</b>One per food group. A dashed sign means that group would like a visit.</span></li>
     <li><span class="obi">${WRING(70,8)}</span><span><b>The board</b>How well you are covered, what is low, what is next. Tap it to open it big.</span></li>
     <li><span class="obi">${TORTV()}</span><span><b>Me</b>Tap me for the next step, like the same breakfast as yesterday.</span></li></ul>
@@ -5416,17 +5424,17 @@ function wTop(w){const el=$('wtop');if(!el)return;const isT=S.date===TODAY,t=isT
 function wDock(){const el=$('wdock');if(!el||!S.plan)return;const nx=wNext();
  const plate=t=>{const k=slotOfType(t),keys=mealKeys(S.plan).filter(q=>typeOf(S.plan,q)===t),fk=keys.find(q=>S.plan[q].it.length),sl=S.plan[k],n=t==='s'?'Snack':TY[t].n,skip=!fk&&sl&&sl.skip;
   return `<button class="wplate${fk?' full':skip?' skip':' open'}${nx===k?' next':''}" type="button" data-wp="${k}" aria-label="${n}${fk?'':skip?', none':', add'}"><span class="wpl em">${fk?slotIcon(S.plan[fk],t):skip?'<small>None</small>':PLUS}</span><span class="wpn">${n}</span></button>`};
- el.innerHTML=`<div class="in">${plate('b')}${plate('l')}<button class="wbask" type="button" id="w-add" aria-label="Add food">${BASKI}</button>${plate('d')}${plate('s')}</div>`;
+ el.innerHTML=`<div class="in">${plate('b')}${plate('l')}<button class="wbask" type="button" id="w-add" aria-label="Scan and shop">${SHOPI}</button>${plate('d')}${plate('s')}</div>`;
  el.querySelectorAll('[data-wp]').forEach(b=>b.onclick=()=>{const k=wEnsure(b.dataset.wp),t=typeOf(S.plan,k),fk=mealKeys(S.plan).find(q=>typeOf(S.plan,q)===t&&S.plan[q].it.length);
   if(fk){openMeal(fk);return}if(S.plan[k].skip){delete S.plan[k].skip;save()}startMeal(k)});
- $('w-add').onclick=()=>startMeal(wEnsure(nx||wSlotNow()))}
+ $('w-add').onclick=()=>{S.shopSeg='scan';go('scan')}}
 /* the board's notes open what they show */
 function wBoard(){return;const el=$('wboard');if(!el||!G||G.ed)return;el.querySelectorAll('[data-wb]').forEach(b=>{b.onclick=e=>{e.stopPropagation();const a=b.dataset.wb;
  if(a==='gap')selectNut(b.dataset.k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(b.dataset.k));
  else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(b.dataset.k)&&gLand().sec[x]);if(bd){G.sb=bd;G.bmt=null;gView('bed')}else go('today')}else go('today')}})}
 function wBoardPos(){}
 function wHead(v){const el=$('wsheet-h');if(!el)return;const on=WSHEETS.includes(v);el.hidden=!on;$('wscrim').hidden=!on;if(!on)return;const board=v==='today'||v==='nutr';
- el.innerHTML=`<span class="whandle" aria-hidden="true"></span><div class="wshr">${board?`<div class="seg sm wseg">${[['today','Today'],['nutr','Nutrients']].map(([x,l])=>`<button type="button" data-wsv="${x}" aria-pressed="${v===x}">${l}</button>`).join('')}</div>`:`<span class="wtitle">${{lib:'Kitchen',scan:'Shopping',profile:'Profile'}[v]}</span>`}<button class="iconbtn wx" type="button" id="w-x" aria-label="Close">${XIC}</button></div>`;
+ el.innerHTML=`<span class="whandle" aria-hidden="true"></span><div class="wshr">${board?`<div class="seg sm wseg">${[['today','Today'],['nutr','Nutrients']].map(([x,l])=>`<button type="button" data-wsv="${x}" aria-pressed="${v===x}">${l}</button>`).join('')}</div>`:`<span class="wtitle">${{lib:'Kitchen',scan:'Scan and shop',profile:'Profile'}[v]}</span>`}<button class="iconbtn wx" type="button" id="w-x" aria-label="Close">${XIC}</button></div>`;
  el.querySelectorAll('[data-wsv]').forEach(b=>b.onclick=()=>go(b.dataset.wsv));$('w-x').onclick=()=>wSheet('garden')}
 function wShopN(){try{return shopOpen()||0}catch(e){return 0}}
 function wShell(){const v=S.view,on=WSHEETS.includes(v);document.documentElement.classList.toggle('wsheet-on',on);
@@ -5709,7 +5717,7 @@ const WTOUR=[
  ['#wboard','The notice board. Tap it anywhere to open it big: what is covered, what is low, your meals, your beds and the next step.'],
  ['#gd-world [data-wsb]','Six beds, one per food group. A dashed sign means that group would like a visit. Tap a sign to add a food from it.'],
  ['#w-ring','This ring is the same number as Covered on the board. The arrows beside the date go to other days.'],
- ['#w-add','The basket adds anything you eat. The plates beside it are your meals of the day: tap one to see or change it.'],
+ ['#w-add','The middle button scans a product in the shop and keeps your shopping list and pantry. The plates beside it are your meals of the day: tap one to add food or change it.'],
  ['#gd-world [data-bld="shed"]','The barn keeps one of every plant you harvested. Drag the sickle over ripe plants to harvest them.'],
  ['#gd-world [data-bld="shop"]','The kitchen has dishes, recipes, your own foods and tips about every nutrient.'],
  ['#gd-world [data-bld="market"]','The shop has your shopping list, your pantry and the barcode scanner.'],
