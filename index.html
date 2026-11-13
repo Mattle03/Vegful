@@ -3967,7 +3967,7 @@ const SHOPI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8V5a2 2 0 0
 const BASKI='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3.5 10h17l-1.7 8.6a2 2 0 0 1-2 1.6H7.2a2 2 0 0 1-2-1.6z"/><path d="M8 10l3-5.5M16 10l-3-5.5M9 14v3M12 14v3M15 14v3"/></svg>';
 const gCanSvg=wf=>{const h=Math.round(18*Math.max(0,Math.min(1,wf))*10)/10;return `<svg viewBox="0 0 48 40" aria-hidden="true"><path d="M30 16l13-8 2 3-12 10" fill="none" stroke="var(--g-can)" stroke-width="3" stroke-linejoin="round"/><path d="M13 12a6 5 0 0 1 12 0" fill="none" stroke="var(--g-can)" stroke-width="3"/><rect x="6" y="12" width="26" height="24" rx="5" fill="var(--g-can)"/><rect x="9" y="15" width="20" height="18" rx="3" fill="var(--g-canin)"/>${h?`<rect x="9" y="${33-h}" width="20" height="${h}" rx="3" fill="var(--water)"/>`:''}</svg>`};
 
-function seedSet(dates){const set=new Set();dates.forEach(d=>{const p=S.days[d];if(!p)return;eatK(p).forEach(k=>{const sl=p[k];if(!sl||sl.did||sl.est)return;const no=new Set(sl.nos||[]);
+function seedSet(dates){const set=new Set();dates.forEach(d=>{const p=S.days[d];if(!p)return;eatK(p).forEach(k=>{const sl=p[k];if(!sl||sl.est)return;const no=new Set(sl.nos||[]);
  sl.it.forEach(([id,g])=>{if(g<=0||no.has(id)||String(id).startsWith('c_'))return;const f=FM[id];if(!(PLANTS[id]||(f&&f.pk&&!f.ing&&!f.parts)))return;plantKinds(id).forEach(x=>set.add(x))})})});return set}
 function plantKinds(id){const f=FM[id],pk=q=>PLANTS[q]||(FM[q]&&FM[q].pk?[FM[q].pk]:[]);
  if(PLANTS[id])return PLANTS[id];if(f&&f.pk)return [f.pk];
@@ -4025,11 +4025,12 @@ function gardenTick(){FEDC.clear();const g=S.garden;if(g.tick===TODAY)return;if(
  for(;x<TODAY;x=shift(x,1)){g.plants.forEach(p=>{if(p.d<=x)p.gp=Math.min(p.need,Math.round((p.gp+1)*1000)/1000)})}
  g.tick=TODAY}finally{PROJ=o}}
 /* sowing: a kind eaten in the last 7 days is credited once per day; it sows a seed when none of its kind grows or waits */
+var WSOWN=[];
 function gardenSync(){const g=S.garden,o=PROJ;PROJ=false;try{
  for(let i=GCFG.seenDays-1;i>=0;i--){const d=shift(TODAY,-i),ks=[...seedSet([d])];let sn=g.seen[d];
   if(!i&&sn)sn.slice().forEach(k=>{if(ks.includes(k))return;sn.splice(sn.indexOf(k),1);
    const pi=g.plants.findIndex(p=>p.k===k&&p.s===TODAY&&p.d===TODAY&&!(p.gp>0));if(pi>=0){g.plants.splice(pi,1);gRefill()}else{const ti=g.tray.findIndex(t=>t.k===k&&t.s===TODAY);if(ti>=0)g.tray.splice(ti,1)}});
-  ks.forEach(k=>{sn=g.seen[d]||(g.seen[d]=[]);if(sn.includes(k))return;sn.push(k);if(g.plants.some(p=>p.k===k)||g.tray.some(t=>t.k===k))return;gSow(k,d)});
+  ks.forEach(k=>{sn=g.seen[d]||(g.seen[d]=[]);if(sn.includes(k))return;sn.push(k);if(g.plants.some(p=>p.k===k)||g.tray.some(t=>t.k===k))return;gSow(k,d);if(d===TODAY)WSOWN.push(k)});
   if(sn&&!sn.length)delete g.seen[d]}
  Object.keys(g.seen).forEach(d=>{if(d>TODAY||dayDiff(d,TODAY)>8)delete g.seen[d]})}finally{PROJ=o}}
 /* what a plant shows: stored growth plus today's water in bottle mode */
@@ -5811,12 +5812,15 @@ let GNEW=[];
 function gSowNow(k,s){const g=S.garden,b=gBedOf(k),pos=gFreePos(b);if(pos<0)return 0;const I=kindInfo(k);g.plants.push({k,b,d:TODAY,gp:0,need:I.need,tier:I.tier,s,pos});GNEW.push(k);if(GNEW.length>8)GNEW.splice(0,GNEW.length-8);return 1}
 const wDlg=()=>['add','meal','gsheet','pk','food','sheet','scan','plan','gran','supd'].some(id=>{const d=$(id);return d&&d.open});
 function wFly(){if(!GNEW.length||!G)return;if(wDlg()||S.view!=='garden')return;const ks=[...new Set(GNEW.splice(0).reverse())];if(GSTILL())return;
- const a=$('w-add'),A=a?a.getBoundingClientRect():{left:innerWidth/2-30,top:innerHeight-90,width:60,height:60};
- ks.map(k=>[k,document.querySelector(`#gd-world .gplot[data-gp="${CSS.escape(k)}"]`)]).filter(x=>x[1]).slice(0,4).forEach(([k,el],i)=>{const R=el.getBoundingClientRect(),c=document.createElement('div');
+ const els=ks.map(k=>[k,document.querySelector(`#gd-world .gplot[data-gp="${CSS.escape(k)}"]`)]).filter(x=>x[1]);if(!els.length)return;
+ const vis=e=>{const r=e.getBoundingClientRect(),cx=r.left+r.width/2,cy=r.top+r.height/2;return cx>16&&cx<innerWidth-16&&cy>110&&cy<innerHeight-300};
+ const go=()=>{const a=$('w-add'),A=a?a.getBoundingClientRect():{left:innerWidth/2-30,top:innerHeight-90,width:60,height:60};
+ els.slice(0,4).forEach(([k,el],i)=>{const R=el.getBoundingClientRect(),c=document.createElement('div');
   c.className='wfly';c.setAttribute('aria-hidden','true');c.innerHTML=kindInfo(k).icon;document.body.appendChild(c);
   const x0=A.left+A.width/2-20,y0=A.top+A.height/2-20,x1=R.left+R.width/2-20,y1=R.top+R.height*.62-20,dx=x1-x0,dy=y1-y0;c.style.left=x0+'px';c.style.top=y0+'px';
   if(!c.animate){c.remove();return}
-  c.animate([{transform:'translate(0,0) scale(.5)',opacity:0},{transform:`translate(${dx*.5}px,${dy*.5-110}px) scale(1.1)`,opacity:1,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(.6)`,opacity:1}],{duration:600,delay:i*140,easing:'cubic-bezier(.3,.7,.4,1)',fill:'both'}).onfinish=()=>{c.remove();el.classList.remove('wland');void el.offsetWidth;el.classList.add('wland')}});wSay(wPick('log'),'pleased')}
+  c.animate([{transform:'translate(0,0) scale(.5)',opacity:0},{transform:`translate(${dx*.5}px,${dy*.5-110}px) scale(1.1)`,opacity:1,offset:.5},{transform:`translate(${dx}px,${dy}px) scale(.6)`,opacity:1}],{duration:600,delay:i*140,easing:'cubic-bezier(.3,.7,.4,1)',fill:'both'}).onfinish=()=>{c.remove();el.classList.remove('wland');void el.offsetWidth;el.classList.add('wland')}})};
+ if(els.some(([k,e])=>vis(e))){go();return}const r=els[0][1].getBoundingClientRect(),V=$('gd-scene').getBoundingClientRect();wGlide(V.left+V.width/2-(r.left+r.width/2),V.top+V.height*.4-(r.top+r.height/2));setTimeout(go,500)}
 /* a freed plot takes the oldest seed waiting for that bed */
 function gRefill(){const g=S.garden;if(!g)return;g.tray.slice().forEach(t=>{const pos=gFreePos(gBedOf(t.k));if(pos<0)return;g.tray.splice(g.tray.indexOf(t),1);const b=gBedOf(t.k),I=kindInfo(t.k);g.plants.push({k:t.k,b,d:TODAY,gp:0,need:I.need,tier:I.tier,s:t.s,pos});GNEW.push(t.k)})}
 /* the shed keeps one of every kind you have harvested; no amounts, no empty slots to fill */
@@ -6113,7 +6117,7 @@ function wWish(){const g=S.garden;if(!g)return null;if(g.wish&&g.wish.d===TODAY)
 function wWishCheck(){const w=wWish();if(!w||w.done)return false;const p=S.days[TODAY];if(!p)return;const i=K.indexOf(w.n),T=targets();let hit=null;
  eatK(p).forEach(k=>(p[k].it||[]).forEach(it=>{if(hit)return;let v=null;try{v=itemV(it)}catch(e){}if(w.foods.includes(it[0])||(v&&(v[i]||0)>=T[w.n]*.15))hit=it[0]}));if(!hit)return false;
  const g=S.garden;w.done=1;w.by=hit;gEarn(GWISH);WHOLDT=Date.now()+15000;g.wglow=g.wglow||{};plantKinds(hit).forEach(k=>g.wglow[k]=TODAY);save();const nm=(FM[hit]?FM[hit].n:hit).split(',')[0];
- setTimeout(()=>{if(S.view==='garden'&&$('wtort')){WHOLDT=Date.now()+15000;wAsk(`${nm} brings your ${nlow(w.n)} up.`,`That covers today's focus: ${GWISH} coins, and its plant glows for a few days.`,[['Nice',()=>{WHOLDT=0}]],true);try{const m=document.querySelector('#wtort .tmas');if(m)m.className='tmas pleased'}catch(e){}}else toast(`Today's focus covered: ${nlow(w.n)}. ${GWISH} coins`)},600);return true}
+ setTimeout(()=>{if(S.view==='garden'&&$('wtort')){WHOLDT=Date.now()+15000;wAsk(`${nm} brings your ${nlow(w.n)} up.`,`That covers today's focus: ${GWISH} coins`+(plantKinds(hit).length?', and it grows golden: double coins at harvest.':'.'),[['Nice',()=>{WHOLDT=0}]],true);try{const m=document.querySelector('#wtort .tmas');if(m)m.className='tmas pleased'}catch(e){}}else toast(`Today's focus covered: ${nlow(w.n)}. ${GWISH} coins`)},600);return true}
 function wWishSay(){const w=wWish();if(!w||w.done)return;const nm=id=>FM[id].n.split(',')[0],sl=wEnsure(wNext()||wSlotNow());
  const fl=w.foods.map(id=>nm(id).toLowerCase()),fs=(fl.length>1?fl.slice(0,-1).join(', ')+' or '+fl[fl.length-1]:fl[0]).replace(/^./,c=>c.toUpperCase());
  wAsk(`Today's focus: ${nlow(w.n)}, at ${w.p} % lately.`,`${fs} would bring it up, and they grow golden: double coins at harvest. Tap one to add it to ${wMealN(sl).toLowerCase()}.`,
@@ -6138,9 +6142,14 @@ function wReqCard(){const r=wReq();if(!r)return '';const g=S.garden,I=kindInfo(r
 let WIMP=null;
 function wImpact(silent){const p=S.days[TODAY];if(!p){WIMP=null;return}const o=PROJ;PROJ=false;let v,sig;try{v=planV(p);sig=eatK(p).map(k=>p[k].it.map(x=>x[0]+':'+x[1]).join(',')).join('|')}finally{PROJ=o}
  const prev=WIMP;WIMP={d:TODAY,sig,v:v.slice()};if(!prev||prev.d!==TODAY||prev.sig===sig||S.view!=='garden'||silent)return;
- const T=targets(),gs=ALLK.filter(k=>T[k]>0).map(k=>{const i=K.indexOf(k);return {k,a:(prev.v[i]||0)/T[k],b:(v[i]||0)/T[k]}}).filter(x=>x.b-x.a>=.1).sort((x,y)=>(y.b-y.a)-(x.b-x.a));if(!gs.length)return;
+ const sown=WSOWN.splice(0),ps=(prev.sig||'').split(/[|,]/),added=sig.split(/[|,]/).filter(x=>x&&!ps.includes(x));if(!added.length)return;
+ const T=targets(),gs=ALLK.filter(k=>T[k]>0).map(k=>{const i=K.indexOf(k);return {k,a:(prev.v[i]||0)/T[k],b:(v[i]||0)/T[k]}}).filter(x=>x.b-x.a>=.1).sort((x,y)=>(y.b-y.a)-(x.b-x.a));
+ const g=S.garden,lst=a=>a.length>1?a.slice(0,-1).join(', ')+' and '+a[a.length-1]:a[0],up=x=>x.replace(/^./,c=>c.toUpperCase()),kn=k=>kindInfo(k).name.toLowerCase();
+ let pl='';if(sown.length){const ks=sown.slice(0,3),gold=ks.some(k=>g.goldK&&g.goldK[k]);pl=`${up(lst(ks.map(kn)))}${sown.length>3?' and more':''} ${ks.length>1||sown.length>3?'are':'is'} planted${gold?', golden':''}.`}
+ else{const ids=[...new Set(added.map(x=>x.split(':')[0]))],gk=[...new Set(ids.flatMap(id=>{try{return plantKinds(id)}catch(e){return []}}))].filter(k=>g.plants.some(p=>p.k===k));if(gk.length)pl=`${up(kn(gk[0]))} is already growing.`}
  const done=gs.filter(x=>x.a<1&&x.b>=1).slice(0,2),pc=x=>Math.round(Math.min(x.b,9.99)*100);
- const t=done.length?`That covers your ${done.map(x=>nlow(x.k)).join(' and ')} for today.`:`That brought ${gs.slice(0,2).map(x=>nlow(x.k)+' to '+pc(x)+' %').join(' and ')} of today's need.`;
+ const nu=!gs.length?'':done.length?`That covers your ${done.map(x=>nlow(x.k)).join(' and ')} for today.`:`That brought ${gs.slice(0,2).map(x=>nlow(x.k)+' to '+pc(x)+' %').join(' and ')} of today's need.`;
+ const t=[pl,nu].filter(Boolean).join(' ')||'Noted for today.';
  WHOLDT=Date.now()+9000;setTimeout(()=>{if(S.view==='garden'&&!document.querySelector('dialog[open]'))wSay(t,'pleased')},900)}
 /* the garden grows with your variety: new patches open by themselves */
 /* no herb patch (herbs are not worth logging); new patches wait for the new map */
