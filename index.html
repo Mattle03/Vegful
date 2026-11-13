@@ -1380,6 +1380,73 @@ html.still .wib .wn-next.go{animation:none;box-shadow:0 2px 3px rgba(0,0,0,.22),
 #wdock .wtourhl,.wtbtn.wtourhl{outline:3px solid var(--coral);outline-offset:4px;border-radius:50%}
 .gtit.on{outline:3px solid var(--coral);outline-offset:-3px}
 .gbld[data-bld="silo"] .gsti{aspect-ratio:120/188}
+/* garden skin: every sheet and window is paper under a wooden header, like the board in the world */
+.app>section.view.wsheet,.wsheeth,dialog{--bg:#F4E9D2;--surface:#FFFAEE;--surface2:#EFE2C6;--line:#E3D2B0;--ink:#33291C;--muted:#6B5B43;--wood1:#B07A45;--wood2:#93623A;--woodd:#6E4A2A;--woodt:#FFF4DC}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .app>section.view.wsheet,:root:not([data-theme="light"]) .wsheeth,:root:not([data-theme="light"]) dialog{--bg:#2A231B;--surface:#3A3127;--surface2:#463B2E;--line:#54473A;--ink:#F3EADB;--muted:#C9BBA3;--wood1:#80562E;--wood2:#62421F;--woodd:#3F2A16;--woodt:#FFF0DC}}
+:root[data-theme="dark"] .app>section.view.wsheet,:root[data-theme="dark"] .wsheeth,:root[data-theme="dark"] dialog{--bg:#2A231B;--surface:#3A3127;--surface2:#463B2E;--line:#54473A;--ink:#F3EADB;--muted:#C9BBA3;--wood1:#80562E;--wood2:#62421F;--woodd:#3F2A16;--woodt:#FFF0DC}
+.app>section.view.wsheet,dialog{background:var(--bg);color:var(--ink)}
+.wsheeth,dialog .pk-head{background:repeating-linear-gradient(180deg,rgba(0,0,0,.05) 0 1px,transparent 1px 11px),linear-gradient(180deg,var(--wood1),var(--wood2));color:var(--woodt);border-bottom:0!important;box-shadow:inset 0 -4px 0 var(--woodd),0 4px 10px rgba(0,0,0,.16)}
+.wsheeth{padding-bottom:14px}
+.wsheeth .whandle{background:rgba(255,244,220,.5)}
+.wsheeth .wtitle,dialog .pk-head h2,dialog .pk-head .lbl,dialog .pk-head .cap,dialog .pk-head p{color:var(--woodt)!important;text-shadow:0 1px 0 rgba(0,0,0,.28)}
+.wsheeth .seg{background:rgba(0,0,0,.22)!important}
+.wsheeth .seg button{color:var(--woodt)!important}
+.wsheeth .seg button[aria-pressed="true"]{background:#FFF4DC!important;color:#5E3E1F!important;box-shadow:0 2px 0 var(--woodd)!important}
+.wsheeth .wx,dialog .pk-head .btn.sm,dialog .pk-head .iconbtn{background:#FFF4DC!important;color:#5E3E1F!important;border:2px solid var(--woodd)!important;box-shadow:0 3px 0 var(--woodd)!important;text-shadow:none}
+.wsheeth .wx,dialog .pk-head .iconbtn{border-radius:50%!important}
+dialog .pk-head .btn.sm{border-radius:999px!important;font-weight:800}
+.wsheeth .wx:active,dialog .pk-head .btn.sm:active,dialog .pk-head .iconbtn:active{transform:translateY(2px);box-shadow:0 1px 0 var(--woodd)!important}
+dialog .pk-head .iconbtn svg{stroke:#5E3E1F}
+dialog .pk-head input{background:#FFFAEE;color:#33291C;border:2px solid var(--woodd)}
+dialog .pk-head a,dialog .pk-head .link,dialog .pk-head .linkbtn{color:var(--woodt)!important}
+dialog{overflow:hidden}
+.app>section.view.wsheet .card,dialog .card{border:1.5px solid var(--line);box-shadow:0 2px 0 var(--line)}
+@keyframes wsup{from{transform:translateY(48px);opacity:0}to{transform:none;opacity:1}}
+@keyframes wsdown{to{transform:translateY(64px);opacity:0}}
+.app>section.view.wsheet.win,.wsheeth.win{animation:wsup .26s cubic-bezier(.2,.8,.2,1)}
+.app>section.view.wsheet.wout,.wsheeth.wout{animation:wsdown .17s ease-in forwards}
+.wscrim{transition:opacity .17s}.wscrim.wout{opacity:0}
+dialog[open]{animation:wsup .24s cubic-bezier(.2,.8,.2,1)}
+/* the big notice board */
+.wbig{position:fixed;inset:0;z-index:60;background:rgba(16,24,18,.45);display:flex;align-items:center;justify-content:center;padding:calc(env(safe-area-inset-top,0px) + 14px) 12px calc(env(safe-area-inset-bottom,0px) + 14px);box-sizing:border-box;animation:wbfade .18s ease}
+.wbig.out{opacity:0;transition:opacity .17s}
+.wbbd{position:relative;width:100%;max-width:440px;max-height:100%;overflow-y:auto;overscroll-behavior:contain;box-sizing:border-box;padding:12px 14px 18px;border-radius:16px;border:10px solid #7A5230;background:repeating-linear-gradient(90deg,rgba(0,0,0,.04) 0 2px,transparent 2px 26px),#B07A45;box-shadow:inset 0 0 0 2px rgba(0,0,0,.18),inset 0 -6px 0 rgba(0,0,0,.12),0 14px 34px rgba(0,0,0,.4);animation:wbpop .24s cubic-bezier(.2,1.3,.4,1)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wbbd{border-color:#4A3119;background-color:#7C5329}}
+:root[data-theme="dark"] .wbbd{border-color:#4A3119;background-color:#7C5329}
+.wbtop{display:flex;align-items:center;justify-content:center;position:relative;margin:0 0 10px;min-height:44px}
+.wbpl{background:#E9CFA0;color:#3B2A18;border-radius:999px;padding:5px 20px;font-size:19px;font-weight:800;box-shadow:0 2px 0 #A87A47}
+.wbx{position:absolute;right:-4px;top:0;width:44px;height:44px;border-radius:50%;background:#FFF4DC;color:#5E3E1F;border:2px solid #6E4A2A;box-shadow:0 3px 0 #6E4A2A;display:grid;place-items:center;padding:0}
+.wbx svg{width:20px;height:20px;stroke:currentColor;fill:none;stroke-width:2.4;stroke-linecap:round}
+.wbx:active{transform:translateY(2px);box-shadow:0 1px 0 #6E4A2A}
+.wbg{display:grid;grid-template-columns:1fr 1fr;gap:12px 10px}
+.wbn{--surface2:#E9DDC4;--hg:#2E9E5B;--hm:#E08A2E;--hl:#D9534F;position:relative;transform:rotate(var(--r,0deg));background:#FFFBEF;color:#2B2A1E;border:0;border-radius:6px;padding:22px 12px 12px;box-shadow:0 3px 6px rgba(0,0,0,.28);font:inherit;font-family:var(--body);text-align:left;display:flex;flex-direction:column;align-items:stretch;gap:6px;min-width:0;min-height:120px;box-sizing:border-box}
+button.wbn{cursor:pointer}button.wbn:active{transform:rotate(var(--r,0deg)) scale(.97)}
+.wbn.wide{grid-column:1/-1;min-height:0;padding-top:20px}
+.wbn.go{background:#FFF1C2}
+.wbn .wpin{position:absolute;top:7px;left:50%;width:12px;height:12px;margin-left:-6px;border-radius:50%;box-shadow:0 2px 2px rgba(0,0,0,.35),inset -2px -2px 0 rgba(0,0,0,.2)}
+.wbh{font-size:12px;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:#7A5230}
+.wbs{font-size:13px;line-height:1.35;color:#5E5444}
+.wbring{position:relative;width:68px;height:68px;align-self:center}
+.wbring svg{width:100%;height:100%;display:block}
+.wbring b{position:absolute;inset:0;display:grid;place-items:center;font-size:18px;font-weight:800}
+.wbrow{display:flex;justify-content:space-between;align-items:baseline;gap:6px;border:0;background:none;padding:4px 0;border-bottom:1.5px dashed #E3D2B0;font:inherit;font-size:15px;font-weight:700;color:#2B2A1E;text-align:left;min-height:36px}
+.wbrow span{min-width:0;overflow-wrap:anywhere}.wbrow b{color:#B83A2A;flex:none}
+.wblink{border:0;background:none;padding:6px 0 0;font:inherit;font-size:14px;font-weight:800;color:#2D5A3F;text-align:left;text-decoration:underline;text-underline-offset:3px;min-height:32px}
+.wbnt{font-size:22px;font-weight:800;line-height:1.15}
+.wbms{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.wbm{display:flex;flex-direction:column;align-items:center;gap:4px;font-size:13px;font-weight:700;min-width:0}
+.wbm i{width:34px;height:34px;border-radius:50%;display:grid;place-items:center;flex:none;border:2px dashed #B9A88A;color:#8A7A60;box-sizing:border-box}
+.wbm.full i{border:0;background:#6DBB63;color:#fff}.wbm.skip i{border-style:solid}
+.wbm i svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+.wbfg{display:flex;flex-wrap:wrap;gap:6px}
+.wbchip{border:2px solid #CDB990;background:#F6EEDC;color:#2B2A1E;border-radius:999px;padding:4px 10px;font:inherit;font-size:13px;font-weight:700;min-height:32px}
+.wbchip.low{border-style:dashed;border-color:#C9803F;background:#FFF1C2}
+.wbwk{display:flex;flex-wrap:wrap;gap:6px 20px;font-size:15px;font-weight:600}
+.wbwk b{font-size:22px;font-weight:800;margin-right:2px}
+@keyframes wbfade{from{opacity:0}}
+@keyframes wbpop{from{transform:scale(.92);opacity:0}}
+#wboard{cursor:pointer}
+@media (prefers-reduced-motion:reduce){.wbig,.wbbd,dialog[open],.app>section.view.wsheet.win,.wsheeth.win{animation:none}}
 </style>
 </head>
 <body>
@@ -3994,7 +4061,7 @@ function gMain(g,nb){G.need=wNeedBeds();const R=g.plants.filter(gReady),wk=gWeek
   <div class="ghud hbot">${G.ed?gEditBar():gSeedBar()}</div></div>`;
  gCamGo();if(!G.cam)requestAnimationFrame(()=>{if(G)gCamGo()});
  gReapBind(b);gSeedBind(b);gCamBind();gHoldBind();
- b.querySelectorAll('[data-gv]').forEach(x=>x.onclick=()=>{if(G.ed)return;if(x.dataset.gv==='mail'){go('profile');PS='voice';render();return}const sv=WBLDV[x.dataset.gv];if(sv==='scan'&&S.shopSeg!=='pantry')S.shopSeg='list';if(sv)go(sv);else gView(x.dataset.gv)});b.querySelectorAll('[data-ul]').forEach(x=>x.onclick=()=>{G.ul=x.dataset.ul;gView('unlock')});b.querySelectorAll('[data-sb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.sb;gView('sec')});b.querySelectorAll('[data-wsb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.wsb;G.bmt=null;gView('bed')});
+ b.querySelectorAll('[data-gv]').forEach(x=>x.onclick=()=>{if(G.ed)return;if(x.dataset.gv==='mail'){go('profile');PS='voice';render();return}if(x.dataset.gv==='album'){wBigBoard();return}const sv=WBLDV[x.dataset.gv];if(sv==='scan'&&S.shopSeg!=='pantry')S.shopSeg='list';if(sv)go(sv);else gView(x.dataset.gv)});b.querySelectorAll('[data-ul]').forEach(x=>x.onclick=()=>{G.ul=x.dataset.ul;gView('unlock')});b.querySelectorAll('[data-sb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.sb;gView('sec')});b.querySelectorAll('[data-wsb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.wsb;G.bmt=null;gView('bed')});
  if($('gd-share'))$('gd-share').onclick=gShare;$('gd-zin').onclick=()=>gZoom(1.25);$('gd-zout').onclick=()=>gZoom(.8);
  b.querySelectorAll('[data-gch]').forEach(x=>x.onclick=()=>{const c0=g.coins,r=gClaim(+x.dataset.gch);if(!r)return;save();renderGarden();gCount(c0,g.coins);gDone(`+${r.c} coins${r.d?' and a '+r.d.toLowerCase():''}`)});
  if($('gd-gift'))$('gd-gift').onclick=()=>{const c0=g.coins,r=gGift();if(!r)return;save();renderGarden();gCount(c0,g.coins);toast(`+${r.c} coins${r.d?' and '+r.d.toLowerCase():''}`)};
@@ -4788,7 +4855,7 @@ function renderOnb(){
     <ul class="obhow">
     <li><span class="obi obk">${BASKI}</span><span><b>The basket</b>Add what you eat. Plates under it show your meals.</span></li>
     <li><span class="obi">${WSEED}</span><span><b>The beds</b>One per food group. A dashed sign means that group would like a visit.</span></li>
-    <li><span class="obi">${WRING(70,8)}</span><span><b>The board</b>How well you are covered, what is low, what is next. Tap it for every number.</span></li>
+    <li><span class="obi">${WRING(70,8)}</span><span><b>The board</b>How well you are covered, what is low, what is next. Tap it to open it big.</span></li>
     <li><span class="obi">${TORTV()}</span><span><b>Me</b>Tap me for the next step, like the same breakfast as yesterday.</span></li></ul>
     ${wObPush()}`
  ];
@@ -5335,7 +5402,8 @@ function wNext(){if(S.date!==TODAY||!S.plan||wClosed())return null;const h=new D
 function wSlotNow(){const h=new Date().getHours(),t=h<11?'b':h<16?'l':h<21?'d':'s';return slotOfType(t)}
 function wEnsure(k){if(!S.plan[k]){S.plan[k]={t:'',it:[]};rebuildSlots()}return k}
 const wMealN=k=>{const t=typeOf(S.plan,k);return t==='s'?'Snack':TY[t].n};
-function wSheet(v){if(v==='garden'||!WSHEETS.includes(v)){S.view='garden';render();return}go(v)}
+let WOUT=0;function wSheet(v){if(v==='garden'||!WSHEETS.includes(v)){const cur=S.view,sec=$('v-'+cur);if(WSHEETS.includes(cur)&&sec&&!GSTILL()){if(WOUT)return;WOUT=1;[sec,$('wsheet-h'),$('wscrim')].forEach(e=>e&&e.classList.add('wout'));
+  setTimeout(()=>{WOUT=0;[sec,$('wsheet-h'),$('wscrim')].forEach(e=>e&&e.classList.remove('wout'));S.view='garden';render()},170);return}S.view='garden';render();return}go(v)}
 const WSEED='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V11" stroke="var(--g-stem,#5B8A3A)" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M12 12c-4 0-6-2-6-6 4 0 6 2 6 6zM12 10c0-4 2-6 6-6 0 4-2 6-6 6z" fill="#6FA84A"/></svg>';
 const WTICK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.5L19 7.5"/></svg>';
 const WRING=(p,r)=>{const C=2*Math.PI*r;return `<svg viewBox="0 0 ${2*r+8} ${2*r+8}" aria-hidden="true"><circle cx="${r+4}" cy="${r+4}" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="6"/>${p>0?`<circle cx="${r+4}" cy="${r+4}" r="${r}" fill="none" stroke="${p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)'}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-Math.min(p,100)/100)).toFixed(1)}" transform="rotate(-90 ${r+4} ${r+4})"/>`:''}</svg>`};
@@ -5353,7 +5421,7 @@ function wDock(){const el=$('wdock');if(!el||!S.plan)return;const nx=wNext();
   if(fk){openMeal(fk);return}if(S.plan[k].skip){delete S.plan[k].skip;save()}startMeal(k)});
  $('w-add').onclick=()=>startMeal(wEnsure(nx||wSlotNow()))}
 /* the board's notes open what they show */
-function wBoard(){const el=$('wboard');if(!el||!G||G.ed)return;el.querySelectorAll('[data-wb]').forEach(b=>{b.onclick=e=>{e.stopPropagation();const a=b.dataset.wb;
+function wBoard(){return;const el=$('wboard');if(!el||!G||G.ed)return;el.querySelectorAll('[data-wb]').forEach(b=>{b.onclick=e=>{e.stopPropagation();const a=b.dataset.wb;
  if(a==='gap')selectNut(b.dataset.k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(b.dataset.k));
  else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(b.dataset.k)&&gLand().sec[x]);if(bd){G.sb=bd;G.bmt=null;gView('bed')}else go('today')}else go('today')}})}
 function wBoardPos(){}
@@ -5363,7 +5431,7 @@ function wHead(v){const el=$('wsheet-h');if(!el)return;const on=WSHEETS.includes
 function wShopN(){try{return shopOpen()||0}catch(e){return 0}}
 function wShell(){const v=S.view,on=WSHEETS.includes(v);document.documentElement.classList.toggle('wsheet-on',on);
  WSHEETS.forEach(x=>{const s=$('v-'+x);if(s)s.classList.toggle('wsheet',x===v)});
- if(v!==WLASTV){const s=$('v-'+v);if(s&&on)s.scrollTop=0;WLASTV=v}
+ if(v!==WLASTV){const s=$('v-'+v);if(s&&on){s.scrollTop=0;if(!WSHEETS.includes(WLASTV)&&!GSTILL()){const hh=$('wsheet-h');[s,hh].forEach(e=>{if(!e)return;e.classList.remove('win');void e.offsetWidth;e.classList.add('win')});setTimeout(()=>[s,hh].forEach(e=>e&&e.classList.remove('win')),320)}}WLASTV=v}
  let w=null;try{w=wScore()}catch(e){w={sc:0,empty:true}}
  wTop(w);wDock();wHead(v);wNoneSync();wTort();wGreet();wMirror();if(v==='profile'&&PS==='voice')wVoiceRender();if(G&&S.garden)wBoard()}
 /* ---------- food group beds: each bed is a group of plant foods; a group not eaten lately shows as an open invitation ---------- */
@@ -5425,7 +5493,7 @@ function wUndo(t,fn){let el=$('wundo');if(!el){el=document.createElement('div');
 /* the notice board: three notes with a plain heading each. Covered (mixed), Low (the two lowest nutrients), Next (the one next step) */
 const WFGREP={whole:'oats',leg:'lentils',nuts:'walnuts',fruit:'apple',green:'spinach',cruc:'broccoli'};
 const wHasData=()=>Object.keys(S.days||{}).some(d=>d<=TODAY&&logged(S.days[d]));
-function wBoardNotes(ed){const w=wScore(),any=wHasData(),iss=any?issues(w.DS,w.T).filter(x=>!x.s.over).slice(0,2):[],nx=wNext(),isT=S.date===TODAY,B=ed?'span':'button',ty=ed?'':' type="button"';
+function wBoardNotes(ed){const w=wScore(),any=wHasData(),iss=any?issues(w.DS,w.T).filter(x=>!x.s.over).slice(0,2):[],nx=wNext(),isT=S.date===TODAY,B='span',ty='';
  let lowG=[];try{lowG=fgStatus(TODAY).filter(x=>x.low).map(x=>x.k)}catch(e){}
  const head=t=>`<small class="wnh">${t}</small>`;
  const ring=`<${B} class="wnote wn-ring"${ty} data-wb="ring" aria-label="${any?w.sc+' percent covered':'Nothing logged yet'}">${head('Covered')}<span class="wnr">${WRING(any?w.sc:0,17)}${any?`<b class="num">${w.sc} %</b>`:`<span class="wnsp">${WSEED}</span>`}</span></${B}>`;
@@ -5439,9 +5507,9 @@ function wBoardNotes(ed){const w=wScore(),any=wHasData(),iss=any?issues(w.DS,w.T
  return ring+low+next}
 const WIB={ph:24,fh:80,tile:42};
 /* footprint 8 by 2 tiles; the board stands along its long side; turned, it runs the other way */
-function wIsoBoard(k,c,r,z,fl){const [fw,fh0]=bwh(k,fl),[x,y]=isoP(c+(fw-1)/2,r+(fh0-1)/2),L=Math.max(fw,fh0),BW=L*WIB.tile,d=BW*.36,{ph,fh}=WIB,GY=ph+fh+BW*.5+12,H=GY+BW*.5+20,ed=!!G.ed,T=ed?'button':'div',sl=fl?-.5:.5;
+function wIsoBoard(k,c,r,z,fl){const [fw,fh0]=bwh(k,fl),[x,y]=isoP(c+(fw-1)/2,r+(fh0-1)/2),L=Math.max(fw,fh0),BW=L*WIB.tile,d=BW*.36,{ph,fh}=WIB,GY=ph+fh+BW*.5+12,H=GY+BW*.5+20,ed=!!G.ed,T='button',sl=fl?-.5:.5;
  const post=s=>`<i class="wibpost" style="left:${BW/2+s*d-6}px;top:${GY-ph+s*d*sl-14}px;height:${ph+14}px"></i>`;
- return `<${T} class="gbld wib${ed?' ed':''}${fl?' flip':''}" ${ed?'type="button" ':'role="group" '}id="wboard" data-gv="album" data-bld="board" style="left:${pct(x-BW/2,ISO.w)};top:${pct(y-GY,ISO.h)};width:${pct(BW,ISO.w)};height:${pct(H,ISO.h)};z-index:${z}" aria-label="Board">
+ return `<${T} class="gbld wib${ed?' ed':''}${fl?' flip':''}" type="button" id="wboard" data-gv="album" data-bld="board" style="left:${pct(x-BW/2,ISO.w)};top:${pct(y-GY,ISO.h)};width:${pct(BW,ISO.w)};height:${pct(H,ISO.h)};z-index:${z}" aria-label="Notice board, open">
  ${post(-1)}${post(1)}<i class="wibback" style="top:${GY-ph-fh}px;height:${fh}px"></i>
  <span class="wibface" style="top:${GY-ph-fh}px;height:${fh}px"><span class="wibt">Today</span><span class="wbin">${wBoardNotes(ed)}</span></span></${T}>`}
 /* ---------- eating plants a seed: it flies from the basket into its bed; a full bed keeps it waiting in the seed bar ---------- */
@@ -5638,7 +5706,7 @@ function wPushOffer(auto){const g=S.garden;if(g.vpush||wPushOn()||!(WPUSH.url&&W
 /* the tortoise shows the garden: the view glides to each place and it says what it is */
 const WTOUR=[
  [null,'Let me show you around. It takes half a minute.'],
- ['#wboard','The board. Covered is how well your nutrients are covered lately, Low is what is short, Next is the one next step. Tap it for every number.'],
+ ['#wboard','The notice board. Tap it anywhere to open it big: what is covered, what is low, your meals, your beds and the next step.'],
  ['#gd-world [data-wsb]','Six beds, one per food group. A dashed sign means that group would like a visit. Tap a sign to add a food from it.'],
  ['#w-ring','This ring is the same number as Covered on the board. The arrows beside the date go to other days.'],
  ['#w-add','The basket adds anything you eat. The plates beside it are your meals of the day: tap one to see or change it.'],
@@ -5657,6 +5725,36 @@ function wTourGo(i){document.querySelectorAll('.wtourhl').forEach(x=>x.classList
 function wGlide(dx,dy){if(!G||!G.cam)return;const c=G.cam,x0=c.x,y0=c.y;if(GSTILL()){c.x=x0+dx;c.y=y0+dy;gCamApply();return}const t0=performance.now(),D=450;
  const f=n=>{const k=Math.min(1,(n-t0)/D),e=1-Math.pow(1-k,3);c.x=x0+dx*e;c.y=y0+dy*e;gCamApply();if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
 function wTour(){if(S.view!=='garden'||!G||G.ed)return;S.garden.tour=1;save();wTourGo(0)}
+/* the big notice board: a tap anywhere on the board in the world opens it; every note opens what it shows */
+function wBigClose(now){const el=$('wbig');if(!el)return;if(now||GSTILL()){el.remove();return}el.classList.add('out');setTimeout(()=>el.remove(),170)}
+function wBigBoard(){wBigClose(true);if(!S.garden)return;const w=wScore(),any=wHasData(),iss=any?issues(w.DS,w.T).filter(x=>!x.s.over).slice(0,3):[],nx=wNext(),isT=S.date===TODAY;
+ let fg=[];try{fg=fgStatus(TODAY)}catch(e){}const lowG=fg.filter(x=>x.low).map(x=>x.k);
+ const ds=[...Array(7)].map((_,i)=>shift(TODAY,-i));let kinds=0,ld=0;try{kinds=plantSet(ds).size}catch(e){}try{ld=loggedDays(7)}catch(e){}
+ const N=isT&&wClosed()?['','ring','','Day closed','Rest well. Tomorrow is a new page.']
+  :wCanClose()?[' go','close','','That was all','Tap to close the day']
+  :nx?[' go','meal',nx,wMealN(nx),'Tap to add it']
+  :lowG[0]?[' go','fg',lowG[0],GFGN[lowG[0]],'This bed would like a visit']
+  :['','ring','','All set','Everything is in for now'];
+ const mt=t=>{const P=S.plan||{},keys=mealKeys(P).filter(q=>typeOf(P,q)===t),fk=keys.find(q=>P[q].it&&P[q].it.length),k=slotOfType(t),sl=P[k],skip=!fk&&sl&&sl.skip;
+  return `<span class="wbm${fk?' full':skip?' skip':''}"><i>${fk?WTICK:skip?'':PLUS}</i>${t==='s'?'Snack':TY[t].n}</span>`};
+ const pin=c=>`<i class="wpin" style="background:${c}"></i>`,h=t=>`<small class="wbh">${t}</small>`;
+ const el=document.createElement('div');el.id='wbig';el.className='wbig';
+ el.innerHTML=`<div class="wbbd" role="dialog" aria-modal="true" aria-label="Notice board"><div class="wbtop"><span class="wbpl">Notice board</span><button class="wbx" type="button" id="wb-x" aria-label="Close">${XIC}</button></div><div class="wbg">
+  <button class="wbn" type="button" data-bb="nutr" style="--r:-1.4deg">${pin('#E64B4B')}${h('Covered')}<span class="wbring">${WRING(any?w.sc:0,30)}<b class="num">${any?w.sc+' %':''}</b></span><span class="wbs">${any?'Lately, mixed':'Log a meal to see it'}</span></button>
+  <div class="wbn" style="--r:1.2deg">${pin('#F6A33C')}${h('Low')}${iss.length?iss.map(x=>`<button class="wbrow" type="button" data-bb="gap" data-k="${x.k}"><span>${NUT[x.k].n}</span><b class="num">${Math.round(x.s.p)} %</b></button>`).join('')+`<button class="wblink" type="button" data-bb="imp">How to fix</button>`:`<span class="wbs">${any?'Nothing is low. Nice.':'Log a meal first'}</span>`}</div>
+  <button class="wbn wide${N[0]}" type="button" data-bb="${N[1]}"${N[2]?` data-k="${N[2]}"`:''} style="--r:-.5deg">${pin('#6DBB63')}${h('Next')}<span class="wbnt">${esc(N[3])}</span><span class="wbs">${N[4]}</span></button>
+  <button class="wbn wide" type="button" data-bb="today" style="--r:.9deg">${pin('#7CC4F2')}${h(isT?'Meals today':'Meals')}<span class="wbms">${['b','l','d','s'].map(mt).join('')}</span></button>
+  <div class="wbn wide" style="--r:-.7deg">${pin('#B79BE0')}${h('Beds')}<span class="wbfg">${fg.map(x=>`<button class="wbchip${x.low?' low':''}" type="button" data-bb="fg" data-k="${x.k}" aria-label="${GFGN[x.k]}${x.low?', would like a visit':''}">${GFGN[x.k]}</button>`).join('')}</span></div>
+  <button class="wbn wide" type="button" data-bb="hist" style="--r:.6deg">${pin('#F2C14E')}${h('This week')}<span class="wbwk"><span><b class="num">${kinds}</b> kinds of plants</span><span><b class="num">${ld}</b> of 7 days with meals</span></span></button>
+ </div></div>`;
+ document.body.appendChild(el);
+ el.querySelectorAll('[data-bb]').forEach(b=>b.onclick=e=>{e.stopPropagation();const a=b.dataset.bb,k=b.dataset.k;wBigClose(true);
+  if(a==='nutr'||a==='ring'){S.nsub='over';go('nutr')}else if(a==='imp'){S.nsub='imp';go('nutr')}else if(a==='hist'){S.nsub='hist';go('nutr')}
+  else if(a==='gap')selectNut(k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(k));else if(a==='today')go('today');
+  else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(k)&&gLand().sec[x]);if(bd){G.sb=bd;G.bmt=null;gView('bed')}else go('today')}});
+ el.onclick=e=>{if(e.target===el)wBigClose()};$('wb-x').onclick=()=>wBigClose();
+ const esc2=e=>{if(e.key==='Escape'){wBigClose();document.removeEventListener('keydown',esc2)}};document.addEventListener('keydown',esc2);
+}
 function render(){const o=PROJ;PROJ=S.date>TODAY;if(PROJ&&S.plan)mealKeys(S.plan).forEach(k=>{if(S.plan[k].it.length)S.plan[k].pl=1});try{return render0()}finally{PROJ=o}}
 function render0(){
  _VC=null;supMigrate();
