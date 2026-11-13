@@ -1645,6 +1645,9 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 .prow .nm .adseed{margin-left:6px}
 /* the golden badge keeps its own colours in both themes */
 #gd-world .gplot .ggold{color:#3B2A18;font-size:12px;font-weight:800;background:#F2C14E;line-height:1.3}
+.scphoto{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;margin-top:10px;box-sizing:border-box;cursor:pointer}
+.scphoto svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2;stroke-linejoin:round;flex:none}
+.scpmsg{margin:6px 0 0;min-height:0}.scpmsg:empty{display:none}
 </style>
 </head>
 <body>
@@ -3214,6 +3217,18 @@ function openScan(slot,mode){SC={slot:slot===null?null:(slot||S.addto||'s'),stag
 function closeScan(){stopCamera();const d=$('scan');d.close?d.close():d.removeAttribute('open')}
 $('sc-close').onclick=closeScan;
 $('scan').addEventListener('close',stopCamera);
+/* a photo of the barcode, for iPhone and iPad: the phone's own camera opens, iOS asks no permission. The photo is made smaller, then read. */
+const wApple=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
+function photoBtn(id,force){return force||wApple()?`<label class="btn scphoto" for="${id}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>Take a photo of the barcode</label><input type="file" accept="image/*" capture="environment" id="${id}" hidden><p class="cap scpmsg" id="${id}-msg" role="status"></p>`:''}
+async function photoRead(f){await loadZX();let src=URL.createObjectURL(f),made=null;
+ try{const im=await new Promise((ok,bad)=>{const i=new Image();i.onload=()=>ok(i);i.onerror=bad;i.src=src});const m=1600,sc=Math.min(1,m/Math.max(im.naturalWidth,im.naturalHeight));
+  if(sc<1){const c=document.createElement('canvas');c.width=Math.round(im.naturalWidth*sc);c.height=Math.round(im.naturalHeight*sc);c.getContext('2d').drawImage(im,0,0,c.width,c.height);made=c.toDataURL('image/jpeg',.92)}
+  const hints=new Map();hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E]);hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
+  const res=await new ZXing.BrowserMultiFormatReader(hints).decodeFromImageUrl(made||src);return res.getText()}finally{URL.revokeObjectURL(src)}}
+function photoBind(id,go,again){const inp=$(id);if(!inp)return;const lb=document.querySelector(`label[for="${id}"]`);if(lb)lb.addEventListener('click',()=>{const m=$(id+'-msg');if(m)m.textContent=''});
+ inp.onchange=async()=>{const f=inp.files&&inp.files[0];inp.value='';if(!f)return;stopCamera();const m=$(id+'-msg');if(m)m.textContent='Reading the photo…';
+  let code=null;try{code=await photoRead(f)}catch(e){}
+  if(code){SCAN.busy=false;go(code)}else again('No barcode found in that photo. Hold the phone a little closer and keep it steady, or type the number.')}}
 function scStatus(t){const el=$(SCAN.stat||'sc-stat');if(el)el.textContent=t}
 function loadZX(){if(window.ZXing)return Promise.resolve();return new Promise((ok,bad)=>{const add=(src,next)=>{const sc=document.createElement('script');sc.src=src;sc.onload=ok;sc.onerror=next;document.head.appendChild(sc)};add('vendor/zxing.min.js',()=>add('https://unpkg.com/@zxing/library@0.21.3/umd/index.min.js',()=>bad(new Error('load'))))})}
 async function startCamera(vid){
@@ -3252,8 +3267,9 @@ function renderScan(){
   $('sc-title').textContent='Scan barcode';
   b.innerHTML=`<div class="scanbox"><video id="sc-video" playsinline muted></video></div><p class="scanstat" id="sc-stat">Starting camera…</p>
    <div class="lbl" style="margin-bottom:6px">Or type the barcode number</div>
-   <div style="display:flex;gap:8px"><input id="sc-code" type="text" inputmode="numeric" placeholder="e.g. 5411188112709" style="flex:1;font-size:16px;padding:8px"><button class="btn primary" type="button" id="sc-go">Look up</button></div>
+   <div style="display:flex;gap:8px"><input id="sc-code" type="text" inputmode="numeric" placeholder="e.g. 5411188112709" style="flex:1;font-size:16px;padding:8px"><button class="btn primary" type="button" id="sc-go">Look up</button></div>${photoBtn('sc-photo')}
    <button class="btn" type="button" id="sc-label" style="margin-top:12px">No barcode: enter from label</button>`;
+  photoBind('sc-photo',c=>onCode(c),t=>{renderScan();const m=$('sc-photo-msg');if(m)m.textContent=t});
   $('sc-go').onclick=()=>{SCAN.busy=false;onCode($('sc-code').value)};
   $('sc-code').onkeydown=e=>{if(e.key==='Enter')$('sc-go').click()};
   $('sc-label').onclick=()=>{stopCamera();SC.stage='review';SC.prod={code:'',n:'',lab:{},vegan:'unknown',base:'',pack:'',por:'',found:false};renderScan()};
@@ -3327,8 +3343,8 @@ function renderScanTab(){
  const hist=H.length?`<div class="card"><h2 style="margin-bottom:6px">Recently scanned</h2>${H.map((h,i)=>{const c=vInfo(h.vegan);return `<button class="histrow" type="button" data-h="${i}">${h.img?`<img src="${esc(h.img)}" alt="">`:`<span class="thumb em">${EMO['1f37d']}</span>`}<span style="flex:1;min-width:0"><span class="hn">${esc(h.n)}</span><span class="vdot" style="color:${c[0]}">● ${c[1]}</span></span>${CHEV}</button>`}).join('')}</div>`:'';
  if(ST.state==='cam'){
   v.innerHTML=head+`<div class="card"><div class="scanbox"><video id="st-video" playsinline muted></video></div><p class="scanstat" id="st-stat">${ST.msg||'Starting camera…'}</p>
-   <div style="display:flex;gap:8px"><input id="st-code" type="text" inputmode="numeric" placeholder="Or type the barcode number" style="flex:1"><button class="btn" type="button" id="st-go">Look up</button></div></div>${hist}`;
-  ST.msg='';
+   <div style="display:flex;gap:8px"><input id="st-code" type="text" inputmode="numeric" placeholder="Or type the barcode number" style="flex:1"><button class="btn" type="button" id="st-go">Look up</button></div>${photoBtn('st-photo')}</div>${hist}`;
+  ST.msg='';photoBind('st-photo',c=>tabLookup(c),t=>{ST.drawn='';renderScanTab();const m=$('st-photo-msg');if(m)m.textContent=t});
   $('st-go').onclick=()=>{SCAN.busy=false;stopCamera();tabLookup($('st-code').value)};
   $('st-code').onkeydown=e=>{if(e.key==='Enter')$('st-go').click()};
   v.querySelectorAll('[data-h]').forEach(b=>b.onclick=()=>{stopCamera();ST.prod=H[+b.dataset.h].P;ST.state='res';ST.drawn='';renderScanTab();scrollTo({top:0})});
