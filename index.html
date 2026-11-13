@@ -1454,7 +1454,6 @@ button.wbn{cursor:pointer}button.wbn:active{transform:rotate(var(--r,0deg)) scal
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .app>section.view.wsheet .seg{background:#1F1912;box-shadow:inset 0 2px 0 rgba(0,0,0,.35)}:root:not([data-theme="light"]) .app>section.view.wsheet .seg button{color:#C9BBA3}:root:not([data-theme="light"]) .app>section.view.wsheet .seg button[aria-pressed="true"]{background:#54473A;color:#FFF4DC;box-shadow:0 2px 0 #1A140E}}
 :root[data-theme="dark"] .app>section.view.wsheet .seg{background:#1F1912;box-shadow:inset 0 2px 0 rgba(0,0,0,.35)}:root[data-theme="dark"] .app>section.view.wsheet .seg button{color:#C9BBA3}:root[data-theme="dark"] .app>section.view.wsheet .seg button[aria-pressed="true"]{background:#54473A;color:#FFF4DC;box-shadow:0 2px 0 #1A140E}
 .app>section.view.wsheet .scanbox{border:8px solid #93623A;box-shadow:inset 0 0 0 2px rgba(0,0,0,.25),0 3px 0 #6E4A2A;border-radius:18px;box-sizing:border-box}
-.scphoto{display:flex;width:100%;margin-top:10px;box-sizing:border-box;cursor:pointer}
 </style>
 </head>
 <body>
@@ -2994,13 +2993,6 @@ async function camGet(){clearTimeout(SCAN.camT);if(camLive()){SCAN.cam.getVideoT
 function camRelease(){clearTimeout(SCAN.camT);if(SCAN.cam){SCAN.cam.getTracks().forEach(t=>t.stop());SCAN.cam=null}}
 function camPark(){if(!SCAN.cam)return;SCAN.cam.getVideoTracks().forEach(t=>t.enabled=false);clearTimeout(SCAN.camT);SCAN.camT=setTimeout(camRelease,3*60*1000)}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden'){stopCamera();camRelease()}});
-const IOS=/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
-/* a photo of the barcode: the phone's own camera, no permission asked */
-function photoBtn(id){return IOS?`<label class="btn ghost scphoto" for="${id}">Take a photo of the barcode</label><input type="file" accept="image/*" capture="environment" id="${id}" hidden>`:''}
-function photoBind(id){const inp=$(id);if(!inp)return;inp.onchange=async()=>{const f=inp.files&&inp.files[0];inp.value='';if(!f)return;scStatus('Reading the photo…');const url=URL.createObjectURL(f);
- try{await loadZX();const hints=new Map();hints.set(ZXing.DecodeHintType.POSSIBLE_FORMATS,[ZXing.BarcodeFormat.EAN_13,ZXing.BarcodeFormat.EAN_8,ZXing.BarcodeFormat.UPC_A,ZXing.BarcodeFormat.UPC_E]);hints.set(ZXing.DecodeHintType.TRY_HARDER,true);
-  const res=await new ZXing.BrowserMultiFormatReader(hints).decodeFromImageUrl(url);SCAN.busy=false;onCode(res.getText())}
- catch(e){scStatus('No barcode found in that photo. Hold the phone closer and keep it steady, or type the number.')}finally{URL.revokeObjectURL(url)}}}
 function openScan(slot,mode){SC={slot:slot===null?null:(slot||S.addto||'s'),stage:mode==='label'?'review':'scan',prod:mode==='label'?{code:'',n:'',lab:{},vegan:'unknown',base:'',pack:'',por:'',found:false}:null,msg:''};
  const d=$('scan');renderScan();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}if(SC.stage==='scan')startCamera()}
 function closeScan(){stopCamera();const d=$('scan');d.close?d.close():d.removeAttribute('open')}
@@ -3044,9 +3036,9 @@ function renderScan(){
   $('sc-title').textContent='Scan barcode';
   b.innerHTML=`<div class="scanbox"><video id="sc-video" playsinline muted></video></div><p class="scanstat" id="sc-stat">Starting camera…</p>
    <div class="lbl" style="margin-bottom:6px">Or type the barcode number</div>
-   <div style="display:flex;gap:8px"><input id="sc-code" type="text" inputmode="numeric" placeholder="e.g. 5411188112709" style="flex:1;font-size:16px;padding:8px"><button class="btn primary" type="button" id="sc-go">Look up</button></div>${photoBtn('sc-photo')}
+   <div style="display:flex;gap:8px"><input id="sc-code" type="text" inputmode="numeric" placeholder="e.g. 5411188112709" style="flex:1;font-size:16px;padding:8px"><button class="btn primary" type="button" id="sc-go">Look up</button></div>
    <button class="btn" type="button" id="sc-label" style="margin-top:12px">No barcode: enter from label</button>`;
-  $('sc-go').onclick=()=>{SCAN.busy=false;onCode($('sc-code').value)};photoBind('sc-photo');
+  $('sc-go').onclick=()=>{SCAN.busy=false;onCode($('sc-code').value)};
   $('sc-code').onkeydown=e=>{if(e.key==='Enter')$('sc-go').click()};
   $('sc-label').onclick=()=>{stopCamera();SC.stage='review';SC.prod={code:'',n:'',lab:{},vegan:'unknown',base:'',pack:'',por:'',found:false};renderScan()};
   return;
@@ -3119,7 +3111,7 @@ function renderScanTab(){
  const hist=H.length?`<div class="card"><h2 style="margin-bottom:6px">Recently scanned</h2>${H.map((h,i)=>{const c=vInfo(h.vegan);return `<button class="histrow" type="button" data-h="${i}">${h.img?`<img src="${esc(h.img)}" alt="">`:`<span class="thumb em">${EMO['1f37d']}</span>`}<span style="flex:1;min-width:0"><span class="hn">${esc(h.n)}</span><span class="vdot" style="color:${c[0]}">● ${c[1]}</span></span>${CHEV}</button>`}).join('')}</div>`:'';
  if(ST.state==='cam'){
   v.innerHTML=head+`<div class="card"><div class="scanbox"><video id="st-video" playsinline muted></video></div><p class="scanstat" id="st-stat">${ST.msg||'Starting camera…'}</p>
-   <div style="display:flex;gap:8px"><input id="st-code" type="text" inputmode="numeric" placeholder="Or type the barcode number" style="flex:1"><button class="btn" type="button" id="st-go">Look up</button></div>${photoBtn('st-photo')}</div>${hist}`;photoBind('st-photo');
+   <div style="display:flex;gap:8px"><input id="st-code" type="text" inputmode="numeric" placeholder="Or type the barcode number" style="flex:1"><button class="btn" type="button" id="st-go">Look up</button></div></div>${hist}`;
   ST.msg='';
   $('st-go').onclick=()=>{SCAN.busy=false;stopCamera();tabLookup($('st-code').value)};
   $('st-code').onkeydown=e=>{if(e.key==='Enter')$('st-go').click()};
