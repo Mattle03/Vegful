@@ -5319,7 +5319,12 @@ document.querySelectorAll('#p-gw [data-gw]').forEach(b=>b.onclick=()=>{gInit();S
 $('p-water').onchange=e=>{S.prof.water=e.target.checked?'1':'0';if(!S.prof.btl)S.prof.btl=750;render()};
 $('p-btl').onchange=e=>{const v=parseInt(e.target.value);S.prof.btl=v>=100&&v<=3000?v:750;render()};
 function backupJSON(){return JSON.stringify(Object.assign({app:'vegful',v:1,saved:new Date().toISOString()},JSON.parse(localStorage.getItem('vpc2')||JSON.stringify(S,function(k,v){return this===S&&k==='plan'?undefined:v}))))}
-$('bk-save').onclick=()=>{save();try{const b=new Blob([backupJSON()],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=`vegful-backup-${TODAY}.json`;document.body.appendChild(a);a.click();a.remove();$('bk-msg').textContent='Backup file created. Photos are not included.'}catch(e){$('bk-msg').textContent='Saving files is blocked here. Use Copy backup instead.'}};
+/* one way to save a backup file, used by Profile and by the tortoise; it remembers the day so the tortoise does not ask again soon */
+async function wBackupSave(){save();const nm=`vegful-backup-${TODAY}.json`,txt=backupJSON();let ok=false;
+ try{const f=typeof File==='function'?new File([txt],nm,{type:'application/json'}):null;if(f&&wApple()&&navigator.canShare&&navigator.canShare({files:[f]})){await navigator.share({files:[f]});ok=true}}catch(e){if(e&&e.name==='AbortError')return false}
+ if(!ok){try{const b=new Blob([txt],{type:'application/json'}),a=document.createElement('a');a.href=URL.createObjectURL(b);a.download=nm;document.body.appendChild(a);a.click();a.remove();ok=true}catch(e){}}
+ if(ok&&S.garden){S.garden.bak=Object.assign(S.garden.bak||{},{at:TODAY});save()}return ok}
+$('bk-save').onclick=async()=>{const ok=await wBackupSave();$('bk-msg').textContent=ok?'Backup file created. Photos are not included.':'Saving files is blocked here. Use Copy backup instead.'};
 $('bk-copy').onclick=async()=>{save();try{await navigator.clipboard.writeText(backupJSON());$('bk-msg').textContent='Backup copied. Paste it into a note or message to keep it.'}catch(e){$('bk-msg').textContent='Copying is blocked here.'}};
 $('bk-file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{const o=JSON.parse(await f.text());if(!o||!o.days)throw 0;
  const n=Object.keys(o.days).length;delete o.app;delete o.v;delete o.saved;S=Object.assign(structuredClone(DEF),o);S.custom=S.custom||[];S.custom.forEach(registerFood);setDate(TODAY);render();$('bk-msg').textContent=`Restored ${n} days.`}catch(err){$('bk-msg').textContent='That file is not a Vegful backup.'}};
@@ -6159,12 +6164,19 @@ function wAsk(t,detail,acts,stay){const el=$('wtort');if(!el||el.hidden)return;c
    Each is asked by itself once a day; until answered the tortoise keeps its mark and asks when tapped. */
 function wSupDue(){if(!S.sups||!S.sups.length)return [];const T=targets();return S.sups.filter(s=>s.freq!=='d'&&s.freq!=='o').filter(s=>{const st=sStatus(s,TODAY,T);return st&&st.due})}
 function wActOpen(){const p=S.days[TODAY],g=S.garden;if(!p||!g||!logged(p)||p.act||g.actok===TODAY)return false;return new Date().getHours()>=18||!!(p.d&&p.d.it&&p.d.it.length)}
-function wCheckNext(){if(S.date!==TODAY)return null;const d=wSupDue();if(d.length)return {k:'sup',s:d[0]};if(wActOpen())return {k:'act'};return null}
+/* a backup offer about once a month, after a week of logging: counted from the last backup, the last offer or the first logged day.
+   It is marked as asked the moment it shows, so it never stays as a mark; Don't ask again turns it off for good. */
+function wBakDue(){const g=S.garden;if(!g||(g.bak&&g.bak.off))return false;const ds=Object.keys(S.days||{}).filter(d=>d<=TODAY&&logged(S.days[d])).sort();if(ds.length<7)return false;
+ const b=g.bak||{},base=[b.at,b.ask,ds[0]].filter(Boolean).sort().pop();return dayDiff(base,TODAY)>=30}
+function wBakAsk(){const g=S.garden;g.bak=Object.assign(g.bak||{},{ask:TODAY});save();WHOLDT=Date.now()+20000;
+ wAsk('Save a backup?','Your garden lives only on this phone.',[['Save backup',async()=>{WHOLDT=0;const ok=await wBackupSave();toast(ok?'Backup saved':'Saving is blocked here. Profile has Copy backup.')}],['Not now',()=>{WHOLDT=0}],["Don't ask again",()=>{g.bak.off=1;save();WHOLDT=0;toast('Backups stay in Profile')}]],true)}
+function wCheckNext(){if(S.date!==TODAY)return null;const d=wSupDue();if(d.length)return {k:'sup',s:d[0]};if(wActOpen())return {k:'act'};if(wBakDue())return {k:'bak'};return null}
 function wSupAsk(s){const n=sName(s);WHOLDT=Date.now()+20000;wAsk(`${n} is due today`,'',[['Taken',()=>{s.takes=s.takes||[];if(!s.takes.includes(TODAY))s.takes.push(TODAY);save();render();WHOLDT=0;toast(`${n}: taken`)}],['Later',()=>{WHOLDT=0}]],true)}
 function wActAsk(){const base=String(S.prof.act||'1.6'),i=Math.max(0,ACTS.findIndex(a=>a[0]===base)),seen=new Set();
  const O=[['Usual',i],['Less',i-1],['More',i+1],['A lot more',i+2]].filter(([,j])=>j>=0&&j<ACTS.length&&!seen.has(j)&&seen.add(j));
  WHOLDT=Date.now()+20000;wAsk('How active was today?','',O.map(([t,j])=>[t,()=>{const p=S.days[TODAY];if(!p)return;const v=ACTS[j][0];if(v===base)delete p.act;else p.act=v;S.garden.actok=TODAY;save();render();WHOLDT=0;toast(`Today: ${actName(v).toLowerCase()}`)}]),true)}
 function wCheckIn(auto){const c=wCheckNext();if(!c)return false;const g=S.garden;
+ if(c.k==='bak'){wBakAsk();return true}
  if(auto){g.vchk=g.vchk||{};const key=c.k==='sup'?'s'+c.s.id:'act';if(g.vchk[key]===TODAY)return false;g.vchk[key]=TODAY;save()}
  if(c.k==='sup')wSupAsk(c.s);else wActAsk();return true}
 let WCHKT=0;
