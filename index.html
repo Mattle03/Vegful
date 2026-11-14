@@ -729,6 +729,11 @@ input[type=date]::-webkit-date-and-time-value{text-align:left}input[type=date]::
 .fsz{margin:8px 0 6px}
 .adhad{margin:10px 2px 0}
 .adquick{margin:2px 0 6px}
+.adqk{display:flex;gap:8px;overflow-x:auto;padding:2px 2px 8px;margin:0 -2px;scrollbar-width:none;-webkit-overflow-scrolling:touch}.adqk::-webkit-scrollbar{display:none}
+.adqb{flex:none;display:flex;flex-direction:column;align-items:center;gap:4px;width:76px;min-height:76px;padding:8px 4px 6px;border-radius:14px;border:1.5px solid var(--line);background:var(--surface);color:var(--ink);font:inherit;-webkit-tap-highlight-color:transparent}
+.adqb .em{width:30px;height:30px;display:grid;place-items:center}.adqb .em svg,.adqb .em img{width:100%;height:100%;object-fit:cover;border-radius:6px}
+.adqb b{font-size:12px;font-weight:700;line-height:1.15;text-align:center;overflow:hidden;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;word-break:break-word}
+.adqb:active{transform:scale(.96)}
 .adgrp .adm .chev{width:18px;height:18px;flex:none;margin-left:auto;fill:none;stroke:var(--muted);stroke-width:2.2;stroke-linecap:round;transition:transform .2s}
 .adgrp [aria-expanded="true"] .chev{transform:rotate(90deg)}
 .adgv{padding-left:14px;border-left:3px solid var(--accent-soft);margin-left:20px}
@@ -1684,15 +1689,15 @@ html.calm .gbld.refill .wbwater{animation:none}
 .wsign{transform:translate(-50%,-62%)}.wsign .wsst{display:none}
 .wsp{--sb:#E9CFA0;--st:#3B2A18;--se:#A87A47;background:var(--sb);color:var(--st);font-size:12px;padding:2px 8px 2px 4px;border-radius:3px;gap:4px;box-shadow:2px -1px 0 var(--se),0 3px 5px rgba(0,0,0,.14)}
 .wsign.rot .wsp{box-shadow:-2px -1px 0 var(--se),0 3px 5px rgba(0,0,0,.14)}
-.wsic{display:inline-flex;width:15px;height:15px;flex:none}.wsic svg{width:15px;height:15px}
-.wsign.t-f .wsp{--sb:#C8473B;--st:#FFF4E6;--se:#8E2C24}
-.wsign.t-n .wsp{--sb:#7A5233;--st:#FBEBD3;--se:#4E321E}
-.wsign.t-v .wsp{--sb:#E58A3A;--st:#3B2010;--se:#A85A1E}
-.wsign.t-k .wsp{--sb:#5E9E4E;--st:#F2FBEA;--se:#3D6E31}
-.wsign.t-c .wsp{--sb:#E9C25E;--st:#4A3410;--se:#B48A2A}
-.wsign.t-l .wsp{--sb:#CFC07A;--st:#3E3A18;--se:#8E8240;background:repeating-linear-gradient(90deg,var(--sb) 0 22px,#B9AA62 22px 24px)}
-.wsign.need .wsp,.wsign.rot.need .wsp{background:var(--sb);color:var(--st);outline:2px dashed #FFE08A;outline-offset:2px}
-.wsign.t-l.need .wsp{background:repeating-linear-gradient(90deg,var(--sb) 0 22px,#B9AA62 22px 24px)}
+.wsic{display:inline-flex;width:17px;height:17px;flex:none}.wsic svg{width:17px;height:17px}
+
+
+
+
+
+
+.wsign.need .wsp,.wsign.rot.need .wsp{background:var(--sb);color:var(--st);outline:2px dashed #9A6A12;outline-offset:2px}
+
 .wleg{display:grid;gap:14px;padding:4px 2px 10px}.wlegr{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center}.wlegr svg{width:34px;height:34px}.wlegr b{display:block;font-size:15.5px}.wlegr .cap{display:block;margin:1px 0 0}
 .wsign.need .wsp{box-shadow:2px -1px 0 var(--se),0 0 0 7px color-mix(in srgb,var(--coral) 28%,transparent)}
 .wsign.rot.need .wsp{box-shadow:-2px -1px 0 var(--se),0 0 0 7px color-mix(in srgb,var(--coral) 28%,transparent)}
@@ -4924,7 +4929,7 @@ function adMain(b,s){const T=targets(),q=fold(AD.q).trim(),D0=dayMinus(AD.slot);
   if(!h)h=`<p class="empty2">No match. <button class="linkbtn" type="button" id="ad-tout" style="display:inline-flex;padding:0;min-height:0">Log it as eaten out</button></p>`}
  else if(AD.more)h=adMore(b,s,T,D0);
  else{const ag=againList(AD.slot,2);AD.ag=ag;
-  h+=`<div class="chips adquick" role="group" aria-label="Shortcuts">${[['meals','Recent'],['fav','Favourites'],['mine','Your dishes']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}</div>`;
+  h+=`<div class="chips adquick" role="group" aria-label="Shortcuts">${[['meals','Recent'],['fav','Favourites'],['mine','Your dishes']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}</div>`+adQuickRow();
   if(ag.length)h+=`<h3 class="adh">Again</h3>`+ag.map((a,i)=>adRow({gt:a.est?'':wSeedTag(a.it),main:`data-adag="${i}"`,plus:`data-adag="${i}"`,ic:slotIcon({did:a.did,it:a.it},typeOf(S.plan,AD.slot)),n:a.n,lab:a.est?lab('Estimate','est'):'',sub:`${whenTxt(a.d)} · ${ENs(a.v[0])}${Math.round(a.v[1])} g protein`})).join('');
   const LO=lowList(T);AD.focus=AD.focus.filter(k=>LO.some(x=>x.k===k));
   const I=s.t==='s'?[]:slotIdeas(AD.slot,AD.focus.length?12:8,AD.focus);
@@ -4934,6 +4939,14 @@ function adMain(b,s){const T=targets(),q=fold(AD.q).trim(),D0=dayMinus(AD.slot);
   h+=`<h3 class="adh">More</h3><div class="chips wrap admore">${[...(Object.keys(S.pantry||{}).length?[['pantry','From my pantry']]:[]),['recent','Recent foods'],['prod','Your products'],['dishes','All dishes'],['foods','All foods']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}<button class="chip" type="button" id="ad-out">Ate out</button></div>`}
  b.innerHTML=h;adBind(b,s)}
 
+/* quick add: favourite dishes, then favourite and recent foods, then what you ate most in the last two weeks, one tap each; the pick goes to How much like any other */
+function adQuick(){const it=S.plan[AD.slot].it,on=new Set(it.map(x=>x[0])),out=[],seen=new Set();
+ allDishes().filter(d=>d.fav).slice(0,3).forEach(d=>out.push({d}));
+ const cnt={};for(let i=0;i<14;i++){const p=S.days[shift(TODAY,-i)];if(!p)continue;mealKeys(p).forEach(k=>{const m=p[k];if(m&&!m.skip)(m.it||[]).forEach(([id,q])=>{if(q>0)cnt[id]=(cnt[id]||0)+1})})}
+ [...S.favFoods,...S.recentFoods,...Object.keys(cnt).sort((x,y)=>cnt[y]-cnt[x])].forEach(id=>{const f=FM[id];if(out.length>=8||!f||f.hide||seen.has(id)||on.has(id))return;seen.add(id);out.push({f})});return out}
+function adQuickRow(){const L=adQuick();if(!L.length)return '';
+ return `<h3 class="adh">Quick add</h3><div class="adqk" role="group" aria-label="Quick add">${L.map(x=>x.d?`<button class="adqb" type="button" data-adpd="${x.d.id}" aria-label="Add ${esc(x.d.n)}"><span class="em">${PH[x.d.id]?`<img src="${PH[x.d.id]}" alt="">`:dIcon(x.d)}</span><b>${esc(x.d.n)}</b></button>`
+  :`<button class="adqb" type="button" data-adpf="${x.f.id}" aria-label="Add ${esc(x.f.n)}"><span class="em">${fIcon(x.f.id)}</span><b>${esc(x.f.n.split(',')[0])}</b></button>`).join('')}</div>`}
 function adMore(b,s,T,D0){const m=AD.more,ttl={meals:'Recent',pantry:'From my pantry',recent:'Recent foods',fav:'Favourites',mine:'Your dishes',prod:'Your products',dishes:'All dishes',foods:'All foods'}[m];let h=`<div class="admhead"><button class="chip" type="button" data-admore="">${BACKI}Back</button><h3>${ttl}</h3></div>`;
  if(m==='pantry'){const L=panDishes(s.t);h+=L.map(x=>{const add=x.d.it.reduce((a,it)=>addv(a,itemV(it)),z());return adRow({gt:wSeedTag(x.d.it),main:`data-add="${x.d.id}"`,plus:`data-adpd="${x.d.id}"`,ic:PH[x.d.id]?`<img src="${PH[x.d.id]}" alt="">`:dIcon(x.d),n:x.d.n,sub:`${x.ok===x.n?'Everything at home':x.ok+' of '+x.n+' at home · no '+x.miss.slice(0,2).join(', ')} · ${ENs(add[0])}${Math.round(add[1])} g protein`})}).join('')||'<p class="empty2">Nothing fits what is at home yet. Fill your pantry from Scan/Shop.</p>'}
  else if(m==='meals'){const L=recentMeals(AD.slot);AD.rc=L;h+=L.map((a,i)=>adRow({gt:a.est?'':wSeedTag(a.it),main:`data-adrc="${i}"`,plus:`data-adrc="${i}"`,ic:slotIcon({did:a.did,it:a.it},a.ty),n:a.n,lab:a.est?lab('Estimate','est'):'',sub:`${whenTxt(a.d)}, ${TY[a.ty].n.toLowerCase()} · ${ENs(a.v[0])}${Math.round(a.v[1])} g protein`})).join('')||'<p class="empty2">Meals you log show up here.</p>'}
