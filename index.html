@@ -1601,7 +1601,7 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 :root[data-theme="dark"] .wempty{background:rgba(58,49,39,.92);color:#F3EADB;border-color:#9A7A45}:root[data-theme="dark"] .wempty b{color:#E9C77B}
 .wspt{display:flex;flex-direction:column;align-items:flex-start;line-height:1.05}
 .wspt small{font-size:12.5px;font-weight:700;margin-top:2px;opacity:.85}
-.wsign.empty .wsp{outline:3px dashed #C99A1E;outline-offset:-3px}
+
 .wbwat{font-size:15px}.wbwat b{font-size:22px;font-weight:800;margin-right:2px}
 .wbwbar{display:block;height:8px;border-radius:4px;background:#E9DDC4;overflow:hidden}.wbwbar i{display:block;height:100%;background:#7CC4F2;border-radius:4px}
 .wbn .wbchip[data-bb]{align-self:flex-start;margin-top:2px}
@@ -1691,8 +1691,9 @@ html.calm .gbld.refill .wbwater{animation:none}
 .wsign.t-k .wsp{--sb:#5E9E4E;--st:#F2FBEA;--se:#3D6E31}
 .wsign.t-c .wsp{--sb:#E9C25E;--st:#4A3410;--se:#B48A2A}
 .wsign.t-l .wsp{--sb:#CFC07A;--st:#3E3A18;--se:#8E8240;background:repeating-linear-gradient(90deg,var(--sb) 0 22px,#B9AA62 22px 24px)}
-.wsign.need .wsp,.wsign.rot.need .wsp,.wsign.empty .wsp{background:var(--sb);color:var(--st);outline:2px dashed #FFE08A;outline-offset:2px}
-.wsign.t-l.need .wsp,.wsign.t-l.empty .wsp{background:repeating-linear-gradient(90deg,var(--sb) 0 22px,#B9AA62 22px 24px)}
+.wsign.need .wsp,.wsign.rot.need .wsp{background:var(--sb);color:var(--st);outline:2px dashed #FFE08A;outline-offset:2px}
+.wsign.t-l.need .wsp{background:repeating-linear-gradient(90deg,var(--sb) 0 22px,#B9AA62 22px 24px)}
+.wleg{display:grid;gap:14px;padding:4px 2px 10px}.wlegr{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center}.wlegr svg{width:34px;height:34px}.wlegr b{display:block;font-size:15.5px}.wlegr .cap{display:block;margin:1px 0 0}
 .wsign.need .wsp{box-shadow:2px -1px 0 var(--se),0 0 0 7px color-mix(in srgb,var(--coral) 28%,transparent)}
 .wsign.rot.need .wsp{box-shadow:-2px -1px 0 var(--se),0 0 0 7px color-mix(in srgb,var(--coral) 28%,transparent)}
 </style>
@@ -4165,7 +4166,7 @@ function gardenView(){if(!GON()){G=null;$('gd-head').innerHTML='<div class="vhea
 function openGarden(view){if(!GON())return;gStart(view);S.view='garden';render();scrollTo({top:0});}
 function closeGarden(){if($('gsheet').open)$('gsheet').close();G=null;if(S.view==='garden'){S.view='today'}render()}
 function gView(v){G.view=v;G.sel=null;G.spot=null;G.buy=null;G.nm=0;renderGarden()}
-function renderGarden(){if(!G||!S.garden)return;const o=PROJ;PROJ=false;try{renderGarden0()}finally{PROJ=o}try{wBfStart()}catch(e){}}
+function renderGarden(){if(!G||!S.garden)return;const o=PROJ;PROJ=false;try{renderGarden0()}finally{PROJ=o}try{wBfStart()}catch(e){}try{wLabSoon(90)}catch(e){}}
 function gEta(p){const left=p.need-gProgress(p);if(gMode()==='auto'){const n=Math.ceil(left-1e-6);if(n<=0)return 'Ready';return n<=1?'Ready tomorrow':`Ready in ${n} days`}
  const wf=gWaterOn(TODAY);if(left<=1-wf+1e-6)return 'Ready with more water today';if(wf<=0)return 'Needs water';const n=Math.ceil(left-(1-wf)-1e-6);return n<=1?'Ready tomorrow':`Ready in about ${n} days`}
 /* ---------- the land: a tile grid you lay out yourself; sections, stone paths and decorations snap to it ----------
@@ -4424,7 +4425,7 @@ function gBuildings(L0,nb){const B=gBld(),P={shed:GB_SHED,shop:GB_SHOP,market:GB
 function gCamFit(){const vp=$('gd-scene');if(!vp)return;const R=vp.getBoundingClientRect();if(!R.width)return;const P=Object.values(gLand().sec).flatMap(secTiles).map(t=>isoP(...tileXY(t))),xs=P.map(p=>p[0]),ys=P.map(p=>p[1]),x0=Math.min(...xs)-46,x1=Math.max(...xs)+46,y0=Math.min(...ys)-24,y1=Math.max(...ys)+24,B=gBld().board,BD=B?bwh('board',B[2]):[1,1],yb=B?Math.min(y0,isoP(B[0]+(BD[0]-1)/2,B[1]+(BD[1]-1)/2)[1]-(WIB.ph+WIB.fh+Math.max(...BD)*WIB.tile*.25+20)):y0,top=72,bot=112,s=Math.min(1.3,Math.max(.35,Math.min(R.width*.94/(x1-x0),(R.height-top-bot)/(y1+30-yb))));G.cam={s,x:R.width/2-(x0+x1)/2*s,y:top+(R.height-top-bot)/2-(yb+y1+30)/2*s}}
 const gCamGo=()=>{const k=S.garden&&S.garden.cam;if(!G.cam&&k&&isFinite(k.s)&&isFinite(k.x)&&isFinite(k.y)){const vp=$('gd-scene');if(vp&&vp.getBoundingClientRect().width)G.cam={s:k.s,x:k.x,y:k.y}}if(!G.cam)gCamFit();gCamApply()};
 function gCamClamp(){const vp=$('gd-scene'),c=G.cam;if(!vp||!c)return;const R=vp.getBoundingClientRect();c.s=Math.max(.3,Math.min(1.8,c.s));const W=ISO.w*c.s,H=ISO.h*c.s;c.x=Math.min(R.width*.5,Math.max(R.width*.5-W,c.x));c.y=Math.min(R.height*.5,Math.max(R.height*.5-H,c.y))}
-let GCAMT=0;function gCamApply(){const w=$('gd-world');if(!w||!G.cam)return;gCamClamp();clearTimeout(GCAMT);GCAMT=setTimeout(()=>{if(S.garden&&G&&G.cam){S.garden.cam={s:+G.cam.s.toFixed(3),x:Math.round(G.cam.x),y:Math.round(G.cam.y)};save()}},700);w.style.transform=`translate(${G.cam.x.toFixed(1)}px,${G.cam.y.toFixed(1)}px) scale(${G.cam.s.toFixed(3)})`;wMoving(w)}
+let GCAMT=0;function gCamApply(){const w=$('gd-world');if(!w||!G.cam)return;gCamClamp();clearTimeout(GCAMT);GCAMT=setTimeout(()=>{if(S.garden&&G&&G.cam){S.garden.cam={s:+G.cam.s.toFixed(3),x:Math.round(G.cam.x),y:Math.round(G.cam.y)};save()}},700);w.style.transform=`translate(${G.cam.x.toFixed(1)}px,${G.cam.y.toFixed(1)}px) scale(${G.cam.s.toFixed(3)})`;wMoving(w);try{wLabSoon(260)}catch(e){}}
 /* while the view moves the world rides on the graphics card and the sparkles pause; once it rests, it is drawn sharp again */
 let WMV=0,WHOLD=0,WAN=[];function wMoving(w){if(!w)return;const sc=$('gd-scene');if(!WMV){w.style.willChange='transform';if(sc){WAN=sc.getAnimations?sc.getAnimations({subtree:true}).filter(a=>a.playState==='running'):[];WAN.forEach(a=>a.pause())}}clearTimeout(WMV);const rel=()=>{if(WHOLD){WMV=setTimeout(rel,220);return}WMV=0;w.style.willChange='';WAN.forEach(a=>{try{a.play()}catch(_){}});WAN=[]};WMV=setTimeout(rel,220)}
 function gZoom(f,cx,cy){const vp=$('gd-scene');if(!vp||!G.cam)return;const R=vp.getBoundingClientRect();cx=cx==null?R.width/2:cx-R.left;cy=cy==null?R.height/2:cy-R.top;const c=G.cam,s2=Math.max(.3,Math.min(1.8,c.s*f)),k=s2/c.s;c.x=cx-(cx-c.x)*k;c.y=cy-(cy-c.y)*k;c.s=s2;gCamApply()}
@@ -4453,7 +4454,7 @@ function gMain(g,nb){G.need=wNeedBeds();const R=g.plants.filter(gReady),wk=gWeek
   <div class="grain" aria-hidden="true">${drops}</div><div class="wwx" aria-hidden="true"><i></i><i></i><i></i></div>
   ${sel?`<p class="ghud gtip" role="status"><b>${esc(kindInfo(sel.k).name)}</b> · ${gEta(sel)}</p>`:''}
   <div class="ghud hfab">${G.ed?'':`<button class="gfab" type="button" id="gd-edit" aria-label="Edit layout">${PENSM}</button><button class="gfab" type="button" id="gd-share" aria-label="Share my garden"><svg viewBox="0 0 24 24"><path d="M12 15V4M8 8l4-4 4 4M5 13v6a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-6"/></svg></button>`}<button class="gfab" type="button" id="gd-zin" aria-label="Zoom in">+</button><button class="gfab" type="button" id="gd-zout" aria-label="Zoom out">−</button></div>
-  ${R.length&&!G.ed?`<button class="ghud gharv" type="button" id="gd-all" aria-label="Scythe: drag over ripe plants, or tap to cut them all"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M11.5 42.5l8.5-11" stroke="#7A4E2A" stroke-width="5.5" stroke-linecap="round"/><path d="M12 41.5l7.6-9.8" stroke="#A8743F" stroke-width="2.2" stroke-linecap="round"/><path d="M18.6 32.2l3.2 2.4" stroke="#5E6B74" stroke-width="3.4" stroke-linecap="round"/><path d="M21 31.5C8.5 23 12 5.5 29 4.6 37.5 4.2 43.5 8.5 45 14.5 40.5 10.2 34.5 8.6 28.8 10.2 20.5 12.6 17.6 21.8 23.4 29.2z" fill="#E4EAEE" stroke="#6F7D86" stroke-width="1.8" stroke-linejoin="round"/><path d="M23 28.3C19.5 22.5 21.4 14.6 28.9 11.8 34 10 39.5 11.2 43 13.4" fill="none" stroke="#9AA7B0" stroke-width="1.6" stroke-linecap="round"/></svg><span class="num">${R.length}</span></button>`:''}
+  ${R.length&&!G.ed?`<button class="ghud gharv" type="button" id="gd-all" aria-label="Sickle: drag over ripe plants, or tap to cut them all"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M11.5 42.5l8.5-11" stroke="#7A4E2A" stroke-width="5.5" stroke-linecap="round"/><path d="M12 41.5l7.6-9.8" stroke="#A8743F" stroke-width="2.2" stroke-linecap="round"/><path d="M18.6 32.2l3.2 2.4" stroke="#5E6B74" stroke-width="3.4" stroke-linecap="round"/><path d="M21 31.5C8.5 23 12 5.5 29 4.6 37.5 4.2 43.5 8.5 45 14.5 40.5 10.2 34.5 8.6 28.8 10.2 20.5 12.6 17.6 21.8 23.4 29.2z" fill="#E4EAEE" stroke="#6F7D86" stroke-width="1.8" stroke-linejoin="round"/><path d="M23 28.3C19.5 22.5 21.4 14.6 28.9 11.8 34 10 39.5 11.2 43 13.4" fill="none" stroke="#9AA7B0" stroke-width="1.6" stroke-linecap="round"/></svg><span class="num">${R.length}</span></button>`:''}
   <div class="ghud hbot">${G.ed?gEditBar():gSeedBar()}</div></div>`;
  gCamGo();if(!G.cam)requestAnimationFrame(()=>{if(G)gCamGo()});
  gReapBind(b);gSeedBind(b);gCamBind();gHoldBind();
@@ -4469,7 +4470,7 @@ function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduc
 `;
  if($('gd-pen'))$('gd-pen').onclick=()=>{G.nm=1;renderGarden();const n=$('gd-nm');if(n){n.focus();n.select()}};
  const nf=$('gd-nm');if(nf){const done=()=>{if(nf.dataset.done)return;nf.dataset.done='1';g.name=nf.value.trim().slice(0,28);G.nm=0;save();renderGarden()};nf.onblur=done;nf.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();nf.blur()}}}
- if(v!=='main'){const d=$('gsheet');$('gs-head').innerHTML=`<div class="row">${v==='market'||v==='shop'?`<span class="gcoins num" id="gd-coins-w">${COINI}<b>${g0c()}</b></span>`:''}<h2>${{market:'Market',basket:'Barn',shop:'Garden centre',album:'Notice board',water:'Rain barrel',unlock:'Unlock',sec:GSECN[G.sb]||'Section',bed:GSECN[G.sb]||'',silo:'Silo',plant:GSECN[(G.pp||{}).b]||'Plant'}[v]||''}</h2><button class="iconbtn" type="button" id="gs-x" aria-label="Close">${XIC}</button></div>`;$('gs-x').onclick=gSheetClose;gPanel(v,$('gs-body'));if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}}else if($('gsheet').open)$('gsheet').close();
+ if(v!=='main'){const d=$('gsheet');$('gs-head').innerHTML=`<div class="row">${v==='market'||v==='shop'?`<span class="gcoins num" id="gd-coins-w">${COINI}<b>${g0c()}</b></span>`:''}<h2>${{market:'Market',basket:'Barn',shop:'Garden centre',album:'Notice board',water:'Rain barrel',unlock:'Unlock',sec:GSECN[G.sb]||'Section',bed:GSECN[G.sb]||'',silo:'Silo',legend:'What the garden shows',plant:GSECN[(G.pp||{}).b]||'Plant'}[v]||''}</h2><button class="iconbtn" type="button" id="gs-x" aria-label="Close">${XIC}</button></div>`;$('gs-x').onclick=gSheetClose;gPanel(v,$('gs-body'));if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}}else if($('gsheet').open)$('gsheet').close();
  gMain(g,nb)}
 
 
@@ -4646,7 +4647,7 @@ function gSeedFly(){wFly()}
 /* the stands' sheets: market, shed, shop, notice board, barrel, unlocking land, a section */
 function gSheetClose(){if(!G)return;G.view='main';G.buy=null;G.ul=null;G.sb=null;const d=$('gsheet');if(d.open)d.close();renderGarden()}
 const g0c=()=>S.garden&&S.garden.coins||0;
-function gPanel(v,b){const g=S.garden;if(v==='bed')return wBedPanel(G.sb,b);
+function gPanel(v,b){const g=S.garden;if(v==='bed')return wBedPanel(G.sb,b);if(v==='legend')return wLegend(b);
  if(v==='market'){b.innerHTML=`<div id="gm-a"></div><div id="gm-b"></div><p class="cap gmto">Spend your coins at the Garden centre.</p>`;gPanel('orders',$('gm-a'));gPanel('sell',$('gm-b'));return}if(v==='silo')return wSiloPanel(b);if(v==='basket')return wShedPanel(b);
  if(v==='plant'){const pp=G.pp||{},cnt={};g.tray.filter(t=>gBedOf(t.k)===pp.b).forEach(t=>{cnt[t.k]=(cnt[t.k]||0)+1});const ks=Object.keys(cnt);
   b.innerHTML=ks.length?`<div class="gpick">${ks.map(k=>{const I=kindInfo(k);return `<button class="gpack big" type="button" data-pk="${esc(k)}"><span class="gpki">${I.icon}</span><span class="gpkn">${esc(I.name)}</span>${cnt[k]>1?`<span class="gbn num">${cnt[k]}</span>`:''}</button>`}).join('')}</div>`:`<p class="gempty">No seeds for this patch yet</p><p class="cap gpkhint">Log a plant food to get its seed</p>`;
@@ -4686,7 +4687,7 @@ function gPanel(v,b){const g=S.garden;if(v==='bed')return wBedPanel(G.sb,b);
 let REAP=null,GREND=0;
 function gReapBind(b){const sc=$('gd-scene');if(!sc)return;
  sc.querySelectorAll('[data-gp]').forEach(x=>x.addEventListener('click',()=>{if(x.dataset.done)return;const k=x.dataset.gp,p=S.garden.plants.find(q=>q.k===k);if(!p)return;
-  if(gReady(p)){const s=$('gd-all');if(s){s.classList.remove('nudge');void s.offsetWidth;s.classList.add('nudge')}toast('Drag the scythe over it');return}G.sel=G.sel===k?null:k;renderGarden()}));
+  if(gReady(p)){const s=$('gd-all');if(s){s.classList.remove('nudge');void s.offsetWidth;s.classList.add('nudge')}toast('Ripe. Drag the sickle over it.');return}G.sel=G.sel===k?null:k;renderGarden()}));
  const s=$('gd-all');if(!s)return;let st=null;
  s.addEventListener('pointerdown',e=>{e.preventDefault();st={id:e.pointerId,x:e.clientX,y:e.clientY,mv:0,n:0};try{s.setPointerCapture(e.pointerId)}catch(_){}});
  s.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;if(!st.mv&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>8){st.mv=1;s.classList.add('out')}if(!st.mv)return;gSickle(e.clientX,e.clientY,1);
@@ -5881,8 +5882,8 @@ function wNeedBeds(){const M={};let L=[];try{L=fgLow(TODAY)}catch(e){}L.forEach(
 function wEmptyBeds(){const g=S.garden,L=gLand();return gBeds().map(([b])=>{if(g.plants.some(p=>p.b===b)||g.tray.some(t=>gBedOf(t.k)===b))return '';const s=L.sec[b],[w,hh]=secWH(s),[x,y]=s.rot?isoP(s.c+(w-1)*.15,s.r+(hh-1)/2):isoP(s.c+(w-1)/2,s.r+(hh-1)*.15);
  return `<button class="wempty" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}"><b>Empty</b><span>Eat ${WBEDFOOD[b]||'something from it'} to plant</span></button>`}).join('')}
 const WSIGNIC={f:'apple',n:'hazelnut',v:'carrot',k:'kale',c:'wheat',l:'pea',b:'strawberry',h:'basil'};
-function wBedSigns(){const L=gLand(),N=G.need||{};return gBeds().map(([b])=>{const s=L.sec[b],[w,hh]=secWH(s),[x,y]=s.rot?isoP(s.c+w-.1,s.r+hh/2-.5):isoP(s.c+w/2-.5,s.r+hh-.1),nk=N[b],lab=nk?GFGN[nk]:GSECN[b],em=!S.garden.plants.some(p=>p.b===b)&&!S.garden.tray.some(t=>gBedOf(t.k)===b);
- return `<button class="wsign t-${b}${nk?' need':''}${em?' empty':''}${s.rot?' rot':''}" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)};z-index:${Math.round((s.c+w/2+s.r+hh)*10)+8}" aria-label="${esc(lab)}${nk?', add some':''}${em?`, empty: eat ${WBEDFOOD[b]||'some'} to plant`:''}"><span class="wsp"><span class="wsic" aria-hidden="true">${(kindMap()[WSIGNIC[b]]||{}).icon||''}</span><span class="wspt"><b>${esc(lab)}</b></span></span></button>`}).join('')}
+function wBedSigns(){const L=gLand(),N=G.need||{};return gBeds().map(([b])=>{const s=L.sec[b],[w,hh]=secWH(s),[x,y]=s.rot?isoP(s.c+w-.1,s.r+hh/2-.5):isoP(s.c+w/2-.5,s.r+hh-.1),nk=N[b],lab=GSECN[b],em=!S.garden.plants.some(p=>p.b===b)&&!S.garden.tray.some(t=>gBedOf(t.k)===b);
+ return `<button class="wsign t-${b}${nk?' need':''}${em?' empty':''}${s.rot?' rot':''}" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)};z-index:${Math.round((s.c+w/2+s.r+hh)*10)+8}" aria-label="${esc(lab)}${nk?', would like a visit':''}${em?`, empty: eat ${WBEDFOOD[b]||'some'} to plant`:''}"><span class="wsp"><span class="wsic" aria-hidden="true">${(kindMap()[WSIGNIC[b]]||{}).icon||''}</span><span class="wspt"><b>${esc(lab)}</b></span></span></button>`}).join('')}
 /* foods for a bed: what you eat most first, then good everyday picks; only whole plant foods, so every tile sows a seed here */
 function wBedFoods(bd){const ok=id=>{const f=FM[id];if(!f||f.hide||String(id).startsWith('c_')||f.cat==='My foods'||isDis(id))return false;if(!(PLANTS[id]||(f.pk&&!f.ing&&!f.parts)))return false;try{return plantKinds(id).some(k=>gBedOf(k)===bd)}catch(e){return false}};
  let E=[];try{E=[...eaten()]}catch(e){}const def=(GBEDFG[bd]||[]).flatMap(k=>FG[k].sug).concat(GBEDDEF[bd]||[]);
@@ -6189,6 +6190,27 @@ function wGlide(dx,dy){if(!G||!G.cam)return;const c=G.cam,x0=c.x,y0=c.y;if(GSTIL
  const f=n=>{const k=Math.min(1,(n-t0)/D),e=1-Math.pow(1-k,3);c.x=x0+dx*e;c.y=y0+dy*e;gCamApply();if(k<1)requestAnimationFrame(f)};requestAnimationFrame(f)}
 function wTour(){if(S.view!=='garden'||!G||G.ed)return;S.garden.tour=1;save();wTourGo(0)}
 /* the big notice board: a tap anywhere on the board in the world opens it; every note opens what it shows */
+/* what the garden shows: every sign in the garden has one meaning, listed here in one line each */
+const WLEGI={sun:'<circle cx="12" cy="12" r="4.6" fill="#F2C14E"/><g stroke="#F2C14E" stroke-width="2" stroke-linecap="round"><path d="M12 2.5v2.4M12 19.1v2.4M2.5 12h2.4M19.1 12h2.4M5.3 5.3l1.7 1.7M17 17l1.7 1.7M5.3 18.7L7 17M17 7l1.7-1.7"/></g>',
+ bfly:'<path d="M12 12C9 5 3.5 5.5 4 10c.3 2.6 3 3.4 8 2z" fill="#E98AB0"/><path d="M12 12c3-7 8.5-6.5 8 -2c-.3 2.6-3 3.4-8 2z" fill="#F2A7C3"/><path d="M12 12c-3 1-5.5 2.5-4.5 5.5c.8 2.2 3.5 1 4.5-5.5z" fill="#E98AB0"/><path d="M12 12c3 1 5.5 2.5 4.5 5.5c-.8 2.2-3.5 1-4.5-5.5z" fill="#F2A7C3"/><path d="M12 8v10" stroke="#5B4636" stroke-width="1.6" stroke-linecap="round"/>',
+ dry:'<rect x="3" y="7" width="18" height="10" rx="2.5" fill="#C9A26B"/><rect x="3" y="7" width="18" height="10" rx="2.5" fill="none" stroke="#E0A91E" stroke-width="2" stroke-dasharray="3.2 2.6"/>',
+ gold:'<circle cx="12" cy="12" r="9.5" fill="#F7D774" opacity=".45"/><circle cx="12" cy="12" r="5.6" fill="#EDB52F"/>',
+ ripe:'<path d="M12 3l2 6.2 6.2 2L14 13.2l-2 6.3-2-6.3-6.2-2L10 9.2z" fill="#F2C14E"/><path d="M19 3.5l.7 2 2 .7-2 .7-.7 2-.7-2-2-.7 2-.7z" fill="#F7D774"/>',
+ bath:'<ellipse cx="12" cy="9" rx="8.5" ry="3.6" fill="#B9C0C6"/><ellipse cx="12" cy="8.6" rx="6.6" ry="2.4" fill="#6DB7EA"/><path d="M10.6 12h2.8v6h-2.8z" fill="#A9B0B6"/><ellipse cx="12" cy="18.6" rx="4.4" ry="1.7" fill="#B9C0C6"/>',
+ bang:'<circle cx="12" cy="12" r="9" fill="#F4C542"/><path d="M12 6.6v6.6" stroke="#4A3508" stroke-width="2.4" stroke-linecap="round"/><circle cx="12" cy="16.9" r="1.4" fill="#4A3508"/>'};
+const WLEG=[['sun','Sun or clouds','How well your nutrients are covered lately.'],['bfly','Butterfly','You eat from this bed on most days.'],['dry','Dry soil and a dashed sign','You have not eaten this food group lately.'],['gold','Golden glow',"Rich in today's focus. Pays double."],['ripe','Sparkles','Ripe. Drag the sickle over it.'],['bath','Bird bath','Track water and it fills as you drink.'],['bang','Mark on the tortoise','It has a next step for you.']];
+function wLegend(el){el.innerHTML=`<div class="wleg">${WLEG.map(([i,t,d])=>`<div class="wlegr"><svg viewBox="0 0 24 24" aria-hidden="true">${WLEGI[i]}</svg><div><b>${t}</b><span class="cap">${d}</span></div></div>`).join('')}</div>`}
+/* building labels step aside when a floating button or the screen edge covers them; they settle once the view rests */
+let WLDT=0;
+function wLabDodge(){const sc=$('gd-scene');if(!sc||!G||!G.cam||G.ed||S.view!=='garden')return;const W=innerWidth,sv=G.cam.s||1,pad=5;
+ const fx=[...document.querySelectorAll('#v-garden .hfab,#gd-all,#wtort .wtbtn')].map(e=>e.getBoundingClientRect()).filter(r=>r.width>0);
+ sc.querySelectorAll('.gbld .gstl').forEach(l=>{l.style.translate='';const r=l.getBoundingClientRect();if(!r.width||r.right<0||r.left>W||r.bottom<0||r.top>innerHeight)return;
+  let dx=0;const hit=fx.find(f=>r.left<f.right+pad&&r.right>f.left-pad&&r.top<f.bottom+pad&&r.bottom>f.top-pad);
+  if(hit){const toL=hit.left-pad-r.right,toR=hit.right+pad-r.left;dx=(r.left+toL>=pad&&(Math.abs(toL)<=toR||r.right+toR>W-pad))?toL:toR}
+  if(r.right+dx>W-pad)dx=W-pad-r.right;if(r.left+dx<pad)dx=pad-r.left;
+  if(hit&&fx.some(f=>r.left+dx<f.right+pad&&r.right+dx>f.left-pad&&r.top<f.bottom+pad&&r.bottom>f.top-pad))return;
+  if(!dx||Math.abs(dx)>120)return;const flip=l.closest('.gbld').classList.contains('flip')&&Math.abs(new DOMMatrix(getComputedStyle(l.closest('.gbld')).transform).a+1)<.01?-1:1;l.style.translate=(flip*dx/sv).toFixed(1)+'px 0'})}
+const wLabSoon=ms=>{clearTimeout(WLDT);WLDT=setTimeout(()=>{try{wLabDodge()}catch(e){}},ms)};
 function wBigClose(now){const el=$('wbig');if(!el)return;if(now||GSTILL()){el.remove();return}el.classList.add('out');setTimeout(()=>el.remove(),170)}
 function wBigBoard(){wBigClose(true);if(!S.garden)return;const w=wScore(),any=wHasData(),iss=any?issues(w.DS,w.T).filter(x=>!x.s.over).slice(0,3):[],nx=wNext(),isT=S.date===TODAY;
  let fg=[];try{fg=fgStatus(TODAY)}catch(e){}const lowG=fg.filter(x=>x.low).map(x=>x.k);
@@ -6207,17 +6229,18 @@ function wBigBoard(){wBigClose(true);if(!S.garden)return;const w=wScore(),any=wH
   <div class="wbn" style="--r:1.2deg">${pin('#F6A33C')}${h('Low')}${(()=>{const ws=wWish();return ws?`<p class="wbwish${ws.done?' done':''}">${ws.done?'Focus covered: ':'Today\'s focus: '}${nlow(ws.n)}${ws.done?'':' · '+ws.foods.map(id=>FM[id].n.split(',')[0].toLowerCase()).join(', ')+' grow golden'}</p>`:''})()}${iss.length?iss.map(x=>`<button class="wbrow" type="button" data-bb="gap" data-k="${x.k}"><span>${NUT[x.k].n}</span><b class="num">${Math.round(x.s.p)} %</b></button>`).join('')+`<button class="wblink" type="button" data-bb="imp">How to fix</button>`:`<span class="wbs">${any?'Nothing is low. Nice.':'Log a meal first'}</span>`}</div>
   <button class="wbn wide${N[0]}" type="button" data-bb="${N[1]}"${N[2]?` data-k="${N[2]}"`:''} style="--r:-.5deg">${pin('#6DBB63')}${h('Next')}<span class="wbnt">${esc(N[3])}</span><span class="wbs">${N[4]}</span></button>
   <button class="wbn wide" type="button" data-bb="today" style="--r:.9deg">${pin('#7CC4F2')}${h(isT?'Meals today':'Meals')}<span class="wbms">${['b','l','d','s'].map(mt).join('')}</span></button>
-  <div class="wbn wide" style="--r:-.7deg">${pin('#B79BE0')}${h('Beds')}<span class="wbfg">${fg.map(x=>`<button class="wbchip${x.low?' low':''}" type="button" data-bb="fg" data-k="${x.k}" aria-label="${GFGN[x.k]}${x.low?', would like a visit':''}">${GFGN[x.k]}</button>`).join('')}</span></div>
+  <div class="wbn wide" style="--r:-.7deg">${pin('#B79BE0')}${h('Food groups')}<span class="wbfg">${fg.map(x=>`<button class="wbchip${x.low?' low':''}" type="button" data-bb="fg" data-k="${x.k}" aria-label="${GFGN[x.k]}${x.low?', would like a visit':''}">${GFGN[x.k]}</button>`).join('')}</span></div>
   <button class="wbn wide" type="button" data-bb="hist" style="--r:.6deg">${pin('#F2C14E')}${h('This week')}<span class="wbwk"><span><b class="num">${kinds}</b> kinds of plants</span><span><b class="num">${ld}</b> of 7 days with meals</span></span></button>
   ${(()=>{const wo=WON(),lo=WLON();if(!wo&&!lo)return '';const one=wo!==lo;let o='';
    if(wo){const p=S.days[TODAY]||{},tot=wTotal(p),tg=wTarget(),f=Math.min(1,tot/tg);o+=`<div class="wbn${one?' wide':''}" style="--r:-.8deg">${pin('#7CC4F2')}${h('Water')}<span class="wbwat"><b class="num">${wL(tot)}</b> <span class="num">of ${wL(tg)}</span></span><span class="wbwbar"><i style="width:${(f*100).toFixed(0)}%"></i></span><button class="wbchip" type="button" data-bb="water">+ Glass</button></div>`}
    if(lo){const ds=wDates().filter(x=>x<=TODAY),last=ds[ds.length-1];o+=`<div class="wbn${one?' wide':''}" style="--r:.9deg">${pin('#B8B08F')}${h('Weight')}${last?`<span class="wbwat"><b class="num">${fmtKg(+S.weights[last])} kg</b></span><span class="wbs">${last===TODAY?'Today':fdS(last)}</span>`:'<span class="wbs">Nothing logged yet</span>'}<button class="wbchip" type="button" data-bb="weight">Log weight</button></div>`}
    return o})()}
+  <button class="wbn wide wbleg" type="button" data-bb="legend" style="--r:.4deg">${pin('#9AA7B0')}${h('Guide')}<span class="wbs">What the garden shows</span></button>
  </div></div>`;
  document.body.appendChild(el);
  el.querySelectorAll('[data-bb]').forEach(b=>b.onclick=e=>{e.stopPropagation();const a=b.dataset.bb,k=b.dataset.k;if(a==='water'){const sd=S.date;if(sd!==TODAY)setDate(TODAY);wAdd(250);save();if(sd!==TODAY)setDate(sd);toast('+ 250 ml');wBigBoard();return}wBigClose(true);if(a==='weight'){openWeight();return}
   if(a==='nutr'||a==='ring'){S.nsub='over';go('nutr')}else if(a==='imp'){S.nsub='imp';go('nutr')}else if(a==='hist'){S.nsub='hist';go('nutr')}
-  else if(a==='gap')selectNut(k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(k));else if(a==='today')go('today');
+  else if(a==='legend')gView('legend');else if(a==='gap')selectNut(k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(k));else if(a==='today')go('today');
   else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(k)&&gLand().sec[x]);if(bd){G.sb=bd;G.bmt=null;gView('bed')}else go('today')}});
  el.onclick=e=>{if(e.target===el)wBigClose()};$('wb-x').onclick=()=>wBigClose();
  const esc2=e=>{if(e.key==='Escape'){wBigClose();document.removeEventListener('keydown',esc2)}};document.addEventListener('keydown',esc2);
@@ -6228,7 +6251,7 @@ function wBigBoard(){wBigClose(true);if(!S.garden)return;const w=wScore(),any=wH
    for the nutrient you are lowest on (never B12, D or iodine: those are supplement and salt questions, and the app never pushes them). */
 function wBedVit(){const o=PROJ;PROJ=false;try{const ds=[];for(let i=0;i<7;i++){const d=shift(TODAY,-i),p=S.days[d];if(p&&logged(p))ds.push(d)}if(!ds.length)return null;
  const cnt={};ds.forEach(d=>{new Set([...seedSet([d])].map(k=>gBedOf(k))).forEach(b=>cnt[b]=(cnt[b]||0)+1)});const N=G&&G.need||{},out={};
- gBeds().forEach(([b])=>{const n=cnt[b]||0,r=n/ds.length;let st=r>=.57&&n>=2?'lush':r<.28&&ds.length>=3?'dry':'fine';if(N[b])st=ds.length>=3?'dry':'fine';out[b]={n,of:ds.length,st}});return out}finally{PROJ=o}}
+ gBeds().forEach(([b])=>{const n=cnt[b]||0,r=n/ds.length;let st=N[b]?'dry':r>=.57&&n>=2?'lush':'fine';out[b]={n,of:ds.length,st}});return out}finally{PROJ=o}}
 function wBedDeco(b,q){const v=(G.vit||{})[b];if(!v||v.st==='fine')return '';const P=a=>a.map(p=>p[0].toFixed(1)+','+p[1].toFixed(1)).join(' ');
  if(v.st==='dry'){let h=`<polygon points="${P(q)}" fill="var(--g-dry)" opacity=".72"/>`;const s=gLand().sec[b];for(let pos=0;pos<4*s.rows;pos++){const {x,y}=isoC(b,pos);h+=`<path d="M${(x-11).toFixed(1)} ${(y+5).toFixed(1)}l4 -3l3 2l4 -3l5 2" stroke="var(--g-crack)" stroke-width="2.2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>`}return `<g class="wbdry">${h}</g>`}
  const L=(a,c,t)=>[a[0]+(c[0]-a[0])*t,a[1]+(c[1]-a[1])*t],cols=['#F28AA8','#F6CB5A','#FFFFFF','#B79BE0'];let h='',i=0;
