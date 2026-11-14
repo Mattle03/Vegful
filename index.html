@@ -1680,6 +1680,21 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 .wbwater{transform-box:fill-box;transform-origin:50% 50%}.gbld.refill .wbwater{animation:wbfill .9s ease-out}
 @keyframes wbfill{0%{transform:translateY(6px) scale(.6);opacity:.3}60%{transform:translateY(-1px) scale(1.05);opacity:1}100%{transform:none}}
 html.calm .gbld.refill .wbwater{animation:none}
+/* bed signs: a small plank on the bed's front edge, themed after the bed */
+.wsign{transform:translate(-50%,-62%)}.wsign .wsst{display:none}
+.wsp{--sb:#E9CFA0;--st:#3B2A18;--se:#A87A47;background:var(--sb);color:var(--st);font-size:12px;padding:2px 8px 2px 4px;border-radius:3px;gap:4px;box-shadow:2px -1px 0 var(--se),0 3px 5px rgba(0,0,0,.14)}
+.wsign.rot .wsp{box-shadow:-2px -1px 0 var(--se),0 3px 5px rgba(0,0,0,.14)}
+.wsic{display:inline-flex;width:15px;height:15px;flex:none}.wsic svg{width:15px;height:15px}
+.wsign.t-f .wsp{--sb:#C8473B;--st:#FFF4E6;--se:#8E2C24}
+.wsign.t-n .wsp{--sb:#7A5233;--st:#FBEBD3;--se:#4E321E}
+.wsign.t-v .wsp{--sb:#E58A3A;--st:#3B2010;--se:#A85A1E}
+.wsign.t-k .wsp{--sb:#5E9E4E;--st:#F2FBEA;--se:#3D6E31}
+.wsign.t-c .wsp{--sb:#E9C25E;--st:#4A3410;--se:#B48A2A}
+.wsign.t-l .wsp{--sb:#CFC07A;--st:#3E3A18;--se:#8E8240;background:repeating-linear-gradient(90deg,var(--sb) 0 22px,#B9AA62 22px 24px)}
+.wsign.need .wsp,.wsign.rot.need .wsp,.wsign.empty .wsp{background:var(--sb);color:var(--st);outline:2px dashed #FFE08A;outline-offset:2px}
+.wsign.t-l.need .wsp,.wsign.t-l.empty .wsp{background:repeating-linear-gradient(90deg,var(--sb) 0 22px,#B9AA62 22px 24px)}
+.wsign.need .wsp{box-shadow:2px -1px 0 var(--se),0 0 0 7px color-mix(in srgb,var(--coral) 28%,transparent)}
+.wsign.rot.need .wsp{box-shadow:-2px -1px 0 var(--se),0 0 0 7px color-mix(in srgb,var(--coral) 28%,transparent)}
 </style>
 </head>
 <body>
@@ -4209,7 +4224,7 @@ function wKitchenFence(){const K=wKitchenPair(),L=gLand();if(K)return wFenceRect
 function wFenceRect(K){const m=.62,q=[isoP(K.c-m,K.r-m),isoP(K.c+K.w-1+m,K.r-m),isoP(K.c+K.w-1+m,K.r+K.h-1+m),isoP(K.c-m,K.r+K.h-1+m)];let h='';
  [[q[0],q[1]],[q[1],q[2]],[q[3],q[2]],[q[0],q[3]]].forEach(([a,c])=>{const n=Math.max(4,Math.round(Math.hypot(c[0]-a[0],c[1]-a[1])/18));h+=`<path d="M${a[0].toFixed(1)} ${(a[1]-8).toFixed(1)}L${c[0].toFixed(1)} ${(c[1]-8).toFixed(1)}" stroke="#F4EEE6" stroke-width="2.4"/>`;
   for(let i=0;i<=n;i++){const x=a[0]+(c[0]-a[0])*i/n,y=a[1]+(c[1]-a[1])*i/n;h+=`<path d="M${x.toFixed(1)} ${y.toFixed(1)}v-13" stroke="#F4EEE6" stroke-width="2.6" stroke-linecap="round"/>`}});return h}
-function wKitchenSign(){const K=wKitchenPair();if(!K)return '';const [x,y]=isoP(K.c+K.w-1+.95,K.r-.3);return `<span class="wkg" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}" aria-hidden="true">Kitchen garden</span>`}
+function wKitchenSign(){return '';const K=wKitchenPair();if(!K)return '';const [x,y]=isoP(K.c+K.w-1+.95,K.r-.3);return `<span class="wkg" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}" aria-hidden="true">Kitchen garden</span>`}
 /* once: greens move next to the vegetables, if there is room */
 function wKitchenMove(L){if(L.kg)return;L.kg=1;const v=L.sec.v,k=L.sec.k;if(!v||!k||wKitchenPair())return;const [vw,vh]=secWH(v);
  const tries=v.rot?[{c:v.c,r:v.r+vh},{c:v.c,r:v.r-4}]:[{c:v.c+vw,r:v.r},{c:v.c-4,r:v.r}];for(const t of tries){const n=Object.assign({},k,{c:t.c,r:t.r,rot:v.rot,rows:v.rows});if(secTiles(n).every(gInMap)&&gSetSec('k',n))return}}
@@ -5862,8 +5877,9 @@ function wNeedBeds(){const M={};let L=[];try{L=fgLow(TODAY)}catch(e){}L.forEach(
 /* an empty bed says plainly what would plant it */
 function wEmptyBeds(){const g=S.garden,L=gLand();return gBeds().map(([b])=>{if(g.plants.some(p=>p.b===b)||g.tray.some(t=>gBedOf(t.k)===b))return '';const s=L.sec[b],[w,hh]=secWH(s),[x,y]=s.rot?isoP(s.c+(w-1)*.15,s.r+(hh-1)/2):isoP(s.c+(w-1)/2,s.r+(hh-1)*.15);
  return `<button class="wempty" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}"><b>Empty</b><span>Eat ${WBEDFOOD[b]||'something from it'} to plant</span></button>`}).join('')}
+const WSIGNIC={f:'apple',n:'hazelnut',v:'carrot',k:'kale',c:'wheat',l:'pea',b:'strawberry',h:'basil'};
 function wBedSigns(){const L=gLand(),N=G.need||{};return gBeds().map(([b])=>{const s=L.sec[b],[w,hh]=secWH(s),[x,y]=s.rot?isoP(s.c+w-.1,s.r+hh/2-.5):isoP(s.c+w/2-.5,s.r+hh-.1),nk=N[b],lab=nk?GFGN[nk]:GSECN[b],em=!S.garden.plants.some(p=>p.b===b)&&!S.garden.tray.some(t=>gBedOf(t.k)===b);
- return `<button class="wsign${nk?' need':''}${em?' empty':''}${s.rot?' rot':''}" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)};z-index:${Math.round((s.c+w/2+s.r+hh)*10)+8}" aria-label="${esc(lab)}${nk?', add some':''}"><span class="wsp">${nk?WSEED:''}<span class="wspt"><b>${esc(lab)}</b>${em?`<small>Empty: eat ${WBEDFOOD[b]||'some'} to plant</small>`:''}</span></span><i class="wsst" aria-hidden="true"></i></button>`}).join('')}
+ return `<button class="wsign t-${b}${nk?' need':''}${em?' empty':''}${s.rot?' rot':''}" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)};z-index:${Math.round((s.c+w/2+s.r+hh)*10)+8}" aria-label="${esc(lab)}${nk?', add some':''}${em?`, empty: eat ${WBEDFOOD[b]||'some'} to plant`:''}"><span class="wsp"><span class="wsic" aria-hidden="true">${(kindMap()[WSIGNIC[b]]||{}).icon||''}</span><span class="wspt"><b>${esc(lab)}</b></span></span></button>`}).join('')}
 /* foods for a bed: what you eat most first, then good everyday picks; only whole plant foods, so every tile sows a seed here */
 function wBedFoods(bd){const ok=id=>{const f=FM[id];if(!f||f.hide||String(id).startsWith('c_')||f.cat==='My foods'||isDis(id))return false;if(!(PLANTS[id]||(f.pk&&!f.ing&&!f.parts)))return false;try{return plantKinds(id).some(k=>gBedOf(k)===bd)}catch(e){return false}};
  let E=[];try{E=[...eaten()]}catch(e){}const def=(GBEDFG[bd]||[]).flatMap(k=>FG[k].sug).concat(GBEDDEF[bd]||[]);
