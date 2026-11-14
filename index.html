@@ -1626,7 +1626,7 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 .wgi{display:flex;align-items:center;gap:6px;padding:5px 9px 5px 5px;border-radius:12px;background:var(--surface);border:1.5px solid var(--line);font-size:13px}
 .wgi .em{width:26px;height:26px;display:grid;place-items:center}.wgi .em svg,.wgi .em img{width:100%;height:100%}
 .wgi b{display:block;font-size:13px}.wgi small{display:block;font-size:11.5px;color:var(--muted)}
-.wgi.ripe{border-color:#E9B23A;background:#FFF8E1}
+.wgi.ripe{border-color:#E9B23A;background:#FFF8E1;color:#3A2E12}.wgi.ripe small{color:#7A6A3E}
 /* golden plants */
 .gplot.gold .gcrop,.gplot.gold>svg{filter:drop-shadow(0 0 4px rgba(242,193,78,.95)) drop-shadow(0 0 1px rgba(233,162,58,.9))}
 .ggold{position:absolute;right:6%;top:4%;padding:1px 5px;border-radius:999px;background:#F2C14E;color:#3B2A18;font-size:10px;font-weight:800;line-height:1.3;box-shadow:0 1px 0 #B9831C;pointer-events:none}
@@ -4096,9 +4096,12 @@ function gSeed(){const g=S.garden,first={},o=PROJ;PROJ=false;try{
  Object.keys(first).map(k=>{const I=kindInfo(k);return {k,b:gBedOf(k),d:first[k],gp:Math.min(I.need,dayDiff(first[k],TODAY)),need:I.need,tier:I.tier,s:first[k]}}).sort((a,b)=>b.gp-a.gp||a.k.localeCompare(b.k))
   .forEach(p=>{const pos=gFreePos(p.b);if(pos<0)g.tray.push({k:p.k,b:p.b,s:p.s});else{p.pos=pos;g.plants.push(p)}});g.tick=TODAY}finally{PROJ=o}}
 function gFreePos(b){const used=new Set(S.garden.plants.filter(p=>p.b===b).map(p=>p.pos));for(let i=0;i<gPlots(b);i++)if(!used.has(i))return i;return -1}
+/* fewer concepts (v86): 1 = switched off and hidden, 0 = back exactly as it was. Nothing is deleted: the code, a saved request and the saved spots of hidden buildings (land.boff) all stay.
+   req: the market's request (the daily focus is the one goal). silo: the silo building (waiting seeds show in the bed window). mail: the mailbox (Profile, Voice and reminders, is the same screen). */
+const GCUT={req:1,silo:1,mail:1};
 /* golden seeds: a food rich in today's focus nutrient (or the market's request) is planted golden and pays double at harvest.
    The bonus is fixed when you eat it, so there is nothing to gain by waiting. */
-function wGoldNow(k){const g=S.garden,r=g&&g.req;if(r&&!r.done&&r.k===k)return true;const w=wWish();if(!w)return false;const I=kindInfo(k),f=I.id&&FM[I.id];if(!f||!f.v)return false;const i=K.indexOf(w.n),T=targets();return (f.v[i]||0)*(f.por||100)/100>=T[w.n]*.15}
+function wGoldNow(k){const g=S.garden,r=g&&!GCUT.req&&g.req;if(r&&!r.done&&r.k===k)return true;const w=wWish();if(!w)return false;const I=kindInfo(k),f=I.id&&FM[I.id];if(!f||!f.v)return false;const i=K.indexOf(w.n),T=targets();return (f.v[i]||0)*(f.por||100)/100>=T[w.n]*.15}
 function wHarvestPay(k){const g=S.garden,I=kindInfo(k),wk=gPx().wk,gold=g.goldK&&g.goldK[k];return Math.max(I.price,Math.round(I.price*wk*(gold?2:1)))}
 let WREAPC=0,WREQH=null;
 function gSow(k,s){const g=S.garden;g.goldK=g.goldK||{};try{if(wGoldNow(k))g.goldK[k]=TODAY;else delete g.goldK[k]}catch(e){}if(!gSowNow(k,s))g.tray.push({k,b:gBedOf(k),s})}
@@ -4136,7 +4139,7 @@ function gardenSync(){const g=S.garden,o=PROJ;PROJ=false;try{
 function gProgress(p){return Math.min(p.need,p.gp)}
 const gReady=p=>gProgress(p)>=p.need-1e-6;
 const gStage=p=>{const pr=gProgress(p);return pr>=p.need-1e-6?3:pr<=0?0:pr<p.need/2?1:2};
-function gHarvest(i){const g=S.garden,p=g.plants[i];if(!p||!gReady(p))return 0;g.plants.splice(i,1);{const r=g.req;let pay;if(r&&!r.done&&r.k===p.k){r.done=1;pay=r.pay;WREQH=p.k}else pay=wHarvestPay(p.k);if(g.goldK)delete g.goldK[p.k];gEarn(pay);WREAPC+=pay}
+function gHarvest(i){const g=S.garden,p=g.plants[i];if(!p||!gReady(p))return 0;g.plants.splice(i,1);{const r=GCUT.req?null:g.req;let pay;if(r&&!r.done&&r.k===p.k){r.done=1;pay=r.pay;WREQH=p.k}else pay=wHarvestPay(p.k);if(g.goldK)delete g.goldK[p.k];gEarn(pay);WREAPC+=pay}
  g.stat.harv=(g.stat.harv||0)+1;if(!g.ever.includes(p.k))g.ever.push(p.k);gRefill();return 1}
 function gHarvestAll(){let n=0;for(let i=S.garden.plants.length-1;i>=0;i--)n+=gHarvest(i);return n}
 /* the basket sells at the base price; what open orders ask for stays */
@@ -4394,7 +4397,7 @@ function gDone(msg){if(GNEWB){const b=GBADGE.find(x=>x[0]===GNEWB);GNEWB=null;if
 /* ---------- the world: a meadow you look into; drag to move, pinch or buttons to zoom ---------- */
 const GBLD={shed:{n:'Barn',w:4,v:'basket'},market:{n:'Market',w:3,v:'market'},shop:{n:'Kitchen',w:4,v:'shop'},board:{n:'Board',w:3,h:1,v:'album'},silo:{n:'Silo',w:3,v:'silo'},mail:{n:'Mailbox',w:1,v:'mail'},bench:{n:'Workbench',w:2,v:'plan'},centre:{n:'Garden centre',w:4,v:'centre'},well:{n:'Bird bath',w:1,v:'well'}};
 const GBLD0={shed:[-5,-3],market:[4,9],shop:[2,-7],board:[-1,-3],silo:[13,2],mail:[2,-2],bench:[7,-7],centre:[8,9],well:[3,-2]};
-function gBld(){const L=gLand();if(!L.bld||typeof L.bld!=='object'||L.bv!==2){L.bld={};L.bv=2}Object.keys(L.bld).forEach(k=>{if(!GBLD[k])delete L.bld[k]});Object.keys(GBLD).forEach(k=>{if(!Array.isArray(L.bld[k])&&k!=='bench'&&k!=='centre'&&k!=='well'&&(L.bm>=3||!['silo','mail'].includes(k)))L.bld[k]=GBLD0[k].slice()});
+function gBld(){const L=gLand();if(!L.bld||typeof L.bld!=='object'||L.bv!==2){L.bld={};L.bv=2}Object.keys(L.bld).forEach(k=>{if(!GBLD[k])delete L.bld[k]});wBldCut(L);Object.keys(GBLD).forEach(k=>{if(!Array.isArray(L.bld[k])&&k!=='bench'&&k!=='centre'&&k!=='well'&&!GCUT[k]&&!(gBld.cut&&(k==='silo'||k==='mail'))&&(L.bm>=3||!['silo','mail'].includes(k)))L.bld[k]=GBLD0[k].slice()});
  /* the board left its old corner once, so its live view stands in sight; a board the person moved stays put */
  if(!(L.bm>=2)){L.bm=2;const o=L.bld.board,[c0,r0]=GBLD0.board;if(o&&((o[0]===5&&o[1]===-3)||(o[0]===-3&&o[1]===-3))){const occ=gOcc();let free=1;for(let y=r0;y<r0+2;y++)for(let x=c0;x<c0+2;x++){const t=x+','+y;if(occ[t]&&occ[t]!=='b:board')free=0}if(free)L.bld.board=[c0,r0].concat(o[2]?[o[2]]:[])}}wBld3(L);wBld4(L);wBld5(L);wBld6(L);wBld7(L);wBld8(L);wBld9(L);wBld10(L);if(!Array.isArray(L.bld.well)&&!gBld.busy){gBld.busy=1;try{const p=wBldPlace('well',GBLD0.well,0);if(p)L.bld.well=p}finally{gBld.busy=0}}return L.bld}
 const bldTiles=(k,o)=>{const q=gBld()[k]||[0,0];return wBldTilesAt(k,o||q,q[2])};
@@ -6091,9 +6094,13 @@ function wBld8(L){if(L.bm>=8)return;L.bm=8;const B=L.bld;if(!B||Array.isArray(B.
 function wBld9(L){if(L.bm>=9)return;L.bm=9;const B=L.bld;if(!B||!Array.isArray(B.centre))return;const fl=!!B.centre[2];if(!wBldFree('centre',B.centre,fl)){const p=wBldPlace('centre',B.centre,fl);if(p)B.centre=p.concat(fl?[1]:[])}}
 /* the bird bath left its far corner: once, a bath still on (or right beside) its old spot moves next to the mailbox, where it is in sight; a bath the person moved stays put */
 function wBld10(L){if(L.bm>=10)return;L.bm=10;const B=L.bld,b=B&&B.well;if(!Array.isArray(b))return;if(Math.max(Math.abs(b[0]-1),Math.abs(b[1]-20))>2)return;const p=wBldPlace('well',GBLD0.well,0);if(p)B.well=p}
+/* a hidden building keeps its spot in land.boff; switched back on, it returns there, or to the nearest free place if something stands there now */
+function wBldCut(L){if(gBld.cut)return;['silo','mail'].forEach(k=>{if(GCUT[k]){if(Array.isArray(L.bld[k])){(L.boff=L.boff||{})[k]=L.bld[k];delete L.bld[k]}return}
+ const st=L.boff&&L.boff[k];if(L.boff)delete L.boff[k];const q=st||(L.bm>=3&&!Array.isArray(L.bld[k])?GBLD0[k].slice():null);if(!q)return;const fl=!!q[2];
+ gBld.cut=1;try{L.bld[k]=q;const occ=gOcc(),mine='b:'+k;if(!wBldTilesAt(k,q,fl).every(t=>gInMap(t)&&occ[t]===mine)){delete L.bld[k];const p=wBldPlace(k,q,fl);L.bld[k]=(p||q.slice(0,2)).concat(fl?[1]:[])}}finally{gBld.cut=0}})}
 function wBld7(L){if(L.bm>=7)return;L.bm=7;const B=L.bld;if(!B||Array.isArray(B.bench))return;const p=wBldPlace('bench',GBLD0.bench,0);if(p)B.bench=p}
 function wBld3(L){if(L.bm>=3)return;L.bm=3;const B=L.bld;
- ['silo','mail'].forEach(k=>{if(!Array.isArray(B[k])){delete B[k];const p=wBldPlace(k,GBLD0[k],0);if(p)B[k]=p}});
+ ['silo','mail'].forEach(k=>{if(GCUT[k])return;if(!Array.isArray(B[k])){delete B[k];const p=wBldPlace(k,GBLD0[k],0);if(p)B[k]=p}});
  const b=B.board;if(b){const fl=!!b[2],old=GOLD3.board.some(q=>q[0]===b[0]&&q[1]===b[1]);let p=old&&wBldFree('board',GBLD0.board,fl)?GBLD0.board.slice():null;
   if(!p)p=wBldFree('board',b,fl)?b.slice(0,2):wBldPlace('board',b,fl);if(p)B.board=p.concat(fl?[1]:[])}}
 const GB_SILO='<svg viewBox="0 -76 120 188" aria-hidden="true"><defs><linearGradient id="gsiloB" x1="0" x2="1"><stop offset="0" stop-color="#DCE1E5"/><stop offset=".42" stop-color="#C6CCD1"/><stop offset="1" stop-color="#959CA3"/></linearGradient><linearGradient id="gsiloR" x1="0" x2="1"><stop offset="0" stop-color="#D9594E"/><stop offset=".45" stop-color="#C8473D"/><stop offset="1" stop-color="#93342C"/></linearGradient></defs><polygon points="104.2,80 60,102.1 60,97.1 104.2,75" fill="#8C867C"/><polygon points="15.8,80 60,102.1 60,97.1 15.8,75" fill="#A39D92"/><polygon points="60,52.9 104.2,75 60,97.1 15.8,75" fill="#BDB7AC"/><ellipse cx="60" cy="75" rx="33" ry="16.5" fill="rgba(0,0,0,.18)"/><path d="M30 -26V75A30 15 0 0 0 90 75V-26z" fill="url(#gsiloB)"/><path d="M30 -2A30 15 0 0 0 90 -2" fill="none" stroke="#8F969D" stroke-width="1.8"/><path d="M30 22A30 15 0 0 0 90 22" fill="none" stroke="#8F969D" stroke-width="1.8"/><path d="M30 46A30 15 0 0 0 90 46" fill="none" stroke="#8F969D" stroke-width="1.8"/><path d="M41 85V61a7 6 0 0 1 14 -1V88z" fill="#5E6B74"/><path d="M48 56v31" stroke="#4A555D" stroke-width="1.2"/><path d="M80 83V-22M86 80V-25" stroke="#6F7880" stroke-width="2"/><path d="M80 80l6 -3" stroke="#6F7880" stroke-width="1.8"/><path d="M80 69l6 -3" stroke="#6F7880" stroke-width="1.8"/><path d="M80 58l6 -3" stroke="#6F7880" stroke-width="1.8"/><path d="M80 47l6 -3" stroke="#6F7880" stroke-width="1.8"/><path d="M80 36l6 -3" stroke="#6F7880" stroke-width="1.8"/><path d="M80 25l6 -3" stroke="#6F7880" stroke-width="1.8"/><path d="M80 14l6 -3" stroke="#6F7880" stroke-width="1.8"/><path d="M80 3l6 -3" stroke="#6F7880" stroke-width="1.8"/><path d="M80 -8l6 -3" stroke="#6F7880" stroke-width="1.8"/><rect x="52" y="-14" width="12" height="9" rx="2" fill="#5E6B74"/><path d="M28 -26C28 -54 46 -66 60 -66C74 -66 92 -54 92 -26A32 16 0 0 1 28 -26z" fill="url(#gsiloR)"/><path d="M28 -26A32 16 0 0 0 92 -26" fill="none" stroke="#7E2C25" stroke-width="2"/><ellipse cx="60" cy="-65" rx="6" ry="3" fill="#7E2C25"/><path d="M60 -68v-6" stroke="#7E2C25" stroke-width="2.4"/></svg>';
@@ -6173,7 +6180,8 @@ const WTOUR=[
  ['#gd-edit','Arrange your garden.'],
  ['#wtort .wtbtn','And me. Tap me for the next step.']];
 let WTI=-1;
-function wTourGo(i){document.querySelectorAll('.wtourhl').forEach(x=>x.classList.remove('wtourhl'));if(i>=WTOUR.length||S.view!=='garden'||!G||G.ed){WTI=-1;return}WTI=i;
+const wTourCut=sel=>!!sel&&((GCUT.silo&&sel.includes('"silo"'))||(GCUT.mail&&sel.includes('"mail"')));
+function wTourGo(i){document.querySelectorAll('.wtourhl').forEach(x=>x.classList.remove('wtourhl'));while(i<WTOUR.length&&wTourCut(WTOUR[i][0]))i++;if(i>=WTOUR.length||S.view!=='garden'||!G||G.ed){WTI=-1;return}WTI=i;
  const [sel,t]=WTOUR[i],el=sel&&document.querySelector(sel),last=i===WTOUR.length-1;
  if(el){el.classList.add('wtourhl');if(el.closest('#gd-world')){const R=el.getBoundingClientRect(),V=$('gd-scene').getBoundingClientRect(),dx=V.left+V.width/2-(R.left+R.width/2),dy=V.top+V.height*.36-(R.top+R.height/2);wGlide(dx,dy)}}
  wAsk(t,'',last?[['Done',()=>wTourGo(99)]]:[['Next',()=>wTourGo(i+1)],['Skip',()=>wTourGo(99)]],true)}
@@ -6290,7 +6298,7 @@ function wWeather(){if(!wHasData())return 'fair';let sc=0;try{sc=wScore().sc}cat
 const WXSAY={sun:'Your garden is sunny: you are well covered.',fair:'Your garden is fair.',soft:'Your garden is cloudy: a few nutrients are low.'};
 const WBEDWHY={f:FG.fruit.why,b:FG.fruit.why,c:FG.whole.why,l:FG.leg.why,n:FG.nuts.why,k:FG.green.why,v:'Fiber, potassium, folate and vitamins A and C.',h:'Herbs and spices add flavour and a little of everything.'};
 function wBedGrowing(bd){const g=S.garden,ps=g.plants.filter(p=>p.b===bd).sort((a,c)=>a.pos-c.pos),wt=g.tray.filter(t=>gBedOf(t.k)===bd);if(!ps.length&&!wt.length)return '';
- return `<div class="wgrowing"><span class="lbl">Growing here</span><div class="wgl">${ps.map(p=>{const I=kindInfo(p.k),rp=gReady(p);return `<span class="wgi${rp?' ripe':''}${g.goldK&&g.goldK[p.k]?' gold':''}"><span class="em">${I.icon}</span><span><b>${esc(I.name)}${g.goldK&&g.goldK[p.k]?' <i class="wgx">golden</i>':''}</b><small>${rp?'Ripe':gEta(p)}</small></span></span>`}).join('')}</div>${wt.length?`<p class="cap">${wt.length} more waiting in the silo</p>`:''}</div>`}
+ return `<div class="wgrowing"><span class="lbl">Growing here</span><div class="wgl">${ps.map(p=>{const I=kindInfo(p.k),rp=gReady(p);return `<span class="wgi${rp?' ripe':''}${g.goldK&&g.goldK[p.k]?' gold':''}"><span class="em">${I.icon}</span><span><b>${esc(I.name)}${g.goldK&&g.goldK[p.k]?' <i class="wgx">golden</i>':''}</b><small>${rp?'Ripe':gEta(p)}</small></span></span>`}).join('')}</div>${wt.length?`<p class="cap">${GCUT.silo?`${wt.length} more seed${wt.length===1?'':'s'} waiting for a free plot: ${[...new Set(wt.map(t=>kindInfo(t.k).name.toLowerCase()))].join(', ')}`:`${wt.length} more waiting in the silo`}</p>`:''}</div>`}
 function wBedHealth(bd){const v=(G.vit||wBedVit()||{})[bd],st=v?v.st:'fine',say={lush:'Thriving',fine:'Doing fine',dry:'Would like a visit'}[st];
  return `<div class="wbedh ${st}"><span class="wbhdot" aria-hidden="true"></span><div><b>${say}</b> <span class="cap num">${v?`· eaten on ${v.n} of the last ${v.of} logged day${v.of===1?'':'s'}`:'· log a meal to see'}</span><p class="cap">${WBEDWHY[bd]||''}</p></div></div>`}
 const WISHX=['kcal','b12','d','iod'],GWISH=10;let WHOLDT=0;
@@ -6313,7 +6321,7 @@ function wReport(wn){const t=wn.old?`${wn.c} coins from earlier weeks are yours 
  const d=wn.old?'':[wn.good&&wn.good.length?'Well covered: '+wn.good.map(nlow).join(', ')+'.':'',wn.look&&wn.look.length?'Worth a look: '+wn.look.map(nlow).join(', ')+'.':'',wn.c?`${wn.c} coins${wn.d?' and a '+wn.d.toLowerCase():''} for the variety.`:''].filter(Boolean).join(' ');
  if(S.view==='garden'&&$('wtort')){WHOLDT=Date.now()+25000;wAsk(t,d,[['Thanks',()=>{WHOLDT=0}]],true)}else toast(t)}
 /* the market's request: a crop rich in today's focus nutrient, within four days, for triple coins; it leaves quietly when the time is up */
-function wReq(){const g=S.garden;if(!g)return null;const r=g.req;if(r&&!r.done){const grown=g.plants.some(p=>p.k===r.k)||g.tray.some(t=>t.k===r.k)||(g.bag&&g.bag[r.k]>0);if(!r.planted&&grown)r.planted=TODAY;else if(r.planted&&!grown)delete r.planted;if(r.planted||r.until>=TODAY)return r}if(r&&r.made===TODAY)return null;
+function wReq(){const g=S.garden;if(!g||GCUT.req)return null;const r=g.req;if(r&&!r.done){const grown=g.plants.some(p=>p.k===r.k)||g.tray.some(t=>t.k===r.k)||(g.bag&&g.bag[r.k]>0);if(!r.planted&&grown)r.planted=TODAY;else if(r.planted&&!grown)delete r.planted;if(r.planted||r.until>=TODAY)return r}if(r&&r.made===TODAY)return null;
  const w=wWish();if(!w)return null;const ks=[];w.foods.forEach(id=>plantKinds(id).forEach(k=>{if(!ks.includes(k))ks.push(k)}));const k=ks.find(x=>!(g.bag[x]>0)&&!g.plants.some(p=>p.k===x));if(!k)return null;
  g.req={k,n:w.n,id:w.foods.find(id=>plantKinds(id).includes(k)),made:TODAY,until:shift(TODAY,3),done:0,pay:Math.max(30,gPrice(k)*3)};return g.req}
 function wReqGive(){const g=S.garden,r=wReq();if(!r||!(g.bag[r.k]>0))return 0;g.bag[r.k]--;if(!g.bag[r.k]){delete g.bag[r.k];delete g.bagT[r.k]}r.done=1;gEarn(r.pay);return r.pay}
