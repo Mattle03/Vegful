@@ -1869,24 +1869,24 @@ html.calm .gbld.refill .wbwater{animation:none}
 /* ---------- data ---------- */
 const K=['kcal','p','fib','b12','d','iod','ca','fe','zn','se','ala','c','fol','a','k','mg','pot','epa'];
 const NUT={
- kcal:{n:'Energy',u:'kcal',g:'Energy and macros',i:'Fuel for the day. Too little and your body burns protein for energy.'},
- p:{n:'Protein',u:'g',g:'Energy and macros',i:'Builds and repairs muscle. Plant protein digests slightly less well, so vegans often aim about 10 % higher. Soy, seitan, lentils and beans are the densest sources.'},
- fib:{n:'Fiber',u:'g',g:'Energy and macros',i:'Feeds gut bacteria, keeps blood sugar stable and keeps you full. Whole grains, legumes, seeds and berries.'},
- b12:{n:'Vitamin B12',u:'µg',g:'Vitamins',i:'Needed for nerves and blood. No plant food contains active B12. Fortified plant milks help, but the gut absorbs only about 1.5 µg per meal, so a supplement is the reliable way for every vegan.'},
- d:{n:'Vitamin D',u:'µg',g:'Vitamins',i:'Bones, muscles and immune system. Skin makes it from midday sun. Further than about 35 degrees from the equator, winter sun is too weak for months, and dark skin, sunscreen and indoor life lower it all year. Food barely contributes, so many people need a supplement, vegan or not. Vitamin D3 from lichen is vegan.'},
- iod:{n:'Iodine',u:'µg',g:'Minerals',i:'Makes thyroid hormones. Plant iodine depends on soil and is usually low. Use iodized salt where it is sold (sea salt, pink and flaky salts usually have none) or take a supplement. Avoid kelp and hijiki; their dose is unpredictable and often far too high. Mild deficiency rarely shows symptoms; a TSH blood test checks thyroid function.'},
- ca:{n:'Calcium',u:'mg',g:'Minerals',i:'Bones and teeth. Fortified plant milk and yogurt, tofu set with calcium sulfate, kale, almonds, chia and white beans. Spinach calcium is mostly blocked by oxalate.',ul:2500},
- fe:{n:'Iron',u:'mg',g:'Minerals',i:'Carries oxygen in the blood. Plant iron absorbs less, so eat vitamin C (pepper, kiwi, citrus) in the same meal and keep tea and coffee an hour away from meals.'},
- zn:{n:'Zinc',u:'mg',g:'Minerals',i:'Immune system, skin and healing. Phytates in grains and legumes reduce uptake, so the target uses the higher value. Pumpkin seeds, oats, lentils, tofu; sourdough bread and soaked legumes help.',ul:25},
- se:{n:'Selenium',u:'µg',g:'Minerals',i:'Thyroid and cell protection. Plant selenium depends on soil: low in much of Europe, New Zealand and parts of China, higher in North America. One or two Brazil nuts a day cover it; more than four a day is too much.'},
- ala:{n:'Omega 3 ALA',u:'g',g:'Omega 3 fats',i:'Plant omega 3. The body turns a small share into EPA and DHA, so vegans aim for about twice the standard amount. Ground flax, chia, walnuts, hemp seeds, rapeseed (canola) oil. Use fewer sunflower and corn oil; their omega 6 competes with the conversion.'},
- c:{n:'Vitamin C',u:'mg',g:'Vitamins',i:'Immune system and iron uptake. Peppers, kiwi, citrus, strawberries, broccoli, Brussels sprouts. Cooking destroys part of it: cooked vegetables count about 35 % less here. Steaming keeps more than boiling; raw vegetables and fruit keep all of it.'},
- fol:{n:'Folate',u:'µg',g:'Vitamins',i:'Cell division and blood formation. Legumes and dark leafy greens are rich in it; vegans usually reach it. Cooked vegetables count about 25 % less here, since folate is lost into cooking water.'},
- a:{n:'Vitamin A',u:'µg',g:'Vitamins',i:'Eyes, skin and immune system. Plants supply beta carotene: carrots, sweet potato, spinach, kale, mango. Eat with a little fat.'},
- k:{n:'Vitamin K',u:'µg',g:'Vitamins',i:'Blood clotting and bones. Dark green leaves, broccoli, Brussels sprouts and rapeseed oil.'},
- pot:{n:'Potassium',u:'mg',g:'Minerals',i:'Heart, muscles and blood pressure; balances out salt. Potatoes, legumes, leafy greens, nuts, dried fruit, bananas and other fruit. Vegans usually reach it more easily than others.'},
- mg:{n:'Magnesium',u:'mg',g:'Minerals',i:'Muscles and nerves. Seeds, nuts, oats, whole grains and legumes.'},
- epa:{n:'Omega 3 EPA and DHA',u:'mg',g:'Omega 3 fats',opt:1,i:'Long chain omega 3 for brain, eyes and heart. Fish get it from algae; vegans can take algae oil directly. Not required if ALA is high, but 250 mg a day is a sensible optional extra. Not counted as a gap.'}
+ kcal:{n:'Energy',u:'kcal',g:'Energy and macros',i:'Fuel for the day. Too little, and your body burns protein instead.'},
+ p:{n:'Protein',u:'g',g:'Energy and macros',i:'Builds and repairs muscle. Plant protein digests a little less well, so vegans aim about 10 % higher. Soy, seitan, lentils and beans are the densest.'},
+ fib:{n:'Fiber',u:'g',g:'Energy and macros',i:'Feeds gut bacteria, steadies blood sugar and keeps you full. Whole grains, legumes, seeds, berries.'},
+ b12:{n:'Vitamin B12',u:'µg',g:'Vitamins',i:'Nerves and blood. No plant food has active B12. Fortified foods help, but a supplement is the reliable way for every vegan.'},
+ d:{n:'Vitamin D',u:'µg',g:'Vitamins',i:'Bones, muscles, immune system. Skin makes it from midday sun, but not enough in winter far from the equator, with dark skin or mostly indoors. Food barely helps, so many people need a supplement, vegan or not. Lichen D3 is vegan.'},
+ iod:{n:'Iodine',u:'µg',g:'Minerals',i:'Thyroid hormones. Plant foods have little. Use iodized salt (sea and pink salt usually have none) or a supplement. Avoid kelp and hijiki: their dose is unpredictable and often far too high.'},
+ ca:{n:'Calcium',u:'mg',g:'Minerals',i:'Bones and teeth. Fortified plant milk and yogurt, calcium set tofu, kale, almonds, chia, white beans. Spinach calcium is mostly blocked.',ul:2500},
+ fe:{n:'Iron',u:'mg',g:'Minerals',i:'Carries oxygen. Plant iron is taken up less: eat vitamin C (pepper, kiwi, citrus) in the same meal and keep tea and coffee an hour away.'},
+ zn:{n:'Zinc',u:'mg',g:'Minerals',i:'Immune system, skin and healing. Grains and legumes lower uptake, so the target is higher. Pumpkin seeds, oats, lentils, tofu; sourdough and soaked legumes help.',ul:25},
+ se:{n:'Selenium',u:'µg',g:'Minerals',i:'Thyroid and cell protection. Depends on the soil; low in much of Europe. One or two Brazil nuts a day cover it; more than four is too much.'},
+ ala:{n:'Omega 3 ALA',u:'g',g:'Omega 3 fats',i:'Plant omega 3. The body turns little of it into EPA and DHA, so vegans aim for twice the usual amount. Ground flax, chia, walnuts, hemp, rapeseed oil. Less sunflower and corn oil helps.'},
+ c:{n:'Vitamin C',u:'mg',g:'Vitamins',i:'Immune system and iron uptake. Peppers, kiwi, citrus, strawberries, broccoli. Cooked vegetables count about 35 % less here; raw keeps all of it.'},
+ fol:{n:'Folate',u:'µg',g:'Vitamins',i:'Cell division and blood. Legumes and dark leafy greens; vegans usually reach it. Cooked vegetables count about 25 % less here.'},
+ a:{n:'Vitamin A',u:'µg',g:'Vitamins',i:'Eyes, skin, immune system. Carrots, sweet potato, spinach, kale, mango. Eat with a little fat.'},
+ k:{n:'Vitamin K',u:'µg',g:'Vitamins',i:'Blood clotting and bones. Dark green leaves, broccoli, Brussels sprouts, rapeseed oil.'},
+ pot:{n:'Potassium',u:'mg',g:'Minerals',i:'Heart, muscles, blood pressure; balances salt. Potatoes, legumes, leafy greens, nuts, dried fruit, bananas.'},
+ mg:{n:'Magnesium',u:'mg',g:'Minerals',i:'Muscles and nerves. Seeds, nuts, oats, whole grains, legumes.'},
+ epa:{n:'Omega 3 EPA and DHA',u:'mg',g:'Omega 3 fats',opt:1,i:'Long chain omega 3 for brain, eyes and heart. Fish get it from algae; algae oil is the vegan source. Optional when ALA is high, so never counted as a gap.'}
 };
 const CATS=['Grains and starch','Legumes and soy','Plant milk and yogurt','Nuts and seeds','Vegetables','Fruit','Oils and other','My foods'];
 // per 100 g: kcal,p,fib,b12,d,iod,ca,fe,zn,se,ala,c,fol,a,k,mg ; por = typical portion g
@@ -2255,7 +2255,7 @@ const planV=p=>{const v=supV(p);eatK(p).forEach(k=>p[k].it.forEach(it=>addv(v,it
 /* weekly basis: what today still needs so the 7 day average reaches the target */
 /* how long the body holds on to each nutrient, in days: the window it is averaged over in Mixed */
 const WIN={kcal:1,p:3,fib:3,pot:3,zn:7,k:7,c:14,mg:14,ala:14,epa:14,b12:30,d:30,a:30,fe:30,ca:30,iod:30,se:30,fol:30};
-const WINWHY={1:'Your body needs energy every day; a day without food is not made up by other days.',3:'Hardly stored, so you need it steadily; a short window catches a few low days.',7:'Small stores that last days, so a week shows how you are doing.',14:'The body keeps a pool that lasts a few weeks.',30:'Stored for months in the liver, bones, fat or thyroid, so the month counts more than one day.'};
+const WINWHY={1:'Needed every day; other days do not make up for it.',3:'Hardly stored, so you need it steadily.',7:'Small stores that last days.',14:'The body keeps a pool for a few weeks.',30:'Stored for months, so the month counts more than one day.'};
 const winLabel=k=>WIN[k]===1?'today':WIN[k]+' days';
 /* Mixed: each nutrient is a weighted average of your logged days. The day you look at counts fully and older days fade out gradually:
    a day counts about half after half the nutrient's span (WIN), a fifth after the span, and nothing after twice the span.
@@ -2460,19 +2460,19 @@ const itemV=([id,g,st])=>{if(!FM[id])return z();const v=FM[id].v.map(x=>x*g/100)
 function normPlan(p){mealKeys(p).forEach(k=>p[k].it.forEach(it=>{if(COOK.has(it[0])&&!it[2])it[2]=defState(it[0],typeOf(p,k))}))}
 const slotVraw=s=>s==='x'?supV(S.plan):S.plan[s].it.reduce((a,it)=>addv(a,itemV(it)),z());
 const slotV=s=>s==='x'?supV(S.plan):!PROJ&&isPl(S.plan,s)?z():(S.plan[s].it.reduce((a,it)=>addv(a,itemV(it)),z()));
-const ONE={c:{n:'Vitamin C',cov:['c'],h:'Tablets are usually 80 to 1000 mg. The body takes up most of the first 200 mg and passes the rest out within hours, so one tablet covers the day.'},
- epa:{n:'Omega 3 (EPA and DHA)',cov:['epa'],h:'Algae oil capsules usually hold 250 to 500 mg EPA and DHA together. One covers the day.'},
- dha:{n:'Omega 3 (DHA only)',cov:['epa'],h:'Many algae oils hold only DHA, usually 200 to 300 mg. The body turns some DHA back into EPA, so one capsule covers the day.'},
- epo:{n:'Omega 3 (EPA only)',cov:['epa'],h:'EPA only capsules usually hold 200 to 500 mg. One covers the day.'},
- d:{n:'Vitamin D3',cov:['d'],wk:1,hi:25,h:'Daily tablets are usually 10 to 25 µg (400 to 1000 IU). The body stores vitamin D for weeks, so a weekly dose or a 20 000 IU capsule every few weeks works too. Take high doses only as the label or your doctor says.'},
- b12:{n:'Vitamin B12',cov:['b12'],wk:1,h:'Daily tablets are usually 25 to 250 µg, weekly ones 1000 to 2000 µg. Both work.'},
+const ONE={c:{n:'Vitamin C',cov:['c'],h:'Tablets: 80 to 1000 mg. One covers the day; the body passes extra out within hours.'},
+ epa:{n:'Omega 3 (EPA and DHA)',cov:['epa'],h:'Capsules: 250 to 500 mg EPA and DHA. One covers the day.'},
+ dha:{n:'Omega 3 (DHA only)',cov:['epa'],h:'Capsules: 200 to 300 mg DHA. The body turns some into EPA. One covers the day.'},
+ epo:{n:'Omega 3 (EPA only)',cov:['epa'],h:'Capsules: 200 to 500 mg. One covers the day.'},
+ d:{n:'Vitamin D3',cov:['d'],wk:1,hi:25,h:'Daily tablets: 10 to 25 µg (400 to 1000 IU). The body stores it, so weekly or monthly doses work too. Take high doses only as the label or your doctor says.'},
+ b12:{n:'Vitamin B12',cov:['b12'],wk:1,h:'Daily tablets: 25 to 250 µg. Weekly: 1000 to 2000 µg. Both work.'},
  multi:{n:'Vegan multivitamin',cov:['b12','d','iod'],add:{zn:5,se:50},h:'Counts B12, vitamin D and iodine for the day, plus some zinc and selenium.'},
- iod:{n:'Iodine',cov:['iod'],warn:1,h:'Tablets are usually 100 to 200 µg. Count it only if the dose is near your need; high iodine harms the thyroid.'},
- mg:{n:'Magnesium',cov:['mg'],h:'Tablets are usually 100 to 400 mg.'},
- ca:{n:'Calcium',cov:['ca'],h:'Tablets are usually 300 to 600 mg.'},
- zn:{n:'Zinc',cov:['zn'],warn:1,h:'Tablets are usually 10 to 25 mg. Over 25 mg a day for a long time harms copper levels.'},
- se:{n:'Selenium',cov:['se'],warn:1,h:'Tablets are usually 50 to 100 µg. More is harmful; one Brazil nut gives about the same.'},
- fol:{n:'Folate',cov:['fol'],h:'Tablets are usually 200 to 400 µg.'},
+ iod:{n:'Iodine',cov:['iod'],warn:1,h:'Tablets: 100 to 200 µg. High iodine harms the thyroid; count it only if the dose is near your need.'},
+ mg:{n:'Magnesium',cov:['mg'],h:'Tablets: 100 to 400 mg.'},
+ ca:{n:'Calcium',cov:['ca'],h:'Tablets: 300 to 600 mg.'},
+ zn:{n:'Zinc',cov:['zn'],warn:1,h:'Tablets: 10 to 25 mg. Over 25 mg a day for long lowers copper.'},
+ se:{n:'Selenium',cov:['se'],warn:1,h:'Tablets: 50 to 100 µg. More is harmful; one Brazil nut gives about the same.'},
+ fol:{n:'Folate',cov:['fol'],h:'Tablets: 200 to 400 µg.'},
  fe:{n:'Iron',cov:['fe'],warn:1,h:'Take iron only after a blood test or on a doctor\'s advice; too much iron is harmful.'},
  salt:{n:'Iodized salt',cov:[],add:{iod:100},h:'About 5 g a day gives roughly half the iodine target. Check the pack says iodized.'}};
 /* ---------- supplements: S.sups = [{id,kind,amt:{nutrient:amount},freq:'d'|'w'|'n'|'o',every,start,end,takes:[dates],skip:[dates]}]
@@ -2813,19 +2813,19 @@ function srcLinks(keys,note){const P=S.prof.ref||'efsa',L=[REFL[P]];const seen=n
  return `<details class="srcd"><summary aria-label="Sources">${INFO}</summary><div class="srcpop">${note?`<p>${note}</p>`:''}${L.map(([t,u])=>`<a href="${u}" target="_blank" rel="noopener">${t}</a>`).join('')}</div></details>`}
 /* how to take each supplement: timing, food, what to keep apart. Shown behind the info circle */
 const MEDS='Ask your pharmacist about timing if you take medicines.';
-const HOW={b12:['Any time of day, with or without food.','Chew it, let it dissolve or swallow it; all work.','The body takes up only a little per dose, so tablets are strong. A daily small dose or one big weekly dose both work.'],
- d:['Take it with a meal that has some fat, like your main meal. Vitamin D dissolves in fat and is taken up better that way.','Weekly or monthly doses work too, because the body stores it.','Lichen D3 is vegan. D2 is vegan as well but raises blood levels less.'],
- epa:['Take it with a meal that has some fat. It is taken up better and causes fewer burps.','Keep the bottle closed and cool. Throw it out if it smells off.'],
- iod:['Any time, with or without food.','Do not add kelp or seaweed tablets; their iodine varies a lot.','With a thyroid condition, ask your doctor first.'],
- salt:['Use it for the salt you already use. Do not add extra salt for the iodine.','Keep the pack closed and dry; iodine fades in open, damp salt.'],
- multi:['Take it with a meal. Fat helps vitamins D, A and K, and food makes nausea less likely.','If it already has iodine or vitamin D, a separate tablet can double the dose. Check the label.'],
- c:['Any time, with or without food. With food is gentler on the stomach.','Take it with an iron rich meal like lentils or tofu; it helps the body take up plant iron.'],
- mg:['Take it with a meal. Big doses on an empty stomach can cause loose stools.','Citrate and glycinate are taken up better than oxide.',MEDS],
- ca:['Calcium carbonate: with a meal. Calcium citrate: any time.','The body takes up 500 mg or less at once best. Split bigger doses.','Keep it 2 hours away from iron or zinc tablets; it lowers their uptake.','Calcium set tofu and fortified plant milk often give plenty already.',MEDS],
- zn:['Best taken up on an empty stomach. If that upsets your stomach, take it with a meal.','Keep it 2 hours away from iron or calcium tablets.','Do not take over 25 mg a day for long; it lowers copper.',MEDS],
- se:['Any time, with or without food.','Do not eat Brazil nuts every day on top; together they can pass the safe limit.'],
+const HOW={b12:['Any time, with or without food. Chew, dissolve or swallow.'],
+ d:['Take it with a meal that has some fat.','Lichen D3 is vegan. D2 is too, but raises blood levels less.'],
+ epa:['Take it with a meal that has some fat; fewer burps.','Keep it closed and cool. Throw it out if it smells off.'],
+ iod:['Any time, with or without food.','No kelp or seaweed tablets on top; their iodine varies a lot.','With a thyroid condition, ask your doctor first.'],
+ salt:['Use it instead of your usual salt, not on top.','Keep the pack closed and dry; iodine fades in damp salt.'],
+ multi:['Take it with a meal.','If it has iodine or vitamin D, a separate tablet can double the dose. Check the label.'],
+ c:['Any time. With food is gentler on the stomach.','With lentils or tofu, it helps the body take up plant iron.'],
+ mg:['With a meal; big doses on an empty stomach can loosen stools.','Citrate and glycinate are taken up better than oxide.',MEDS],
+ ca:['Carbonate with a meal, citrate any time.','Take 500 mg or less at once.','Keep it 2 hours away from iron or zinc tablets.','Calcium set tofu and fortified plant milk often cover it already.',MEDS],
+ zn:['Best on an empty stomach; with a meal if it upsets you.','Keep it 2 hours away from iron or calcium tablets.','Not over 25 mg a day for long; it lowers copper.',MEDS],
+ se:['Any time, with or without food.','No daily Brazil nuts on top; together they can pass the safe limit.'],
  fol:['Any time, with or without food.'],
- fe:['Only after a blood test or on a doctor\'s advice.','Take it on an empty stomach, or with vitamin C like orange juice, for the best uptake. If it upsets your stomach, take it with a meal.','Keep it 1 to 2 hours away from tea, coffee and calcium.','Your doctor may suggest every other day; that is often taken up better and is easier on the stomach.','Dark stools are normal. Keep iron tablets away from children; they are dangerous for them.',MEDS]};
+ fe:['Only after a blood test or on a doctor\'s advice.','Best on an empty stomach or with vitamin C; with a meal if it upsets you.','Keep it 1 to 2 hours away from tea, coffee and calcium.','Every other day is often taken up better; ask your doctor.','Dark stools are normal. Keep iron away from children; it is dangerous for them.',MEDS]};
 HOW.dha=HOW.epa;HOW.epo=HOW.epa;
 function openSupInfo(kind){const u=ONE[kind];if(!u)return;const dl=$('sheet');S.sel=null;$('sheet-grp').textContent='Supplement';
  $('sheet-body').innerHTML=`<h2 style="font-size:24px;margin:0 0 2px">${u.n}</h2>
@@ -3014,7 +3014,7 @@ function spark(k,T){const mx0=S.range===0&&(WIN[k]||7)>1,R=rangeStats(S.range>1?
   <line x1="0" x2="${W}" y1="${H-H*100/mx}" y2="${H-H*100/mx}" stroke="var(--muted)" stroke-dasharray="3 3" stroke-width="1"/>
   ${ser.map((v,j)=>{if(v===null)return `<rect x="${j*bw+bw*.2}" y="${H-2}" width="${bw*.6}" height="2" fill="var(--line)"/>`;const p=v/T[k]*100,h=Math.max(2,H*Math.min(p,mx)/mx);const c=T.ul[k]&&v>T.ul[k]?'var(--over)':p<50?'var(--low)':p<90?'var(--mid)':'var(--ok)';return `<rect x="${j*bw+bw*.15}" y="${H-h}" width="${bw*.7}" height="${h}" rx="${Math.min(3,bw*.3)}" fill="${c}"/>`}).join('')}
   <text x="0" y="${H+14}" font-size="11" fill="var(--muted)">${kdate(R.dates[0]).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</text><text x="${W}" y="${H+14}" font-size="11" fill="var(--muted)" text-anchor="end">Today</text></svg>
-  <p class="cap">${mx0?'Each bar is where you stood that day, with recent days counting most and older days fading out. Dashed line is your target. Grey marks: no entries yet.':'Dashed line is your daily target. Grey marks are days without entries.'}</p></div>`}
+  <p class="cap">${mx0?'Bars: where you stood each day. Dashed line: your target. Grey: nothing logged.':'Dashed line: your daily target. Grey: nothing logged.'}</p></div>`}
 function renderDetail(T,root){
  if(!S.sel&&root.id==='sheet-body'&&['Plant variety','Recipe','Supplement','Learn'].includes($('sheet-grp').textContent))return;
  const k=S.sel||'b12',i=K.indexOf(k),N=NUT[k],MXd=S.range===0?mixStats():null,R=S.range>1?rangeStats(S.range,S.date):null,D=MXd?MXd.avg:R&&R.L.length?R.avg:dayV(),s=nstat(k,D,T),d2=(MXd&&(WIN[k]||7)>1)||!!(R&&R.L.length);
@@ -3037,7 +3037,7 @@ function renderDetail(T,root){
  const supTip=['b12','d','iod'].includes(k)&&!supHas(k);
  root.innerHTML=`<div><h2 style="font-size:26px">${N.n}</h2>
    <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px"><span class="big" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span>${d2?(R?`<span class="muted">Average of ${R.L.length} logged day${R.L.length>1?'s':''}</span>`:''):`<span class="muted num">${fmt(D[i])} of ${fmt(T[k])} ${N.u}</span>`}</div>${d2?(()=>{const Dy=dayV(),sd=nstat(k,Dy,T),b=(st,th)=>`<span class="stack${th?' thin':''}"><i style="width:${Math.min(st.p,150)/1.5}%;background:${k==='kcal'?'var(--accent)':st.c}"></i></span>`,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${EN(T.kcal)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${N.u}`}</span>`;
-    return `<div class="n2" style="margin-top:10px"><span class="il">${MXd?winLabel(k):S.range+' days'}</span>${b(s)}${am(D[i])}<span class="il">${S.date===TODAY?'today':kdate(S.date).toLocaleDateString('en-GB',{weekday:'short'})}</span>${b(sd,1)}${am(Dy[i])}</div>`})():''}${MXd?`<p class="cap" style="margin-top:6px">${WINWHY[WIN[k]||7]}${(WIN[k]||7)>1?` Recent days count most; a day fades to half after ${WIN[k]/2} days and stops counting after ${2*WIN[k]}.`:''}${(()=>{const n=lowRun(k,S.date,mixMemo(),T);return n>=3?` <b style="color:var(--ink)">Below target for ${runTxt(n)}.</b>`:''})()}</p>`:''}
+    return `<div class="n2" style="margin-top:10px"><span class="il">${MXd?winLabel(k):S.range+' days'}</span>${b(s)}${am(D[i])}<span class="il">${S.date===TODAY?'today':kdate(S.date).toLocaleDateString('en-GB',{weekday:'short'})}</span>${b(sd,1)}${am(Dy[i])}</div>`})():''}${MXd?`<p class="cap" style="margin-top:6px">${WINWHY[WIN[k]||7]}${(WIN[k]||7)>1?' Recent days count most.':''}${(()=>{const n=lowRun(k,S.date,mixMemo(),T);return n>=3?` <b style="color:var(--ink)">Below target for ${runTxt(n)}.</b>`:''})()}</p>`:''}
    <div style="margin-top:8px">${srcLinks([k],`Target from ${REFL[S.prof.ref||'efsa'][0]}${['zn','ala','p'].includes(k)?', adjusted for vegan eating':''}. Food amounts are typical averages; brands differ.`)}</div>
    ${T.ul[k]?`<p class="cap" style="margin-top:6px">Upper safe limit ${fmt(T.ul[k])} ${N.u}${s.over?'. You are above it.':''}</p>`:''}</div>
   <p class="info">${N.i}</p>
