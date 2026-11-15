@@ -6155,36 +6155,65 @@ function wNoneSync(){const nb=$('ad-none');if(!nb||!AD)return;const sl=S.plan[AD
 /* ---------- voice: Kind (default), Guilt, Guilt 18+. Guilt mocks the logging and the garden, never the body, amounts or supplements ---------- */
 const WVL={
  kind:{
-  nag:['{Meal} is open. Your garden is listening.','A plant for {meal}? The tortoise saved you a spot.','Your beds would love a little something.','No pressure, just seeds. {Meal} is open.','The tortoise is waiting by the gate. {Meal}?'],
-  done:['{Meal} is in. Your garden says thanks.','{Meal} logged. The beds are happy.','Nice. {Meal} is growing into something.'],
-  away:['Welcome back whenever you like. The garden kept your place.','The tortoise kept the beds tidy for you.'],
-  ripe:['Something is ripe in your garden.','A plant is ready to harvest.'],
-  recap:['This week {kinds} kinds grew in your garden.'],
-  log:['Lovely. That one is planted.','Planted. The beds say thanks.','Good choice. It is growing already.'],
-  close:['Sleep well. The garden has it from here.','Day closed. The beds are resting.'],
-  none:['Noted. Nothing for {meal}.'],
-  bed:['{group} would love some company.'],
-  tap:['Hello. I am keeping an eye on the beds.','Slow and steady. That is my whole thing.','The garden looks good today.','I like it here.'],
-  open:['Good to see you.','The beds are ready when you are.']},
+  nag:['{Meal} is open. Your garden is listening.','A plant for {meal}? The tortoise saved you a spot.','Your beds would love a little something.','No pressure, just seeds. {Meal} is open.','The tortoise is waiting by the gate. {Meal}?',
+   'The bees asked what is for {meal}. I said I would ask you.','The watering can is ready whenever {meal} is.','The beds are making a little room for {meal}.','Whatever you have for {meal}, the garden would love to hear about it.','The tortoise has a tiny notebook open. {Meal}?'],
+  nagE:['Dinner yet? No rush, the moon is not going anywhere.','The garden is winding down. Any dinner to add?','A quiet evening. Something for dinner?','The stars are out. Dinner for the garden?','Evening. The tortoise would love to hear about dinner.'],
+  done:['{Meal} is in. Your garden says thanks.','{Meal} logged. The beds are happy.','Nice. {Meal} is growing into something.',
+   '{Meal} logged. The tortoise did a tiny happy dance. Very slowly.','The bees heard about your {meal}. They approve.','{Meal} is tucked in. Lovely.','{Meal} is in. The garden is humming.','Good {meal}. The soil says thank you.','{Meal} done. You can put your feet up. The tortoise already has.','{Meal} is planted. That is a good day in the garden.'],
+  away:['Welcome back whenever you like. The garden kept your place.','The tortoise kept the beds tidy for you.',
+   'The tortoise kept your seat warm. Tortoises are very good at sitting.','No rush. The garden grows at tortoise speed anyway.','The bird bath is full and the birds say hi.','Whenever you are ready, the beds are too.','The bees keep asking about you. Nicely.','The garden is doing fine and would love a visit.','The tortoise watered the beds and saved you the best spot.','Pop by when you can. The garden saved you a sunny corner.'],
+  ripe:['Something is ripe in your garden.','A plant is ready to harvest.',
+   'Something is ripe and looking very proud of itself.','A plant says it is ready for its close up.','Ripe and ready. The basket is waiting.','Good news from the garden: something is ready to pick.','One of your plants is showing off. It is ripe.','The garden made you something. Come and pick it.','A very gentle ripe alert.','Harvest time. Bring the sickle and a smile.'],
+  recap:['This week {kinds} kinds grew in your garden.',
+   '{kinds} kinds of plants this week. What a colourful garden.','Your garden grew {kinds} different kinds this week. The bees are thrilled.','{kinds} kinds this week. The tortoise counted twice, slowly.','Week done: {kinds} kinds grew. The beds say thank you.','This week brought {kinds} kinds to the garden. Lovely mix.'],
+  log:['Lovely. That one is planted.','Planted. The beds say thanks.','Good choice. It is growing already.',
+   'Planted. It already likes you.','In it goes. The soil is delighted.','Lovely pick. The bees will hear about this.','One more plant for the garden. Nice.','Tucked into the soil. Sweet dreams, little seed.','The tortoise nodded approvingly. Very slowly.','Planted. Give it a day and a little water.'],
+  close:['Sleep well. The garden has it from here.','Day closed. The beds are resting.',
+   'Good night. The tortoise is on night watch. Mostly napping.','Day ended. The stars can take it from here.','Rest well. Tomorrow is a fresh page.','All done for today. The beds are pulling up their blankets.','Night night. The bees are already asleep.','Lights out in the garden. Well done today.'],
+  none:['Noted. Nothing for {meal}.',
+   'Okay, no {meal} today. Thanks for telling me.','Got it, nothing for {meal}. The garden understands.','No {meal}. The tortoise wrote it down in neat little letters.','All right, no {meal}. See you at the next one.'],
+  bed:['{group} would love some company.',
+   '{group} has room for a new friend.','{group} is wondering what you are up to.','{group} could use a visit.','A little something for {group}?'],
+  tap:['Hello. I am keeping an eye on the beds.','Slow and steady. That is my whole thing.','The garden looks good today.','I like it here.',
+   'Hello! I am supervising. It is hard work.','I counted the bees. There are many.','I am 80. I have seen a lot of lettuce.','My shell is fine, thanks for asking.','I run this garden. Well, I walk it.','Tap me again and I might smile. Slowly.'],
+  open:['Good to see you.','The beds are ready when you are.',
+   'There you are. The garden lit up.','Hello again. The bees saved you a seat.','Welcome back. Everything is growing nicely.','Oh good, you are here. The beds were chatting about you.','Hello! The tortoise put the kettle on. Metaphorically.']},
  guilt:{
-  nag:['Your lentils filed a missing person report. The missing person is you.','Your spinach started writing its will. You are not in it.','The plants cannot log themselves. They have no thumbs. You have two. Use one.','Your garden called. It said "who?"','Log {meal} or I start telling the kale things about you.','Still alive? Prove it. Log a banana.','The board is blank. The board is sad. The board knows where you live.'],
-  nagE:['It is {time}. Log dinner or admit you ate cereal over the sink like a raccoon.'],
-  done:['You logged {meal}. The tortoise is shocked. He had to sit down.','{Meal}, logged. Who are you and what did you do with the old you?','{Meal} is in. Fine. I guess I will stop crying now.'],
-  away:['The tortoise has been staring at the gate for {days} days. He is 80. He does not have time for this.','Your garden called. It said "who?"','Day {days} without you. The tortoise took up smoking.'],
-  ripe:['It is ripe. Like your excuses.','Something is ripe and it is judging you.'],
-  recap:['{kinds} kinds this week. The tortoise is grudgingly impressed.'],
-  log:['Food, logged. Should I call the press?','Look at you, doing the bare minimum.','Planted. Do not let it go to your head.'],
-  close:['Fine. Sleep. The kale will be watching.','Day closed. The tortoise will be thinking about you. Menacingly.'],
-  none:['No {meal}? Bold. The beds will remember this.'],
-  bed:['{group}. They miss you. Weirdly.'],
-  tap:['Lunch. Even a tortoise could do it, and I am literally a tortoise.','Do not poke me. Poke a vegetable.','I am 80 years old and I am more organised than you.','Stop touching me and log something.'],
-  open:['Oh look who remembered we exist.','Oh. It is you.']},
+  nag:['Your lentils filed a missing person report. The missing person is you.','Your spinach started writing its will. You are not in it.','The plants cannot log themselves. They have no thumbs. You have two. Use one.','Log {meal} or I start telling the kale things about you.','The board is blank. The board is sad. The board knows where you live.',
+   'I am tapping my watch. I do not own a watch. That is how serious this is.','Your carrots formed a union. Their one demand is {meal}.','The scarecrow quit. Said there was nothing to guard. Log {meal}.','I have waited for {meal} since the Bronze Age. I am a tortoise. I was there.','{Meal}. You know, the thing you do every day. Except, apparently, in this app.','Your broccoli is giving me the silent treatment. I blame you.','Your beds are so empty they echo. Hello? Hello? Log {meal}.'],
+  nagE:['It is {time}. Log dinner or admit you ate cereal over the sink like a raccoon.',
+   'It is {time}. Dinner happened. I can smell it from here. Log it.','{time} and no dinner logged. The raccoons are getting ideas.','The kitchen light is on. The garden is not stupid. Log dinner.','It is {time}. The garden is going to bed hungry. Dramatic, I know. Log dinner.'],
+  done:['You logged {meal}. The tortoise is shocked. He had to sit down.','{Meal}, logged. Who are you and what did you do with the old you?','{Meal} is in. Fine. I guess I will stop crying now.',
+   '{Meal} logged. Mark the date. I am having a plaque made.','{Meal} is in. The kale owes me five coins. I bet on you.','{Meal} logged without being asked twice. Growth. Literally.','{Meal}, done. Someone give this person a medal. Not me. I have feet.','Look who logged {meal}. The beds are throwing a tiny parade.','{Meal} is in. I am not crying, it is pollen.'],
+  away:['The tortoise has been staring at the gate for {days} days. He is 80. He does not have time for this.','Your garden called. It said "who?"',
+   'Day {days} without you. I have started talking to the scarecrow. The scarecrow talks back.','{days} days. The weeds have formed a government.','It has been {days} days. Your lentils changed the locks.','{days} days away. The bees think you moved to a fancier garden. Did you?','Your garden put your face on a milk carton. Oat milk, obviously.','I wrote you {days} letters. Tortoise handwriting is terrible, so the short version: come back.','{days} days. The kale is telling everyone you two are on a break.'],
+  ripe:['It is ripe. Like your excuses.','Something is ripe and it is judging you.',
+   'A plant is ripe. It did all the work. You just have to pick it. Can you manage that?','Ripe. Pick it before it starts paying rent.','Something is ripe and getting impatient. Plants have feelings. Small ones.','Harvest is ready. The sickle is bored out of its mind.','Your plant is ripe and has been practising its sad face.'],
+  recap:['{kinds} kinds this week. The tortoise is grudgingly impressed.',
+   '{kinds} kinds this week. The bees demanded a recount.','Weekly report: {kinds} kinds. I put it on the fridge. I do not have a fridge.','{kinds} kinds this week. I would clap, but, you know. Feet.','{kinds} kinds. The garden is telling the neighbours.'],
+  log:['Food, logged. Should I call the press?','Look at you, doing the bare minimum.','Planted. Do not let it go to your head.',
+   'Logged. I am filing this under miracles.','Planted. The garden would clap if it had hands.','Planted. Somewhere a lentil shed a single tear of joy.','Logged. I will try to contain my excitement. There. Contained.','Planted. The kale is pretending it is not impressed.'],
+  close:['Fine. Sleep. The kale will be watching.','Day closed. The tortoise will be thinking about you. Menacingly.',
+   'Day closed. Go to bed. The garden will gossip about you.','Lights out. If you hear rustling, that is just the kale plotting.','Night. Do not dream about snacks. I will know.','Day over. The tortoise is drafting tomorrow\'s complaints.'],
+  none:['No {meal}? Bold. The beds will remember this.',
+   'No {meal}. The tortoise respects it and also wrote it in his little book.','Nothing for {meal}. Very mysterious. Very suspicious.','No {meal}. The garden wrote it in the diary. The diary is dramatic.'],
+  bed:['{group}. They miss you. Weirdly.',
+   '{group} is writing sad poetry. Please make it stop.','{group} asked if you two are still together.','{group} put up posters with your face on them. Have you seen this person?'],
+  tap:['Do not poke me. Poke a vegetable.','I am 80 years old and I am more organised than you.','Stop touching me and log something.',
+   'I have a shell for a reason. The reason is you.','Poke me one more time and I am telling the kale.','I am not a button. Okay, I am a button. But I have feelings.','This is a garden, not a petting zoo.','Tap tap tap. Is that how you treat your elders?','I was here before you were born. Show some respect.'],
+  open:['Oh look who remembered we exist.','Oh. It is you.',
+   'You came back. The kale owes me money.','Oh hi. We were just talking about you. Nothing nice.','Welcome back. Wipe your feet. And log something.','The prodigal gardener returns.']},
  adult:{
-  nag:['Your eggplant is lonely. Do not make it weird. Okay, a little weird.','Cucumber, zucchini, banana. Log them. Do not explain them.','Get your oats. The breakfast kind, you degenerate.','Tofu is firm. Are you? Log {meal}.','Nobody is checking your search history. We are checking your fiber.','Spread it on toast. Peanut butter. Get your mind out of the gutter. Actually stay there, it is 18+ mode.','Plant something tonight. In the garden, pervert.',{t:'Your nuts are low today. Yes, those. Log some walnuts.',g:'nuts'},{t:'Your chickpeas are getting hard waiting. To grow. Hard to grow. Log them.',g:'leg'},{t:'Beans tonight? Your roommate has been warned.',s:'d'}],
-  done:['{Meal} logged. Good. Now go do something filthy with the rest of your day.'],
-  recap:['{kinds} kinds this week. Variety. Kinky.'],
-  log:['Ooh, you put that in. The garden noticed.'],
-  tap:['Buy me dinner first.','Easy, tiger. I am a tortoise.']}
+  nag:['Your eggplant is lonely. Do not make it weird. Okay, a little weird.','Cucumber, zucchini, banana. Log them. Do not explain them.','Get your oats. The breakfast kind, you degenerate.','Tofu is firm. Are you? Log {meal}.','Nobody is checking your search history. We are checking your fiber.','Plant something tonight. In the garden, pervert.',
+   'Log {meal}. Your peaches are waiting. The fruit. Behave.','Your melons need attention. Watermelon. Log {meal}, you animal.','Size does not matter. Variety does. Log {meal}.',
+   {t:'Your nuts are low today. Yes, those. Log some walnuts.',g:'nuts'},{t:'Your chickpeas are getting hard waiting. To grow. Hard to grow. Log them.',g:'leg'},{t:'Beans tonight? Your roommate has been warned.',s:'d'}],
+  done:['{Meal} logged. Good. Now go do something filthy with the rest of your day.','{Meal} logged. Was it good for you? It was good for the garden.','{Meal} is in. Getting your greens in, you naughty thing.'],
+  away:['You left me on read for {days} days. Rude. Hot, but rude.'],
+  ripe:['Something is ripe and ready for you. Do not make it weird.'],
+  recap:['{kinds} kinds this week. Variety. Kinky.','{kinds} kinds this week. You really get around.'],
+  log:['Ooh, you put that in. The garden noticed.','That went in smoothly. The garden is blushing.'],
+  close:['Sweet dreams. Keep them vegan.'],
+  tap:['Buy me dinner first.','Easy, tiger. I am a tortoise.','Hands where I can see them.','Not in front of the kale.']}
 };
 const wVoice=()=>{const v=S.garden&&S.garden.voice;return v==='guilt'||v==='adult'?v:'kind'};
 const WVTXT={kind:'Gentle words and a friendly tortoise.',guilt:'The tortoise gets rude. Dark jokes, no mercy. Never about your body, your weight or how much you eat.',adult:'Rude, crude and not safe for work. Adults only.'};
@@ -6320,8 +6349,8 @@ function wSiloPanel(el){const g=S.garden;if(!g.tray.length){el.innerHTML=`<div c
  el.innerHTML=`<div class="wbed"><p class="cap num">${g.tray.length} seed${g.tray.length===1?'':'s'} waiting. They plant themselves when a plot frees up.</p>
  ${GBEDS.filter(b=>by[b]).map(b=>`<div class="wcolg"><h3>${GSECN[b]}</h3><div class="wcol">${[...new Set(by[b])].map(k=>{const I=kindInfo(k);return `<span class="wcolk"><span class="em">${I.icon}</span><b>${esc(I.name)}</b></span>`}).join('')}</div>${wGrowBtn(b)}</div>`).join('')}</div>`;wGrowBind(el)}
 /* the tortoise is the guide: tap it for the next step; at a meal's time it asks once by itself */
-WVL.kind.again=['Same {meal} as {when}?','{Meal} like {when}?'];
-WVL.guilt.again=['Same {meal} as {when}? Creativity is overrated.','Same {meal} as {when}? I will act surprised.','{Meal} like {when}? Bold of you to have a routine.'];
+WVL.kind.again=['Same {meal} as {when}?','{Meal} like {when}?','Same {meal} as {when}? A good one is worth repeating.','{Meal} like {when}? Always a classic.','Your {meal} from {when} again?'];
+WVL.guilt.again=['Same {meal} as {when}? Creativity is overrated.','Same {meal} as {when}? I will act surprised.','{Meal} like {when}? Bold of you to have a routine.','Same {meal} as {when}? The garden has seen this episode.'];
 WVL.adult.again=['Same {meal} as {when}? Creature of habit. Hot.'];
 WVL.kind.push=['Want a little nudge at meal times?'];
 WVL.guilt.push=['Want me to nag you on your phone too? I am very good at it.'];
