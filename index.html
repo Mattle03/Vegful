@@ -1208,6 +1208,9 @@ html.wxopen #wtort{visibility:hidden}
 .wxpop .xf{background:var(--s4);color:#3B2A18}.wxpop .xs{background:var(--s5);color:#2B1F3A}.wxpop .xpt{display:flex;flex-direction:column}.wxpop b{font-size:15px}.wxpop small{font-size:12.5px;color:var(--ink2);font-weight:600}
 .wdock{position:fixed;z-index:30;left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:540px;margin:0 auto}
 .wdock .in{height:88px;border-radius:24px;background:var(--surface);box-shadow:0 -2px 18px rgba(0,0,0,.16);display:grid;grid-template-columns:1fr 1fr 72px 1fr 1fr;align-items:center;padding:0 4px}
+.wplate{position:relative}
+.wpsup{position:absolute;top:6px;left:calc(50% + 9px);width:22px;height:22px;border-radius:50%;display:grid;place-items:center;background:var(--surface);box-shadow:0 0 0 2px var(--s5);color:#6B4FA0}
+.wpsup svg{width:14px;height:14px;fill:none;stroke:currentColor;stroke-width:2.4}.wpsup.on{background:var(--s5);color:#2B1F3A}
 .wplate{border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:4px;font:700 12px var(--body);color:var(--ink);min-height:76px;justify-content:center;min-width:0}
 .wpl{width:48px;height:48px;border-radius:50%;background:var(--surface2);border:2px solid var(--line);display:grid;place-items:center;overflow:hidden;box-sizing:border-box}
 .wpl>svg,.wpl>img{width:30px;height:30px}
@@ -6142,7 +6145,7 @@ function wTop(w){const el=$('wtop');if(!el)return;const isT=S.date===TODAY,t=isT
  $('w-ring').onclick=()=>wBigBoard();$('w-me').onclick=()=>go('profile')}
 function wDock(){const el=$('wdock');if(!el||!S.plan)return;document.documentElement.classList.remove('wxopen');const nx=wNext();
  const plate=t=>{const k=slotOfType(t),keys=mealKeys(S.plan).filter(q=>typeOf(S.plan,q)===t),fk=keys.find(q=>S.plan[q].it.length),sl=S.plan[k],n=t==='s'?'Extras':TY[t].n,skip=!fk&&sl&&sl.skip;
-  return `<button class="wplate${fk?' full':skip?' skip':' open'}${nx===k?' next':''}" type="button" data-wp="${k}" data-wt="${t}" aria-label="${n}${fk?'':skip?', none':', add'}"><span class="wpl em">${fk?slotIcon(S.plan[fk],t):skip?'<small>None</small>':PLUS}</span><span class="wpn">${n}</span></button>`};
+  return `<button class="wplate${fk?' full':skip?' skip':' open'}${nx===k?' next':''}" type="button" data-wp="${k}" data-wt="${t}" aria-label="${t==='s'?'Extras: food, drink or a supplement':n+(fk?'':skip?', none':', add')}"><span class="wpl em">${fk?slotIcon(S.plan[fk],t):skip?'<small>None</small>':PLUS}</span>${t==='s'?`<i class="wpsup${(S.sups||[]).some(s=>(s.takes||[]).includes(S.date))?' on':''}" aria-hidden="true">${QPILL}</i>`:''}<span class="wpn">${n}</span></button>`};
  el.innerHTML=`<div class="in">${plate('b')}${plate('l')}<button class="wbask" type="button" id="w-add" aria-label="Scan">${SCANI}</button>${plate('d')}${plate('s')}</div>`;
  el.querySelectorAll('[data-wp]').forEach(b=>b.onclick=()=>{if(b.dataset.wt==='s'){wXPop();return}wPlateGo(b.dataset.wp)});
  $('w-add').onclick=()=>{S.shopSeg='scan';go('scan')}}
