@@ -2237,7 +2237,7 @@ if(!Array.isArray(S.custom))S.custom=[];
 /* removing a product hides it from lists and search; days you already logged keep it */
 function hideCustom(id){const c=S.custom.find(x=>x.id===id);if(!c)return;const used=Object.values(S.days).some(p=>mealKeys(p).some(k=>p[k].it.some(x=>x[0]===id)))||Object.values(S.dishes).some(d=>(d.it||[]).some(x=>x[0]===id));
  if(used){c.hide=1;registerFood(c)}else{S.custom=S.custom.filter(x=>x.id!==id);const i=F.findIndex(x=>x.id===id);if(i>=0)F.splice(i,1);delete FM[id]}S.recentFoods=(S.recentFoods||[]).filter(x=>x!==id);S.favFoods=(S.favFoods||[]).filter(x=>x!==id)}
-function registerFood(c){const f={id:c.id,n:c.n,cat:'My foods',por:c.por,parts:c.parts,cook:c.cook,gb:c.gb,yg:c.yg,v:K.map((k,i)=>+(c.v||[])[i]||0),pl:c.pack?`pack ${c.pack} g`:'',pack:c.pack,est:c.est,bc:c.bc,ing:c.ing,img:c.img,ph:c.ph,fs:c.fs,hide:c.hide};const old=F.findIndex(x=>x.id===f.id);if(old>=0)F[old]=f;else F.push(f);FM[f.id]=f;return f}
+function registerFood(c){const f={id:c.id,n:c.n,cat:'My foods',por:c.por,parts:c.parts,cook:c.cook,gb:c.gb,yg:c.yg,v:K.map((k,i)=>+(c.v||[])[i]||0),pl:c.pack?`pack ${c.pack} g`:'',pack:c.pack,est:c.est,bc:c.bc,ing:c.ing,liq:c.liq,img:c.img,ph:c.ph,fs:c.fs,hide:c.hide};const old=F.findIndex(x=>x.id===f.id);if(old>=0)F[old]=f;else F.push(f);FM[f.id]=f;return f}
 S.custom.forEach(registerFood);
 /* product photos: keep a small copy on the phone so icons work offline; older scans get their photo from the scan history */
 function thumbOf(url){return new Promise((ok,bad)=>{const im=new Image();im.crossOrigin='anonymous';im.onload=()=>{try{const Z=96,c=document.createElement('canvas');c.width=c.height=Z;const g=c.getContext('2d');g.fillStyle='#fff';g.fillRect(0,0,Z,Z);const sc=Math.max(Z/im.width,Z/im.height);g.drawImage(im,(Z-im.width*sc)/2,(Z-im.height*sc)/2,im.width*sc,im.height*sc);ok(c.toDataURL('image/jpeg',.8))}catch(e){bad(e)}};im.onerror=bad;im.src=url})}
@@ -2742,8 +2742,15 @@ function applyTheme(){const r=document.documentElement,m=S.prof.mode||'auto',a=S
 const WON=()=>S.prof.water==='1';
 const BTL=()=>Math.max(100,Math.min(3000,+S.prof.btl||750));
 const wTarget=()=>{const base=S.prof.sex==='f'?1600:2000,a=actEff();return a>=2.1?base+600:a>=1.8?base+300:base};
-const DRINK=/juice|milk|beverage|drink|smoothie|kombucha|tea|coffee/i;
-function wFood(p){let ml=0;eatK(p).forEach(k=>p[k].it.forEach(([id,g])=>{const f=FM[id];if(!f||f.cat==='Oils and other')return;if(['soymilk','oatmilk'].includes(id)||(DRINK.test(f.n)&&!/powder|dry|yogurt|chocolate|condensed|concentrate/i.test(f.n)&&f.cat!=='Nuts and seeds'))ml+=+g||0}));return Math.round(ml)}
+/* drinks count toward water: plant milks, juices, teas, coffee, smoothies, water itself, and scanned drinks (by name, or marked as a drink when scanned: a beverage category or a pack size in ml, cl or l).
+   Words are matched whole, so steamed rice is not tea; foods packed in juice or water, powders and concentrates to dilute do not count */
+const DRINK=/juice|\bmilk\b|soymilk|oatmilk|beverage|\bdrinks?\b|smoothie|kombucha|\btea\b|coffee|nectar|lemonade|limonade|\bsoda\b|\bcola\b|\btonic\b|coconut water|\bfanta\b|\bsprite\b|\bpepsi\b|\bcoke\b|7 ?up|schweppes|ice ?tea|iced tea|\bspritz/i;
+const DRINKNOT=/powder|\bdry\b|dried|yogurt|chocolate|condensed|frozen concentrate|undiluted|packed in|canned in|water pack|rinsed/i;
+function isDrink(id){const f=FM[id];if(!f)return false;if(id==='water'||id==='soymilk'||id==='oatmilk')return true;if(f.cat==='Oils and other'&&!/coconut water/i.test(f.n))return false;
+ if(DRINK.test(f.n))return !DRINKNOT.test(f.n)&&f.cat!=='Nuts and seeds'||/coconut water/i.test(f.n);
+ if(f.liq)return true;
+ return false}
+function wFood(p){let ml=0;eatK(p).forEach(k=>p[k].it.forEach(([id,g])=>{if(isDrink(id))ml+=+g||0}));return Math.round(ml)}
 const wTotal=p=>(+p.w||0)+wFood(p);
 function wLevel(){const p=S.plan;if(S.date!==TODAY)return Math.min(1,wTotal(p)/wTarget());if(!p.wt)return 1;
  const h=(Date.now()-p.wt)/36e5,pace=wTarget()/16;return Math.max(0,Math.min(1,1-h*pace/BTL()))}
@@ -3321,7 +3328,7 @@ function parseIng(list){const out={},unk=[];let share=0,total=0;
 function ingVec(ing,kcal){const v=K.map(()=>0);ing.forEach(([f,p])=>FM[f]&&FM[f].v.forEach((x,i)=>v[i]+=x*p/100));
  const fac=kcal&&v[0]>kcal*1.15?kcal/v[0]:1;return v.map((x,i)=>NOEST.includes(K[i])?0:x*fac)}
 const ingUsable=P=>P.ing&&P.ing.length&&P.share>=40;
-function fromOFF(code,p){const P=fromOFF0(code,p);const x=P.ingx;delete P.ingx;P.ing=x.ing;P.share=x.share;P.unk=x.unk.slice(0,8);
+function fromOFF(code,p){const P=fromOFF0(code,p);const x=P.ingx;delete P.ingx;{const cats=(p.categories_tags||[]).join(' '),nm=(p.product_name||'')+' '+cats;P.liq=!/soup|sauce|broth|yogh?urt|dessert|cream/i.test(nm)&&(/beverage|drinks|sodas|juices|nectars|plant-based-milk|plant-milk|soy-milk|oat-milk|waters|teas|coffees|smoothies|kombucha/.test(cats)||/\d+([.,]\d+)?\s?(ml|cl|l)/i.test(p.quantity||''))?1:0}P.ing=x.ing;P.share=x.share;P.unk=x.unk.slice(0,8);
  P.src=ingUsable(P)&&P.ing.length>=2?'ing':'base';if(!P.base&&P.ing.length)P.base=P.ing[0][0];return P}
 let SC={},SCAN={stream:null,zx:null,loop:0,busy:false,cam:null,camT:0};
 let WVER='';try{caches.keys().then(k=>{const v=k.find(x=>/^vgarden-v\d+$/.test(x));if(v)WVER=v.slice(9)}).catch(()=>{})}catch(e){}
@@ -3429,7 +3436,7 @@ function renderScan(){
   K.forEach((k,i)=>{const el=$('rv-'+k);if(el&&el.value!=='')v[i]=+el.value;else if((useI||bf)&&v[i]>0&&k!=='kcal')est.push(k)});
   if(!(v[0]>0)){$('rv-err').textContent='Enter the energy (kcal) from the label.';return}
   const id='c_'+(P.code||Date.now().toString(36));
-  const old0=S.custom.find(x=>x.id===id);const fsv=parseFloat(String(($('rv-fs')||{}).value||'').replace(',','.'));const c={id,n:name,bc:P.code,fs:fsv>=0?fsv:undefined,v,est,ing:P.ing&&P.ing.length?P.ing:undefined,pack:+$('rv-pack').value||0,por:+$('rv-por').value||100,img:P.img||(old0&&old0.img)||undefined,ph:(old0&&old0.img===P.img&&old0.ph)||undefined};
+  const old0=S.custom.find(x=>x.id===id);const fsv=parseFloat(String(($('rv-fs')||{}).value||'').replace(',','.'));const c={id,n:name,bc:P.code,fs:fsv>=0?fsv:undefined,v,est,ing:P.ing&&P.ing.length?P.ing:undefined,liq:P.liq||(old0&&old0.liq)||undefined,pack:+$('rv-pack').value||0,por:+$('rv-por').value||100,img:P.img||(old0&&old0.img)||undefined,ph:(old0&&old0.img===P.img&&old0.ph)||undefined};
   S.custom=S.custom.filter(x=>x.id!==id);S.custom.push(c);registerFood(c);
   if(SC.pick){const cb=SC.pick;closeScan();render();cb(id);return}
   if(SC.slot){const sl0=SC.slot;closeScan();if(!AD||AD.slot!==sl0||!$('add').open)openAdd(sl0);adJust(sl0,()=>addFood(sl0,id,c.por),1);setTimeout(()=>{try{photoFill()}catch(e){}},50);return}
