@@ -1300,7 +1300,11 @@ html.still .gplot.wseedin{animation:none}
 .wcolk{background:var(--surface2);border-radius:12px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;gap:4px;min-width:0}
 .wcolk .em,.wcolk .em>*{width:34px;height:34px;display:block}
 .wcolk b{font-size:12px;font-weight:700;text-align:center;line-height:1.15;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.wcolk.new{box-shadow:0 0 0 2px var(--coral)}
+.wbarn-top{display:flex;gap:10px;margin:2px 0 10px}.wbarn-top>div{flex:1;background:var(--surface2);border-radius:14px;padding:10px 12px;display:flex;flex-direction:column}.wbarn-top b{font-size:26px;font-weight:800;line-height:1}.wbarn-top span{font-size:12.5px;font-weight:700;color:var(--ink2)}
+.wbarn-next{margin:0 0 6px}.wbarn-bar{height:8px;border-radius:99px;background:var(--surface2);overflow:hidden;margin-bottom:4px}.wbarn-bar i{display:block;height:100%;border-radius:99px;background:var(--acc,#4E8F45)}
+.wbarn-how{margin:2px 0 8px}.wbarn-wayc{margin:-4px 0 8px}.wcolg h3 span{color:var(--ink2);font-weight:700;font-size:13px;margin-left:4px}
+.wcolk{position:relative}.wtag{font-style:normal;font-size:10px;font-weight:800;line-height:1;padding:3px 6px;border-radius:99px;margin-top:1px}
+.wtag.new{background:#4E8F45;color:#fff}.wtag.ripe{background:#F2C14E;color:#3B2A18}.wtag.grow{background:transparent;color:var(--ink2);box-shadow:inset 0 0 0 1.5px var(--line)}
 /* the tortoise at the edge of the garden, the voice and reminder settings */
 .wtort{position:fixed;z-index:31;right:10px;bottom:calc(112px + env(safe-area-inset-bottom,0px));display:flex;align-items:flex-end;gap:6px;pointer-events:none}
 .wtort[hidden]{display:none}
@@ -1585,7 +1589,9 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 .wbub .wb2{position:absolute;right:-14px;top:-14px;width:38px;height:38px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFE58A,#F2C14E 58%,#D99A1E);border:3px solid #B87A12;color:#4A2E10;font-size:15px;font-weight:800;line-height:32px;text-align:center}
 .wbub.wbt{flex-direction:row;gap:5px;padding:5px 11px 5px 7px;border-radius:999px;border:1.5px solid rgba(127,194,232,.7);background:rgba(255,255,255,.72);box-shadow:0 2px 6px rgba(0,0,0,.12);-webkit-backdrop-filter:blur(2px);backdrop-filter:blur(2px)}
 .wbub.wbt b{font-size:14px;font-weight:700}.wbub.wbt .wbg{width:18px;height:18px;flex:none;display:block}.wbub.wbt .wbg svg{width:18px;height:18px;display:block}
-.wbub.wbt i{border:1.5px solid rgba(127,194,232,.7);background:rgba(255,255,255,.72)}.wbub.wbb,.wbub.wbb i{border-color:rgba(176,122,69,.65)}.wbub.wbt .wtd1{width:9px;height:9px;bottom:-12px;margin-left:-4px}.wbub.wbt .wtd2{width:5px;height:5px;bottom:-20px;margin-left:-1px}
+.wbub.wbt i{border:1.5px solid rgba(127,194,232,.7);background:rgba(255,255,255,.72)}.wbub.wbb,.wbub.wbb i{border-color:rgba(176,122,69,.65)}.wbub.wbb{padding:5px 12px 5px 5px;gap:7px}
+.wbub.wbb .wbr0{position:relative;width:30px;height:30px;flex:none;display:grid;place-items:center}.wbub.wbb .wbr0 svg{position:absolute;inset:0;width:100%;height:100%}.wbub.wbb .wbr0 b{font-size:10px;font-weight:800;position:relative}
+.wbub.wbb .wbtx{display:flex;flex-direction:column;align-items:flex-start;line-height:1.1}.wbub.wbb .wbtx b{font-size:14px}.wbub.wbb .wbtx small{font-size:12px;font-weight:700;color:#6B5A44}.wbub.wbt .wtd1{width:9px;height:9px;bottom:-12px;margin-left:-4px}.wbub.wbt .wtd2{width:5px;height:5px;bottom:-20px;margin-left:-1px}
 @media (prefers-reduced-motion:reduce){.wbub{animation:none}}
 .wthought{position:absolute;left:58%;top:-26%;display:flex;align-items:center;gap:4px;padding:5px 10px 5px 6px;border-radius:999px;background:#FFFFFF;border:2px solid #D8CBB0;box-shadow:0 4px 10px rgba(0,0,0,.18);z-index:5;animation:wtbob 3.4s ease-in-out infinite}
 .wthought .wtico{width:30px;height:30px;display:grid;place-items:center}.wthought .wtico svg,.wthought .wtico img{width:100%;height:100%}
@@ -6136,12 +6142,20 @@ function wFly(){if(!GNEW.length||!G)return;if(wDlg()||S.view!=='garden')return;c
 function gRefill(){const g=S.garden;if(!g)return;g.tray.slice().forEach(t=>{const pos=gFreePos(gBedOf(t.k));if(pos<0)return;g.tray.splice(g.tray.indexOf(t),1);const b=gBedOf(t.k),I=kindInfo(t.k);g.plants.push({k:t.k,b,d:TODAY,gp:0,need:I.need,tier:I.tier,s:t.s,pos});GNEW.push(t.k)})}
 /* the shed keeps one of every kind you have harvested; no amounts, no empty slots to fill */
 const wShedNew=()=>{const g=S.garden;if(!g)return 0;if(!Array.isArray(g.colSeen))g.colSeen=g.ever.slice();return g.ever.filter(k=>!g.colSeen.includes(k)).length};
+/* the barn: every different plant you have harvested, once each. The top says how many, how many are growing and what opens next;
+   On the way shows what grows now but is not in the barn yet; every plant says in words what is going on (New since your last visit, Growing, Ripe) */
 function wShedPanel(el){const g=S.garden,ev=g.ever.slice(),nw=new Set(ev.filter(k=>!(g.colSeen||[]).includes(k)));g.colSeen=ev.slice();save();
- const ripe=g.plants.filter(gReady).length;
- if(!ev.length){el.innerHTML=`<div class="wbed"><p class="gempty">${ripe?'Harvested plants are kept here':'Harvested plants are kept here'}</p></div>`;return}
+ const n=ev.length,gk=[...new Set(g.plants.map(p=>p.k))],nxt=WLAND.find(([k])=>!wLandIs(k)),st=k=>{const ps=g.plants.filter(q=>q.k===k);return ps.some(gReady)?'ripe':ps.length?'grow':null};
+ const top=`<div class="wbarn-top"><div class="wbarn-n"><b class="num">${n}</b><span>different plant${n===1?'':'s'} harvested</span></div><div class="wbarn-wk"><b class="num">${gk.length}</b><span>growing now</span></div></div>`+
+  (nxt?`<div class="wbarn-next"><div class="wbarn-bar"><i style="width:${Math.min(100,n/nxt[2]*100).toFixed(1)}%"></i></div><span class="cap num">${esc(nxt[1])} opens at ${nxt[2]} · ${Math.max(0,nxt[2]-n)} to go</span></div>`:'')+
+  `<p class="cap wbarn-how">Eat a plant food and it is planted. Harvest it when it is ripe and it is kept here, once per kind. More kinds opens more land.</p>`;
+ const tag=k=>{const s0=st(k);return nw.has(k)?'<i class="wtag new">New</i>':s0==='ripe'?'<i class="wtag ripe">Ripe</i>':s0==='grow'?'<i class="wtag grow">Growing</i>':''},
+  card=k=>{const I=kindInfo(k);return `<span class="wcolk"><span class="em">${I.icon}</span><b>${esc(I.name)}</b>${tag(k)}</span>`},ord=k=>(nw.has(k)?0:st(k)==='ripe'?1:st(k)?2:3),az=(x,y)=>kindInfo(x).name.localeCompare(kindInfo(y).name);
+ const way=gk.filter(k=>!ev.includes(k)).sort((x,y)=>(st(x)==='ripe'?0:1)-(st(y)==='ripe'?0:1)||az(x,y));
+ const wayH=way.length?`<div class="wcolg"><h3>On the way <span class="num">${way.length}</span></h3><p class="cap wbarn-wayc">Growing now, not in the barn yet${way.some(k=>st(k)==='ripe')?'. Harvest the ripe ones with the sickle':''}.</p><div class="wcol">${way.map(card).join('')}</div></div>`:'';
+ if(!n){el.innerHTML=`<div class="wbed wbarn">${top}${wayH}${way.length?'':'<p class="gempty">Nothing yet. Log a plant food to plant a seed.</p>'}</div>`;return}
  const by={};ev.forEach(k=>{const b=kindInfo(k).bed;(by[b]=by[b]||[]).push(k)});
- el.innerHTML=`<div class="wbed"><p class="cap num">${ev.length} kind${ev.length===1?'':'s'} grown${ripe?` · ${ripe} ripe now`:''}</p>
- ${GBEDS.filter(b=>by[b]).map(b=>`<div class="wcolg"><h3>${GSECN[b]}</h3><div class="wcol">${by[b].sort((x,y)=>kindInfo(x).name.localeCompare(kindInfo(y).name)).map(k=>{const I=kindInfo(k);return `<span class="wcolk${nw.has(k)?' new':''}"><span class="em">${I.icon}</span><b>${esc(I.name)}</b></span>`}).join('')}</div></div>`).join('')}</div>`}
+ el.innerHTML=`<div class="wbed wbarn">${top}${wayH}${GBEDS.filter(b=>by[b]).map(b=>`<div class="wcolg"><h3>${GSECN[b]} <span class="num">${by[b].length}</span></h3><div class="wcol">${by[b].sort((x,y)=>ord(x)-ord(y)||az(x,y)).map(card).join('')}</div></div>`).join('')}</div>`}
 /* closing the day: one tap says nothing else was eaten; open main meals count as none, the garden settles into evening */
 const wClosed=d=>{const g=S.garden;return !!(g&&g.done&&g.done[d||TODAY])};
 function wCanClose(){if(S.date!==TODAY||wClosed()||!logged(S.plan))return false;const h=new Date().getHours();if(h<19)return false;return !wNext()||h>=21}
@@ -6516,11 +6530,13 @@ function wBathArt(){const B=wBath(),f=B.fill,lv=44+(1-f)*7,rx=33*(.5+.5*f),ry=13
 function wTodMig(g){const d=g&&g.decor;if(!d)return;if(!Array.isArray(d.tods))d.tods=['tday'];if(Array.isArray(d.bgs)&&d.bgs.includes('dusk')){d.bgs=d.bgs.filter(x=>x!=='dusk');if(!d.tods.includes('tdusk'))d.tods.push('tdusk')}if(d.bg==='dusk'){d.bg='meadow';d.tod='tdusk'}}
 function wMktBubble(){if(S.date!==TODAY)return '';const B=gBld(),w=wWish();if(!B.market||!w||w.done||!w.foods.length)return '';const bb=gBldBox('market'),fs=w.foods.slice(0,3),nm=id=>FM[id].n.split(',')[0];
  return `<button class="wbub wmk" type="button" id="wmkt" style="left:${pct(bb.x+bb.w*.5,ISO.w)};top:${pct(bb.y+bb.h*.1,ISO.h)}" aria-label="The market wants ${esc(nlow(w.n))} today, like ${esc(fs.map(nm).join(', '))}. Tap for ideas"><b>${esc(NUT[w.n].n)}, please</b><span class="wbr">${fs.map(id=>`<span>${fIcon(id)}</span>`).join('')}</span><span class="wb2 num">2×</span><i class="wtd1"></i><i class="wtd2"></i></button>`}
-/* the board's bubble: a small daily invitation until the board is opened today; in the evening, while the day can be ended, End your day? */
-function wBoardBubble(){if(S.date!==TODAY)return '';const B=gBld().board;if(!B)return '';const g=S.garden,end=wCanClose();if(!end&&g.bdseen===TODAY)return '';
- const fl=!!B[2],[bw,bh]=bwh('board',fl),[x,y]=isoP(B[0]+(bw-1)/2,B[1]+(bh-1)/2),BW=Math.max(bw,bh)*WIB.tile,GY=WIB.ph+WIB.fh+BW*.5+12,h=new Date().getHours();
- const t=end?'End your day?':h<11?'Your day ahead':h<17?'How is today going?':'Your day so far';
- return `<button class="wbub wbt wbb" type="button" id="wboardq" style="left:${pct(x,ISO.w)};top:${pct(y-WIB.ph-WIB.fh-BW*.25+4,ISO.h)}" aria-label="${t} Open the board"><span class="wbg"><svg viewBox="0 0 24 24" aria-hidden="true"><rect x="5" y="4" width="14" height="17" rx="2" fill="#FFFBEF" stroke="#B07A45" stroke-width="1.8"/><path d="M8.5 10h7M8.5 13.5h7M8.5 17h4" stroke="#B07A45" stroke-width="1.6" stroke-linecap="round"/><circle cx="12" cy="4.5" r="2.3" fill="#D9534F"/></svg></span><b>${t}</b><i class="wtd1"></i><i class="wtd2"></i></button>`}
+/* the board's bubble: today's score and the one next thing, all day long; a tap opens the board */
+function wBoardInfo(){const any=wHasData(),w=wScore(),sc=Math.round(w.sc||0);if(wCanClose())return {t:'End your day?',s:`${sc} % today`,sc};
+ if(!any)return {t:'Log a meal to start',s:'Your day shows here',sc:0};
+ const iss=issues(w.DS,w.T).filter(x=>!x.s.over),lo=iss[0],nx=wNext(),ln=lo?`${NUT[lo.k].n} ${Math.round(lo.s.p)} %`:'';
+ if(nx)return {t:`${wMealN(nx)} next`,s:ln||`${sc} % today`,sc};if(lo)return {t:ln,s:'Lowest now',sc};return {t:'All covered',s:`${sc} % today`,sc}}
+function wBoardBubble(){if(S.date!==TODAY)return '';const B=gBld().board;if(!B)return '';const fl=!!B[2],[bw,bh]=bwh('board',fl),[x,y]=isoP(B[0]+(bw-1)/2,B[1]+(bh-1)/2),BW=Math.max(bw,bh)*WIB.tile,f=wBoardInfo();
+ return `<button class="wbub wbt wbb" type="button" id="wboardq" style="left:${pct(x,ISO.w)};top:${pct(y-WIB.ph-WIB.fh-BW*.25+4,ISO.h)}" aria-label="${esc(f.t)}. ${esc(f.s)}. Open the board"><span class="wbr0">${WRING(f.sc,9)}<b class="num">${f.sc}</b></span><span class="wbtx"><b>${esc(f.t)}</b><small class="num">${esc(f.s)}</small></span><i class="wtd1"></i><i class="wtd2"></i></button>`}
 /* the bird bath's bubble: it asks about water until today's target is reached */
 function wBathBubble(){if(S.date!==TODAY||!WON())return '';const B=gBld();if(!B.well)return '';const W=wBath();if(!(W.drunk<W.T))return '';const bb=gBldBox('well');
  const t=W.birds<=1?'Thirsty birds':'Did you drink?';
