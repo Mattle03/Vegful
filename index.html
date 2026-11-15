@@ -972,6 +972,7 @@ html.still .schest *,html.still .gch,html.still .ggift svg{animation:none!import
 @keyframes tzz{0%{opacity:0;transform:translate(0,4px)}40%{opacity:1}100%{opacity:0;transform:translate(4px,-6px)}}
 .tsay{display:inline-block;align-self:flex-start;margin-top:4px;padding:5px 10px;border-radius:12px 12px 12px 4px;background:var(--surface2);font-size:14px;font-weight:700;color:var(--ink)}
 .gsharebtn{margin-top:14px}
+.attmore summary{cursor:pointer;font-weight:700;color:var(--ink2);padding:10px 2px 4px;list-style:none}.attmore summary::-webkit-details-marker{display:none}.attmore summary::after{content:' ›'}.attmore[open] summary::after{content:' ‹'}
 html.still .tort *{animation:none!important}
 @media (prefers-reduced-motion:reduce){.tort *{animation:none!important}}
 
@@ -2894,6 +2895,16 @@ const XIC='<svg viewBox="0 0 24 24"><path d="M6 6l12 12M18 6L6 18"/></svg>';
 function nstat(k,D,T){const i=K.indexOf(k),p=D[i]/T[k]*100;if(T.ul[k]&&D[i]>T.ul[k])return{c:'var(--over)',t:'Too much',p,over:1};if(k==='kcal')return{c:'var(--accent)',t:'',p};if(NUT[k].opt)return{c:p>=90?'var(--ok)':'var(--muted)',t:'',p};return{c:p<50?'var(--low)':p<90?'var(--mid)':'var(--ok)',t:p<90?'Low':'',p}}
 const ALLK=K.filter(k=>k!=='kcal'&&!NUT[k].opt);
 function dayScore(D,T){return Math.round(ALLK.reduce((a,k)=>a+Math.min(D[K.indexOf(k)]/T[k],1),0)/ALLK.length*100)}
+/* today is judged by pace, not as a whole day: meals still to come do not count as nothing.
+   The share of today that is done is the main meals logged or marked none (at least a third once anything is logged); an ended or past day counts in full.
+   Amounts shown stay real; only colours, low lists and scores compare with the target for the part of the day that is done. */
+function dayDone(d){d=d||TODAY;if(d!==TODAY||(typeof wClosed==='function'&&wClosed(d)))return 1;const p=S.days[d];if(!logged(p))return 1;
+ const done=new Set();mealKeys(p).forEach(k=>{const t=typeOf(p,k);if('bld'.includes(t)&&t.length===1&&(p[k].it.length||p[k].skip))done.add(t)});return Math.max(1,done.size)/3}
+function paceVec(range,end){end=end||S.date;const f=dayDone(end);if(f>=1)return null;const o={};
+ if(range===1){K.forEach(k=>o[k]=f);return o}
+ if(range>1){const n=rangeStats(range,end).L.length||1;K.forEach(k=>o[k]=(n-1+f)/n);return o}
+ K.forEach(k=>{let num=0,den=0;const H=mixSpan(k);for(let a=0;a<H;a++){if(!logged(S.days[shift(end,-a)]))continue;const w=mixW(k,a);den+=w;num+=w*(a===0?f:1)}o[k]=den?num/den:1});return o}
+function paceT(T,range,end){const P=paceVec(range==null?S.range:range,end);if(!P)return T;const o=Object.assign({},T);K.forEach(k=>{if(P[k]!=null&&T[k]>0)o[k]=T[k]*P[k]});o.ul=T.ul;o.paced=1;o.full=T;return o}
 function issues(D,T){
  const out=[];ALLK.forEach(k=>{const s=nstat(k,D,T);if(s.over)out.push({k,s,w:2});else if(s.p<90)out.push({k,s,w:1})});
  return out.sort((a,b)=>b.w-a.w||a.s.p-b.s.p);
@@ -2901,15 +2912,15 @@ function issues(D,T){
 
 /* ---------- today ---------- */
 function renderToday(T,D){
- const sc=dayScore(D,T),C=2*Math.PI*52,date=kdate(S.date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
+ const sc=dayScore(D,paceT(T,1)),C=2*Math.PI*52,date=kdate(S.date).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'long'});
  const isT=S.date===TODAY,title=isT?'Today':S.date===shift(TODAY,-1)?'Yesterday':S.date===shift(TODAY,1)?'Tomorrow':kdate(S.date).toLocaleDateString('en-GB',{weekday:'long'});
  const wk=rangeStats(7,S.date),wsc=wk.L.length?dayScore(wk.avg,T):null,emptyDay=!logged(S.plan);
- const MXV=mixMemo(),MX=S.range===0?mixStats(S.date,MXV):null,RG=S.range>1?rangeStats(S.range,S.date):null,useR=RG&&RG.L.length,DS=MX?MX.avg:useR?RG.avg:D,rs=dayScore(DS,T),iss=issues(DS,T);if(MX)iss.slice(0,3).forEach(x=>{x.run=x.s.over?0:lowRun(x.k,S.date,MXV,T)});
+ const MXV=mixMemo(),MX=S.range===0?mixStats(S.date,MXV):null,RG=S.range>1?rangeStats(S.range,S.date):null,useR=RG&&RG.L.length,DS=MX?MX.avg:useR?RG.avg:D,TP=paceT(T),rs=dayScore(DS,TP),iss=issues(DS,TP);if(MX)iss.slice(0,3).forEach(x=>{x.run=x.s.over?0:lowRun(x.k,S.date,MXV,T)});
  const rlab=S.range===0?'mixed':S.range===1?(isT?'today':'this day'):S.range+' days',rnote=S.range===0?(isT?'Energy today, protein and fiber 3 days':'Energy this day, protein and fiber 3 days'):S.range===1?(isT?'Today':'This day'):(useR?`Average of ${RG.L.length} logged day${RG.L.length>1?'s':''}`:'No days logged');
  let prev=null;for(let i=1;i<=14&&!prev;i++){const k=shift(S.date,-i);if(logged(S.days[k]))prev=k}
  const HC=p=>p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)';
  const PV0=isT&&!emptyDay&&(S.range===0||S.range===1)?dayPreview(D):null,PV=PV0&&PV0.sc>rs?PV0:null;
- const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?EN(T.kcal).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?HC(p2>=85?100:p2):HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?HC(p>=85?100:p):HC(p)}"></i>${p>100?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
+ const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,pp=DS[i]/TP[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?EN(T.kcal).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?HC(p2>=85?100:p2):HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?HC(pp>=85?100:pp):HC(pp)}"></i>${p>100?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
  const SGt=computeSugg(),TT=targets(),TN=needT(TT);
  let sni=0;const usedI=new Set(),usedA=new Set();AGT={};const idea=s=>{let L=[];const ag=againList(s.id,3).find(a=>!usedA.has(mealSig(a.it)));if(ag){usedA.add(mealSig(ag.it));AGT[s.id]=ag}
    if(s.ty==='s'){const ix=sni++,n=SGt.snacks.length;for(let j=0;j<n;j++){const q=(ix+j)%n,x=SGt.snacks[q];L.push({nm:x.food?x.food.n.split(',')[0]+' '+x.food.por+' g':x.d.n,add:x.add,ic:x.food?fIcon(x.food.id):dIcon(x.d),attr:`data-tsn="${s.id}:${q}"`,did:x.d&&hasRcp(x.d.id)?x.d.id:null})}}
@@ -3033,12 +3044,13 @@ function renderNutrients(T,D){
  $('legend').innerHTML=[...new Map(SL.map(s=>[s.n.replace(/ \d+$/,''),s.c])).entries()].map(([n,c])=>`<span><i style="--c:${c}"></i>${n}</span>`).join('');
  const NORD=['kcal','p','fib','b12','d','a','c','fol','k','ca','fe','zn','iod','se','mg','pot','ala','epa'],groups=[...new Set(NORD.map(k=>NUT[k].g))];
  const rr=S.range===0?7:S.range;const fvAvg=rr>1?(()=>{const R=rangeStats(rr);if(!R.L.length)return null;const a={veg:0,fruit:0};R.L.forEach(d=>{const x=fv(S.days[d]);a.veg+=x.veg/R.L.length;a.fruit+=x.fruit/R.L.length});return a})():null;
- const att=issues(D,T),cov=ALLK.length-att.filter(x=>!x.s.over).length;
- const attHtml=`<div class="card attn-card"><div class="card-head" style="margin-bottom:2px"><div><h2>${att.length?'Needs attention':'All covered'}</h2><p class="cap">${cov} of ${ALLK.length} nutrients covered${S.range===0?', each over the time your body stores it':S.range>1?' on average':''}</p></div>${att.length?'<button class="btn sm primary" type="button" id="n-fix">How to fix</button>':''}</div>
-  ${att.map(x=>{const p=Math.min(x.s.p,100),j=K.indexOf(x.k),sd=nstat(x.k,Dd,T),pc=`<span class="pc num" style="color:${x.s.c}">${x.s.over?'Too much':Math.round(x.s.p)+' %'}</span>`;
+ const TPn=paceT(T),TPd=paceT(T,1),att=issues(D,TPn),cov=ALLK.length-att.filter(x=>!x.s.over).length;
+ const attHtml=`<div class="card attn-card"><div class="card-head" style="margin-bottom:2px"><div><h2>${att.length?'Needs attention':'All covered'}</h2><p class="cap">${TPn.paced?`${cov} of ${ALLK.length} on track for the meals logged so far`:`${cov} of ${ALLK.length} nutrients covered${S.range===0?', each over the time your body stores it':S.range>1?' on average':''}`}</p></div>${att.length?'<button class="btn sm primary" type="button" id="n-fix">How to fix</button>':''}</div>
+  ${(()=>{const row=x=>{const p=Math.min(x.s.p,100),j=K.indexOf(x.k),sd=nstat(x.k,Dd,TPd),pc=`<span class="pc num" style="color:${x.s.c}">${x.s.over?'Too much':Math.round(x.s.p)+' %'}</span>`;
    if(two&&vWin(x.k)>1){const b=(st,th)=>`<span class="stack${th?' thin':''}"><i style="width:${Math.min(st.p,150)/1.5}%;background:${st.c}"></i></span>`,am=v=>`<span class="iv num"><b>${fmt(v)}</b>/${fmt(T[x.k])} ${NUT[x.k].u}</span>`;
     return `<button class="arow2 two" type="button" data-sel="${x.k}"><span class="nm">${NUT[x.k].n}</span>${pc}<span class="n2"><span class="il">${S.range===0?winLabel(x.k):S.range+' days'}</span>${b(x.s)}${am(D[j])}<span class="il">${tlab}</span>${b(sd,1)}${am(Dd[j])}</span></button>`}
-   return `<button class="arow2" type="button" data-sel="${x.k}"><span class="nm">${NUT[x.k].n}</span><span class="abar"><i style="width:${p}%;background:${x.s.c}"></i></span>${pc}</button>`}).join('')||'<p class="cap" style="margin-top:6px">Every nutrient reaches its target. Nice.</p>'}</div>`;
+   return `<button class="arow2" type="button" data-sel="${x.k}"><span class="nm">${NUT[x.k].n}</span><span class="abar"><i style="width:${p}%;background:${x.s.c}"></i></span>${pc}</button>`};
+   return att.length?att.slice(0,3).map(row).join('')+(att.length>3?`<details class="attmore"><summary>Show ${att.length-3} more</summary>${att.slice(3).map(row).join('')}</details>`:''):'<p class="cap" style="margin-top:6px">Every nutrient reaches its target. Nice.</p>'})()}</div>`;
  $('nutrients').innerHTML=attHtml+groups.map(g=>`<div class="card"><h2 style="margin-bottom:6px">${g}</h2><div class="ngroup">${NORD.filter(k=>NUT[k].g===g&&!(k==='kcal'&&HK())).map(k=>{const i=K.indexOf(k),s=nstat(k,D,T);
    const sg=(L,v)=>L.map((sl,j)=>{const w=v[j][i]/T[k]*100/1.5;return w>0?`<i style="width:${w}%;background:${sl.c}"></i>`:''}).join(''),segs=sg(SL,sv),t2=two&&vWin(k)>1,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${EN(T.kcal)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${NUT[k].u}`}</span>`;
    if(t2)return `<button class="nrow" type="button" data-sel="${k}"><span><span class="nn">${NUT[k].n}</span>${s.over?`<span class="tag" style="color:var(--over);background:color-mix(in srgb,var(--over) 16%,transparent)">Too much</span>`:''}${NUT[k].opt?'<span class="tag">Optional</span>':''}</span><span class="np" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="n2"><span class="il">${S.range===0?winLabel(k):S.range+' days'}</span><span class="stack">${segs}</span>${am(D[i])}<span class="il">${tlab}</span><span class="stack thin">${sg(SLOTS,svd)}</span>${am(Dd[i])}</span></button>`;
@@ -3076,7 +3088,7 @@ function renderDetail(T,root){
  const srcs=srcList.slice(0,SRC.n);
  const supTip=['b12','d','iod'].includes(k)&&!supHas(k);
  root.innerHTML=`<div><h2 style="font-size:26px">${N.n}</h2>
-   <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px"><span class="big" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span>${d2?(R?`<span class="muted">Average of ${R.L.length} logged day${R.L.length>1?'s':''}</span>`:''):`<span class="muted num">${fmt(D[i])} of ${fmt(T[k])} ${N.u}</span>`}</div>${d2?(()=>{const Dy=dayV(),sd=nstat(k,Dy,T),b=(st,th)=>`<span class="stack${th?' thin':''}"><i style="width:${Math.min(st.p,150)/1.5}%;background:${k==='kcal'?'var(--accent)':st.c}"></i></span>`,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${EN(T.kcal)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${N.u}`}</span>`;
+   <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px"><span class="big" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span>${d2?(R?`<span class="muted">Average of ${R.L.length} logged day${R.L.length>1?'s':''}</span>`:''):`<span class="muted num">${fmt(D[i])} of ${fmt(T[k])} ${N.u}</span>`}</div>${d2?(()=>{const Dy=dayV(),sd=nstat(k,Dy,paceT(T,1)),b=(st,th)=>`<span class="stack${th?' thin':''}"><i style="width:${Math.min(st.p,150)/1.5}%;background:${k==='kcal'?'var(--accent)':st.c}"></i></span>`,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${EN(T.kcal)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${N.u}`}</span>`;
     return `<div class="n2" style="margin-top:10px"><span class="il">${MXd?winLabel(k):S.range+' days'}</span>${b(s)}${am(D[i])}<span class="il">${S.date===TODAY?'today':kdate(S.date).toLocaleDateString('en-GB',{weekday:'short'})}</span>${b(sd,1)}${am(Dy[i])}</div>`})():''}${MXd?`<p class="cap" style="margin-top:6px">${WINWHY[WIN[k]||7]}${(WIN[k]||7)>1?' Recent days count most.':''}${(()=>{const n=lowRun(k,S.date,mixMemo(),T);return n>=3?` <b style="color:var(--ink)">Below target for ${runTxt(n)}.</b>`:''})()}</p>`:''}
    <div style="margin-top:8px">${srcLinks([k],`Target from ${REFL[S.prof.ref||'efsa'][0]}${['zn','ala','p'].includes(k)?', adjusted for vegan eating':''}. Food amounts are typical averages; brands differ.`)}</div>
    ${T.ul[k]?`<p class="cap" style="margin-top:6px">Upper safe limit ${fmt(T.ul[k])} ${N.u}${s.over?'. You are above it.':''}</p>`:''}</div>
@@ -6003,7 +6015,7 @@ const WMEAL={b:5,l:11,d:17};
 let WLASTV=null;
 /* the same number as the ring on the board sheet: mixed, one day or a range, following the chosen range */
 function wScore(){const r0=S.range;S.range=0;try{const T=targets(),D=dayV(),MX=mixStats(S.date,mixMemo()),DS=MX?MX.avg:D;
- return {T,DS,sc:dayScore(DS,T),empty:!logged(S.plan)}}finally{S.range=r0}}
+ const TP=paceT(T,0);return {T:TP,DS,sc:dayScore(DS,TP),empty:!logged(S.plan)}}finally{S.range=r0}}
 const wOpen=k=>{const sl=S.plan&&S.plan[k];return !!sl&&!sl.it.length&&!sl.skip&&!mealKeys(S.plan).some(q=>q!==k&&typeOf(S.plan,q)===typeOf(S.plan,k)&&S.plan[q].it.length)};
 /* the one next step: the first main meal whose time has come and that is still open; only today */
 function wNext(){if(S.date!==TODAY||!S.plan||wClosed())return null;const h=new Date().getHours();for(const t of 'bld'){if(h<WMEAL[t])break;const k=slotOfType(t);if(wOpen(k))return k}return null}
