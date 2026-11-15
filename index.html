@@ -1191,6 +1191,9 @@ input,textarea,select,[contenteditable],#sheet-body,#it-kitchen,.selok{-webkit-u
 .meter.mt .rng,.stack .rng{position:absolute;top:0;bottom:0;z-index:2;border-radius:2px;background:color-mix(in srgb,var(--ink) 16%,transparent);box-shadow:inset 1.5px 0 0 color-mix(in srgb,var(--ink) 45%,transparent),inset -1.5px 0 0 color-mix(in srgb,var(--ink) 45%,transparent);pointer-events:none}
 .meter.mt .rng{top:-3px;bottom:-3px}
 .herocard .meter.mt .rng{background:color-mix(in srgb,var(--hero-ink) 22%,transparent);box-shadow:inset 1.5px 0 0 var(--hero-ink),inset -1.5px 0 0 var(--hero-ink)}
+
+.macro .row b{white-space:nowrap}.macro .row>span{min-width:0}
+.macro .row>span>.mu{display:block;font-size:11px;line-height:1.1;opacity:.75;font-weight:600}
 /* ---------- world shell: top bar, meal dock, live board, views as sheets ---------- */
 html,body{overflow:hidden;overscroll-behavior:none}
 .tabbar{display:none!important}
@@ -1792,6 +1795,12 @@ html.wdragging .wplate.dno{opacity:.45}
 .wghost>svg,.wghost>img{width:34px;height:34px}
 
 .wbbd.wbin{max-width:none;max-height:none;overflow:visible;border-width:6px;border-radius:14px;margin:6px 0 4px;animation:none;padding:14px 12px 16px}
+
+.wcoin{position:absolute;left:0;top:calc(100% + 8px);display:inline-flex;align-items:center;gap:5px;height:30px;padding:0 11px 0 7px;border-radius:15px;background:#FFF4DC;color:#5E3E1F;border:2px solid #6E4A2A;box-shadow:0 2px 0 #6E4A2A;font-weight:800;font-size:14px;box-sizing:border-box;pointer-events:none}
+.wcoin svg,.wcoin img{width:17px;height:17px}
+html.wsheet-on .wcoin{visibility:hidden}
+.wbate{display:flex;flex-direction:column;gap:6px;margin:10px 0 4px}.wbate .cap{margin:0}
+.wbac{display:flex;flex-wrap:wrap;gap:6px}.wbai{display:inline-flex;align-items:center;gap:6px;background:var(--surface2);border-radius:12px;padding:5px 10px 5px 6px}.wbai .em{width:24px;height:24px;display:grid;place-items:center}.wbai .em svg,.wbai .em img{width:22px;height:22px}.wbai b{font-size:13.5px}.wbai small{font-size:12px;color:var(--ink2);font-weight:700}
 </style>
 </head>
 <body>
@@ -2999,7 +3008,7 @@ function renderToday(T,D){
  let prev=null;for(let i=1;i<=14&&!prev;i++){const k=shift(S.date,-i);if(logged(S.days[k]))prev=k}
  const HC=p=>p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)';
  const PV0=isT&&!emptyDay&&(S.range===0||S.range===1)?dayPreview(D):null,PV=PV0&&PV0.sc>rs?PV0:null;
- const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,pp=DS[i]/TP[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?ENG(T).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?'var(--hen)':HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?'var(--hen)':HC(pp)}"></i>${isE?RNGB(sc):''}${p>100&&!isE?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
+ const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,pp=DS[i]/TP[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}${isE?` <span class="mu">${EN(0).split(' ')[1]}</span>`:''}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?ENG(T).split(' ')[0]:Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?'var(--hen)':HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?'var(--hen)':HC(pp)}"></i>${isE?RNGB(sc):''}${p>100&&!isE?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
  const SGt=computeSugg(),TT=targets(),TN=needT(TT);
  let sni=0;const usedI=new Set(),usedA=new Set();AGT={};const idea=s=>{let L=[];const ag=againList(s.id,3).find(a=>!usedA.has(mealSig(a.it)));if(ag){usedA.add(mealSig(ag.it));AGT[s.id]=ag}
    if(s.ty==='s'){const ix=sni++,n=SGt.snacks.length;for(let j=0;j<n;j++){const q=(ix+j)%n,x=SGt.snacks[q];L.push({nm:x.food?x.food.n.split(',')[0]+' '+x.food.por+' g':x.d.n,add:x.add,ic:x.food?fIcon(x.food.id):dIcon(x.d),attr:`data-tsn="${s.id}:${q}"`,did:x.d&&hasRcp(x.d.id)?x.d.id:null})}}
@@ -3115,7 +3124,7 @@ function heroCard(T,D){const isT=S.date===TODAY,C=2*Math.PI*52;
  const rlab=S.range===0?'mixed':S.range===1?(isT?'today':'this day'):S.range+' days',rnote=S.range===0?(isT?'Energy today, protein and fiber 3 days':'Energy this day, protein and fiber 3 days'):S.range===1?(isT?'Today':'This day'):(useR?`Average of ${RG.L.length} logged day${RG.L.length>1?'s':''}`:'No days logged');
  const HC=p=>p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)';
  const PV0=isT&&logged(S.plan)&&(S.range===0||S.range===1)?dayPreview(D):null,PV=PV0&&PV0.sc>rs?PV0:null;
- const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,pp=DS[i]/TP[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?ENG(T).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?'var(--hen)':HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?'var(--hen)':HC(pp)}"></i>${isE?RNGB(sc):''}${p>100&&!isE?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
+ const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,pp=DS[i]/TP[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}${isE?` <span class="mu">${EN(0).split(' ')[1]}</span>`:''}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?ENG(T).split(' ')[0]:Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?'var(--hen)':HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?'var(--hen)':HC(pp)}"></i>${isE?RNGB(sc):''}${p>100&&!isE?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
  return `<div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/>${PV?`<circle class="pvarc" cx="60" cy="60" r="52" fill="none" stroke="${HC(PV.sc)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-PV.sc/100)}"/>`:''}<circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
    <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div></div>${PV?`<p class="pvline">${PV.txt} <b class="num">${PV.sc} %</b></p>`:''}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div></div>`}
 function renderNutrients(T,D){
@@ -4685,7 +4694,7 @@ function gMain(g,nb){if(!G.ed){G.esnap=null;G.pst=null;G.edq=null}G.need=wNeedBe
  gEditBind(b);wBoard();wTort()}
 
 function renderGarden0(){const g=S.garden,v=G.view,nb=Object.values(g.bag).reduce((a,b)=>a+b,0);
- $('gd-head').innerHTML=`<div class="row"><div class="adt gname">${G.nm?`<input type="text" id="gd-nm" maxlength="28" value="${esc(g.name||'')}" placeholder="Garden" aria-label="Name your garden" enterkeyhint="done" autocomplete="off">`:`<h2>${esc(g.name||'Garden')}</h2><button class="iconbtn gpen" type="button" id="gd-pen" aria-label="Name your garden">${PENSM}</button>`}</div><div class="ghead"><span class="gcoins num" aria-label="${g.coins} coins">${COINI}<b id="gd-coins">${g.coins}</b></span></div></div>
+ $('gd-head').innerHTML=`<div class="row"><div class="adt gname">${G.nm?`<input type="text" id="gd-nm" maxlength="28" value="${esc(g.name||'')}" placeholder="Garden" aria-label="Name your garden" enterkeyhint="done" autocomplete="off">`:`<h2>${esc(g.name||'Garden')}</h2><button class="iconbtn gpen" type="button" id="gd-pen" aria-label="Name your garden">${PENSM}</button>`}</div><div class="ghead"><span class="gcoins num" aria-label="${g.coins} coins">${COINI}<b>${g.coins}</b></span></div></div>
 `;
  if($('gd-pen'))$('gd-pen').onclick=()=>{G.nm=1;renderGarden();const n=$('gd-nm');if(n){n.focus();n.select()}};
  const nf=$('gd-nm');if(nf){const done=()=>{if(nf.dataset.done)return;nf.dataset.done='1';g.name=nf.value.trim().slice(0,28);G.nm=0;save();renderGarden()};nf.onblur=done;nf.onkeydown=e=>{if(e.key==='Enter'){e.preventDefault();nf.blur()}}}
@@ -6162,7 +6171,7 @@ const WTICK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 12.5l4.5 4.
 const WRING=(p,r)=>{const C=2*Math.PI*r;return `<svg viewBox="0 0 ${2*r+8} ${2*r+8}" aria-hidden="true"><circle cx="${r+4}" cy="${r+4}" r="${r}" fill="none" stroke="var(--surface2)" stroke-width="6"/>${p>0?`<circle cx="${r+4}" cy="${r+4}" r="${r}" fill="none" stroke="${p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)'}" stroke-width="6" stroke-linecap="round" stroke-dasharray="${C.toFixed(1)}" stroke-dashoffset="${(C*(1-Math.min(p,100)/100)).toFixed(1)}" transform="rotate(-90 ${r+4} ${r+4})"/>`:''}</svg>`};
 function wTop(w){const el=$('wtop');if(!el)return;const isT=S.date===TODAY,t=isT?'Today':S.date===shift(TODAY,-1)?'Yesterday':S.date===shift(TODAY,1)?'Tomorrow':kdate(S.date).toLocaleDateString('en-GB',{weekday:'long'}),d=kdate(S.date).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'});
  el.innerHTML=`<div class="wday"><button class="wnav" type="button" id="w-prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><button class="wdt" type="button" id="w-date" aria-label="${isT?'History calendar':'Back to today'}"><b>${t}</b><small class="num">${d}</small></button><button class="wnav" type="button" id="w-next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div>
- <button class="wring" type="button" id="w-ring" aria-label="${wHasData()?w.sc+' percent covered, mixed. Open the board':'Nothing logged yet. Open the board'}">${WRING(wHasData()?w.sc:0,22)}${wHasData()?`<b class="num">${w.sc} %</b>`:`<span class="wrsp">${WSEED}</span>`}</button><button class="wme" type="button" id="w-me" aria-label="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></button>`;
+ <button class="wring" type="button" id="w-ring" aria-label="${wHasData()?w.sc+' percent covered, mixed. Open the board':'Nothing logged yet. Open the board'}">${WRING(wHasData()?w.sc:0,22)}${wHasData()?`<b class="num">${w.sc} %</b>`:`<span class="wrsp">${WSEED}</span>`}</button>${GON()&&S.garden?`<span class="wcoin num" aria-label="${S.garden.coins} coins">${COINI}<b id="gd-coins">${S.garden.coins}</b></span>`:''}<button class="wme" type="button" id="w-me" aria-label="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></button>`;
  $('w-prev').onclick=()=>{setDate(shift(S.date,-1));render()};$('w-next').onclick=()=>{setDate(shift(S.date,1));render()};
  $('w-date').onclick=()=>{if(S.date!==TODAY){setDate(TODAY);render()}else{S.nsub='hist';S.hsel=S.date;go('nutr')}};
  $('w-ring').onclick=()=>wBigBoard();$('w-me').onclick=()=>go('profile')}
@@ -6263,9 +6272,14 @@ function wBedFoods(bd){const ok=id=>{const f=FM[id];if(!f||f.hide||String(id).st
  let E=[];try{E=[...eaten()]}catch(e){}const def=(GBEDFG[bd]||[]).flatMap(k=>FG[k].sug).concat(GBEDDEF[bd]||[]);
  let L=[...new Set([...(S.recentFoods||[]),...(S.favFoods||[]),...def,...E])].filter(ok);
  if(L.length<6)F.forEach(f=>{if(L.length<6&&!f.hide&&f.src!=='usda'&&!L.includes(f.id)&&ok(f.id))L.push(f.id)});return L.slice(0,6)}
+/* a bed tells what you ate from it: each food over the last 7 days, and today's grams */
+function wBedAte(bd){const o=PROJ;PROJ=false;try{const c={},isB=id=>{try{return plantKinds(id).some(k=>gBedOf(k)===bd)}catch(e){return false}};let today=0;
+ for(let i=0;i<7;i++){const d=shift(TODAY,-i),p=S.days[d];if(!p)continue;const seen=new Set();eatK(p).forEach(k=>(p[k].it||[]).forEach(([id,g])=>{if(!FM[id]||!(+g>0)||!isB(id))return;if(!i)today+=+g;if(!seen.has(id)){seen.add(id);c[id]=(c[id]||0)+1}}))}
+ const L=Object.keys(c).sort((a,b)=>c[b]-c[a]||(FM[a].n<FM[b].n?-1:1));
+ return `<div class="wbate"><span class="lbl">Last 7 days</span>${L.length?`<div class="wbac">${L.slice(0,8).map(id=>`<span class="wbai"><span class="em">${fIcon(id)||''}</span><b>${esc(FM[id].n.split(',')[0])}</b><small class="num">${c[id]} day${c[id]===1?'':'s'}</small></span>`).join('')}</div>`:'<p class="cap">Nothing from this bed yet.</p>'}<p class="cap num">${today?`Today: ${Math.round(today)} g from this bed.`:'Nothing from it today yet.'}</p></div>`}finally{PROJ=o}}
 function wBedPanel(bd,el){const ty=G.bmt||typeOf(S.plan,wSlotNow());G.bmt=ty;const L=wBedFoods(bd);
  const np=S.garden.plants.filter(p=>p.b===bd).length,full=np>=gPlots(bd);
- el.innerHTML=`<div class="wbed">${wBedHealth(bd)}${wBedGrowing(bd)}<p class="cap num wbplots">${GBEDCAP[bd]||''} · ${np} of ${gPlots(bd)} plots growing</p>${full?wGrowBtn(bd):''}
+ el.innerHTML=`<div class="wbed">${wBedHealth(bd)}${wBedAte(bd)}${wBedGrowing(bd)}<p class="cap num wbplots">${np} of ${gPlots(bd)} plots growing</p>${full?wGrowBtn(bd):''}
  <div class="seg sm wbm" role="group" aria-label="Meal">${[...'blds'].map(t=>`<button type="button" data-bm="${t}" aria-pressed="${t===ty}">${t==='s'?'Extras':TY[t].n}</button>`).join('')}</div>
  ${L.length?`<div class="wtiles">${L.map(id=>{const f=FM[id],nm=f.n.split(',')[0],g=lastG(id);return `<button class="wtile" type="button" data-bf="${id}" aria-label="Add ${esc(nm)}, ${g} g"><span class="em">${fIcon(id)||''}</span><b>${esc(nm)}</b><small class="num">${g} g</small></button>`}).join('')}</div>`:'<p class="gempty">Search to find a food for this bed</p>'}
  <button class="btn wide wsrch" type="button" id="wb-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Search all foods</button></div>`;
@@ -6593,7 +6607,7 @@ function wPushOffer(auto){const g=S.garden;if(g.vpush||wPushOn()||!(WPUSH.url&&W
 const WTOUR=[
  [null,'A quick tour.'],
  ['#wboard','The notice board. Tap it to open it.'],
- ['#gd-world [data-wsb]','One bed per food group. What you eat grows here. An empty bed means you have not eaten that group lately.'],
+ ['#gd-world [data-wsb]','One bed per food group. What you eat grows here. Tap the sign on a bed to see what you ate from it.'],
  ['#w-ring','How well your nutrients are covered. The weather follows it. Tap it for the board.'],
  ['#w-add','Scan a product here. That is all this button does.'],
  ['#wdock [data-wt="l"]','Your meals. Tap a plate to add food. Hold a full one and drag it to an empty plate to move it.'],
