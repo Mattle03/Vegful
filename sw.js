@@ -1,5 +1,5 @@
 // Bump VERSION after every change so phones pick up the new files.
-const VERSION = 'vgarden-v115';
+const VERSION = 'vgarden-v117';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/badge-96.png', 'vendor/zxing.min.js'];
 
 self.addEventListener('install', e => {
@@ -69,9 +69,11 @@ async function ring() {
     if (!P.length && cat === 'nagE') P = m.pools.nag || [];
     P = P.filter(x => (!x.g || c.low.includes(x.g)) && (!x.s || x.s === slot || (x.s === 'd' && slot === 'e')));
     if (P.length) {
-      const last = rec[cat] || [], keep = Math.min(4, P.length - 1), C = P.filter(x => !last.slice(-keep).includes(x.id)), pool = C.length ? C : P;
+      // every line once before any comes back; a new round never starts with the last one
+      let used = (rec[cat] || []).filter(id => P.some(x => x.id === id)), pool = P.filter(x => !used.includes(x.id));
+      if (!pool.length) { const last = used[used.length - 1]; pool = P.filter(x => x.id !== last); if (!pool.length) pool = P; used = []; }
       const x = pool[Math.floor(Math.random() * pool.length)];
-      rec[cat] = last.concat(x.id).slice(-6);
+      rec[cat] = used.concat(x.id);
       body = fill(x.t, c);
       try { await idb('readwrite', s => s.put(rec, 'r')); } catch (_) {}
     }
