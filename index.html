@@ -1186,6 +1186,11 @@ label[for="p-garden"]{display:none!important}
 body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
 input,textarea,select,[contenteditable],#sheet-body,#it-kitchen,.selok{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
 #sheet-body button,#it-kitchen button{-webkit-user-select:none;user-select:none}
+
+.stack.en::after{display:none}
+.meter.mt .rng,.stack .rng{position:absolute;top:0;bottom:0;z-index:2;border-radius:2px;background:color-mix(in srgb,var(--ink) 16%,transparent);box-shadow:inset 1.5px 0 0 color-mix(in srgb,var(--ink) 45%,transparent),inset -1.5px 0 0 color-mix(in srgb,var(--ink) 45%,transparent);pointer-events:none}
+.meter.mt .rng{top:-3px;bottom:-3px}
+.herocard .meter.mt .rng{background:color-mix(in srgb,var(--hero-ink) 22%,transparent);box-shadow:inset 1.5px 0 0 var(--hero-ink),inset -1.5px 0 0 var(--hero-ink)}
 /* ---------- world shell: top bar, meal dock, live board, views as sheets ---------- */
 html,body{overflow:hidden;overscroll-behavior:none}
 .tabbar{display:none!important}
@@ -1785,10 +1790,13 @@ html.wdragging .wplate.dhov .wpl{transform:scale(1.12);background:color-mix(in s
 html.wdragging .wplate.dno{opacity:.45}
 .wghost{position:fixed;z-index:60;width:56px;height:56px;margin:-84px 0 0 -28px;border-radius:50%;background:var(--surface2);border:2px solid var(--s4);display:grid;place-items:center;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.35);pointer-events:none;transform:scale(1.08)}
 .wghost>svg,.wghost>img{width:34px;height:34px}
+
+.wbbd.wbin{max-width:none;max-height:none;overflow:visible;border-width:6px;border-radius:14px;margin:6px 0 4px;animation:none;padding:14px 12px 16px}
 </style>
 </head>
 <body>
 <div class="app">
+  <section id="v-board" class="view" hidden></section>
   <section id="v-today" class="view"></section>
 
   <section id="v-nutr" class="view" hidden>
@@ -2677,6 +2685,9 @@ function targets(){
 const HK=()=>S.prof.hidekcal==='1';
 /* energy is a range, not a line to hit: ten percent either side of the goal, in steps of 50 kcal; it is never shown as low or too much */
 const kcRange=k=>[Math.round(k*.9/50)*50,Math.round(k*1.1/50)*50];
+/* what you see while eating: the amount eaten and one goal number; the range is a band in the bar, not a pair of numbers */
+const ENG=T=>EN(Math.round((typeof T==='number'?T:T.kcal)/50)*50);
+const RNGB=sc=>`<b class="rng" style="left:${90/sc*100}%;width:${20/sc*100}%" aria-hidden="true"></b>`;
 const ENR=T=>{const [a,b]=kcRange(typeof T==='number'?T:T.kcal);return EN(a).split(' ')[0]+' to '+EN(b)};
 /* measures guide: typical weights, so you can log without a scale */
 const MEAS=[['Spoons and cups',[['1 teaspoon (tsp)','5 ml'],['1 tablespoon (tbsp)','15 ml, 3 tsp'],['1 cup','240 ml; a mug holds about 300 ml'],['1 glass','200 to 250 ml']]],
@@ -2988,7 +2999,7 @@ function renderToday(T,D){
  let prev=null;for(let i=1;i<=14&&!prev;i++){const k=shift(S.date,-i);if(logged(S.days[k]))prev=k}
  const HC=p=>p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)';
  const PV0=isT&&!emptyDay&&(S.range===0||S.range===1)?dayPreview(D):null,PV=PV0&&PV0.sc>rs?PV0:null;
- const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,pp=DS[i]/TP[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?ENR(T).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?'var(--hen)':HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?'var(--hen)':HC(pp)}"></i>${p>100?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
+ const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,pp=DS[i]/TP[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?ENG(T).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?'var(--hen)':HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?'var(--hen)':HC(pp)}"></i>${isE?RNGB(sc):''}${p>100&&!isE?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
  const SGt=computeSugg(),TT=targets(),TN=needT(TT);
  let sni=0;const usedI=new Set(),usedA=new Set();AGT={};const idea=s=>{let L=[];const ag=againList(s.id,3).find(a=>!usedA.has(mealSig(a.it)));if(ag){usedA.add(mealSig(ag.it));AGT[s.id]=ag}
    if(s.ty==='s'){const ix=sni++,n=SGt.snacks.length;for(let j=0;j<n;j++){const q=(ix+j)%n,x=SGt.snacks[q];L.push({nm:x.food?x.food.n.split(',')[0]+' '+x.food.por+' g':x.d.n,add:x.add,ic:x.food?fIcon(x.food.id):dIcon(x.d),attr:`data-tsn="${s.id}:${q}"`,did:x.d&&hasRcp(x.d.id)?x.d.id:null})}}
@@ -3104,7 +3115,7 @@ function heroCard(T,D){const isT=S.date===TODAY,C=2*Math.PI*52;
  const rlab=S.range===0?'mixed':S.range===1?(isT?'today':'this day'):S.range+' days',rnote=S.range===0?(isT?'Energy today, protein and fiber 3 days':'Energy this day, protein and fiber 3 days'):S.range===1?(isT?'Today':'This day'):(useR?`Average of ${RG.L.length} logged day${RG.L.length>1?'s':''}`:'No days logged');
  const HC=p=>p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)';
  const PV0=isT&&logged(S.plan)&&(S.range===0||S.range===1)?dayPreview(D):null,PV=PV0&&PV0.sc>rs?PV0:null;
- const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,pp=DS[i]/TP[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?ENR(T).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?'var(--hen)':HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?'var(--hen)':HC(pp)}"></i>${p>100?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
+ const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,pp=DS[i]/TP[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?ENG(T).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?'var(--hen)':HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?'var(--hen)':HC(pp)}"></i>${isE?RNGB(sc):''}${p>100&&!isE?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
  return `<div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/>${PV?`<circle class="pvarc" cx="60" cy="60" r="52" fill="none" stroke="${HC(PV.sc)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-PV.sc/100)}"/>`:''}<circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
    <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div></div>${PV?`<p class="pvline">${PV.txt} <b class="num">${PV.sc} %</b></p>`:''}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div></div>`}
 function renderNutrients(T,D){
@@ -3126,9 +3137,9 @@ function renderNutrients(T,D){
    return `<button class="arow2" type="button" data-sel="${x.k}"><span class="nm">${NUT[x.k].n}</span><span class="abar"><i style="width:${p}%;background:${x.s.c}"></i></span>${pc}</button>`};
    return att.length?att.slice(0,3).map(row).join('')+(att.length>3?`<details class="attmore"><summary>Show ${att.length-3} more</summary>${att.slice(3).map(row).join('')}</details>`:''):'<p class="cap" style="margin-top:6px">Every nutrient reaches its target. Nice.</p>'})()}</div>`;
  $('range-seg').hidden=true;$('nutrients').innerHTML=heroCard(T,Dd)+attHtml+groups.map(g=>`<div class="card"><h2 style="margin-bottom:6px">${g}</h2><div class="ngroup">${NORD.filter(k=>NUT[k].g===g&&!(k==='kcal'&&HK())).map(k=>{const i=K.indexOf(k),s=nstat(k,D,T);
-   const sg=(L,v)=>L.map((sl,j)=>{const w=v[j][i]/T[k]*100/1.5;return w>0?`<i style="width:${w}%;background:${sl.c}"></i>`:''}).join(''),segs=sg(SL,sv),t2=two&&vWin(k)>1,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${ENR(T)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${NUT[k].u}`}</span>`;
-   if(t2)return `<button class="nrow" type="button" data-sel="${k}"><span><span class="nn">${NUT[k].n}</span>${s.over?`<span class="tag" style="color:var(--over);background:color-mix(in srgb,var(--over) 16%,transparent)">Too much</span>`:''}${NUT[k].opt?'<span class="tag">Optional</span>':''}</span><span class="np" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="n2"><span class="il">${S.range===0?winLabel(k):S.range+' days'}</span><span class="stack">${segs}</span>${am(D[i])}<span class="il">${tlab}</span><span class="stack thin">${sg(SLOTS,svd)}</span>${am(Dd[i])}</span></button>`;
-   return `<button class="nrow" type="button" data-sel="${k}"><span><span class="nn">${NUT[k].n}</span>${S.range===0?`<span class="wtag">${winLabel(k)}</span>`:''}${s.over?`<span class="tag" style="color:var(--over);background:color-mix(in srgb,var(--over) 16%,transparent)">Too much</span>`:''}${NUT[k].opt?'<span class="tag">Optional</span>':''}<br><span class="nv num">${k==='kcal'?EN(D[0])+' of '+ENR(T):fmt(D[i])+' of '+fmt(T[k])+' '+NUT[k].u}</span></span><span class="np" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="stack">${segs}</span></button>`}).join('')}</div></div>`).join('')+(rr>1&&!fvAvg?'':fvCard(S.plan,fvAvg));
+   const sg=(L,v)=>L.map((sl,j)=>{const w=v[j][i]/T[k]*100/1.5;return w>0?`<i style="width:${w}%;background:${sl.c}"></i>`:''}).join(''),segs=sg(SL,sv),t2=two&&vWin(k)>1,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${ENG(T)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${NUT[k].u}`}</span>`;
+   if(t2)return `<button class="nrow" type="button" data-sel="${k}"><span><span class="nn">${NUT[k].n}</span>${s.over?`<span class="tag" style="color:var(--over);background:color-mix(in srgb,var(--over) 16%,transparent)">Too much</span>`:''}${NUT[k].opt?'<span class="tag">Optional</span>':''}</span><span class="np" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="n2"><span class="il">${S.range===0?winLabel(k):S.range+' days'}</span><span class="stack${k==='kcal'?' en':''}">${segs}${k==='kcal'?RNGB(150):''}</span>${am(D[i])}<span class="il">${tlab}</span><span class="stack thin">${sg(SLOTS,svd)}</span>${am(Dd[i])}</span></button>`;
+   return `<button class="nrow" type="button" data-sel="${k}"><span><span class="nn">${NUT[k].n}</span>${S.range===0?`<span class="wtag">${winLabel(k)}</span>`:''}${s.over?`<span class="tag" style="color:var(--over);background:color-mix(in srgb,var(--over) 16%,transparent)">Too much</span>`:''}${NUT[k].opt?'<span class="tag">Optional</span>':''}<br><span class="nv num">${k==='kcal'?EN(D[0]).split(' ')[0]+' of '+ENG(T):fmt(D[i])+' of '+fmt(T[k])+' '+NUT[k].u}</span></span><span class="np" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="stack${k==='kcal'?' en':''}">${segs}${k==='kcal'?RNGB(150):''}</span></button>`}).join('')}</div></div>`).join('')+(rr>1&&!fvAvg?'':fvCard(S.plan,fvAvg));
  $('nutrients').insertAdjacentHTML('beforeend',fsCard());
  $('nutrients').querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>selectNut(b.dataset.sel));
  $('nutrients').querySelectorAll('#t-range [data-r]').forEach(b=>b.onclick=()=>{S.range=+b.dataset.r;render()});
@@ -3163,7 +3174,7 @@ function renderDetail(T,root){
  const srcs=srcList.slice(0,SRC.n);
  const supTip=['b12','d','iod'].includes(k)&&!supHas(k);
  root.innerHTML=`<div><h2 style="font-size:26px">${N.n}</h2>
-   <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px"><span class="big" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span>${d2?(R?`<span class="muted">Average of ${R.L.length} logged day${R.L.length>1?'s':''}</span>`:''):`<span class="muted num">${fmt(D[i])} of ${fmt(T[k])} ${N.u}</span>`}</div>${d2?(()=>{const Dy=dayV(),sd=nstat(k,Dy,paceT(T,1)),b=(st,th)=>`<span class="stack${th?' thin':''}"><i style="width:${Math.min(st.p,150)/1.5}%;background:${k==='kcal'?'var(--accent)':st.c}"></i></span>`,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${ENR(T)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${N.u}`}</span>`;
+   <div style="display:flex;align-items:baseline;gap:12px;flex-wrap:wrap;margin-top:8px"><span class="big" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span>${d2?(R?`<span class="muted">Average of ${R.L.length} logged day${R.L.length>1?'s':''}</span>`:''):`<span class="muted num">${fmt(D[i])} of ${fmt(T[k])} ${N.u}</span>`}</div>${d2?(()=>{const Dy=dayV(),sd=nstat(k,Dy,paceT(T,1)),b=(st,th)=>`<span class="stack${th?' thin':''}${k==='kcal'?' en':''}"><i style="width:${Math.min(st.p,150)/1.5}%;background:${k==='kcal'?'var(--accent)':st.c}"></i>${k==='kcal'?RNGB(150):''}</span>`,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${ENG(T)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${N.u}`}</span>`;
     return `<div class="n2" style="margin-top:10px"><span class="il">${MXd?winLabel(k):S.range+' days'}</span>${b(s)}${am(D[i])}<span class="il">${S.date===TODAY?'today':kdate(S.date).toLocaleDateString('en-GB',{weekday:'short'})}</span>${b(sd,1)}${am(Dy[i])}</div>`})():''}${MXd?`<p class="cap" style="margin-top:6px">${WINWHY[WIN[k]||7]}${(WIN[k]||7)>1?' Recent days count most.':''}${(()=>{const n=lowRun(k,S.date,mixMemo(),T);return n>=3?` <b style="color:var(--ink)">Below target for ${runTxt(n)}.</b>`:''})()}</p>`:''}
    <div style="margin-top:8px">${srcLinks([k],`Target from ${REFL[S.prof.ref||'efsa'][0]}${['zn','ala','p'].includes(k)?', adjusted for vegan eating':''}. Food amounts are typical averages; brands differ.`)}</div>
    ${T.ul[k]?`<p class="cap" style="margin-top:6px">Upper safe limit ${fmt(T.ul[k])} ${N.u}${s.over?'. You are above it.':''}</p>`:''}</div>
@@ -5374,7 +5385,7 @@ function openLearn(k){const N=NUT[k],T=targets(),i=K.indexOf(k),dl=$('sheet');S.
  const tips=KT.filter(t=>t[4].includes(k)),how=HOW[k],ref=REFL[S.prof.ref||'efsa'];
  const links=[ref,...(ODS[k]?[[`NIH fact sheet: ${N.n}`,`https://ods.od.nih.gov/factsheets/${ODS[k]}-HealthProfessional/`]]:[]),FOODL];
  $('sheet-body').innerHTML=`<div><h2 style="font-size:26px">${N.n}</h2><p class="info" style="margin-top:8px">${N.i}</p></div>
-  <div class="lfacts"><div><span class="cap">${k==='kcal'?'Your range':'Your target'}</span><b class="num">${k==='kcal'?ENR(T):fmt(T[k])+' '+N.u}</b><span class="cap">${ref[0].replace(/ dietary reference values| reference values| nutrient recommendations/,'')}</span></div>${T.ul[k]?`<div><span class="cap">Upper safe limit</span><b class="num">${fmt(T.ul[k])} ${N.u}</b><span class="cap">from all sources</span></div>`:''}<div><span class="cap">Body stores</span><b>${{1:'None',3:'Days',7:'About a week',14:'A few weeks',30:'Months'}[WIN[k]||7]}</b><span class="cap">${(WINWHY[WIN[k]||7]||'').split(';')[0].split(',')[0]}</span></div></div>
+  <div class="lfacts"><div><span class="cap">${k==='kcal'?'Your goal':'Your target'}</span><b class="num">${k==='kcal'?ENG(T):fmt(T[k])+' '+N.u}</b><span class="cap">${k==='kcal'?'anywhere from '+ENR(T)+' is fine. ':''}${ref[0].replace(/ dietary reference values| reference values| nutrient recommendations/,'')}</span></div>${T.ul[k]?`<div><span class="cap">Upper safe limit</span><b class="num">${fmt(T.ul[k])} ${N.u}</b><span class="cap">from all sources</span></div>`:''}<div><span class="cap">Body stores</span><b>${{1:'None',3:'Days',7:'About a week',14:'A few weeks',30:'Months'}[WIN[k]||7]}</b><span class="cap">${(WINWHY[WIN[k]||7]||'').split(';')[0].split(',')[0]}</span></div></div>
   ${top.length?`<div><h3 style="margin-bottom:6px">Best everyday sources</h3><div class="contrib">${top.map(x=>`<div class="crow"><span>${esc(x.f.n.split(',')[0])} <span class="cap">${x.f.pl?x.f.pl+', ':''}${x.f.por} g</span></span><span class="v num">${fmt(x.v)} ${N.u}</span></div>`).join('')}</div></div>`:''}
   ${how?`<div><h3 style="margin-bottom:6px">If you take it</h3><ul class="sinfo-l" style="margin:0;padding-left:20px;display:flex;flex-direction:column;gap:4px">${how.map(h=>`<li>${h}</li>`).join('')}</ul></div>`:''}
   ${tips.length?`<div><h3 style="margin-bottom:6px">Tips</h3><div class="ktips">${tips.map(t=>`<div class="ktip"><h3>${t[1]}</h3><span class="muted">${t[2]}</span>${srcPop(t[3])}</div>`).join('')}</div></div>`:''}
@@ -5917,7 +5928,7 @@ function drawReport(n){const {T,R,L,D,fg,sups,score}=repData(n);
  y=P+250;
  const bar=(x,y,w,p,col)=>{const sc=Math.max(100,Math.min(p,200));rr(x,y,w,14,7,C.track);rr(x,y,Math.max(14,w*Math.min(p,200)/sc),14,7,col);if(p>100){g.fillStyle=C.ink;g.fillRect(x+w*100/sc-3,y-6,3,26)}};
  t('Daily average',P,y,{s:34,w:800});y+=24;
- const macro=(k,lab,unit)=>{const i=K.indexOf(k),v=D[i],p=v/T[k]*100;y+=46;t(lab,P,y,{s:28});t(`${k==='kcal'?Math.round(v).toLocaleString('en'):fmt(v)} / ${k==='kcal'?kcRange(T[k]).map(x=>x.toLocaleString('en')).join(' to '):Math.round(T[k])} ${unit}`,W-P,y,{s:28,a:'right',c:C.muted,w:600});bar(P,y+12,W-2*P,p,k==='kcal'?C.ok:p>=90?C.ok:p>=50?C.mid:C.low);y+=24};
+ const macro=(k,lab,unit)=>{const i=K.indexOf(k),v=D[i],p=v/T[k]*100;y+=46;t(lab,P,y,{s:28});t(`${k==='kcal'?Math.round(v).toLocaleString('en'):fmt(v)} / ${k==='kcal'?(Math.round(T[k]/50)*50).toLocaleString('en'):Math.round(T[k])} ${unit}`,W-P,y,{s:28,a:'right',c:C.muted,w:600});bar(P,y+12,W-2*P,p,k==='kcal'?C.ok:p>=90?C.ok:p>=50?C.mid:C.low);y+=24};
  if(!HK())macro('kcal','Energy','kcal');macro('p','Protein','g');macro('fib','Fiber','g');
  {y+=50;
   if(WLON()){const wd=wDates().filter(x=>x>=R.dates[0]&&x<=R.dates[R.dates.length-1]);if(wd.length){const a=wd.reduce((q,x)=>q+ +S.weights[x],0)/wd.length;t(`Weight: average ${fmtKg(a)} kg (${wd.length} ${wd.length===1?'entry':'entries'})`,P,y,{s:26,w:600,c:C.muted});y+=40}}
@@ -6131,7 +6142,7 @@ addEventListener('pageshow',e=>{if(e.persisted)dayReturn()});setInterval(dayTick
 applyTheme();
 /* ---------- the world shell: the garden is the screen; the other views open as sheets over it ----------
    top bar: the day and today's ring; dock: the meals as plates around the basket; the notice board in the world shows a live view */
-const WSHEETS=['today','nutr','lib','scan','profile'];
+const WSHEETS=['board','today','nutr','lib','scan','profile'];
 const WBLDV={shop:'lib',album:'today'};
 const WMEAL={b:5,l:11,d:17};
 let WLASTV=null;
@@ -6198,8 +6209,8 @@ function wBoard(){return;const el=$('wboard');if(!el||!G||G.ed)return;el.querySe
  if(a==='gap')selectNut(b.dataset.k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(b.dataset.k));
  else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(b.dataset.k)&&gLand().sec[x]);if(bd){G.sb=bd;G.bmt=null;gView('bed')}else go('today')}else go('today')}})}
 function wBoardPos(){}
-function wHead(v){const el=$('wsheet-h');if(!el)return;const on=WSHEETS.includes(v);el.hidden=!on;$('wscrim').hidden=!on;if(!on)return;const board=v==='today'||v==='nutr';
- el.innerHTML=`<span class="whandle" aria-hidden="true"></span><div class="wshr">${board?`<div class="seg sm wseg">${[['today','Today'],['nutr','Nutrients']].map(([x,l])=>`<button type="button" data-wsv="${x}" aria-pressed="${v===x}">${l}</button>`).join('')}</div>`:`<span class="wtitle">${{lib:'Kitchen',scan:S.shopSeg==='list'?'Workbench':'Scan',profile:'Profile'}[v]}</span>`}<button class="iconbtn wx" type="button" id="w-x" aria-label="Close">${XIC}</button></div>`;
+function wHead(v){const el=$('wsheet-h');if(!el)return;const on=WSHEETS.includes(v);el.hidden=!on;$('wscrim').hidden=!on;if(!on)return;const board=v==='board'||v==='today'||v==='nutr';
+ el.innerHTML=`<span class="whandle" aria-hidden="true"></span><div class="wshr">${board?`<div class="seg sm wseg">${[['board','Board'],['today','Today'],['nutr','Nutrients']].map(([x,l])=>`<button type="button" data-wsv="${x}" aria-pressed="${v===x}">${l}</button>`).join('')}</div>`:`<span class="wtitle">${{lib:'Kitchen',scan:S.shopSeg==='list'?'Workbench':'Scan',profile:'Profile'}[v]}</span>`}<button class="iconbtn wx" type="button" id="w-x" aria-label="Close">${XIC}</button></div>`;
  el.querySelectorAll('[data-wsv]').forEach(b=>b.onclick=()=>go(b.dataset.wsv));$('w-x').onclick=()=>wSheet('garden')}
 function wShopN(){try{return shopOpen()||0}catch(e){return 0}}
 function wShell(){const v=S.view,on=WSHEETS.includes(v);document.documentElement.classList.toggle('wsheet-on',on);
@@ -6630,8 +6641,10 @@ function wLabDodge(){const sc=$('gd-scene');if(!sc||!G||!G.cam||G.ed||S.view!=='
   if(hit&&fx.some(f=>r.left+dx<f.right+pad&&r.right+dx>f.left-pad&&r.top<f.bottom+pad&&r.bottom>f.top-pad))return;
   if(!dx||Math.abs(dx)>120)return;const flip=l.closest('.gbld').classList.contains('flip')&&Math.abs(new DOMMatrix(getComputedStyle(l.closest('.gbld')).transform).a+1)<.01?-1:1;l.style.translate=(flip*dx/sv).toFixed(1)+'px 0'})}
 const wLabSoon=ms=>{clearTimeout(WLDT);WLDT=setTimeout(()=>{try{wLabDodge()}catch(e){}},ms)};
-function wBigClose(now){const el=$('wbig');if(!el)return;if(now||GSTILL()){el.remove();return}el.classList.add('out');setTimeout(()=>el.remove(),170)}
-function wBigBoard(){wBigClose(true);if(!S.garden)return;if(S.date===TODAY&&S.garden.bdseen!==TODAY){S.garden.bdseen=TODAY;save();if(G&&!G.ed){const q=$('wboardq');if(q)q.remove()}}const w=wScore(),any=wHasData(),iss=any?issues(w.DS,w.T).filter(x=>!x.s.over).slice(0,3):[],nx=wNext(),isT=S.date===TODAY;
+/* the notice board is the first tab of the same sheet as Today and Nutrients: one place for how the day is going */
+function wBigClose(now){if(S.view!=='board')return;if(now){S.view='garden';render();return}wSheet('garden')}
+function wBigBoard(){go('board')}
+function renderBoard(){if(!S.garden)return;if(S.date===TODAY&&S.garden.bdseen!==TODAY){S.garden.bdseen=TODAY;save();if(G&&!G.ed){const q=$('wboardq');if(q)q.remove()}}const w=wScore(),any=wHasData(),iss=any?issues(w.DS,w.T).filter(x=>!x.s.over).slice(0,3):[],nx=wNext(),isT=S.date===TODAY;
  let fg=[];try{fg=fgStatus(TODAY)}catch(e){}const lowG=fg.filter(x=>x.low).map(x=>x.k);
  const ds=[...Array(7)].map((_,i)=>shift(TODAY,-i));let kinds=0,ld=0;try{kinds=plantSet(ds).size}catch(e){}try{ld=loggedDays(7)}catch(e){}
  const N=isT&&wClosed()?['','ring','','Day closed','Rest well. Tomorrow is a new page.']
@@ -6642,8 +6655,8 @@ function wBigBoard(){wBigClose(true);if(!S.garden)return;if(S.date===TODAY&&S.ga
  const mt=t=>{const P=S.plan||{},keys=mealKeys(P).filter(q=>typeOf(P,q)===t),fk=keys.find(q=>P[q].it&&P[q].it.length),k=slotOfType(t),sl=P[k],skip=!fk&&sl&&sl.skip;
   return `<span class="wbmeal${fk?' full':skip?' skip':''}"><i>${fk?WTICK:skip?'':PLUS}</i>${t==='s'?'Extras':TY[t].n}</span>`};
  const pin=c=>`<i class="wpin" style="background:${c}"></i>`,h=t=>`<small class="wbh">${t}</small>`;
- const el=document.createElement('div');el.id='wbig';el.className='wbig';
- el.innerHTML=`<div class="wbbd" role="dialog" aria-modal="true" aria-label="Notice board"><div class="wbtop"><span class="wbpl">Notice board</span><button class="wbx" type="button" id="wb-x" aria-label="Close">${XIC}</button></div><div class="wbg">
+ const el=$('v-board');if(!el)return;
+ el.innerHTML=`<div class="wbbd wbin" id="wbig" aria-label="Notice board"><div class="wbg">
   <button class="wbn" type="button" data-bb="nutr" style="--r:-1.4deg">${pin('#E64B4B')}${h('Covered')}<span class="wbring">${WRING(any?w.sc:0,30)}<b class="num">${any?w.sc+' %':''}</b></span><span class="wbs">${any?'Lately, mixed. '+WXSAY[wWeather()]:'Log a meal to see it'}</span></button>
   <div class="wbn" style="--r:1.2deg">${pin('#F6A33C')}${h('Low')}${(()=>{const ws=wWish();return ws?`<p class="wbwish${ws.done?' done':''}">${ws.done?'Focus covered: ':'Today\'s focus: '}${nlow(ws.n)}${ws.done?'':' · '+ws.foods.map(id=>FM[id].n.split(',')[0].toLowerCase()).join(', ')+' grow golden'}</p>`:''})()}${iss.length?iss.map(x=>`<button class="wbrow" type="button" data-bb="gap" data-k="${x.k}"><span>${NUT[x.k].n}</span><b class="num">${Math.round(x.s.p)} %</b></button>`).join('')+`<button class="wblink" type="button" data-bb="imp">How to fix</button>`:`<span class="wbs">${any?'Nothing is low. Nice.':'Log a meal first'}</span>`}</div>
   <button class="wbn wide${N[0]}" type="button" data-bb="${N[1]}"${N[2]?` data-k="${N[2]}"`:''} style="--r:-.5deg">${pin('#6DBB63')}${h('Next')}<span class="wbnt">${esc(N[3])}</span><span class="wbs">${N[4]}</span></button>
@@ -6656,13 +6669,10 @@ function wBigBoard(){wBigClose(true);if(!S.garden)return;if(S.date===TODAY&&S.ga
    return o})()}
   <button class="wbn wide wbleg" type="button" data-bb="legend" style="--r:.4deg">${pin('#9AA7B0')}${h('Guide')}<span class="wbs">What the garden shows</span></button>
  </div></div>`;
- document.body.appendChild(el);
- el.querySelectorAll('[data-bb]').forEach(b=>b.onclick=e=>{e.stopPropagation();const a=b.dataset.bb,k=b.dataset.k;if(a==='water'){const sd=S.date;if(sd!==TODAY)setDate(TODAY);wAdd(250);save();if(sd!==TODAY)setDate(sd);toast('+ 250 ml');wBigBoard();return}wBigClose(true);if(a==='weight'){openWeight();return}
+ el.querySelectorAll('[data-bb]').forEach(b=>b.onclick=e=>{e.stopPropagation();const a=b.dataset.bb,k=b.dataset.k;if(a==='water'){const sd=S.date;if(sd!==TODAY)setDate(TODAY);wAdd(250);save();if(sd!==TODAY)setDate(sd);toast('+ 250 ml');render();return}if(!['nutr','ring','imp','hist','today'].includes(a))wBigClose(true);if(a==='weight'){openWeight();return}
   if(a==='nutr'||a==='ring'){S.nsub='over';go('nutr')}else if(a==='imp'){S.nsub='imp';go('nutr')}else if(a==='hist'){S.nsub='hist';go('nutr')}
   else if(a==='legend')gView('legend');else if(a==='gap')selectNut(k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(k));else if(a==='today')go('today');
   else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(k)&&gLand().sec[x]);if(bd){G.sb=bd;G.bmt=null;gView('bed')}else go('today')}});
- el.onclick=e=>{if(e.target===el)wBigClose()};$('wb-x').onclick=()=>wBigClose();
- const esc2=e=>{if(e.key==='Escape'){wBigClose();document.removeEventListener('keydown',esc2)}};document.addEventListener('keydown',esc2);
 }
 /* ---------- the garden shows your health ----------
    A bed thrives when you ate from it on most of the last 7 logged days (flowers, a butterfly), and turns dry and pale after
@@ -6854,19 +6864,20 @@ function render0(){
  if(GON()){gInit();gardenTick();gardenSync();gDaily();try{const g0=S.garden;wScrub();wNoBath();if(g0.bag&&Object.keys(g0.bag).some(k=>g0.bag[k]>0)){const c=gSellRest();if(c)setTimeout(()=>toast(`Your basket was sold: +${c} coins. Harvests now pay right away.`),900)}if(g0.bv3!==1){g0.bv3=1;KI=null;gResort();gRefill()}if((g0.wv||0)<3){delete g0.cam;g0.wv=3;if(G)G.cam=null}wTodMig(g0);wKitchenMove(gLand());wLandOpen()}catch(e){}try{wUnlocks()}catch(e){}if(S.garden.unl&&S.view==='garden'&&!document.querySelector('dialog[open]')){const u=S.garden.unl;delete S.garden.unl;save();setTimeout(()=>{if(S.view==='garden'){WHOLDT=Date.now()+20000;if(u[2]&&G&&G.cam){const [x,y]=isoP(u[2][0],u[2][1]),W=$('gd-world'),V=$('gd-scene');if(W&&V){const w=W.getBoundingClientRect(),v=V.getBoundingClientRect();wGlide(v.width/2-(w.left-v.left+x*G.cam.s),v.height*.42-(w.top-v.top+y*G.cam.s))}}setTimeout(()=>wAsk(u[0],u[1],[['Nice',()=>{WHOLDT=0}]],true),u[2]?700:0)}else toast(u[0])},1400)}const wn=S.garden.wkNote;if(wn&&!wn.shown){wn.shown=1;save();setTimeout(()=>wReport(wn),1600)}}
  const fid=document.activeElement&&document.activeElement.id;
  if(S.view==='ideas'){S.view='nutr';S.nsub='imp'}
- if(!['today','nutr','scan','lib','garden','profile'].includes(S.view))S.view='garden';
+ if(!['board','today','nutr','scan','lib','garden','profile'].includes(S.view))S.view='garden';
  if(v0!=='scan'&&SCAN.tab){stopCamera();SCAN.tab=false;ST.drawn=''}
  if(!['over','imp','hist'].includes(S.nsub))S.nsub='over';if(WRV!==S.view){if(WRV!==null)S.range=0;WRV=S.view}if(S.lib==='meals')S.lib='dishes';if(S.lib==='recipes'){S.lib='dishes';if(S.rcp==='bld')S.libt='bld'}if(['learn','guide','kitchen'].includes(S.lib))S.lib='tips';if(!['dishes','foods','pantry','tips'].includes(S.lib))S.lib='dishes';if(S.view==='scan'&&S.shopSeg==='pantry'){S.view='lib';S.lib='pantry';S.shopSeg='scan'}
  save();
  const T=targets(),D=dayV(),v=S.view;
- ['today','nutr','scan','lib','garden','profile'].forEach(x=>{$('v-'+x).hidden=x!==v&&x!=='garden'});
+ ['board','today','nutr','scan','lib','garden','profile'].forEach(x=>{$('v-'+x).hidden=x!==v&&x!=='garden'});if(v!=='board')$('v-board').innerHTML='';
  document.querySelectorAll('.tabbar [data-v]').forEach(b=>b.setAttribute('aria-current',b.dataset.v===v||(b.dataset.v==='nutr'&&v==='lib')));
  {const gt=document.querySelector('.tabbar [data-v="garden"]');if(gt){let bd=gt.querySelector('.tbadge');const n=GON()&&S.garden?S.garden.tray.length:0;if(n){if(!bd){bd=document.createElement('span');bd.className='tbadge num';gt.appendChild(bd)}bd.textContent=n}else if(bd)bd.remove()}}
  setTimeout(gSeedFly,0);
  document.querySelectorAll('[data-vsw]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.vsw===v);b.onclick=()=>go(b.dataset.vsw)});
  if(v!=='garden'&&$('gsheet').open)$('gsheet').close();
  if(v==='garden'||!G)gardenView();
- if(v==='today')renderToday(T,D);
+ if(v==='board')renderBoard();
+ else if(v==='today')renderToday(T,D);
  else if(v==='nutr'){document.querySelectorAll('#nsub-seg [data-ns]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ns===S.nsub));$('n-over').hidden=S.nsub!=='over';$('n-imp').hidden=S.nsub!=='imp';$('n-hist').hidden=S.nsub!=='hist';$('range-seg').closest('#n-over');
   if(S.nsub==='over')renderNutrients(T,D);else if(S.nsub==='hist')renderHistory(T);else{renderImprove();renderSwaps();renderTips(T,D)}}
  else if(v==='lib')renderLib(T);
