@@ -1,5 +1,5 @@
 // Bump VERSION after every change so phones pick up the new files.
-const VERSION = 'vgarden-v151';
+const VERSION = 'vgarden-v152';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/badge-96.png', 'vendor/zxing.min.js'];
 
 self.addEventListener('install', e => {
@@ -45,7 +45,8 @@ function fill(t, c) {
 async function ring() {
   let m = null, rec = {};
   try { m = await idb('readonly', s => s.get('m')); rec = (await idb('readonly', s => s.get('r'))) || {}; } catch (_) {}
-  const now = new Date(), h = now.getHours(), slot = h < 11 ? 'b' : h < 16 ? 'l' : h < 20 ? 'd' : 'e', today = ymd(now);
+  // the garden's day runs until 3 at night, like the app
+  const now = new Date(), h = now.getHours(), hd = h < 3 ? h + 24 : h, slot = hd < 11 ? 'b' : hd < 16 ? 'l' : hd < 20 ? 'd' : 'e', today = ymd(new Date(now.getTime() - 3 * 3600e3));
   // a weekly or every few days supplement that is due today: said once that day, on the first reminder
   const sd = ((m && m.sup) || []).filter(x => x && x.n && x.due && x.due <= today).map(x => x.n);
   if (sd.length && rec.sup !== today) {

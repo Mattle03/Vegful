@@ -2344,7 +2344,10 @@ function itemR(it){const v=itemV(it),f=FM[it[0]];if(!f)return v;const i=K.indexO
 const dkey=d=>{const z=n=>String(n).padStart(2,'0');return d.getFullYear()+'-'+z(d.getMonth()+1)+'-'+z(d.getDate())};
 const kdate=k=>{const [y,m,d]=k.split('-').map(Number);return new Date(y,m-1,d)};
 const shift=(k,n)=>{const d=kdate(k);d.setDate(d.getDate()+n);return dkey(d)};
-let TODAY=dkey(new Date());
+/* the garden's day runs until 3 at night, so a late dinner or ending the day after midnight still belongs to that day.
+   dayHr() is the hour within that day: 1 at night counts as 25. Classic Vegful still turns at midnight; the stored data is the same. */
+const DAYH=3,dnow=()=>new Date(Date.now()-DAYH*3600e3),dayHr=()=>{const n=new Date(),h=n.getHours()+n.getMinutes()/60;return h<DAYH?h+24:h};
+let TODAY=dkey(dnow());
 const emptyPlan=()=>({b:{t:'',it:[]},l:{t:'',it:[]},d:{t:'',it:[]},s:{t:'',it:[]}});
 if(!S.days||typeof S.days!=='object'){S.days={};S.days[TODAY]=raw0?(S.plan||emptyPlan()):emptyPlan()}
 Object.values(S.days).forEach(p=>{['b','l','d','s'].forEach(k=>{if(!p[k])p[k]={t:'',it:[]}});mealKeys(p).forEach(k=>{p[k].it=(p[k].it||[]).filter(x=>FM[x[0]])})});
@@ -5116,7 +5119,7 @@ function bindCu(v){v.querySelectorAll('[data-cu]').forEach(b=>b.onclick=()=>{con
  if($('cu-add'))$('cu-add').onclick=()=>{const cu=catchUp();if(!cu)return;const p=S.days[cu.y]||(S.days[cu.y]=emptyPlan());let n=0;
   cu.L.forEach(x=>{if(CU.off[x.ty])return;const o={t:x.u.t,it:cp(x.u.it)};if(x.u.did)o.did=x.u.did;p[x.ty]=o;n++});if(!n)return;save();toast(`Added ${n} meal${n>1?'s':''} to yesterday`);render()}}
 /* where today is heading: empty main meals filled with the planned or the usual meal; changes nothing stored */
-function dayPreview(D){const h=new Date().getHours(),add=[];
+function dayPreview(D){const h=dayHr(),add=[];
  SLOTS.forEach(s=>{const k=s.id,sl=S.plan[k],ty=s.ty;if(!sl||sl.skip||!['b','l','d'].includes(ty))return;if((ty==='b'&&h>=14)||(ty==='l'&&h>=18))return;
   let it=null,kind='';if(sl.pl&&sl.it.length){it=sl.it;kind='planned'}else if(!sl.it.length){const u=usualMeal(ty);if(u){it=u.it;kind='usual'}}
   if(it)add.push({k,ty,it,kind})});
@@ -5218,7 +5221,7 @@ function panList(){const el=$('pn-list');if(!el)return;const have=panAll(),q=fol
  if($('pn-cook'))$('pn-cook').onclick=()=>{const k=panSlot();openAdd(k);AD.more='pantry';renderAdd()};
  if($('pn-clr'))$('pn-clr').onclick=()=>{const h2=panAll();Object.keys(h2).forEach(id=>{if(h2[id]<=0)delete S.pantry[id]});re()}}
 /* the next meal of today that is still empty */
-function panSlot(){const h=new Date().getHours(),want=h<10?'b':h<15?'l':h<21?'d':'s';const s=SLOTS.find(x=>x.id===want&&!S.plan[x.id].it.length)||SLOTS.find(x=>!S.plan[x.id].it.length)||SLOTS.find(x=>x.id==='d')||SLOTS[0];return s.id}
+function panSlot(){const h=dayHr(),want=h<10?'b':h<15?'l':h<21?'d':'s';const s=SLOTS.find(x=>x.id===want&&!S.plan[x.id].it.length)||SLOTS.find(x=>!S.plan[x.id].it.length)||SLOTS.find(x=>x.id==='d')||SLOTS[0];return s.id}
 /* dishes you can make from what is at home; staples like salt and spices count as at home */
 function panDishes(t){const have=panAll();return allDishes(t).map(d=>dishFit(d)).filter(Boolean).map(d=>{const need=d.it.filter(([id])=>FM[id]&&!AT_HOME(id)),ok=need.filter(([id,g])=>(have[id]||0)>=g*.8);return {d,n:need.length,ok:ok.length,miss:need.filter(x=>!ok.includes(x)).map(([id])=>FM[id].n.split(',')[0].toLowerCase())}})
  .filter(x=>x.n&&x.ok/x.n>=.6).sort((a,b)=>(b.ok/b.n)-(a.ok/a.n)||b.ok-a.ok)}
@@ -6159,8 +6162,8 @@ $('supd-close').onclick=closeSupD;
 /* new day: while you use the app nothing moves; the day you are on just becomes "Yesterday".
    When you come back to the app later and were on the old today, it opens the new today. */
 const busy=()=>!!document.querySelector('dialog[open]')||!!(document.activeElement&&document.activeElement.matches&&document.activeElement.matches('input,textarea,select'));
-function dayTick(){const t=dkey(new Date());if(t===TODAY)return;if(busy())return;TODAY=t;render()}
-function dayReturn(){const t=dkey(new Date());if(t===TODAY)return;const was=S.date===TODAY;TODAY=t;if(was&&!busy())setDate(TODAY);render()}
+function dayTick(){const t=dkey(dnow());if(t===TODAY)return;if(busy())return;TODAY=t;render()}
+function dayReturn(){const t=dkey(dnow());if(t===TODAY)return;const was=S.date===TODAY;TODAY=t;if(was&&!busy())setDate(TODAY);render()}
 document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='visible')dayReturn()});
 addEventListener('pageshow',e=>{if(e.persisted)dayReturn()});setInterval(dayTick,60000);
 applyTheme();
@@ -6175,8 +6178,8 @@ function wScore(){const r0=S.range;S.range=0;try{const T=targets(),D=dayV(),MX=m
  const TP=paceT(T,0);return {T:TP,DS,sc:dayScore(DS,TP),empty:!logged(S.plan)}}finally{S.range=r0}}
 const wOpen=k=>{const sl=S.plan&&S.plan[k];return !!sl&&!sl.it.length&&!sl.skip&&!mealKeys(S.plan).some(q=>q!==k&&typeOf(S.plan,q)===typeOf(S.plan,k)&&S.plan[q].it.length)};
 /* the one next step: the first main meal whose time has come and that is still open; only today */
-function wNext(){if(S.date!==TODAY||!S.plan||wClosed())return null;const h=new Date().getHours();for(const t of 'bld'){if(h<WMEAL[t])break;const k=slotOfType(t);if(wOpen(k))return k}return null}
-function wSlotNow(){const h=new Date().getHours(),t=h<11?'b':h<16?'l':h<21?'d':'s';return slotOfType(t)}
+function wNext(){if(S.date!==TODAY||!S.plan||wClosed())return null;const h=dayHr();for(const t of 'bld'){if(h<WMEAL[t])break;const k=slotOfType(t);if(wOpen(k))return k}return null}
+function wSlotNow(){const h=dayHr(),t=h<11?'b':h<16?'l':h<21?'d':'s';return slotOfType(t)}
 function wEnsure(k){if(!S.plan[k]){S.plan[k]={t:'',it:[]};rebuildSlots()}return k}
 const wMealN=k=>{const t=typeOf(S.plan,k);return t==='s'?'Extras':TY[t].n};
 let WOUT=0;function wSheet(v){if(v==='garden'||!WSHEETS.includes(v)){const cur=S.view,sec=$('v-'+cur);if(WSHEETS.includes(cur)&&sec&&!GSTILL()){if(WOUT)return;WOUT=1;[sec,$('wsheet-h'),$('wscrim')].forEach(e=>e&&e.classList.add('wout'));
@@ -6367,7 +6370,7 @@ function wShedPanel(el){const g=S.garden,ev=g.ever.slice(),nw=new Set(ev.filter(
  el.innerHTML=`<div class="wbed wbarn">${top}${wayH}${GBEDS.filter(b=>by[b]).map(b=>`<div class="wcolg"><h3>${GSECN[b]} <span class="num">${by[b].length}</span></h3><div class="wcol">${by[b].sort((x,y)=>ord(x)-ord(y)||az(x,y)).map(card).join('')}</div></div>`).join('')}</div>`}
 /* closing the day: one tap says nothing else was eaten; open main meals count as none, the garden settles into evening */
 const wClosed=d=>{const g=S.garden;return !!(g&&g.done&&g.done[d||TODAY])};
-function wCanClose(){if(S.date!==TODAY||wClosed()||!logged(S.plan))return false;const h=new Date().getHours();if(h<19)return false;return !wNext()||h>=21}
+function wCanClose(){if(S.date!==TODAY||wClosed()||!logged(S.plan))return false;const h=dayHr();if(h<19)return false;return !wNext()||h>=21}
 function wCloseDay(){const g=S.garden;if(!g||S.date!==TODAY)return;g.done=g.done&&typeof g.done==='object'?g.done:{};const set=[];
  [...'bld'].forEach(t=>{const k=slotOfType(t);if(wOpen(k)){S.plan[k].skip=1;set.push(k)}});g.done[TODAY]=1;Object.keys(g.done).forEach(d=>{if(dayDiff(d,TODAY)>14)delete g.done[d]});
  save();render();wSay(wPick('close'),'asleep');wUndo('Day closed',()=>{set.forEach(k=>{if(S.plan[k])delete S.plan[k].skip});delete g.done[TODAY];save();render()})}
@@ -6593,7 +6596,7 @@ function wAsk(t,detail,acts,stay){const el=$('wtort');if(!el||el.hidden)return;c
 /* the day's check-ins, asked by the tortoise: a weekly or every few days supplement that is due, and from 18:00 (or once dinner is in) how active today was.
    Each is asked by itself once a day; until answered the tortoise keeps its mark and asks when tapped. */
 function wSupDue(){if(!S.sups||!S.sups.length)return [];const T=targets();return S.sups.filter(s=>s.freq!=='d'&&s.freq!=='o').filter(s=>{const st=sStatus(s,TODAY,T);return st&&st.due})}
-function wActOpen(){const p=S.days[TODAY],g=S.garden;if(!p||!g||!logged(p)||p.act||g.actok===TODAY)return false;return new Date().getHours()>=18||!!(p.d&&p.d.it&&p.d.it.length)}
+function wActOpen(){const p=S.days[TODAY],g=S.garden;if(!p||!g||!logged(p)||p.act||g.actok===TODAY)return false;return dayHr()>=18||!!(p.d&&p.d.it&&p.d.it.length)}
 /* a backup offer about once a month, after a week of logging: counted from the last backup, the last offer or the first logged day.
    It is marked as asked the moment it shows, so it never stays as a mark; Don't ask again turns it off for good. */
 function wBakDue(){const g=S.garden;if(!g||(g.bak&&g.bak.off))return false;const ds=Object.keys(S.days||{}).filter(d=>d<=TODAY&&logged(S.days[d])).sort();if(ds.length<7)return false;
@@ -6730,7 +6733,7 @@ var WBF={st:[],els:[],spots:[],raf:0,last:0,k:1};
    The start is kept in S.garden.bwake, never in the shared day logs:
    ahead of the day it is full (3 birds), on pace about half (2), a little behind low (1), further behind empty (none). Without tracking, birds just visit. */
 function wBathStart(h){const g=S.garden;if(!g)return 10;if(h>=6&&!(g.bwake&&g.bwake.d===TODAY)){g.bwake={d:TODAY,h:Math.round(h*100)/100};save()}return g.bwake&&g.bwake.d===TODAY?Math.min(10,g.bwake.h):10}
-function wBath(){if(!WON())return {on:false,fill:.75,birds:2};let drunk=0;try{drunk=wTotal(S.days[TODAY]||{})}catch(e){}const T=wTarget(),n=new Date(),h=n.getHours()+n.getMinutes()/60,st=wBathStart(h),exp=T*Math.min(1,Math.max(0,(h-st)/(22-st))),C=T*.5,fill=Math.max(0,Math.min(1,(drunk-exp+C*.5)/C));
+function wBath(){if(!WON())return {on:false,fill:.75,birds:2};let drunk=0;try{drunk=wTotal(S.days[TODAY]||{})}catch(e){}const T=wTarget(),h=dayHr(),st=wBathStart(h),exp=T*Math.min(1,Math.max(0,(h-st)/(22-st))),C=T*.5,fill=Math.max(0,Math.min(1,(drunk-exp+C*.5)/C));
  return {on:true,fill,birds:fill>=.8?3:fill>=.4?2:fill>=.15?1:0,drunk,T,exp}}
 const WBIRD='<svg viewBox="0 0 24 20" aria-hidden="true"><path d="M4 12L0 8.6 1.2 14.4z" fill="var(--bd2)"/><ellipse cx="10" cy="12.2" rx="7" ry="5.4" fill="var(--bd1)"/><ellipse cx="11.4" cy="14" rx="4.4" ry="3.2" fill="var(--bd3)"/><path class="bw" d="M5.6 10.4Q10 7 13.4 11.2Q9.2 14.4 5.6 10.4z" fill="var(--bd2)"/><g class="bh"><circle cx="16" cy="8" r="4" fill="var(--bd1)"/><circle cx="17.4" cy="7.2" r=".95" fill="#1E1A16"/><circle cx="17.7" cy="6.9" r=".3" fill="#fff"/><path d="M19.7 8.1L23.2 9 19.7 9.9z" fill="#E9A23A"/></g><path d="M9 17v2.6M12 17v2.6" stroke="#8A5C30" stroke-width=".9" stroke-linecap="round"/></svg>';
 var WBATH={birds:-1,key:''};
