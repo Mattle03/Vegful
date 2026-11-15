@@ -917,7 +917,7 @@ button.schest>svg:first-child{animation:gchb 1.6s ease-in-out infinite;filter:dr
 @keyframes gopen{0%{transform:scale(1)}40%{transform:scale(1.25) rotate(-6deg)}100%{transform:scale(1.1);opacity:.85}}
 .schest .gprice svg{width:16px;height:16px}
 .bg-terrace{--g-sky:#F7E6D0;--g-sky2:#F4DCC2;--g-grass:#E6C3A0;--g-grass2:#D9AE88;--g-hill:#D7A47A}
-.bg-terrace{--w-sky1:#F2DCC0;--w-sky2:#F7EBDD}.bg-dusk{--w-sky1:#4E447E;--w-sky2:#E8A07E;--w-cloud:#E3BCD2}.bg-roof{--w-sky1:#CFE0EC;--w-sky2:#E6EEF3}
+.bg-terrace{--w-sky1:#F2DCC0;--w-sky2:#F7EBDD}.bg-desert{--g-sky:#F6E7C8;--g-sky2:#F3DDB0;--g-grass:#EAD6A8;--g-grass2:#DFC690;--g-hill:#D9B77A;--w-sky1:#A9D6EE;--w-sky2:#F2E4C4}.bg-dusk{--w-sky1:#4E447E;--w-sky2:#E8A07E;--w-cloud:#E3BCD2}.bg-roof{--w-sky1:#CFE0EC;--w-sky2:#E6EEF3}
 .bgprev{overflow:hidden}.bgprev svg{width:100%;height:100%;display:block}
 .bg-dusk{--g-sky:#6B5C9E;--g-sky2:#E39A7B;--g-grass:#8DB67E;--g-grass2:#6E9C66;--g-hill:#5E7F63;--g-sun:#FFB36B;--g-cloud:#C9A3C8}
 .bg-roof{--g-sky:#CFE4F5;--g-sky2:#E3EEF5;--g-grass:#C4C9CE;--g-grass2:#B3B8BE;--g-hill:#9AA7B4}
@@ -1289,6 +1289,11 @@ html.still #wundo{transition:none}
 @keyframes wseedin{0%{transform:scale(.6)}60%{transform:scale(1.12)}100%{transform:scale(1)}}
 html.still .gplot.wseedin{animation:none}
 .gscene.wdusk::after{content:"";position:absolute;inset:0;z-index:40;pointer-events:none;background:rgba(30,36,84,.26);mix-blend-mode:multiply}
+.tdusk{--w-sky1:#4E447E;--w-sky2:#E8A07E;--w-cloud:#E3BCD2;--g-sun:#FFB36B}
+.tdusk::after{content:"";position:absolute;inset:0;z-index:40;pointer-events:none;background:linear-gradient(180deg,rgba(70,50,140,.2),rgba(255,140,70,.14) 65%,rgba(70,50,140,.16))}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .tdusk{--w-sky1:#1A1530;--w-sky2:#5A3B4A;--w-cloud:#4A3E5C}:root:not([data-theme="light"]) .bg-desert{--g-sky:#2E2A22;--g-sky2:#3A3226;--g-grass:#5A4C34;--g-grass2:#4C402C;--g-hill:#54482F;--w-sky1:#16233A;--w-sky2:#3A3226}}
+:root[data-theme="dark"] .tdusk{--w-sky1:#1A1530;--w-sky2:#5A3B4A;--w-cloud:#4A3E5C}:root[data-theme="dark"] .bg-desert{--g-sky:#2E2A22;--g-sky2:#3A3226;--g-grass:#5A4C34;--g-grass2:#4C402C;--g-hill:#54482F;--w-sky1:#16233A;--w-sky2:#3A3226}
+.gscene.wdusk.bg-desert{--g-grass:#4A3F2C;--g-grass2:#3E3424}
 .gscene.wdusk{--g-grass:#2A4430;--g-grass2:#23392A;--w-cloud:#4A5266}.gscene.wdusk.bg-dusk{--w-cloud:#4A5266}.gscene.wdusk.bg-terrace{--g-grass:#4A3A2E;--g-grass2:#3D3027}.gscene.wdusk.bg-dusk{--g-grass:#2E4430;--g-grass2:#253A28}.gscene.wdusk.bg-roof{--g-grass:#3A4048;--g-grass2:#30363D}
 .wcolg h3{font-size:15px;font-weight:800;margin:6px 0 8px}
 .wcol{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
@@ -1525,11 +1530,11 @@ html.wediting #wdock{display:none}
 .wwx i{position:absolute;display:none;width:90vw;height:46vw;border-radius:50%;background:radial-gradient(closest-side,rgba(40,50,70,.22),rgba(40,50,70,0));animation:wcloud 70s linear infinite}
 .wwx i:nth-child(1){top:8%;left:-60%}.wwx i:nth-child(2){top:44%;left:-90%;animation-delay:-25s;animation-duration:90s}.wwx i:nth-child(3){top:70%;left:-70%;animation-delay:-50s}
 @keyframes wcloud{from{transform:translateX(0)}to{transform:translateX(260vw)}}
-.wx-sun .wwx{background:radial-gradient(130% 75% at 8% -12%,rgba(255,224,140,.42),rgba(255,224,140,0) 62%)}
-.wx-soft .wwx{background:linear-gradient(rgba(140,150,170,.34),rgba(140,150,170,.2))}
+.wx-sun .wwx{background:none}
+.wx-soft .wwx{background:none}
 .wx-soft .wwx i{display:block}
-@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wx-sun .wwx{background:radial-gradient(130% 75% at 8% -12%,rgba(255,214,140,.16),rgba(255,214,140,0) 62%)}:root:not([data-theme="light"]) .wx-soft .wwx{background:rgba(20,26,40,.22)}}
-:root[data-theme="dark"] .wx-sun .wwx{background:radial-gradient(130% 75% at 8% -12%,rgba(255,214,140,.16),rgba(255,214,140,0) 62%)}:root[data-theme="dark"] .wx-soft .wwx{background:rgba(20,26,40,.22)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]) .wx-sun .wwx{background:none}:root:not([data-theme="light"]) .wx-soft .wwx{background:none}}
+:root[data-theme="dark"] .wx-sun .wwx{background:none}:root[data-theme="dark"] .wx-soft .wwx{background:none}
 .wbedh{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border-radius:14px;background:var(--surface2);margin:0 0 10px}
 .wbedh .wbhdot{flex:none;width:14px;height:14px;border-radius:50%;margin-top:3px;background:#B8B08F}
 .wbedh.lush .wbhdot{background:#6DBB63;box-shadow:0 0 0 4px rgba(109,187,99,.25)}
@@ -2264,7 +2269,7 @@ if(!S.days||typeof S.days!=='object'){S.days={};S.days[TODAY]=raw0?(S.plan||empt
 Object.values(S.days).forEach(p=>{['b','l','d','s'].forEach(k=>{if(!p[k])p[k]={t:'',it:[]}});mealKeys(p).forEach(k=>{p[k].it=(p[k].it||[]).filter(x=>FM[x[0]])})});
 if(S.lastOpen!==TODAY){S.date=TODAY;S.lastOpen=TODAY}
 if(!S.date)S.date=TODAY;
-if(![0,1,7,30].includes(S.range))S.range=0;
+S.range=0;/* every visit starts mixed; a range picked on Nutrients lasts while you look */
 if(!S.r7){S.range=7;S.r7=1}
 if(!S.rmix){S.range=0;S.rmix=1}
 /* copy only the meals of a day; water, activity and other per day data of the target day stay */
@@ -4218,19 +4223,24 @@ const wLockT=(c,r)=>(r>=23&&!wLandIs('river'))||(c>=18&&!wLandIs('meadow'));
 function wLandOpen(){const g=S.garden;if(!g)return null;g.land2=g.land2||{};const n=(g.ever||[]).length;let out=null;WLAND.forEach(([k,t,need,d,gift,at])=>{if(!g.land2[k]&&n>=need){g.land2[k]=1;if(gift&&!g.decor.own.includes(gift)){g.decor.own.push(gift);const L=gLand(),oc=gOcc();for(const [c,r] of gNear(at[0],at[1])){const tt=c+','+r;if(gInMap(tt)&&!oc[tt]){L.dec[tt]=gift;break}}}out=[t+' opened',d,at]}});if(out)g.unl=out;return out}
 /* the land behind the farm as an isometric height map: it starts flat at the edge and rises to hills and mountains */
 const WPEAKS=[[-18,-15,300,3.6],[-12,-19,230,3.2],[-21,-21,340,3.8],[-4,-18,150,2.8],[-19,-3,160,3],[6,-17,110,2.6],[-17,8,120,2.8]];
-function wHeight(c,r){const d=Math.max(ISO.c0-.5-c,ISO.r0-.5-r,0);if(d<=0)return 0;let h=Math.pow(d,1.3)*4.2+Math.sin(c*.9+r*.35)*5*Math.min(1,d/2)+Math.cos(r*.7-c*.3)*4*Math.min(1,d/2);
- if(wBgId()!=='dusk')WPEAKS.forEach(([pc,pr,ph,ps])=>{const q=Math.hypot(c-pc,r-pr)/ps;h=Math.max(h,ph*Math.exp(-q*q)*Math.min(1,d/1.5))});return Math.max(0,h)}
+function wHeight(c,r){const d=Math.max(ISO.c0-.5-c,ISO.r0-.5-r,0);if(d<=0)return 0;if(wBgId()==='desert')return Math.max(0,Math.pow(d,1.1)*2.6+(Math.sin(c*.55+r*.22)*16+Math.sin(r*.9-c*.15)*7)*Math.min(1,d/2));let h=Math.pow(d,1.3)*4.2+Math.sin(c*.9+r*.35)*5*Math.min(1,d/2)+Math.cos(r*.7-c*.3)*4*Math.min(1,d/2);
+ WPEAKS.forEach(([pc,pr,ph,ps])=>{const q=Math.hypot(c-pc,r-pr)/ps;h=Math.max(h,ph*Math.exp(-q*q)*Math.min(1,d/1.5))});return Math.max(0,h)}
 /* each backdrop is its own place around the farm, not only other colours:
    Meadow: green hills, snowy peaks and round trees. Terrace: hills cut into flat steps with stone walls, olive green fields and cypress trees.
    Dusk: the evening, a low sun behind the mountains, the first stars and alpenglow on the snow. Rooftop: the farm sits among city blocks with windows. */
 const wBgId=()=>{const g=S.garden;return (g&&g.decor&&g.decor.bg)||'meadow'};
-const wNight=()=>S.date===TODAY&&wClosed();
+/* the time of day is the player's choice (Day, Night, Dusk); once today is ended it is night */
+const wTod=()=>{const g=S.garden,t=(g&&g.decor&&g.decor.tod)||'tday';return S.date===TODAY&&wClosed()?'tnight':t};
+const wNight=()=>wTod()==='tnight';
 const wDark=()=>{const d=document.documentElement.dataset.theme;return d==='dark'||(d!=='light'&&matchMedia('(prefers-color-scheme: dark)').matches)};
 const WPAL={meadow:[['#F2F5F7','#AEB9C2'],['#A3ABB0','#5E6870'],['#7FAE6E','#2F4A34'],['#9CC88A','#33503A']],
  dusk:[['#F6D3DC','#8E7C9C'],['#9A86A8','#4A4258'],['#6E8F6A','#24382A'],['#8FB081','#2B4230']],
+ desert:[['#F1DDB0','#6A5A40'],['#E6CB92','#5E5038'],['#DDBE80','#544731'],['#E9D3A1','#4C412E']],
  terrace:[['#E2C89A','#6B5A40'],['#C9A774','#5A4A35'],['#A9B46C','#3F4A2E'],['#C4C682','#4A4F33']]};
 /* a tree for the hills and the open land, in the kind each place has */
-function wTree(bg,x,y,s,dark){if(bg==='terrace')return `<ellipse cx="${(x+8*s).toFixed(1)}" cy="${(y+3).toFixed(1)}" rx="${(12*s).toFixed(1)}" ry="${(5*s).toFixed(1)}" fill="rgba(20,30,10,.18)"/><path d="M${x.toFixed(1)} ${(y+2).toFixed(1)}v${(-8*s).toFixed(1)}" stroke="var(--g-trunk)" stroke-width="${(3.4*s).toFixed(1)}" stroke-linecap="round"/><ellipse cx="${x.toFixed(1)}" cy="${(y-24*s).toFixed(1)}" rx="${(8*s).toFixed(1)}" ry="${(22*s).toFixed(1)}" fill="${dark?'#244A2A':'#3E6B3A'}"/><ellipse cx="${(x-3*s).toFixed(1)}" cy="${(y-28*s).toFixed(1)}" rx="${(3*s).toFixed(1)}" ry="${(13*s).toFixed(1)}" fill="var(--g-leaf2)" opacity=".32"/>`;
+function wTree(bg,x,y,s,dark){if(bg==='desert'){const tx=x+4*s,ty=y-34*s,lf=dark?'#2A5A2E':'#4E8F45',fr=[[-20,5],[-14,-6],[0,-11],[14,-6],[20,5]].map(([dx,dy])=>`M${tx.toFixed(1)} ${ty.toFixed(1)}q${(dx*.5*s).toFixed(1)} ${((dy-8)*s).toFixed(1)} ${(dx*s).toFixed(1)} ${(dy*s).toFixed(1)}`).join('');
+  return `<ellipse cx="${(x+8*s).toFixed(1)}" cy="${(y+3).toFixed(1)}" rx="${(14*s).toFixed(1)}" ry="${(5*s).toFixed(1)}" fill="rgba(60,40,10,.18)"/><path d="M${x.toFixed(1)} ${(y+2).toFixed(1)}q${(-3*s).toFixed(1)} ${(-16*s).toFixed(1)} ${(4*s).toFixed(1)} ${(-36*s).toFixed(1)}" stroke="#8A6A40" stroke-width="${(4*s).toFixed(1)}" fill="none" stroke-linecap="round"/><path d="${fr}" stroke="${lf}" stroke-width="${(4.5*s).toFixed(1)}" fill="none" stroke-linecap="round"/>`}
+ if(bg==='terrace')return `<ellipse cx="${(x+8*s).toFixed(1)}" cy="${(y+3).toFixed(1)}" rx="${(12*s).toFixed(1)}" ry="${(5*s).toFixed(1)}" fill="rgba(20,30,10,.18)"/><path d="M${x.toFixed(1)} ${(y+2).toFixed(1)}v${(-8*s).toFixed(1)}" stroke="var(--g-trunk)" stroke-width="${(3.4*s).toFixed(1)}" stroke-linecap="round"/><ellipse cx="${x.toFixed(1)}" cy="${(y-24*s).toFixed(1)}" rx="${(8*s).toFixed(1)}" ry="${(22*s).toFixed(1)}" fill="${dark?'#244A2A':'#3E6B3A'}"/><ellipse cx="${(x-3*s).toFixed(1)}" cy="${(y-28*s).toFixed(1)}" rx="${(3*s).toFixed(1)}" ry="${(13*s).toFixed(1)}" fill="var(--g-leaf2)" opacity=".32"/>`;
  return `<ellipse cx="${(x+10*s).toFixed(1)}" cy="${(y+4).toFixed(1)}" rx="${(22*s).toFixed(1)}" ry="${(8*s).toFixed(1)}" fill="rgba(20,30,10,.18)"/><path d="M${x.toFixed(1)} ${(y+2).toFixed(1)}v${(-18*s).toFixed(1)}" stroke="var(--g-trunk)" stroke-width="${(6*s).toFixed(1)}" stroke-linecap="round"/><circle cx="${x.toFixed(1)}" cy="${(y-30*s).toFixed(1)}" r="${(22*s).toFixed(1)}" fill="url(#gfrv)"/><circle cx="${(x-8*s).toFixed(1)}" cy="${(y-37*s).toFixed(1)}" r="${(9*s).toFixed(1)}" fill="var(--g-leaf2)" opacity=".35"/>`}
 /* a city block: an isometric box lit from the left, rows of windows, sometimes a green roof */
 const WBOX=[[['#E4E8EC','#BCC4CC','#A3ADB7'],['#4A5560','#36404A','#2C343C']],[['#E7C9B0','#C9A184','#B08A70'],['#5A4A40','#43372F','#372C26']],[['#D6E2EA','#AFC0CC','#97A8B5'],['#3E5060','#2E3C48','#26323C']],[['#EFE6D6','#CFC2AB','#B9AC95'],['#555048','#3F3B35','#34302B']]];
@@ -4248,16 +4258,23 @@ function wCity(dark){const c0=ISO.c0-13,r0=ISO.r0-13;let h=`<polygon points="${P
 function wTerrain(){const bg=wBgId(),dark=wDark()||wNight();if(bg==='roof')return wCity(dark);const pal=WPAL[bg]||WPAL.meadow,ter=bg==='terrace';
  const c0=ISO.c0-13,r0=ISO.r0-13,H={};const hv=(c,r)=>{const k=c+','+r;return k in H?H[k]:(H[k]=wHeight(c,r))},zq=(c,r)=>c>=ISO.c0&&r>=ISO.r0?0:Math.round(hv(c,r)*.62/22)*22;const T=[];
  for(let r=r0;r<ISO.r1;r++)for(let c=c0;c<ISO.c1;c++){if(c>=ISO.c0&&r>=ISO.r0)continue;const a=c-.5,b=r-.5;let z;if(ter){const Z=zq(c,r);z=[Z,Z,Z,Z]}else z=[hv(a,b),hv(a+1,b),hv(a+1,b+1),hv(a,b+1)];T.push({c,r,z})}
+ let PY=[];if(bg==='desert'){PY=[[-21,-20,6,300],[-14,-21,4,190],[-20,-13,3,130]];const inP=(c,r)=>PY.some(([a,b,n])=>c>=a&&c<a+n&&r>=b&&r<b+n);for(let i=T.length-1;i>=0;i--)if(inP(T[i].c,T[i].r))T.splice(i,1);PY.forEach(p=>T.push({c:p[0]+p[2]-1,r:p[1]+p[2]-1+.01,py:p}))}
  T.sort((x,y)=>(x.c+x.r)-(y.c+y.r)||x.c-y.c);let h='';const cl=(hex,k)=>{const n=parseInt(hex.slice(1),16),f=v=>Math.max(0,Math.min(255,Math.round(v*k)));return `rgb(${f(n>>16)},${f((n>>8)&255)},${f(n&255)})`};
  const wall=dark?'#5A4331':'#B07F55',wall2=dark?'#4A3728':'#97683F';
- T.forEach(({c,r,z})=>{const a=c-.5,b=r-.5,p=[[a,b],[a+1,b],[a+1,b+1],[a,b+1]].map(([x,y],i)=>{const [X,Y]=isoP(x,y);return [X,Y-z[i]]}),zm=(z[0]+z[1]+z[2]+z[3])/4;
+ T.forEach(({c,r,z,py})=>{if(py){h+=wPyramid(py,hv,dark);return}const a=c-.5,b=r-.5,p=[[a,b],[a+1,b],[a+1,b+1],[a,b+1]].map(([x,y],i)=>{const [X,Y]=isoP(x,y);return [X,Y-z[i]]}),zm=(z[0]+z[1]+z[2]+z[3])/4;
   const dc=(z[1]+z[2]-z[0]-z[3])/2,dr=(z[2]+z[3]-z[0]-z[1])/2,lit=ter?(Math.round(zm/22)%2?1:.95):Math.max(.74,Math.min(1.12,1+(-dc*.9+dr*1.1)/150));
-  const lv=ter?zm*.75:zm;let base=(lv>235?pal[0]:lv>150?pal[1]:lv>70?pal[2]:pal[3])[dark?1:0];if(bg==='dusk'&&zm>5)base=(c%2?['#A58BD0','#4E406E']:['#7E9E6A','#2E4430'])[dark?1:0];
+  const lv=ter?zm*.75:zm;let base=(lv>235?pal[0]:lv>150?pal[1]:lv>70?pal[2]:pal[3])[dark?1:0];
   if(ter&&zm>0){const dl=zm-zq(c,r+1),dd=zm-zq(c+1,r);if(dl>0)h+=`<polygon points="${PTS([p[3],p[2],[p[2][0],p[2][1]+dl],[p[3][0],p[3][1]+dl]])}" fill="${wall}"/>`;if(dd>0)h+=`<polygon points="${PTS([p[1],p[2],[p[2][0],p[2][1]+dd],[p[1][0],p[1][1]+dd]])}" fill="${wall2}"/>`}
   h+=`<polygon points="${PTS(p)}" fill="${cl(base,lit)}" stroke="${cl(base,lit)}" stroke-width=".8"/>`;
   if(ter&&zm>0&&zm<130&&(c+r)%2===0){const m=[isoP(a+.2,b+.5),isoP(a+.8,b+.5)];h+=`<path d="M${m[0][0]} ${(m[0][1]-zm).toFixed(1)}L${m[1][0]} ${(m[1][1]-zm).toFixed(1)}" stroke="${dark?'#2E3A22':'#7E8E4A'}" stroke-width="3" stroke-linecap="round" opacity=".55"/>`}
-  if(zm>12&&zm<(ter?110:80)&&gH(c,r)<(ter?70:bg==='dusk'?18:55)){const [X,Y]=isoP(c,r);h+=wTree(bg,X,Y-zm,ter?.8:.78,dark)}});
+  if(zm>12&&zm<(ter?110:80)&&gH(c,r)<(ter?70:bg==='desert'?14:55)){const [X,Y]=isoP(c,r);h+=wTree(bg,X,Y-zm,ter?.8:.78,dark)}});
  return h}
+/* a pyramid on the dunes: the left face lit, the right in shade, with stone courses */
+function wPyramid([c0,r0,n,Hh],hv,dark){const z0=Math.min(hv(c0-.5,r0+n-.5),hv(c0+n-.5,r0+n-.5),hv(c0+n-.5,r0-.5))-6,P=(x,y,z)=>{const [X,Y]=isoP(x,y);return [X,Y-z]},
+ B=P(c0+n-.5,r0-.5,z0),C=P(c0+n-.5,r0+n-.5,z0),D=P(c0-.5,r0+n-.5,z0),A=P(c0+n/2-.5,r0+n/2-.5,z0+Hh),L=(p,q,t)=>[p[0]+(q[0]-p[0])*t,p[1]+(q[1]-p[1])*t];
+ let h=`<polygon points="${PTS([D,C,A])}" fill="${dark?'#7A6644':'#E7C98C'}"/><polygon points="${PTS([C,B,A])}" fill="${dark?'#5E4E34':'#C79D62'}"/>`,ln='';
+ for(let k=1;k<8;k++){const t=k/8,p1=L(D,A,t),p2=L(C,A,t),p3=L(B,A,t);ln+=`M${p1[0].toFixed(1)} ${p1[1].toFixed(1)}L${p2[0].toFixed(1)} ${p2[1].toFixed(1)}L${p3[0].toFixed(1)} ${p3[1].toFixed(1)}`}
+ return h+`<path d="${ln}" stroke="rgba(110,70,30,.22)" stroke-width="2" fill="none"/>`}
 /* the night after the day is ended: a dark sky, stars and a moon, the same on every backdrop */
 function wNightSky(hy){let h=`<defs><linearGradient id="wnsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#0D1430"/><stop offset="1" stop-color="#2B315A"/></linearGradient></defs><rect x="0" y="0" width="${ISO.w}" height="${hy}" fill="url(#wnsky)"/>`;
  for(let i=0;i<80;i++){const k=gH(i*5+9,i*11+2),sx=(k%997)/997*ISO.w,sy=((gH(i+3,i*7)%1000)/1000)*hy*.6+12;h+=`<circle cx="${sx.toFixed(0)}" cy="${sy.toFixed(0)}" r="${k%3?2:3.2}" fill="#FFF6E0" opacity="${k%2?.9:.55}"/>`}
@@ -4271,8 +4288,8 @@ function wBackdrop(){const T=isoP(ISO.c0-.5,ISO.r0-.5),Lv=isoP(ISO.c0-.5,ISO.r1-
  const hills=(a,b,amp,ph,fill,lift)=>{const top=[],bot=[];for(let i=0;i<=24;i++){const t=i/24,[x,y]=lerp(a,b,t);top.push([x,y-lift-amp*(.55+.45*Math.sin(t*7+ph))]);bot.push([x,y+6])}return `<polygon points="${PTS(top.concat(bot.reverse()))}" fill="${fill}"/>`};
  h+=`<defs><radialGradient id="gcrv" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="var(--w-lit)"/><stop offset=".55" stop-color="var(--g-crown)"/><stop offset="1" stop-color="var(--w-shade)"/></radialGradient><radialGradient id="gfrv" cx=".36" cy=".3" r=".8"><stop offset="0" stop-color="var(--w-lit)"/><stop offset=".55" stop-color="var(--w-forest)"/><stop offset="1" stop-color="var(--w-shade)"/></radialGradient></defs><defs><linearGradient id="wsky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="var(--w-sky1)"/><stop offset="1" stop-color="var(--w-sky2)"/></linearGradient></defs><rect x="0" y="0" width="${ISO.w}" height="${Math.max(Lv[1],Rv[1])}" fill="url(#wsky)"/>`;
  const [px,py]=isoP(0,1);h+=`<defs><pattern id="wgrd" patternUnits="userSpaceOnUse" x="${px}" y="${py}" width="84" height="42"><rect width="84" height="42" fill="var(--g-grass)"/><rect width="84" height="42" fill="var(--g-grass2)" opacity=".5"/><polygon points="0,21 42,0 84,21 42,42" fill="var(--g-grass)"/></pattern></defs>`;
- const bg=wBgId(),dark=wDark()||wNight(),nt=wNight();if(nt)h+=wNightSky(Math.max(Lv[1],Rv[1]));else if(bg==='dusk')h+=wDusk();
- if(bg!=='dusk'&&!nt)[[.14,.06,1],[.5,.03,.8],[.82,.08,1.1],[.33,.13,.7]].forEach(([fx,fy,s])=>{const x=ISO.w*fx,y=ISO.h*fy;h+=`<g opacity=".75"><ellipse cx="${x}" cy="${y}" rx="${110*s}" ry="${34*s}" fill="var(--w-cloud)"/><ellipse cx="${x+50*s}" cy="${y-20*s}" rx="${70*s}" ry="${30*s}" fill="var(--w-cloud)"/></g>`});
+ const bg=wBgId(),dark=wDark()||wNight(),nt=wNight();if(nt)h+=wNightSky(Math.max(Lv[1],Rv[1]));else if(wTod()==='tdusk')h+=wDusk();
+ if(wTod()==='tday')[[.14,.06,1],[.5,.03,.8],[.82,.08,1.1],[.33,.13,.7]].forEach(([fx,fy,s])=>{const x=ISO.w*fx,y=ISO.h*fy;h+=`<g opacity=".75"><ellipse cx="${x}" cy="${y}" rx="${110*s}" ry="${34*s}" fill="var(--w-cloud)"/><ellipse cx="${x+50*s}" cy="${y-20*s}" rx="${70*s}" ry="${30*s}" fill="var(--w-cloud)"/></g>`});
  h+=`<polygon points="${PTS([Lv,T,Rv,[ISO.w,ISO.h],[0,ISO.h]])}" fill="url(#wgrd)"/>`+wTerrain()+wFront();
  const tree=(x,y,s)=>`<ellipse cx="${(x+10*s).toFixed(1)}" cy="${(y+4).toFixed(1)}" rx="${(22*s).toFixed(1)}" ry="${(8*s).toFixed(1)}" fill="rgba(20,30,10,.18)"/><path d="M${x.toFixed(1)} ${(y+2).toFixed(1)}v${(-18*s).toFixed(1)}" stroke="var(--g-trunk)" stroke-width="${(6*s).toFixed(1)}" stroke-linecap="round"/><circle cx="${x.toFixed(1)}" cy="${(y-30*s).toFixed(1)}" r="${(22*s).toFixed(1)}" fill="url(#gfrv)"/><circle cx="${(x-8*s).toFixed(1)}" cy="${(y-37*s).toFixed(1)}" r="${(9*s).toFixed(1)}" fill="var(--g-leaf2)" opacity=".35"/>`;
  if(bg!=='roof')for(let i=0;i<14;i++){const t=.08+i/16,[x,y]=lerp(Rv,Bv,t);h+=wTree(bg,x+40+(i%3)*22,y+18+(i%2)*26,1.05,dark);h+=wTree(bg,x+90+(i%2)*20,y+60,.95,dark)}
@@ -4281,6 +4298,7 @@ function wBackdrop(){const T=isoP(ISO.c0-.5,ISO.r0-.5),Lv=isoP(ISO.c0-.5,ISO.r1-
 function wFront(){const T=[];for(let r=ISO.r0;r<ISO.r1+40;r++)for(let c=ISO.c0;c<ISO.c1+40;c++){if(c<ISO.c1&&r<ISO.r1)continue;if(r>=19&&r<=23)continue;const [x,y]=isoP(c,r);if(x<-40||x>ISO.w+40||y>ISO.h+60)continue;const k=gH(c+101,r+57);if(k<90)T.push([c,r,x,y,k])}
  T.sort((a,b)=>(a[0]+a[1])-(b[0]+b[1]));const bg=wBgId(),dark=wDark()||wNight();
  if(bg==='roof')return T.map(([c,r,x,y,k])=>k<60?wBox(c,r,1,22+k%3*12,k,dark):'').join('');
+ if(bg==='desert')return T.map(([c,r,x,y,k])=>k<30?wTree(bg,x,y,1,dark):k<60?`<g><circle cx="${x-6}" cy="${y-4}" r="8" fill="${dark?'#4A4630':'#B5A36A'}"/><circle cx="${x+5}" cy="${y-5}" r="7" fill="${dark?'#555036':'#C2B27A'}"/></g>`:'').join('');
  if(bg==='terrace')return T.map(([c,r,x,y,k])=>k<45?wTree(bg,x,y,1,dark):`<g><circle cx="${x-7}" cy="${y-5}" r="10" fill="${dark?'#3E4A36':'#9AA77A'}"/><circle cx="${x+6}" cy="${y-7}" r="11" fill="${dark?'#46523D':'#A9B585'}"/></g>`).join('');
  return T.map(([c,r,x,y,k])=>k<45?`<g><ellipse cx="${x+16}" cy="${y+6}" rx="30" ry="11" fill="url(#gshr)"/><path d="M${x} ${y+4}v-22" stroke="var(--g-trunk)" stroke-width="7" stroke-linecap="round"/><circle cx="${x}" cy="${y-34}" r="26" fill="url(#gfrv)"/><circle cx="${x-9}" cy="${y-42}" r="11" fill="var(--g-leaf2)" opacity=".4"/></g>`:`<g><circle cx="${x-8}" cy="${y-4}" r="11" fill="url(#gcrv)"/><circle cx="${x+7}" cy="${y-6}" r="12" fill="url(#gcrv)"/><circle cx="${x}" cy="${y-12}" r="9" fill="url(#gcrv)"/></g>`).join('')}
 function wRiver(){const c0=ISO.c0-.5,c1=ISO.c1+34,q=[isoP(c0,20.5),isoP(c1,20.5),isoP(c1,22.5),isoP(c0,22.5)],ext=d=>[[q[0][0]-d,q[0][1]+d/2],[q[3][0]-d,q[3][1]+d/2]];let h='';
@@ -4536,7 +4554,7 @@ function gMain(g,nb){if(!G.ed){G.esnap=null;G.pst=null;G.edq=null}G.need=wNeedBe
  const drops=GSTILL()?'':Array.from({length:10},(_,i)=>`<i style="left:${6+i*9.4}%;animation-delay:${(i%4)*.07}s"></i>`).join('');
  const chests=GCFG.week.map(([t])=>{const got=g.wk&&g.wk.claimed.includes(t),can=wk>=t&&!got;return can?`<button class="gch on" type="button" data-gch="${t}" aria-label="Open the chest for ${t} plants">${CHESTC}<span class="num">${t}</span></button>`:`<span class="gch${got?' got':''}" aria-label="${got?'Opened':'Chest at '+t}">${got?CHESTO:CHESTC}<span class="num">${t}</span></span>`}).join('');
  const b=$('gd-body');isoGeom();G.vit=wBedVit()||{};const wx=wWeather();
- b.innerHTML=`<div class="gscene gfull bg-${esc(bg)} wx-${wx}${S.date===TODAY&&wClosed()?' wdusk':''}" id="gd-scene">
+ b.innerHTML=`<div class="gscene gfull bg-${esc(bg)} wx-${wx}${wNight()?' wdusk':wTod()==='tdusk'?' tdusk':''}" id="gd-scene">
   <div class="gworld" id="gd-world" style="width:${ISO.w}px;height:${ISO.h}px"><div class="gfarm${G.ed?' editing':''}" style="--wet:${(mode==='bottle'?wf:1).toFixed(2)}">${isoLand()}${gSigns(G.ed)}${G.ed?'':wBedSigns()}${G.ed?'':wKitchenSign()}${wLandLabels()}${wGrowSpots(G.ed)}${G.ed?'':wBflies()}${wTurnSpot()}${wTallDeco()}${gBuildings(L,nb)}${G.ed?'':wMktBubble()+wBathBubble()}${G.ed?'':gEmpties()}${g.plants.map(gPlot).join('')}${gDecs()}${G.ed?gEditLayer():''}</div></div>
   <div class="grain" aria-hidden="true">${drops}</div><div class="wwx" aria-hidden="true"><i></i><i></i><i></i></div>
   ${sel?`<p class="ghud gtip" role="status"><b>${esc(kindInfo(sel.k).name)}</b> · ${gEta(sel)}</p>`:''}
@@ -4815,15 +4833,16 @@ function gPanel(v,b){const g=S.garden;if(v==='bed')return wBedPanel(G.sb,b);if(v
  if(v==='sell'){const w=wWish(),nm=id=>FM[id].n.split(',')[0].toLowerCase(),wk=gPx().wk;
   b.innerHTML=`<h3 class="rh">In demand now</h3>`+(w?`<div class="gdem"><span class="gdx">2×</span><span class="otx"><b>${esc(NUT[w.n].n)} is low lately</b><span class="cap">Any food rich in ${esc(nlow(w.n))} grows golden, for double coins.${w.foods.length?` Like ${w.foods.map(nm).join(', ')}.`:''}</span></span></div>`:`<p class="cap">Nothing is low right now.</p>`)+
    `<p class="cap gmto">Harvests pay right away${wk>1?`, and your healthy week adds × ${wk}`:''}.</p>`;return}
- if(v==='shop'){const card=(id,n,pr,own,bg)=>{const cnt=bg?0:gDecN(id);return `<button class="gsh${bg&&own?' own':''}${G.buy===id?' on':''}" type="button" data-gs="${id}" aria-pressed="${bg?g.decor.bg===id:G.buy===id}"><span class="gshp${bg?' bgprev bg-'+id:''}">${bg?(GBGI[id]||''):gDec(id)}</span><b>${n}</b>${cnt?`<span class="gown num">You have ${cnt}</span>`:''}<span class="gprice num">${bg&&own?(g.decor.bg===id?'In use':'✓'):pr?COINI+pr:'Free'}</span></button>`};
-  const it=G.buy&&(G.buy.startsWith('up:')?(()=>{const u=GUP.find(x=>'up:'+x[0]===G.buy);return u?[G.buy,u[1],gUpPrice(u[0])]:null})():(GDEC.find(x=>x[0]===G.buy)||GBG.find(x=>x[0]===G.buy)));
+ if(v==='shop'){const card=(id,n,pr,own,bg)=>{const cnt=bg?0:gDecN(id);return `<button class="gsh${bg&&own?' own':''}${G.buy===id?' on':''}" type="button" data-gs="${id}" aria-pressed="${bg?gCur(id)===id:G.buy===id}"><span class="gshp${bg?' bgprev bg-'+id:''}">${bg?(GBGI[id]||''):gDec(id)}</span><b>${n}</b>${cnt?`<span class="gown num">You have ${cnt}</span>`:''}<span class="gprice num">${bg&&own?(gCur(id)===id?'In use':'✓'):pr?COINI+pr:'Free'}</span></button>`};
+  const it=G.buy&&(G.buy.startsWith('up:')?(()=>{const u=GUP.find(x=>'up:'+x[0]===G.buy);return u?[G.buy,u[1],gUpPrice(u[0])]:null})():(GDEC.find(x=>x[0]===G.buy)||GBG.find(x=>x[0]===G.buy)||GTOD.find(x=>x[0]===G.buy)));
   const upcX=GUP.map(([id,n,ps])=>{const lv=gUp(id),pr=ps[lv],own=!pr;return `<button class="gsh${own?' own':''}${G.buy==='up:'+id?' on':''}" type="button" data-gs="up:${id}" aria-pressed="${G.buy==='up:'+id}"${own?' disabled':''}><span class="gshp">${gUpIc(id)}</span><b>${n}${ps.length>1&&lv?' '+(lv+1):''}</b><span class="gprice num">${own?'✓':COINI+pr}</span></button>`}).join('');
   b.innerHTML=`<h3 class="rh">Decorations</h3><div class="gshop">${GDEC.filter(x=>x[0]!=='path').map(([id,n,pr])=>card(id,n,pr,g.decor.own.includes(id),0)).join('')}</div>
-   <h3 class="rh">Backdrops</h3><div class="gshop">${GBG.map(([id,n,pr])=>card(id,n,pr,g.decor.bgs.includes(id),1)).join('')}</div>
+   <h3 class="rh">Places</h3><div class="gshop">${GBG.map(([id,n,pr])=>card(id,n,pr,g.decor.bgs.includes(id),1)).join('')}</div>
+   <h3 class="rh">Time of day</h3><div class="gshop">${GTOD.map(([id,n,pr])=>card(id,n,pr,gTods().includes(id),1)).join('')}</div><p class="cap">Once you end your day, night falls until tomorrow.</p>
    ${it?`<div class="gbuy"><span class="otx"><b>${it[1]}</b><span class="cap num">${COINI} ${it[2]}</span></span><button class="btn primary" type="button" id="gd-buy"${g.coins<it[2]?' disabled':''}>Buy</button></div>`:''}`;
-  b.querySelectorAll('[data-gs]').forEach(x=>x.onclick=()=>{const id=x.dataset.gs,bg=GBG.some(d=>d[0]===id);if(id.startsWith('up:')){G.buy=G.buy===id?null:id;renderGarden();if($('gd-buy'))$('gd-buy').scrollIntoView({block:'nearest'});return}if(bg&&g.decor.bgs.includes(id)){g.decor.bg=id;G.buy=null;save();renderGarden();return}
+  b.querySelectorAll('[data-gs]').forEach(x=>x.onclick=()=>{const id=x.dataset.gs,bg=GBG.some(d=>d[0]===id);if(id.startsWith('up:')){G.buy=G.buy===id?null:id;renderGarden();if($('gd-buy'))$('gd-buy').scrollIntoView({block:'nearest'});return}if(bg&&g.decor.bgs.includes(id)){g.decor.bg=id;G.buy=null;save();renderGarden();return}if(GTOD.some(d=>d[0]===id)&&gTods().includes(id)){g.decor.tod=id;G.buy=null;save();renderGarden();return}
    G.buy=G.buy===id?null:id;renderGarden();if($('gd-buy'))$('gd-buy').scrollIntoView({block:'nearest'})});
-  if($('gd-buy'))$('gd-buy').onclick=()=>{const id=G.buy,c0=g.coins;if(id.startsWith('up:')){if(gBuyUp(id.slice(3))){G.buy=null;save();renderGarden();gCount(c0,g.coins);toast('Upgraded')}else toast('No room there');return}if(gBuy(id)){G.buy=null;save();renderGarden();gCount(c0,g.coins);if(GBG.some(d=>d[0]===id))toast('New backdrop');else{gSheetClose();G.ed='sec';G.etab='yours';G.place=id;G.pm=0;G.sbuy=null;G.es=G.eb=G.ei=null;renderGarden();toast('Tap a spot to place it')}}};return}
+  if($('gd-buy'))$('gd-buy').onclick=()=>{const id=G.buy,c0=g.coins;if(id.startsWith('up:')){if(gBuyUp(id.slice(3))){G.buy=null;save();renderGarden();gCount(c0,g.coins);toast('Upgraded')}else toast('No room there');return}if(gBuy(id)){G.buy=null;save();renderGarden();gCount(c0,g.coins);if(GBG.some(d=>d[0]===id))toast('New place');else if(GTOD.some(d=>d[0]===id))toast('New time of day');else{gSheetClose();G.ed='sec';G.etab='yours';G.place=id;G.pm=0;G.sbuy=null;G.es=G.eb=G.ei=null;renderGarden();toast('Tap a spot to place it')}}};return}
  if(v==='album'){const wk=gWeekN(),o=PROJ,ds=[];for(let d=wkStart(TODAY);d<=TODAY;d=shift(d,1))ds.push(d);const cur={id:wkStart(TODAY),n:wk,kinds:[...plantSet(ds)].sort(),cur:1};
   const wc=a=>`<div class="galb"><span class="cap">${a.cur?'This week':'Week of '+fdS(a.id)}</span><b class="num">${a.n} plant${a.n===1?'':'s'}</b><span class="galk">${a.kinds.slice(0,12).map(k=>`<i>${kindInfo(k).icon}</i>`).join('')}</span></div>`;
   b.innerHTML=`<p class="galdays num"><b>Days logged: ${daysLoggedEver()}</b></p>`+(g.badges.length?`<div class="gbadges">${GBADGE.filter(x=>g.badges.includes(x[0])).map(x=>`<span class="gmed">${MEDI}<span class="cap">${x[1]}</span></span>`).join('')}</div>`:'')+
@@ -4902,17 +4921,24 @@ function gWeekTick(){const g=S.garden,id=wkStart(TODAY);if(!g.wk||!g.wk.id){g.wk
  if(!g.album.some(a=>a.id===g.wk.id)){g.album.push({id:g.wk.id,n,kinds:[...set].sort().slice(0,60),coins:g.wk.coins||0});g.album=g.album.slice(-52)}
  g.wk={id,claimed:[],coins:0}}finally{PROJ=o}}
 const GDEC=[['path','Stone path',30],['pot','Flower pot',40],['can','Watering can',60],['bench','Bench',100],['lantern','Lantern',120],['scare','Scarecrow',150],['hotel','Insect hotel',180],['barrow','Wheelbarrow',220],['arch','Trellis arch',280],['pond','Pond',360],['house','Greenhouse',480]];
-const GBG=[['meadow','Meadow',0],['dusk','Dusk',300],['terrace','Terrace',400],['roof','Rooftop',900]];
+const GBG=[['meadow','Meadow',0],['terrace','Terrace',400],['desert','Desert',600],['roof','Rooftop',900]];
+const GTOD=[['tday','Day',0],['tnight','Night',500],['tdusk','Dusk',800]];
+const gTods=()=>{const d=S.garden.decor;if(!Array.isArray(d.tods))d.tods=['tday'];return d.tods};
+const gCur=id=>GTOD.some(x=>x[0]===id)?(S.garden.decor.tod||'tday'):S.garden.decor.bg;
 /* a small picture of each place: what you will see around the farm */
-const GBGI={meadow:'<svg viewBox="0 0 60 44" aria-hidden="true"><rect width="60" height="44" fill="#BFE3F0"/><circle cx="50" cy="9" r="5" fill="#F6CB5A"/><path d="M12 31L27 8l15 23z" fill="#A3ABB0"/><path d="M22.4 16L27 8l4.6 8-2.3 1.6-2.3-2-2.3 2z" fill="#fff"/><path d="M0 31c10-8 20-8 30-2s20 4 30-3v18H0z" fill="#7FAE6E"/><path d="M0 37c15-5 30-4 60 0v7H0z" fill="#9CC88A"/><path d="M48 36v-6" stroke="#7A5230" stroke-width="2"/><circle cx="48" cy="28" r="5.5" fill="#4E8F45"/><circle cx="9" cy="35" r="3.5" fill="#4E8F45"/></svg>',
+const GBGI={desert:'<svg viewBox="0 0 60 44" aria-hidden="true"><rect width="60" height="44" fill="#A9D6EE"/><circle cx="50" cy="9" r="5" fill="#F6CB5A"/><path d="M8 32L22 12l14 20z" fill="#E7C98C"/><path d="M22 12l14 20h-8z" fill="#C79D62"/><path d="M32 32l9-12 9 12z" fill="#E7C98C"/><path d="M41 20l9 12h-5z" fill="#C79D62"/><path d="M0 32c12-4 24-3 34 0s18 2 26-1v13H0z" fill="#E9D3A1"/><path d="M0 38c18-3 38-3 60 0v6H0z" fill="#DDBE80"/><path d="M9 41q-1-7 2-13" stroke="#8A6A40" stroke-width="1.8" fill="none"/><path d="M11 28q-4 0-7 3M11 28q4 0 7 3M11 28q-2-3-6-3M11 28q2-3 6-3" stroke="#4E8F45" stroke-width="1.8" fill="none" stroke-linecap="round"/></svg>',
+ tday:'<svg viewBox="0 0 60 44" aria-hidden="true"><rect width="60" height="44" fill="#BFE3F0"/><circle cx="30" cy="17" r="8" fill="#F6CB5A"/><g stroke="#F6CB5A" stroke-width="2" stroke-linecap="round"><path d="M30 3.5v3M30 27.5v3M16.5 17h3M40.5 17h3M20.5 7.5l2 2M39.5 7.5l-2 2"/></g><ellipse cx="11" cy="10" rx="7" ry="3" fill="#fff"/><ellipse cx="50" cy="24" rx="6" ry="2.5" fill="#fff"/><path d="M0 34c14-6 30-6 60 0v10H0z" fill="#7FAE6E"/></svg>',
+ tnight:'<svg viewBox="0 0 60 44" aria-hidden="true"><rect width="60" height="44" fill="#141B3A"/><g fill="#FFF6E0"><circle cx="8" cy="8" r="1"/><circle cx="18" cy="15" r=".8"/><circle cx="25" cy="6" r=".9"/><circle cx="52" cy="9" r="1"/><circle cx="48" cy="24" r=".8"/><circle cx="12" cy="24" r=".7"/></g><circle cx="37" cy="15" r="8" fill="#F4EFD8"/><circle cx="41" cy="12" r="7" fill="#141B3A"/><path d="M0 34c14-6 30-6 60 0v10H0z" fill="#23392A"/></svg>',
+ tdusk:'<svg viewBox="0 0 60 44" aria-hidden="true"><defs><linearGradient id="gbgtd" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4E447E"/><stop offset="1" stop-color="#E8A07E"/></linearGradient></defs><rect width="60" height="44" fill="url(#gbgtd)"/><g fill="#FFF6E0"><circle cx="8" cy="7" r=".9"/><circle cx="20" cy="4" r=".7"/><circle cx="46" cy="6" r=".9"/></g><circle cx="30" cy="33" r="15" fill="#FFB36B" opacity=".35"/><circle cx="30" cy="33" r="9" fill="#FFB36B"/><path d="M0 34c14-6 30-6 60 0v10H0z" fill="#5A4A6E"/></svg>',
+ meadow:'<svg viewBox="0 0 60 44" aria-hidden="true"><rect width="60" height="44" fill="#BFE3F0"/><circle cx="50" cy="9" r="5" fill="#F6CB5A"/><path d="M12 31L27 8l15 23z" fill="#A3ABB0"/><path d="M22.4 16L27 8l4.6 8-2.3 1.6-2.3-2-2.3 2z" fill="#fff"/><path d="M0 31c10-8 20-8 30-2s20 4 30-3v18H0z" fill="#7FAE6E"/><path d="M0 37c15-5 30-4 60 0v7H0z" fill="#9CC88A"/><path d="M48 36v-6" stroke="#7A5230" stroke-width="2"/><circle cx="48" cy="28" r="5.5" fill="#4E8F45"/><circle cx="9" cy="35" r="3.5" fill="#4E8F45"/></svg>',
  terrace:'<svg viewBox="0 0 60 44" aria-hidden="true"><rect width="60" height="44" fill="#F4E2C8"/><circle cx="50" cy="9" r="5" fill="#F6B04A"/><path d="M0 44V30h16v-6h14v-6h14v-6h16v32z" fill="#A9B46C"/><path d="M0 30h16v-6h14v-6h14v-6h16" stroke="#B07F55" stroke-width="2.6" fill="none"/><path d="M4 36h10M20 30h8M34 24h8M48 18h8" stroke="#7E8E4A" stroke-width="1.6" stroke-linecap="round"/><ellipse cx="22" cy="17" rx="2.6" ry="7" fill="#3E6B3A"/><ellipse cx="38" cy="11" rx="2.6" ry="7" fill="#3E6B3A"/><path d="M22 24v-1M38 18v-1" stroke="#7A5230" stroke-width="1.6"/><path d="M0 44V38h60v6z" fill="#E6C3A0"/></svg>',
  dusk:'<svg viewBox="0 0 60 44" aria-hidden="true"><defs><linearGradient id="gbgdk" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4E447E"/><stop offset="1" stop-color="#E8A07E"/></linearGradient></defs><rect width="60" height="44" fill="url(#gbgdk)"/><g fill="#FFF6E0"><circle cx="8" cy="7" r=".9"/><circle cx="20" cy="4" r=".7"/><circle cx="44" cy="6" r=".9"/><circle cx="54" cy="13" r=".7"/><circle cx="31" cy="9" r=".6"/></g><circle cx="36" cy="30" r="13" fill="#FFB36B" opacity=".35"/><circle cx="36" cy="30" r="8" fill="#FFB36B"/><path d="M0 31c10-5 22-6 32-2s20 3 28-1v16H0z" fill="#7E9E6A"/><path d="M3 34l9-4M13 37l11-6M25 39l13-8M39 41l12-8M51 42l9-6" stroke="#A58BD0" stroke-width="2.6" stroke-linecap="round"/><path d="M0 40c18-4 36-3 60 0v4H0z" fill="#5E7F63"/></svg>',
  roof:'<svg viewBox="0 0 60 44" aria-hidden="true"><rect width="60" height="44" fill="#CFE4F5"/><path d="M3 34V13h10v21zM15 34V6h9v28zM26 34V17h11v17zM39 34V9h8v25zM49 34V19h10v15z" fill="#A3ADB7"/><path d="M5 16h6M5 20h6M5 24h6M5 28h6M17 10h5M17 14h5M17 18h5M17 22h5M17 26h5M28 20h7M28 24h7M28 28h7M41 12h4M41 16h4M41 20h4M41 24h4M41 28h4M51 22h6M51 26h6" stroke="#F7FAFC" stroke-width="1.6" stroke-dasharray="2 1.6"/><path d="M0 44V34h60v10z" fill="#C4C9CE"/><path d="M0 34h60" stroke="#9AA7B4" stroke-width="1.4"/><rect x="8" y="35" width="18" height="5" rx="1" fill="#8A5E33"/><circle cx="12" cy="34" r="3" fill="#4E8F45"/><circle cx="17.5" cy="33" r="3.4" fill="#5DA552"/><circle cx="23" cy="34" r="3" fill="#4E8F45"/><rect x="36" y="36" width="14" height="4" rx="1" fill="#8A5E33"/><circle cx="40" cy="35" r="2.6" fill="#E25C4B"/><circle cx="46" cy="35" r="2.6" fill="#4E8F45"/></svg>'};
 function gGiveDecor(){const g=S.garden,half=GDEC.slice(0,6).filter(x=>!g.decor.own.includes(x[0]));if(!half.length){gEarn(20);return null}const x=half[gHash(TODAY+'d')%half.length];g.decor.own.push(x[0]);return x[1]}
 function gClaim(t){const g=S.garden,w=GCFG.week.find(x=>x[0]===t);if(!w||g.wk.claimed.includes(t)||gWeekN()<t)return 0;g.wk.claimed.push(t);gEarn(w[1]);const d=t===30?gGiveDecor():null;return {c:w[1],d}}
 function gGift(){const g=S.garden,c=g.gift||0,nd=g.giftD||0;if(!c&&!nd)return 0;g.gift=0;g.giftD=0;gEarn(c);const ds=[];for(let i=0;i<nd;i++){const d=gGiveDecor();if(d)ds.push(d)}return {c,d:ds.join(', ')}}
-function gBuy(id){const g=S.garden,x=GDEC.find(d=>d[0]===id)||GBG.find(d=>d[0]===id);if(!x)return 0;const bg=GBG.some(d=>d[0]===id),own=bg?g.decor.bgs:g.decor.own;if((bg&&own.includes(id))||g.coins<x[2])return 0;
- g.coins-=x[2];own.push(id);if(bg)g.decor.bg=id;return 1}
+function gBuy(id){const g=S.garden,x=GDEC.find(d=>d[0]===id)||GBG.find(d=>d[0]===id)||GTOD.find(d=>d[0]===id);if(!x)return 0;const bg=GBG.some(d=>d[0]===id),td=GTOD.some(d=>d[0]===id),own=td?gTods():bg?g.decor.bgs:g.decor.own;if(((bg||td)&&own.includes(id))||g.coins<x[2])return 0;
+ g.coins-=x[2];own.push(id);if(bg)g.decor.bg=id;if(td)g.decor.tod=id;return 1}
 /* badges, earned once */
 const GBADGE=[['first','First harvest'],['w10','10 plants in a week'],['w20','20 plants in a week'],['w30','30 plants in a week'],['e50','50 plants ever'],['h100','100 harvests'],['bed','A full bed'],['all3','All three orders in a day']];
 function gBadges(){const g=S.garden,wk=gWeekN(),has=b=>g.badges.includes(b),add=b=>{if(!has(b)){g.badges.push(b);GNEWB=b}};
@@ -5968,8 +5994,8 @@ const WBLDV={shop:'lib',album:'today'};
 const WMEAL={b:5,l:11,d:17};
 let WLASTV=null;
 /* the same number as the ring on the board sheet: mixed, one day or a range, following the chosen range */
-function wScore(){const T=targets(),D=dayV(),MX=mixStats(S.date,mixMemo()),DS=MX?MX.avg:D;
- return {T,DS,sc:dayScore(DS,T),empty:!logged(S.plan)}}
+function wScore(){const r0=S.range;S.range=0;try{const T=targets(),D=dayV(),MX=mixStats(S.date,mixMemo()),DS=MX?MX.avg:D;
+ return {T,DS,sc:dayScore(DS,T),empty:!logged(S.plan)}}finally{S.range=r0}}
 const wOpen=k=>{const sl=S.plan&&S.plan[k];return !!sl&&!sl.it.length&&!sl.skip&&!mealKeys(S.plan).some(q=>q!==k&&typeOf(S.plan,q)===typeOf(S.plan,k)&&S.plan[q].it.length)};
 /* the one next step: the first main meal whose time has come and that is still open; only today */
 function wNext(){if(S.date!==TODAY||!S.plan||wClosed())return null;const h=new Date().getHours();for(const t of 'bld'){if(h<WMEAL[t])break;const k=slotOfType(t);if(wOpen(k))return k}return null}
@@ -6450,6 +6476,8 @@ function wBathArt(){const B=wBath(),f=B.fill,lv=44+(1-f)*7,rx=33*(.5+.5*f),ry=13
   <path d="M51 90V62h18v28a9 3.6 0 0 1-18 0z" fill="#B5AE9F"/><path d="M60 93.6a9 3.6 0 0 0 9-3.6V62h-9z" fill="#9A9387"/>
   <path d="M20 44Q22 62 60 66Q98 62 100 44z" fill="#A9A296"/><path d="M60 66Q98 62 100 44H60z" fill="#958E82"/><ellipse cx="60" cy="44" rx="40" ry="16" fill="#D6D0C3"/><ellipse cx="60" cy="44.6" rx="34" ry="13.2" fill="#8E877B"/>${water}</svg>${birds}<span class="wsplash" aria-hidden="true"></span>`}
 /* the market's bubble: today's focus, with foods you could eat for it; it goes once the focus is covered */
+/* Dusk moved from the places to the times of day; who had it keeps it, and a Dusk place becomes the Meadow at dusk */
+function wTodMig(g){const d=g&&g.decor;if(!d)return;if(!Array.isArray(d.tods))d.tods=['tday'];if(Array.isArray(d.bgs)&&d.bgs.includes('dusk')){d.bgs=d.bgs.filter(x=>x!=='dusk');if(!d.tods.includes('tdusk'))d.tods.push('tdusk')}if(d.bg==='dusk'){d.bg='meadow';d.tod='tdusk'}}
 function wMktBubble(){if(S.date!==TODAY)return '';const B=gBld(),w=wWish();if(!B.market||!w||w.done||!w.foods.length)return '';const bb=gBldBox('market'),fs=w.foods.slice(0,3),nm=id=>FM[id].n.split(',')[0];
  return `<button class="wbub wmk" type="button" id="wmkt" style="left:${pct(bb.x+bb.w*.5,ISO.w)};top:${pct(bb.y+bb.h*.1,ISO.h)}" aria-label="The market wants ${esc(nlow(w.n))} today, like ${esc(fs.map(nm).join(', '))}. Tap for ideas"><b>${esc(NUT[w.n].n)}, please</b><span class="wbr">${fs.map(id=>`<span>${fIcon(id)}</span>`).join('')}</span><span class="wb2 num">2×</span><i class="wtd1"></i><i class="wtd2"></i></button>`}
 /* the bird bath's bubble: it asks about water until today's target is reached */
@@ -6584,18 +6612,20 @@ const WSUNF='<svg viewBox="0 0 20 36" aria-hidden="true"><path d="M10 35V13" str
 function wTallDeco(){const L=gLand();let h='';const l=L.sec.l;if(l)for(let pos=0;pos<4*l.rows;pos++){const {x,y,c,r}=isoC('l',pos);h+=`<span class="wtall" style="left:${pct(x-16,ISO.w)};top:${pct(y-40,ISO.h)};width:${pct(32,ISO.w)};z-index:${Math.round((c+r)*10)+4}">${WPOLE}</span>`}
  const n=L.sec.n;if(n){const [w,hh]=secWH(n);for(let i=0;i<(n.rot?hh:w);i++){const c=n.rot?n.c+w-1:n.c+i,r=n.rot?n.r+i:n.r+hh-1,[x,y]=isoP(c+(n.rot?.62:0),r+(n.rot?0:.62));h+=`<span class="wtall" style="left:${pct(x-10,ISO.w)};top:${pct(y-34,ISO.h)};width:${pct(20,ISO.w)};z-index:${Math.round((c+r)*10)+7}">${WSUNF}</span>`}}
  return h}
+/* a range picked on Today or Nutrients lasts while you stay there; switching screens goes back to mixed */
+let WRV=null;
 function render(){FEDC.clear();const o=PROJ;PROJ=S.date>TODAY;if(PROJ&&S.plan)mealKeys(S.plan).forEach(k=>{if(S.plan[k].it.length)S.plan[k].pl=1});try{return render0()}finally{PROJ=o}}
 function render0(){
  _VC=null;supMigrate();
  const v0=S.view;
  if(S.plan)mealKeys(S.plan).forEach(k=>{if(k.length>1&&!S.plan[k].it.length&&k!==MS&&!($('pk').open&&PK&&PK.slot===k))delete S.plan[k]});
  if(S.plan){normPlan(S.plan);rebuildSlots()}
- if(GON()){gInit();gardenTick();gardenSync();gDaily();try{const g0=S.garden;wScrub();wNoBath();if(g0.bag&&Object.keys(g0.bag).some(k=>g0.bag[k]>0)){const c=gSellRest();if(c)setTimeout(()=>toast(`Your basket was sold: +${c} coins. Harvests now pay right away.`),900)}if(g0.bv3!==1){g0.bv3=1;KI=null;gResort();gRefill()}if((g0.wv||0)<3){delete g0.cam;g0.wv=3;if(G)G.cam=null}wKitchenMove(gLand());wLandOpen()}catch(e){}try{wUnlocks()}catch(e){}if(S.garden.unl&&S.view==='garden'&&!document.querySelector('dialog[open]')){const u=S.garden.unl;delete S.garden.unl;save();setTimeout(()=>{if(S.view==='garden'){WHOLDT=Date.now()+20000;if(u[2]&&G&&G.cam){const [x,y]=isoP(u[2][0],u[2][1]),W=$('gd-world'),V=$('gd-scene');if(W&&V){const w=W.getBoundingClientRect(),v=V.getBoundingClientRect();wGlide(v.width/2-(w.left-v.left+x*G.cam.s),v.height*.42-(w.top-v.top+y*G.cam.s))}}setTimeout(()=>wAsk(u[0],u[1],[['Nice',()=>{WHOLDT=0}]],true),u[2]?700:0)}else toast(u[0])},1400)}const wn=S.garden.wkNote;if(wn&&!wn.shown){wn.shown=1;save();setTimeout(()=>wReport(wn),1600)}}
+ if(GON()){gInit();gardenTick();gardenSync();gDaily();try{const g0=S.garden;wScrub();wNoBath();if(g0.bag&&Object.keys(g0.bag).some(k=>g0.bag[k]>0)){const c=gSellRest();if(c)setTimeout(()=>toast(`Your basket was sold: +${c} coins. Harvests now pay right away.`),900)}if(g0.bv3!==1){g0.bv3=1;KI=null;gResort();gRefill()}if((g0.wv||0)<3){delete g0.cam;g0.wv=3;if(G)G.cam=null}wTodMig(g0);wKitchenMove(gLand());wLandOpen()}catch(e){}try{wUnlocks()}catch(e){}if(S.garden.unl&&S.view==='garden'&&!document.querySelector('dialog[open]')){const u=S.garden.unl;delete S.garden.unl;save();setTimeout(()=>{if(S.view==='garden'){WHOLDT=Date.now()+20000;if(u[2]&&G&&G.cam){const [x,y]=isoP(u[2][0],u[2][1]),W=$('gd-world'),V=$('gd-scene');if(W&&V){const w=W.getBoundingClientRect(),v=V.getBoundingClientRect();wGlide(v.width/2-(w.left-v.left+x*G.cam.s),v.height*.42-(w.top-v.top+y*G.cam.s))}}setTimeout(()=>wAsk(u[0],u[1],[['Nice',()=>{WHOLDT=0}]],true),u[2]?700:0)}else toast(u[0])},1400)}const wn=S.garden.wkNote;if(wn&&!wn.shown){wn.shown=1;save();setTimeout(()=>wReport(wn),1600)}}
  const fid=document.activeElement&&document.activeElement.id;
  if(S.view==='ideas'){S.view='nutr';S.nsub='imp'}
  if(!['today','nutr','scan','lib','garden','profile'].includes(S.view))S.view='garden';
  if(v0!=='scan'&&SCAN.tab){stopCamera();SCAN.tab=false;ST.drawn=''}
- if(!['over','imp','hist'].includes(S.nsub))S.nsub='over';if(S.lib==='meals')S.lib='dishes';if(S.lib==='guide'||S.lib==='kitchen'){S.learn=S.lib;S.lib='learn'}if(!['dishes','recipes','foods','learn'].includes(S.lib))S.lib='dishes';
+ if(!['over','imp','hist'].includes(S.nsub))S.nsub='over';if(WRV!==S.view){if(WRV!==null)S.range=0;WRV=S.view}if(S.lib==='meals')S.lib='dishes';if(S.lib==='guide'||S.lib==='kitchen'){S.learn=S.lib;S.lib='learn'}if(!['dishes','recipes','foods','learn'].includes(S.lib))S.lib='dishes';
  save();
  const T=targets(),D=dayV(),v=S.view;
  ['today','nutr','scan','lib','garden','profile'].forEach(x=>{$('v-'+x).hidden=x!==v&&x!=='garden'});
