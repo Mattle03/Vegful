@@ -977,6 +977,11 @@ html.still .schest *,html.still .gch,html.still .ggift svg{animation:none!import
 @keyframes tzz{0%{opacity:0;transform:translate(0,4px)}40%{opacity:1}100%{opacity:0;transform:translate(4px,-6px)}}
 .tsay{display:inline-block;align-self:flex-start;margin-top:4px;padding:5px 10px;border-radius:12px 12px 12px 4px;background:var(--surface2);font-size:14px;font-weight:700;color:var(--ink)}
 .gsharebtn{margin-top:14px}
+.sumline{display:flex;align-items:center;gap:10px;width:100%;border:0;border-radius:16px;background:var(--surface);color:var(--ink);font:inherit;padding:12px 14px;margin:0 0 10px;text-align:left;cursor:pointer;box-shadow:var(--shadow,none)}
+.sumline b{font-size:18px;font-weight:800}.sumline .sl{flex:1;min-width:0;font-weight:700;color:var(--ink2);font-size:14px}
+.adtabs{display:flex;border-bottom:2px solid var(--surface2);margin:0 0 12px;position:sticky;top:0;background:var(--surface);z-index:2}
+.adtabs button{flex:1;border:0;background:none;color:var(--ink2);font:inherit;font-weight:800;font-size:14px;padding:11px 0 9px;border-bottom:3px solid transparent;margin-bottom:-2px;cursor:pointer;min-height:44px}
+.adtabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--accent)}
 .attmore summary{cursor:pointer;font-weight:700;color:var(--ink2);padding:10px 2px 4px;list-style:none}.attmore summary::-webkit-details-marker{display:none}.attmore summary::after{content:' ›'}.attmore[open] summary::after{content:' ‹'}
 html.still .tort *{animation:none!important}
 @media (prefers-reduced-motion:reduce){.tort *{animation:none!important}}
@@ -1176,6 +1181,11 @@ html.still .gplot.empty.can::after{animation:none}
 @media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--g-pathd:#463C2E;--g-stoned:#5A4E3E}}
 :root[data-theme="dark"]{--g-pathd:#463C2E;--g-stoned:#5A4E3E}
 label[for="p-garden"]{display:none!important}
+
+/* text is not selectable, except where you read (a recipe, a nutrient's info, kitchen tips) and in fields */
+body{-webkit-user-select:none;user-select:none;-webkit-touch-callout:none}
+input,textarea,select,[contenteditable],#sheet-body,#it-kitchen,.selok{-webkit-user-select:text;user-select:text;-webkit-touch-callout:default}
+#sheet-body button,#it-kitchen button{-webkit-user-select:none;user-select:none}
 /* ---------- world shell: top bar, meal dock, live board, views as sheets ---------- */
 html,body{overflow:hidden;overscroll-behavior:none}
 .tabbar{display:none!important}
@@ -1191,6 +1201,11 @@ html,body{overflow:hidden;overscroll-behavior:none}
 .wring svg{position:absolute;inset:4px;width:48px;height:48px}
 .wring b{position:relative;font-size:12px;font-weight:800;white-space:nowrap}
 .wme{width:52px;height:52px;flex:none;border-radius:50%;border:0;padding:0;background:color-mix(in srgb,var(--surface) 94%,transparent);box-shadow:0 2px 10px rgba(0,0,0,.14);display:grid;place-items:center;color:var(--ink)}
+html.wxopen #wtort{visibility:hidden}
+.wxpop{position:absolute;right:0;bottom:calc(100% + 10px);width:250px;max-width:calc(100vw - 20px);background:var(--surface);border-radius:20px;padding:8px;display:flex;flex-direction:column;gap:6px;box-shadow:0 10px 28px rgba(0,0,0,.35);z-index:31}
+.wxpop button{display:flex;align-items:center;gap:10px;border:0;border-radius:14px;padding:10px;background:var(--surface2);color:var(--ink);font:inherit;text-align:left;min-height:52px;cursor:pointer}
+.wxpop .xpi{width:34px;height:34px;border-radius:10px;display:grid;place-items:center;flex:none}.wxpop .xpi svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:2.2}
+.wxpop .xf{background:var(--s4);color:#3B2A18}.wxpop .xs{background:var(--s5);color:#2B1F3A}.wxpop .xpt{display:flex;flex-direction:column}.wxpop b{font-size:15px}.wxpop small{font-size:12.5px;color:var(--ink2);font-weight:600}
 .wdock{position:fixed;z-index:30;left:max(10px,env(safe-area-inset-left,0px));right:max(10px,env(safe-area-inset-right,0px));bottom:calc(10px + env(safe-area-inset-bottom,0px));max-width:540px;margin:0 auto}
 .wdock .in{height:88px;border-radius:24px;background:var(--surface);box-shadow:0 -2px 18px rgba(0,0,0,.16);display:grid;grid-template-columns:1fr 1fr 72px 1fr 1fr;align-items:center;padding:0 4px}
 .wplate{border:0;background:none;padding:0;display:flex;flex-direction:column;align-items:center;gap:4px;font:700 12px var(--body);color:var(--ink);min-height:76px;justify-content:center;min-width:0}
@@ -1786,12 +1801,13 @@ html.calm .gbld.refill .wbwater{animation:none}
 
   <section id="v-lib" class="view" hidden>
     <div class="seg sm vsw" role="tablist"><button type="button" data-vsw="nutr" aria-pressed="false">Nutrients</button><button type="button" data-vsw="lib" aria-pressed="true">Library</button></div>
-    <div class="vhead"><div><h1>Library</h1><p class="cap">Dishes, your foods, and what to eat for which nutrient</p></div></div>
-    <div class="seg" id="lib-seg"><button type="button" data-lb="dishes">Dishes</button><button type="button" data-lb="recipes">Recipes</button><button type="button" data-lb="foods">Foods</button><button type="button" data-lb="learn">Learn</button></div>
+    <div class="vhead"><div><h1>Kitchen</h1><p class="cap">Recipes, your foods, what you have at home, and tips</p></div></div>
+    <div class="seg" id="lib-seg"><button type="button" data-lb="dishes">Recipes</button><button type="button" data-lb="foods">Foods</button><button type="button" data-lb="pantry">Pantry</button><button type="button" data-lb="tips">Tips</button></div>
+    <div id="lib-pan" class="view" hidden></div>
     <div id="lib-foods" class="view" hidden><div class="card"><h2 style="margin-bottom:4px">Your foods</h2><p class="cap" style="margin:0 0 10px">Products you scanned or entered, and mixes you made. Tap one to see or change its values.</p><div id="prof-prod"></div>
       <div class="btnrow2" style="margin-top:12px"><button class="btn scanbtn" type="button" id="prof-scan"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 8V5a2 2 0 0 1 2-2h3M16 3h3a2 2 0 0 1 2 2v3M21 16v3a2 2 0 0 1-2 2h-3M8 21H5a2 2 0 0 1-2-2v-3M7 8v8M10.5 8v8M14 8v8M17 8v8"/></svg>Scan a product</button><button class="btn" type="button" id="lib-label">Enter from a label</button><button class="btn" type="button" id="lib-mix">Make a mix</button></div></div></div>
     <div id="lib-rcp" class="view" hidden><div class="chips" id="rcp-seg"><button class="chip" type="button" data-rc="rcp">Recipes</button><button class="chip" type="button" data-rc="bld">Builders</button></div><input type="search" id="rcp-q" placeholder="Search recipes" aria-label="Search recipes"><div id="rcp-list"></div></div>
-    <div id="lib-dishes" class="view" hidden><input type="search" id="lib-q" placeholder="Search dishes or ingredients"><div class="chips" id="lib-t"></div><div id="lib-mine"></div><div class="card" style="padding-top:4px"><h2 style="margin:10px 0 4px" id="lib-allh">All dishes</h2><div id="lib-list"></div></div></div>
+    <div id="lib-dishes" class="view" hidden><input type="search" id="lib-q" placeholder="Search dishes or ingredients"><div class="chips" id="lib-t"></div><div id="lib-bld" hidden></div><div id="lib-mine"></div><div class="card" id="lib-all" style="padding-top:4px"><h2 style="margin:10px 0 4px" id="lib-allh">All dishes</h2><div id="lib-list"></div></div></div>
     <div class="chips" id="learn-seg" hidden><button class="chip" type="button" data-ln="guide">Best sources by nutrient</button><button class="chip" type="button" data-ln="kitchen">Kitchen tips</button></div>
     <div id="it-foods" class="view" hidden>
       <div class="card" style="display:flex;flex-direction:column;gap:12px">
@@ -1823,7 +1839,7 @@ html.calm .gbld.refill .wbwater{animation:none}
       </div>
       <label class="suprow" for="p-hk" style="margin-top:14px"><span class="supname">Show calories</span><span class="switch"><input type="checkbox" id="p-hk"><i></i></span><small>Turn off to hide energy numbers.</small></label>
     </div>
-    <div class="card psec" data-ps="targets" hidden>
+    <div class="card psec" data-ps="you" hidden>
       <h2>Targets</h2>
       <div id="prof-targets" class="targets" style="margin-top:0"></div>
       <div class="padv">
@@ -1861,7 +1877,7 @@ html.calm .gbld.refill .wbwater{animation:none}
     <div class="card psec" data-ps="sup" hidden>
       <h2>Supplements</h2>
       <p class="cap" style="margin:6px 0 14px">Switch on what you take regularly. Each one counts that nutrient as fully covered.</p>
-      <div id="prof-sup" class="suplist"></div>
+      <div id="prof-sup" class="suplist"></div><p class="cap" style="margin:10px 0 0">Take something only now and then? Log it on the day: tap Extras, then Supplement.</p>
       <div id="prof-cov" style="margin-top:14px"></div>
     </div>
     <div class="card psec" data-ps="dis" hidden>
@@ -1871,13 +1887,14 @@ html.calm .gbld.refill .wbwater{animation:none}
       <input type="search" id="dis-q" placeholder="Add a food, e.g. banana" style="margin-top:10px" autocomplete="off">
       <div id="dis-res"></div>
     </div>
+    <div class="card psec" data-ps="help" hidden><h2>Help</h2><p class="cap" style="margin:4px 0 12px">The tortoise shows you every building, and you can load the newest version of the app.</p><div class="btnrow2"><button class="btn" type="button" id="p-htour">Garden tour</button><button class="btn" type="button" id="p-upd">Check for updates</button></div><p class="cap num" id="p-ver" style="margin:10px 0 0"></p></div>
     <div class="card psec" data-ps="data" hidden>
       <div class="row" style="margin-bottom:12px;justify-content:flex-start"><span class="brandmark sm"><span id="logo-prof"></span></span><div><h2>Vegful</h2><p class="cap">Complete your nutrition</p></div></div>
       <p class="cap" style="margin-bottom:10px">Your days are stored on this phone. Make a backup now and then, or to move to a new phone.</p>
       <div class="btnrow" style="margin-bottom:10px"><button class="btn" type="button" id="bk-save">Save backup file</button><button class="btn" type="button" id="bk-copy">Copy backup</button><label class="btn" for="bk-file">Restore</label><input type="file" id="bk-file" accept=".json,application/json,text/plain" hidden></div><p class="cap" id="bk-msg" style="margin-bottom:10px"></p>
       <div class="btnrow"><button class="btn" type="button" id="re-onb">Run setup again</button><button class="btn" type="button" id="reset-day">Load example day</button></div>
     </div>
-    <p class="foot psec" data-ps="targets" hidden>Targets: EFSA reference values for adults, adjusted for vegan eating (zinc high phytate value, omega 3 ALA doubled). <span data-kc="1">Energy: Mifflin St Jeor. </span>Food values are typical averages; check labels. Product data from <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (Open Database License). Food icons: <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener">Twemoji</a>, CC BY 4.0. Cooked vegetables use typical cooking losses (vitamin C about 35 %, folate about 25 %). A planning aid, not medical advice.</p>
+    <p class="foot psec" data-ps="you" hidden>Targets: EFSA reference values for adults, adjusted for vegan eating (zinc high phytate value, omega 3 ALA doubled). <span data-kc="1">Energy: Mifflin St Jeor. </span>Food values are typical averages; check labels. Product data from <a href="https://world.openfoodfacts.org" target="_blank" rel="noopener">Open Food Facts</a> (Open Database License). Food icons: <a href="https://github.com/jdecked/twemoji" target="_blank" rel="noopener">Twemoji</a>, CC BY 4.0. Cooked vegetables use typical cooking losses (vitamin C about 35 %, folate about 25 %). A planning aid, not medical advice.</p>
   </section>
 </div>
 
@@ -1906,13 +1923,13 @@ html.calm .gbld.refill .wbwater{animation:none}
 
 <dialog id="gsheet" aria-label="Garden stand"><div class="pk"><div class="pk-head" id="gs-head"></div><div class="pk-list" id="gs-body"></div></div></dialog>
 <dialog id="add"><div class="pk"><div class="pk-head" id="ad-head"></div><div class="pk-list" id="ad-body"></div><div class="adfoot" id="ad-foot" hidden></div></div></dialog>
-<dialog id="plan"><div class="pk"><div class="pk-head"><div class="row"><h2>Plan ahead</h2><button class="btn sm" id="pl-close" type="button">Done</button></div></div><div class="pk-list detail" id="pl-body" style="padding:14px 16px 24px"></div></div></dialog>
+<dialog id="plan"><div class="pk"><div class="pk-head"><div class="row"><h2>Workbench</h2><button class="btn sm" id="pl-close" type="button">Done</button></div><div class="seg sm" id="pl-seg" style="margin-top:10px"><button type="button" aria-pressed="true">Plan ahead</button><button type="button" data-wbt="list" aria-pressed="false">Shopping list</button></div></div><div class="pk-list detail" id="pl-body" style="padding:14px 16px 24px"></div></div></dialog>
 <dialog id="gran"><div class="pk"><div class="pk-head"><div class="row"><h2 id="gr-title">Granola builder</h2><button class="btn sm" id="gr-close" type="button">Close</button></div></div><div class="pk-list detail" id="gr-body" style="padding:14px 16px 24px"></div></div></dialog>
 <dialog id="food"><div class="pk"><div class="pk-head"><div class="row"><h2 id="fd-title">Food</h2><button class="btn sm" id="fd-close" type="button">Done</button></div></div><div class="pk-list detail" id="fd-body" style="padding:14px 16px 20px"></div></div></dialog>
 
 <dialog id="scan"><div class="pk"><div class="pk-head"><div class="row"><h2 id="sc-title">Add a product</h2><button class="btn sm" id="sc-close" type="button">Close</button></div></div><div class="pk-list" id="sc-body" style="padding:14px 16px 20px"></div></div></dialog>
 
-<dialog id="supd"><div class="pk"><div class="pk-head"><div class="row"><h2>Supplements</h2><button class="btn sm" id="supd-close" type="button">Done</button></div></div><div class="pk-list" id="supd-body" style="padding:14px 16px 22px"></div></div></dialog>
+<dialog id="supd"><div class="pk"><div class="pk-head"><div class="row"><h2 id="supd-t">Supplements</h2><button class="btn sm" id="supd-close" type="button">Done</button></div></div><div class="pk-list" id="supd-body" style="padding:14px 16px 22px"></div></div></dialog>
 <dialog id="sheet"><div class="pk"><div class="pk-head"><div class="row"><span class="lbl" id="sheet-grp">Nutrient</span><button class="btn sm" id="sheet-close" type="button">Close</button></div></div><div class="pk-list detail" id="sheet-body" style="padding:14px 18px 22px"></div></div></dialog>
 
 <div class="onb" id="onb" hidden></div>
@@ -2210,14 +2227,14 @@ const REC=[
  {id:'s-oni',n:'Onigiri with edamame',t:'s',min:15,it:[['rice',50],['nori',2],['edamame',60]]}
 ];
 /* meals of a day: default keys b, l, d, s plus any extra meals (keys starting with e, with a type ty) */
-const TY={b:{n:'Breakfast',c:'var(--s1)',t:'b'},l:{n:'Lunch',c:'var(--s2)',t:'m'},d:{n:'Dinner',c:'var(--s3)',t:'m'},s:{n:'Snack',c:'var(--s4)',t:'s'}};
+const TY={b:{n:'Breakfast',c:'var(--s1)',t:'b'},l:{n:'Lunch',c:'var(--s2)',t:'m'},d:{n:'Dinner',c:'var(--s3)',t:'m'},s:{n:'Extras',c:'var(--s4)',t:'s'}};
 const SUPSLOT={id:'x',n:'Supplements',c:'var(--s5)'};
 const typeOf=(p,k)=>(p[k]&&p[k].ty)||k;
 const mealKeys=p=>Object.keys(p).filter(k=>p[k]&&Array.isArray(p[k].it)).sort((a,b)=>'blds'.indexOf(typeOf(p,a))-'blds'.indexOf(typeOf(p,b))||(a.length-b.length)||(a<b?-1:1));
 const SLOTS=[];
 function rebuildSlots(){SLOTS.length=0;const p=S.plan,cnt={};mealKeys(p).forEach(k=>{const ty=typeOf(p,k);cnt[ty]=(cnt[ty]||0)+1;const base=TY[ty];
-  SLOTS.push({id:k,ty,n:k==='s'?'Snacks':cnt[ty]>1?`${base.n} ${cnt[ty]}`:base.n,c:base.c,t:base.t,extra:k.length>1})});SLOTS.push(SUPSLOT)}
-const TSL=[...'blds'].map(t=>({id:t,ty:t,n:t==='s'?'Snacks':TY[t].n,c:TY[t].c})).concat([SUPSLOT]);
+  SLOTS.push({id:k,ty,n:k==='s'?'Extras':cnt[ty]>1?`${base.n} ${cnt[ty]}`:base.n,c:base.c,t:base.t,extra:k.length>1})});SLOTS.push(SUPSLOT)}
+const TSL=[...'blds'].map(t=>({id:t,ty:t,n:t==='s'?'Extras':TY[t].n,c:TY[t].c})).concat([SUPSLOT]);
 const slotOfType=ty=>{const k=mealKeys(S.plan).find(k=>typeOf(S.plan,k)===ty);return k||ty};
 const SUP=[
  {id:'b12',n:'Vitamin B12',cov:['b12'],h:'Needed by every vegan. Tablet, drop or spray all count; the doses are high enough that low absorption from sprays does not matter.'},
@@ -2972,21 +2989,15 @@ function renderToday(T,D){
   return `<article class="meal${empty?'':' tap'}${pl?' planned':''}" style="--c:${s.c}"${empty?'':` data-edit="${s.id}" role="button" tabindex="0" aria-label="Edit ${s.n}"`}>${ph?`<img class="mphoto" src="${ph}" alt="">`:''}<div class="meal-top"><span class="micon em">${empty?(ICON[s.ty]||ICON[s.id]):slotIcon(sl,s.ty)}</span><div class="mt">${empty&&s.ty==='s'?`<div class="mname">${s.n}</div>`:`<div class="mslot">${s.n}${pl?'<span class="ptag">Planned</span>':''}${!empty&&sl.est?'<span class="ptag">Estimate</span>':''}</div>`}<div class="mname"${empty&&s.ty==='s'?' hidden':''}>${esc(empty?'Nothing planned':(sl.t||sl.it.map(([id],i)=>{const n=FM[id].n.split(',')[0];return i?n.toLowerCase():n}).slice(0,2).join(' and ')))}</div></div>${empty?'':`<div class="mk num">${HK()?`${Math.round(v[1])} g<span>protein</span>`:`${EN(v[0])}<span>${Math.round(v[1])} g protein</span>`}</div>`}</div>
    ${empty?'':`<p class="mfoods">${sl.it.map(([id,g])=>esc(FM[id].n.split(',')[0])+' '+g+' g').join(', ')}</p>`}
    ${pl&&S.date<=TODAY?`<div class="mact"><button class="btn primary sm" type="button" data-ate="${s.id}">Ate this</button></div>`:''}
-   ${empty?`${idea(s)}<div class="mact"><button class="btn primary" type="button" data-start="${s.id}">${s.t==='s'?'Add a snack':'Add '+s.n.toLowerCase()}</button><button class="btn" type="button" data-pick="${s.id}">More ideas</button></div>`:''}</article>`};
+   ${empty?`${idea(s)}<div class="mact"><button class="btn primary" type="button" data-start="${s.id}">${s.t==='s'?'Add extras':'Add '+s.n.toLowerCase()}</button><button class="btn" type="button" data-pick="${s.id}">More ideas</button></div>`:''}</article>`};
  $('v-today').innerHTML=`<div class="vhead"><div>${isT?`<h1>${title}</h1>`:`<h1><button class="h1btn" type="button" id="d-today" aria-label="${title}, back to today">${title}</button></h1>`}<p class="cap">${date}</p></div><div class="datenav"><button class="iconbtn" type="button" id="go-plan" aria-label="Plan ahead"><svg viewBox="0 0 24 24"><rect x="5" y="4" width="14" height="17" rx="2"/><path d="M9 4V3h6v1M9 10l1.5 1.5L13 9M9 15.5l1.5 1.5L13 14.5M15 11h1M15 16.5h1"/></svg></button><button class="iconbtn" type="button" id="d-cal" aria-label="History calendar"><svg viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="15" rx="2"/><path d="M4 10h16M9 3v4M15 3v4"/></svg></button><button class="iconbtn" type="button" id="d-prev" aria-label="Previous day"><svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg></button><button class="iconbtn" type="button" id="d-next" aria-label="Next day"><svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg></button></div></div>${dueLine()}${shopLine()}
   ${emptyDay?`<div class="card newday"><h2>${isT?'New day':S.date>TODAY?'Nothing planned yet':'Nothing logged'}</h2><p class="cap" style="margin:4px 0 12px">${S.date>TODAY?'Plan this day ahead: the ideas below fit what you still need.':'Add what you eat: pick foods one by one, or a dish.'}</p>${actPill(isT,1)}${wsc!==null?`<button class="weekline" type="button" id="go-week" style="margin:0 0 10px"><span>Last 7 days</span><b>${wsc}% covered</b>${CHEV}</button>`:''}${prev?`<button class="btn wide" type="button" id="d-copy">Same as ${prev===shift(S.date,-1)?'yesterday':kdate(prev).toLocaleDateString('en-GB',{weekday:'long',day:'numeric',month:'short'})}</button>`:''}</div>`:''}
-${emptyDay?'':`  <div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}. Open Nutrients"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/>${PV?`<circle class="pvarc" cx="60" cy="60" r="52" fill="none" stroke="${HC(PV.sc)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-PV.sc/100)}"/>`:''}<circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
-   <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div></div>${PV?`<p class="pvline">${PV.txt} <b class="num">${PV.sc} %</b></p>`:''}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div>${actPill(isT)}</div>`}
+${emptyDay?'':`<button class="sumline" type="button" id="t-sum" aria-label="${rs} percent covered. Open Nutrients"><b class="num">${rs} %</b><span class="sl">covered${(()=>{const L=iss.filter(x=>!x.s.over).slice(0,3).map(x=>NUT[x.k].n);return L.length?' · '+L.join(', ')+' low':''})()}</span>${CHEV}</button>${actPill(isT)}`}
 ${isT?cuHTML():''}${isT?questBoard():''}
   <div class="secthead"><h2>Meals</h2>${emptyDay?'':`<span class="cap num">${HK()?'':Math.round(D[0]).toLocaleString('en')+' kcal · '}${Math.round(D[1])} g protein so far</span>`}</div>
-  <div class="meals">${SLOTS.filter(s=>s.id!=='x').map(meal).join('')}</div>
+  <div class="meals">${SLOTS.filter(s=>s.id!=='x').map(meal).join('')}</div>${isT&&!quests().some(q=>q.id==='sup')?`<button class="suprow2" type="button" id="go-took"><span class="micon" style="--c:var(--s5)">${ICON.x}</span><span style="flex:1;min-width:0"><span class="mslot" style="display:block">Supplements</span><span style="font-weight:700">Took something today?</span></span>${CHEV}</button>`:''}
   <div class="addmeal"><span class="lbl">Add a meal</span><div class="chips">${[...'blds'].map(t=>`<button class="chip" type="button" data-addmeal="${t}">+ ${TY[t].n}</button>`).join('')}</div></div>
   ${isT?insCard():''}
-${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="margin-bottom:4px"><div><h2>${iss.length===1?'1 thing to look at':iss.length+' things to look at'}</h2><p class="cap">${S.range===0?'Each nutrient over the time your body stores it':S.range===1?(isT?'Today':'This day'):'Last '+S.range+' days'}</p></div><button class="btn sm ghost" type="button" id="go-ideas">Improve</button></div>
-   <div class="attn">${iss.slice(0,3).map(x=>`<button class="arow" type="button" data-sel="${x.k}"><span class="dotst" style="background:${x.s.c}"></span><span class="nm">${NUT[x.k].n}${x.run>=3?` <span class="cap">for ${runTxt(x.run)}</span>`:''}</span><span class="pill" style="color:${x.s.c};background:color-mix(in srgb,${x.s.c} 16%,transparent)">${x.s.over?'Too much':Math.round(x.s.p)+' %'}</span>${CHEV}</button>`).join('')}
-   ${iss.length>3?`<button class="arow" type="button" id="go-nutr"><span class="nm muted" style="font-weight:600">${iss.length-3} more</span>${CHEV}</button>`:''}</div></div>`
-  :`<div class="card"><h2>Everything covered</h2><p class="cap" style="margin-top:4px">${S.range===0?'Every nutrient reaches its target over the time your body stores it.':(S.range===1?'This day reaches':'Your last '+S.range+' days reach')+' all your targets.'}</p></div>`}
-`}
   ${isT?'':supCard(isT)}${weightRow()}`;
  const v=$('v-today');
  bindFg(v);bindSupCard(v);bindWater(v);bindCu(v);bindIns(v);bindQuests(v);bindDue(v);if($('go-wt'))$('go-wt').onclick=openWeight;v.querySelectorAll('.actpill').forEach(b=>b.onclick=openAct);
@@ -2999,32 +3010,35 @@ ${emptyDay?'':`  ${iss.length?`<div class="card"><div class="card-head" style="m
  v.querySelectorAll('[data-edit]').forEach(b=>{b.onclick=()=>openMeal(b.dataset.edit);b.onkeydown=e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();openMeal(b.dataset.edit)}}});
  v.querySelectorAll('[data-rcp]').forEach(b=>b.onclick=e=>{e.stopPropagation();openRecipe(b.dataset.rcp,b.dataset.rslot)});
  v.querySelectorAll('[data-tdi]').forEach(b=>b.onclick=()=>{const [k,id]=b.dataset.tdi.split(':'),d=dish(id);useDish(k,d);toast(`Added ${d.n}`);render()});
- v.querySelectorAll('[data-tsn]').forEach(b=>b.onclick=()=>{const [k,ix]=b.dataset.tsn.split(':'),x=SGt.snacks[+ix];if(x.food)addFood(k,x.food.id,x.food.por);else useDish(k,x.d);toast('Added to snacks');render()});
+ v.querySelectorAll('[data-tsn]').forEach(b=>b.onclick=()=>{const [k,ix]=b.dataset.tsn.split(':'),x=SGt.snacks[+ix];if(x.food)addFood(k,x.food.id,x.food.por);else useDish(k,x.d);toast('Added to extras');render()});
  v.querySelectorAll('[data-addmeal]').forEach(b=>b.onclick=()=>{const k='e'+Date.now().toString(36);S.plan[k]={t:'',it:[],ty:b.dataset.addmeal};rebuildSlots();MS=k;render();startMeal(k)});
  v.querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>selectNut(b.dataset.sel));
  if($('go-ideas'))$('go-ideas').onclick=()=>{S.nsub='imp';go('nutr')};
  if($('go-nutr'))$('go-nutr').onclick=()=>{S.nsub='over';go('nutr')};
- if($('go-sup'))$('go-sup').onclick=openSupD;
+ if($('go-sup'))$('go-sup').onclick=openSupD;if($('go-took'))$('go-took').onclick=openTook;
  $('d-prev').onclick=()=>{setDate(shift(S.date,-1));render()};$('d-next').onclick=()=>{setDate(shift(S.date,1));render()};
  if($('d-today'))$('d-today').onclick=()=>{setDate(TODAY);render()};
  if($('d-copy'))$('d-copy').onclick=()=>{copyMeals(S.days[prev],S.plan);setDate(S.date);render()};
  document.querySelectorAll('[data-plants]').forEach(b=>b.onclick=openPlants);
  if($('go-week'))$('go-week').onclick=()=>{S.range=7;S.nsub='over';go('nutr')};
- if($('t-ring'))$('t-ring').onclick=()=>{S.nsub='over';go('nutr')};
+ if($('t-sum'))$('t-sum').onclick=()=>{S.nsub='over';go('nutr')};
  const hm=document.querySelector('#v-today .herocard .macros');if(hm)hm.onclick=()=>{S.nsub='over';go('nutr')};
  $('d-cal').onclick=()=>{S.nsub='hist';S.hsel=S.date;go('nutr')};
  v.querySelectorAll('#t-range [data-r]').forEach(b=>b.onclick=()=>{S.range=+b.dataset.r;render()});
 }
 
 /* ---------- toast ---------- */
-function toast(t){let el=$('toast');if(!el){el=document.createElement('div');el.id='toast';el.setAttribute('role','status');document.body.appendChild(el)}el.textContent=t;el.className='show';clearTimeout(toast.h);toast.h=setTimeout(()=>{el.className=''},2600)}
+function toast(t){let el=$('toast');if(!el){el=document.createElement('div');el.id='toast';el.setAttribute('role','status');document.body.appendChild(el)}el.textContent=t;el.className='show';clearTimeout(toast.h);toast.h=setTimeout(()=>{el.className='';clrSel()},2600)}
+/* a selection left on something that went away (a message, a toast) is cleared */
+function clrSel(){try{const s=getSelection();if(!s||s.isCollapsed)return;const n=s.anchorNode,el=n&&(n.nodeType===1?n:n.parentElement);if(!el||!el.isConnected||!el.closest('#sheet-body,#it-kitchen,.selok'))s.removeAllRanges()}catch(_){}}
+document.addEventListener('pointerdown',clrSel,true);
 /* ---------- meal sheet ---------- */
 let MS=null;const SAVENAME={};
 const STAR='<svg viewBox="0 0 24 24"><path d="M12 3.5l2.6 5.3 5.8.8-4.2 4.1 1 5.8L12 16.8l-5.2 2.7 1-5.8-4.2-4.1 5.8-.8z"/></svg>';
 function openMeal(s){openAdd(s,'plate')}
 function autoSave(k,force){const sl=k&&S.plan[k];if(!sl||k==='x'||!sl.it.length)return;const nm=SAVENAME[k];
  if(!force&&!sl.dirty&&(nm==null||nm.trim()===(sl.t||'')))return;
- const ty=typeOf(S.plan,k),n=(nm||'').trim()||sl.t||(ty==='s'?'My snack':'My '+TY[ty].n.toLowerCase());
+ const ty=typeOf(S.plan,k),n=(nm||'').trim()||sl.t||(ty==='s'?'My extras':'My '+TY[ty].n.toLowerCase());
  saveMeal(k,n);delete SAVENAME[k];toast(`Saved "${n}" to My meals`)}
 function closeMeal(){const k=MS;MS=null;autoSave(k);const d=$('meal');d.close?d.close():d.removeAttribute('open');render()}
 $('meal').addEventListener('close',()=>{if(!$('meal').open&&MS){const k=MS;MS=null;autoSave(k);render()}});
@@ -3036,7 +3050,7 @@ function renderMeal(){
  fb.hidden=!mine;if(mine){fb.setAttribute('aria-pressed',d.fav);fb.innerHTML=STAR;fb.onclick=()=>{meta(d.id).fav=!d.fav;render()}}
  const sv=$('m-save');
  sv.innerHTML=(mine?`<div class="photorow">${PH[d.id]?`<img class="mphoto" src="${PH[d.id]}" alt="Photo of ${esc(d.n)}">`:''}<div class="btnrow"><label class="btn sm" for="m-file">${PH[d.id]?'Change photo':'Add photo'}</label><input type="file" id="m-file" accept="image/*" hidden>${PH[d.id]?'<button class="btn sm ghost" type="button" id="m-delph" style="color:var(--low)">Remove photo</button>':''}</div></div>`:'')+
-  (sl.it.length?`<label class="lbl" for="m-name" style="display:block;margin-bottom:4px">Name</label><input type="text" id="m-name" value="${esc(SAVENAME[MS]!=null?SAVENAME[MS]:(sl.t||''))}" placeholder="${ty==='s'?'My snack':'My '+TY[ty].n.toLowerCase()}">`:'');
+  (sl.it.length?`<label class="lbl" for="m-name" style="display:block;margin-bottom:4px">Name</label><input type="text" id="m-name" value="${esc(SAVENAME[MS]!=null?SAVENAME[MS]:(sl.t||''))}" placeholder="${ty==='s'?'My extras':'My '+TY[ty].n.toLowerCase()}">`:'');
  if($('m-file'))$('m-file').onchange=async e=>{const f=e.target.files[0];if(!f)return;try{putPhoto(d.id,await readPhoto(f));render()}catch(err){}};
  if($('m-delph'))$('m-delph').onclick=e=>{if(e.target.dataset.sure!=='1'){e.target.dataset.sure='1';e.target.textContent='Tap again to remove';return}delPhoto(d.id);render()};
  if($('m-name'))$('m-name').oninput=e=>{SAVENAME[MS]=e.target.value};
@@ -3051,7 +3065,7 @@ function renderMeal(){
  if(d)$('m-items').insertAdjacentHTML('afterbegin',`<button class="linkbtn" type="button" id="m-rcp">${hasRcp(d.id)?'Recipe for this dish':'Find a recipe for this dish'}</button>`);
  $('m-items').insertAdjacentHTML('beforeend',`<button class="linkbtn" type="button" id="m-meas">${INFO} How much is a spoon, a cup or a handful?</button>`);
  $('m-foot').innerHTML=`<button class="btn" type="button" id="m-add">Add food</button>
-  <button class="btn" type="button" id="m-change">${s.t==='s'?'Snack ideas':'Choose a dish'}</button><button class="btn" type="button" id="m-clear" style="color:var(--low)">${s.extra?'Remove meal':'Clear'}</button>
+  <button class="btn" type="button" id="m-change">${s.t==='s'?'Ideas for extras':'Choose a dish'}</button><button class="btn" type="button" id="m-clear" style="color:var(--low)">${s.extra?'Remove meal':'Clear'}</button>
   <button class="btn primary savebig" type="button" id="m-savemeal">${sl.it.length?'Save':'Close'}</button>`;
  const m=$('m-items');if($('m-rcp'))$('m-rcp').onclick=()=>openRecipe(d.id);
  m.querySelectorAll('[data-q]').forEach(b=>b.onclick=()=>{const [i,d]=b.dataset.q.split(':');const it=S.plan[MS].it[i];const f=FM[it[0]];const step=f.por>=100?25:f.por>=30?10:5;it[1]=Math.max(0,it[1]+step*d);edited(MS);render()});
@@ -3069,6 +3083,15 @@ function renderMeal(){
 }
 
 /* ---------- nutrients ---------- */
+/* the score card lives in Nutrients: the ring, energy, protein and fiber, for Mixed, Day, 7 or 30 days */
+function heroCard(T,D){const isT=S.date===TODAY,C=2*Math.PI*52;
+ const MXV=mixMemo(),MX=S.range===0?mixStats(S.date,MXV):null,RG=S.range>1?rangeStats(S.range,S.date):null,useR=RG&&RG.L.length,DS=MX?MX.avg:useR?RG.avg:D,TP=paceT(T),rs=dayScore(DS,TP),iss=issues(DS,TP);if(MX)iss.slice(0,3).forEach(x=>{x.run=x.s.over?0:lowRun(x.k,S.date,MXV,T)});
+ const rlab=S.range===0?'mixed':S.range===1?(isT?'today':'this day'):S.range+' days',rnote=S.range===0?(isT?'Energy today, protein and fiber 3 days':'Energy this day, protein and fiber 3 days'):S.range===1?(isT?'Today':'This day'):(useR?`Average of ${RG.L.length} logged day${RG.L.length>1?'s':''}`:'No days logged');
+ const HC=p=>p>=90?'var(--hg)':p>=50?'var(--hm)':'var(--hl)';
+ const PV0=isT&&logged(S.plan)&&(S.range===0||S.range===1)?dayPreview(D):null,PV=PV0&&PV0.sc>rs?PV0:null;
+ const macro=(k,label)=>{const i=K.indexOf(k),p=DS[i]/T[k]*100,pp=DS[i]/TP[k]*100,isE=k==='kcal';return `<div class="macro"><div class="row"><span>${label}</span><b>${isE?EN(DS[0]).split(' ')[0]:Math.round(DS[i])}<span class="muted" style="font-weight:500"> / ${isE?ENR(T).replace(/ (kcal|kJ)$/,'<span class="mu"> $1</span>'):Math.round(T[k])+' g'}</span></b></div><div class="meter mt">${(()=>{const p2=PV?PV.D[i]/T[k]*100:0,sc=Math.max(100,Math.min(Math.max(p,p2),200));return `${p2>p+.5?`<i class="pv" style="width:${Math.min(p2,200)/sc*100}%;background:${isE?'var(--hen)':HC(p2)}"></i>`:''}<i style="width:${Math.min(p,200)/sc*100}%;background:${isE?'var(--hen)':HC(pp)}"></i>${p>100?`<s class="tick" style="left:${100/sc*100}%" aria-hidden="true"></s>`:''}`})()}</div></div>`};
+ return `<div class="card herocard"><div class="seg sm" id="t-range">${[[0,'Mixed'],[1,'Day'],[7,'7 days'],[30,'30 days']].map(([r,l])=>`<button data-r="${r}" aria-pressed="${S.range===r}">${l}</button>`).join('')}</div><div class="hero"><button class="ring" type="button" id="t-ring" aria-label="${rs} percent of nutrients covered, ${rlab}"><svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="none" stroke="var(--surface2)" stroke-width="12"/>${PV?`<circle class="pvarc" cx="60" cy="60" r="52" fill="none" stroke="${HC(PV.sc)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-PV.sc/100)}"/>`:''}<circle cx="60" cy="60" r="52" fill="none" stroke="${HC(rs)}" style="stroke:${HC(rs)}" stroke-width="12" stroke-linecap="round" stroke-dasharray="${C}" stroke-dashoffset="${C*(1-rs/100)}"/></svg><span class="v"><b>${rs}%</b><span>${rlab}</span></span></button>
+   <div class="macros">${HK()?'':macro('kcal','Energy')}${macro('p','Protein')}${macro('fib','Fiber')}</div></div>${PV?`<p class="pvline">${PV.txt} <b class="num">${PV.sc} %</b></p>`:''}<div class="hlegend"><span><i style="background:var(--hg)"></i>Covered</span><span><i style="background:var(--hm)"></i>Close</span><span><i style="background:var(--hl)"></i>Low</span></div></div>`}
 function renderNutrients(T,D){
  let sv=SLOTS.map(s=>slotV(s.id)),SL=SLOTS;const Dd=D,svd=sv,tlab=S.date===TODAY?'today':kdate(S.date).toLocaleDateString('en-GB',{weekday:'short'});let two=S.range===0;
  document.querySelectorAll('#range-seg [data-r]').forEach(b=>{b.setAttribute('aria-pressed',+b.dataset.r===S.range);b.onclick=()=>{S.range=+b.dataset.r;render()}});
@@ -3087,12 +3110,13 @@ function renderNutrients(T,D){
     return `<button class="arow2 two" type="button" data-sel="${x.k}"><span class="nm">${NUT[x.k].n}</span>${pc}<span class="n2"><span class="il">${S.range===0?winLabel(x.k):S.range+' days'}</span>${b(x.s)}${am(D[j])}<span class="il">${tlab}</span>${b(sd,1)}${am(Dd[j])}</span></button>`}
    return `<button class="arow2" type="button" data-sel="${x.k}"><span class="nm">${NUT[x.k].n}</span><span class="abar"><i style="width:${p}%;background:${x.s.c}"></i></span>${pc}</button>`};
    return att.length?att.slice(0,3).map(row).join('')+(att.length>3?`<details class="attmore"><summary>Show ${att.length-3} more</summary>${att.slice(3).map(row).join('')}</details>`:''):'<p class="cap" style="margin-top:6px">Every nutrient reaches its target. Nice.</p>'})()}</div>`;
- $('nutrients').innerHTML=attHtml+groups.map(g=>`<div class="card"><h2 style="margin-bottom:6px">${g}</h2><div class="ngroup">${NORD.filter(k=>NUT[k].g===g&&!(k==='kcal'&&HK())).map(k=>{const i=K.indexOf(k),s=nstat(k,D,T);
+ $('range-seg').hidden=true;$('nutrients').innerHTML=heroCard(T,Dd)+attHtml+groups.map(g=>`<div class="card"><h2 style="margin-bottom:6px">${g}</h2><div class="ngroup">${NORD.filter(k=>NUT[k].g===g&&!(k==='kcal'&&HK())).map(k=>{const i=K.indexOf(k),s=nstat(k,D,T);
    const sg=(L,v)=>L.map((sl,j)=>{const w=v[j][i]/T[k]*100/1.5;return w>0?`<i style="width:${w}%;background:${sl.c}"></i>`:''}).join(''),segs=sg(SL,sv),t2=two&&vWin(k)>1,am=v=>`<span class="iv num">${k==='kcal'?`<b>${EN(v).split(' ')[0]}</b>/${ENR(T)}`:`<b>${fmt(v)}</b>/${fmt(T[k])} ${NUT[k].u}`}</span>`;
    if(t2)return `<button class="nrow" type="button" data-sel="${k}"><span><span class="nn">${NUT[k].n}</span>${s.over?`<span class="tag" style="color:var(--over);background:color-mix(in srgb,var(--over) 16%,transparent)">Too much</span>`:''}${NUT[k].opt?'<span class="tag">Optional</span>':''}</span><span class="np" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="n2"><span class="il">${S.range===0?winLabel(k):S.range+' days'}</span><span class="stack">${segs}</span>${am(D[i])}<span class="il">${tlab}</span><span class="stack thin">${sg(SLOTS,svd)}</span>${am(Dd[i])}</span></button>`;
    return `<button class="nrow" type="button" data-sel="${k}"><span><span class="nn">${NUT[k].n}</span>${S.range===0?`<span class="wtag">${winLabel(k)}</span>`:''}${s.over?`<span class="tag" style="color:var(--over);background:color-mix(in srgb,var(--over) 16%,transparent)">Too much</span>`:''}${NUT[k].opt?'<span class="tag">Optional</span>':''}<br><span class="nv num">${k==='kcal'?EN(D[0])+' of '+ENR(T):fmt(D[i])+' of '+fmt(T[k])+' '+NUT[k].u}</span></span><span class="np" style="color:${k==='kcal'?'var(--ink)':s.c}">${Math.round(s.p)}%</span><span class="stack">${segs}</span></button>`}).join('')}</div></div>`).join('')+(rr>1&&!fvAvg?'':fvCard(S.plan,fvAvg));
  $('nutrients').insertAdjacentHTML('beforeend',fsCard());
  $('nutrients').querySelectorAll('[data-sel]').forEach(b=>b.onclick=()=>selectNut(b.dataset.sel));
+ $('nutrients').querySelectorAll('#t-range [data-r]').forEach(b=>b.onclick=()=>{S.range=+b.dataset.r;render()});
  if($('n-fix'))$('n-fix').onclick=()=>{S.nsub='imp';render();scrollTo({top:0})};
  document.querySelectorAll('[data-plants]').forEach(b=>b.onclick=openPlants);
 }
@@ -3129,7 +3153,7 @@ function renderDetail(T,root){
    <div style="margin-top:8px">${srcLinks([k],`Target from ${REFL[S.prof.ref||'efsa'][0]}${['zn','ala','p'].includes(k)?', adjusted for vegan eating':''}. Food amounts are typical averages; brands differ.`)}</div>
    ${T.ul[k]?`<p class="cap" style="margin-top:6px">Upper safe limit ${fmt(T.ul[k])} ${N.u}${s.over?'. You are above it.':''}</p>`:''}</div>
   <p class="info">${N.i}</p>
-  ${supTip?`<div class="notice">${k==='b12'?'Food alone rarely gets there. Every vegan needs a B12 supplement or reliably fortified foods.':k==='iod'?'Iodized salt in cooking is the first step. If you already take iodine, switch it on in Profile.':'Food barely contains it; sun on the skin is the main source. If you already take it, switch it on in Profile.'}</div>`:''}
+  ${supTip?`<div class="notice">${k==='b12'?'Food alone rarely gets there. Every vegan needs a B12 supplement or reliably fortified foods.':k==='iod'?'Iodized salt in cooking is the first step. If you already take iodine, add it in Supplements on Today.':'Food barely contains it; sun on the skin is the main source. If you already take it, add it in Supplements on Today.'}</div>`:''}
   ${k==='kcal'&&HK()?'':spark(k,T)}
   <div><h3 style="margin-bottom:10px">Where it comes from ${S.date===TODAY?'today':'on '+kdate(S.date).toLocaleDateString('en-GB',{weekday:'long'})}</h3>
    ${contrib.length?`<div class="contrib">${contrib.slice(0,6).map(c=>`<div class="crow"><span>${esc(c.n)} <span class="cap">${c.m}</span></span><span class="v num">${fmt(c.v)} ${N.u}</span><span class="bar"><i style="width:${c.v/maxc*100}%;background:${c.c}"></i></span></div>`).join('')}</div>`:'<p class="cap">Nothing in your day provides this yet.</p>'}</div>
@@ -3477,13 +3501,13 @@ async function tabLookup(code){
 }
 function renderScanTab(){
  const v=$('v-scan'),key=ST.state+':'+(ST.prod?ST.prod.code:'')+':'+(S.shopSeg||'scan');
- if(!v.dataset.shb){v.dataset.shb=1;v.addEventListener('click',e=>{const b=e.target.closest('[data-shs]');if(!b)return;S.shopSeg=b.dataset.shs;S.panScan=0;ST.drawn='';save();renderScanTab();scrollTo({top:0})})}
+ if(!v.dataset.shb){v.dataset.shb=1;v.addEventListener('click',e=>{const w=e.target.closest('[data-wbt]');if(w){if(w.dataset.wbt==='plan')openPlan();return}const b=e.target.closest('[data-shs]');if(!b)return;S.shopSeg=b.dataset.shs;S.panScan=0;ST.drawn='';save();renderScanTab();scrollTo({top:0})})}
  if(ST.drawn===key){if(ST.state==='cam'&&!SCAN.tab)startCamera('st-video');return}
  ST.drawn=key;
- const nOpen=shopOpen(),segH=`<div class="seg" id="sh-seg" style="margin-bottom:14px"><button type="button" data-shs="scan" aria-pressed="${S.shopSeg!=='list'&&S.shopSeg!=='pantry'}">Scan</button><button type="button" data-shs="list" aria-pressed="${S.shopSeg==='list'}">List${nOpen?' · '+nOpen:''}</button><button type="button" data-shs="pantry" aria-pressed="${S.shopSeg==='pantry'}">Pantry</button></div>`;
- if(S.shopSeg==='pantry'){stopCamera();SCAN.tab=false;ST.drawn='';renderPantry(v,`<div class="vhead"><div><h1>Scan/Shop</h1><p class="cap">What you have at home. Logged meals use it up.</p></div></div>`+segH);return}
- if(S.shopSeg==='list'){stopCamera();SCAN.tab=false;ST.drawn='';renderShopList(v,`<div class="vhead"><div><h1>Scan/Shop</h1><p class="cap">Everything your planned meals need, in shop amounts.</p></div></div>`+segH);return}
- const head=`<div class="vhead"><div><h1>Scan/Shop</h1><p class="cap">Check a product in the shop: vegan or not, protein, fiber, sugar.</p></div></div>`+segH;
+ const nOpen=shopOpen(),segH=S.shopSeg==='list'?`<div class="seg" id="sh-seg" style="margin-bottom:14px"><button type="button" data-wbt="plan" aria-pressed="false">Plan ahead</button><button type="button" data-wbt="list" aria-pressed="true">Shopping list${nOpen?' · '+nOpen:''}</button></div>`:'';
+ if(S.shopSeg==='pantry'){stopCamera();SCAN.tab=false;ST.drawn='';renderPantry(v,`<div class="vhead"><div><h1>Scan</h1><p class="cap">What you have at home. Logged meals use it up.</p></div></div>`+segH);return}
+ if(S.shopSeg==='list'){stopCamera();SCAN.tab=false;ST.drawn='';renderShopList(v,`<div class="vhead"><div><h1>Workbench</h1><p class="cap">Everything your planned meals need, in shop amounts.</p></div></div>`+segH);return}
+ const head=`<div class="vhead"><div><h1>Scan</h1><p class="cap">Check a product in the shop: vegan or not, protein, fiber, sugar.</p></div></div>`+segH;
  const H=S.scanHist||[];
  const vInfo=x=>x==='vegan'?['var(--ok)','Vegan']:x==='no'?['var(--low)','Not vegan']:x==='maybe'?['var(--mid)','Maybe vegan']:['var(--mid)','Vegan status unknown'];
  const hist=H.length?`<div class="card"><h2 style="margin-bottom:6px">Recently scanned</h2>${H.map((h,i)=>{const c=vInfo(h.vegan);return `<button class="histrow" type="button" data-h="${i}">${h.img?`<img src="${esc(h.img)}" alt="">`:`<span class="thumb em">${EMO['1f37d']}</span>`}<span style="flex:1;min-width:0"><span class="hn">${esc(h.n)}</span><span class="vdot" style="color:${c[0]}">● ${c[1]}</span></span>${CHEV}</button>`}).join('')}</div>`:'';
@@ -3527,7 +3551,7 @@ function bindST(P){
  const nx=()=>{ST={state:'cam',prod:null,drawn:''};renderScanTab();scrollTo({top:0})};
  if($('st-next'))$('st-next').onclick=nx;
  if($('st-pan'))$('st-pan').onclick=e=>{const b=e.currentTarget,id=b.dataset.pid,g=+b.dataset.pg;panAdd(id,g);save();toast(`Added to your pantry: ${gRowName(id).split(',')[0].toLowerCase()}, ${panAmt(id,g)}`);ST.drawn='';renderScanTab()};
- if($('st-panback'))$('st-panback').onclick=()=>{stopCamera();S.shopSeg='pantry';S.panScan=0;ST.drawn='';save();renderScanTab();scrollTo({top:0})};
+ if($('st-panback'))$('st-panback').onclick=()=>{stopCamera();S.shopSeg='scan';S.panScan=0;ST.drawn='';S.lib='pantry';save();go('lib')};
  const rv=()=>{SC={slot:null,stage:'review',prod:{code:P.code,fs:P.fs,n:P.n||'',lab:Object.assign({},P.lab||{}),vegan:P.vegan,base:P.base||'',pack:P.pack||'',por:P.por||'',img:P.img||'',found:!!P.found,ing:P.ing||[],share:P.share||0,src:P.src||'base',unk:P.unk||[]},msg:''};const d=$('scan');renderScan();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}};
  if($('st-save'))$('st-save').onclick=rv;if($('st-label'))$('st-label').onclick=rv;
 }
@@ -3564,14 +3588,14 @@ function tapBind(el,fn){let x0=0,y0=0,t0=0,done=false;
  el.addEventListener('click',e=>{if(done){done=false;e.preventDefault();return}fn(e)})}
 function renderPicker(){
  const s=SLOTS.find(x=>x.id===PK.slot)||SLOTS[0],T=targets(),q=fold(PK.q).trim(),isD=PK.kind==='dish',fm=q?'all':PK.f;
- const dn=s.t==='s'?'snack ideas':s.t==='b'?'breakfasts':'dishes';
+ const dn=s.t==='s'?'ideas for extras':s.t==='b'?'breakfasts':'dishes';
  $('pk-close').className='btn sm'+(isD?'':' primary');$('pk-close').textContent=isD?'Close':'Done';
  $('pk-title').textContent=PK.pick?'Add to granola':PK.part?`Add to ${FM[PK.part].n}`:isD?`${s.n}: ${dn}`:`Add to ${s.n.toLowerCase()}`;
  $('pk-kind').hidden=!!(PK.part||PK.pick);$('pk-kind').querySelectorAll('[data-k]').forEach(b=>{b.setAttribute('aria-pressed',b.dataset.k===PK.kind);b.onclick=()=>{if(PK.kind===b.dataset.k)return;PK.kind=b.dataset.k;PK.f=PK.kind==='dish'?'ideas':(S.recentFoods.length?'recent':'all');PK.q='';$('pk-q').value='';renderPicker();$('pk-list').scrollTop=0}});
  const filters=isD?[['ideas','Ideas'],['recent','Recent'],['fav','Favs'],['mine','Mine'],['all','All']]:[['recent','Recent'],['fav','Favourites'],['mine','My foods'],['all','All foods']];
  $('pk-mode').innerHTML=filters.map(([m,l])=>`<button data-m="${m}" aria-pressed="${fm===m}">${l}</button>`).join('');
  $('pk-mode').querySelectorAll('button').forEach(b=>b.onclick=()=>{PK.f=b.dataset.m;PK.cat='All';PK.q='';$('pk-q').value='';renderPicker();$('pk-list').scrollTop=0});
- $('pk-hint').textContent=PK.pick?'Search or scan an ingredient':PK.part?'Pick an ingredient for this mix':isD?(s.t==='s'?'Adds to your snacks':(S.plan[PK.slot].it.length?'Picking one replaces this meal':'Pick a dish, then change amounts if you like')):'Adds one portion; change grams after. Over 1,100 foods.';
+ $('pk-hint').textContent=PK.pick?'Search or scan an ingredient':PK.part?'Pick an ingredient for this mix':isD?(s.t==='s'?'Adds to your extras':(S.plan[PK.slot].it.length?'Picking one replaces this meal':'Pick a dish, then change amounts if you like')):'Adds one portion; change grams after. Over 1,100 foods.';
  $('pk-q').placeholder=isD?'Search dishes or ingredients':'Search tofu, lentils, kiwi, quinoa';
  $('pk-cats').hidden=isD||PK.f!=='all';
  $('pk-cats').innerHTML=['All',...CATS].map(c=>`<button class="chip" type="button" data-c="${c}" aria-pressed="${PK.cat===c}">${c}</button>`).join('');
@@ -4025,7 +4049,7 @@ function renderPlan(){if(!PA)return;const ds=paDates(),b=$('pl-body'),T=targets(
  $('pa-shop').onclick=()=>{const end=ds[ds.length-1],n=dayDiff(TODAY,end)+1;shopInit();S.shop.days=n<=3?3:n<=7?7:14;save();const d=$('plan');d.close?d.close():d.removeAttribute('open');PA=null;openShop()}}
 /* a meal's values on any day, planned or not */
 function slotVraw0(p,k){return p[k].it.reduce((a,it)=>addv(a,itemV(it)),z())}
-$('pl-close').onclick=closePlan;
+$('pl-close').onclick=closePlan;$('pl-seg').querySelector('[data-wbt="list"]').onclick=()=>{closePlan();openShop()};
 /* back from the picker or the meal editor: return to the day you were on and refresh the plan */
 function paBack(){setTimeout(()=>{if(!PA||!PA.ret||$('pk').open||$('meal').open||$('add').open)return;const r=PA.ret;PA.ret=null;render();setDate(r);render();renderPlan()},0)}
 $('pk').addEventListener('close',paBack);$('meal').addEventListener('close',paBack);$('add').addEventListener('close',paBack);
@@ -4131,9 +4155,9 @@ function wMealLine(items){const m=wMealSeeds(items),kn=k=>kindInfo(k).name.toLow
 function adFoot(s,sl){const f=$('ad-foot'),v=AD.view;
  if(v==='dish'){const d=dish(AD.dish);f.hidden=!d;if(!d)return;f.className='adfoot two';f.innerHTML=`<button class="btn" type="button" id="ad-rcp">${hasRcp(d.id)?'Recipe':'Find a recipe'}</button><button class="btn primary" type="button" id="ad-put">Put on plate</button>`;
   $('ad-rcp').onclick=()=>openRecipe(d.id,AD.slot);$('ad-put').onclick=()=>adJust(AD.slot,()=>putDish(AD.slot,d),2);return}
- if(v==='out'){const d=AD.os&&dish(AD.os);f.hidden=false;f.className='adfoot';f.innerHTML=`<button class="btn primary wide" type="button" id="ad-oadd"${d?'':' disabled'}>Add to ${s.t==='s'?'snacks':s.n.toLowerCase()}</button>`;
+ if(v==='out'){const d=AD.os&&dish(AD.os);f.hidden=false;f.className='adfoot';f.innerHTML=`<button class="btn primary wide" type="button" id="ad-oadd"${d?'':' disabled'}>Add to ${s.t==='s'?'extras':s.n.toLowerCase()}</button>`;
   $('ad-oadd').onclick=()=>{if(!d)return;const fd=dishFit(d)||d,it=fd.it.map(([id,g,st])=>st?[id,Math.round(g*AD.oz),st]:[id,Math.round(g*AD.oz)]);putOn(AD.slot,it,d.n,d.id,{est:1});save();toast(`Added ${d.n}, estimated`);closeAdd()};return}
- if(v==='plate'&&AD.just){f.hidden=false;f.className='adfoot';f.innerHTML=`<button class="btn primary wide" type="button" id="ad-jadd">Add to ${s.t==='s'?'snacks':s.n.toLowerCase()}</button>`;$('ad-jadd').onclick=()=>adJustOut(false);return}
+ if(v==='plate'&&AD.just){f.hidden=false;f.className='adfoot';f.innerHTML=`<button class="btn primary wide" type="button" id="ad-jadd">Add to ${s.t==='s'?'extras':s.n.toLowerCase()}</button>`;$('ad-jadd').onclick=()=>adJustOut(false);return}
  if(v==='plate'){f.hidden=false;f.className='adfoot';f.innerHTML=`<button class="btn primary wide" type="button" id="ad-done">Done</button>`;$('ad-done').onclick=closeAdd;return}
  if(!sl.it.length){f.hidden=true;f.innerHTML='';return}
  const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.slot),val,1),pu=Date.now()-AD.pulse<700;f.hidden=false;f.className='adfoot plate';
@@ -5113,7 +5137,7 @@ let PN={q:'',open:null};
 function renderPantry(v,head){panInit();const have=panAll(),ids=Object.keys(have).sort((a,b)=>gRowName(a).localeCompare(gRowName(b)));
  v.innerHTML=head+`<div class="card pncard"><div class="adsearch"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg><input type="search" id="pn-q" placeholder="Search or add" aria-label="Search or add to your pantry" autocomplete="off"><button class="adscan" type="button" id="pn-scan" aria-label="Scan a product into the pantry">${SCANI}</button></div><div id="pn-list"></div></div>`;
  $('pn-q').value=PN.q;$('pn-q').oninput=e=>{PN.q=e.target.value;PN.open=null;panList()};
- $('pn-scan').onclick=()=>{S.shopSeg='scan';S.panScan=1;ST={state:'cam',prod:null,drawn:''};save();renderScanTab();scrollTo({top:0})};
+ $('pn-scan').onclick=()=>{S.shopSeg='scan';S.panScan=1;ST={state:'cam',prod:null,drawn:''};save();go('scan')};
  panList()}
 function panList(){const el=$('pn-list');if(!el)return;const have=panAll(),q=fold(PN.q).trim(),ids=Object.keys(have).filter(id=>!q||fmatch(FM[id],q));
  const row=id=>{const g=have[id],f=FM[id],low=panLow(id,g),open=PN.open===id;
@@ -5168,16 +5192,17 @@ function adMain(b,s){const T=targets(),q=fold(AD.q).trim(),D0=dayMinus(AD.slot);
   const dn=oth.filter(nm).slice(0,10),di=oth.filter(d=>!nm(d)).slice(0,6);
   h=own.map(d=>dishItem(d,D0)).join('')+(gbRows(q)||'')+(shRow(q)||'')+(paRow(q)||'')+fs.slice(0,4).map(f=>foodItem(f,T)).join('')+dn.map(d=>dishItem(d,D0)).join('')+fs.slice(4).map(f=>foodItem(f,T)).join('')+di.map(d=>dishItem(d,D0)).join('');
   if(!h)h=`<p class="empty2">No match. <button class="linkbtn" type="button" id="ad-tout" style="display:inline-flex;padding:0;min-height:0">Log it as eaten out</button></p>`}
- else if(AD.more)h=adMore(b,s,T,D0);
+ else if(AD.more&&!ADTABS.includes(AD.more))h=adMore(b,s,T,D0);
+ else if(AD.more)h=adTabs()+adMore(b,s,T,D0).replace(/^<div class="admhead">[\s\S]*?<\/div>/,'');
  else{const ag=againList(AD.slot,2);AD.ag=ag;
-  h+=`<div class="chips adquick" role="group" aria-label="Shortcuts">${[['meals','Recent'],['fav','Favourites'],['mine','Your dishes']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}</div>`+adQuickRow();
+  h+=adTabs()+adQuickRow();
   if(ag.length)h+=`<h3 class="adh">Again</h3>`+ag.map((a,i)=>adRow({gt:a.est?'':wSeedTag(a.it),main:`data-adag="${i}"`,plus:`data-adag="${i}"`,ic:slotIcon({did:a.did,it:a.it},typeOf(S.plan,AD.slot)),n:a.n,lab:a.est?lab('Estimate','est'):'',sub:`${whenTxt(a.d)} · ${ENs(a.v[0])}${Math.round(a.v[1])} g protein`})).join('');
   const LO=lowList(T);AD.focus=AD.focus.filter(k=>LO.some(x=>x.k===k));
   const I=s.t==='s'?[]:slotIdeas(AD.slot,AD.focus.length?12:8,AD.focus);
   if(s.t==='s'){const SG=computeSugg();AD.sn=SG.snacks;if(SG.snacks.length)h+=`<h3 class="adh" id="ad-ideas">Ideas</h3>`+SG.snacks.slice(0,8).map((x,i)=>x.food?adRow({gt:wSeedTag([[x.food.id,x.food.por]]),main:`data-adsn="${i}"`,plus:`data-adsn="${i}"`,ic:fIcon(x.food.id),n:x.food.n.split(',')[0],sub:`${amtTxt(x.food.id,x.food.por)} · ${ENs(x.add[0])}${Math.round(x.add[1])} g protein${(g=>g?' · '+g:'')(gainTxt(D0,x.add))}`}):dishItem(x.d,D0)).join('')}
   else{h+=`<h3 class="adh" id="ad-ideas">Ideas</h3>`+(LO.length?`<div class="chips focusrow" role="group" aria-label="Focus on"><button class="chip" type="button" data-fx="" aria-pressed="${!AD.focus.length}">All</button>${LO.slice(0,8).map(x=>`<button class="chip" type="button" data-fx="${x.k}" aria-pressed="${AD.focus.includes(x.k)}">${NUT[x.k].n}</button>`).join('')}</div>`:'')+
    (I.map(x=>dishItem(x.d,D0).replace(lab('Dish','dsh'),'')).join('')||`<p class="empty2">${AD.focus.length>1?'No dish brings enough of all of these. Pick fewer.':'No idea fits.'}</p>`)}
-  h+=`<h3 class="adh">More</h3><div class="chips wrap admore">${[...(Object.keys(S.pantry||{}).length?[['pantry','From my pantry']]:[]),['recent','Recent foods'],['prod','Your products'],['dishes','All dishes'],['foods','All foods']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}<button class="chip" type="button" id="ad-out">Ate out</button></div>`}
+  h+=`<h3 class="adh">More</h3><div class="chips wrap admore">${[...(Object.keys(S.pantry||{}).length?[['pantry','From my pantry']]:[]),['mine','Your dishes'],['recent','Recent foods'],['dishes','All dishes'],['foods','All foods']].map(([k,l])=>`<button class="chip" type="button" data-admore="${k}">${l}</button>`).join('')}<button class="chip" type="button" id="ad-out">Ate out</button></div>`}
  b.innerHTML=h;adBind(b,s)}
 
 /* quick add: favourite dishes, then favourite and recent foods, then what you ate most in the last two weeks, one tap each; the pick goes to How much like any other */
@@ -5188,13 +5213,16 @@ function adQuick(){const it=S.plan[AD.slot].it,on=new Set(it.map(x=>x[0])),out=[
 function adQuickRow(){const L=adQuick();if(!L.length)return '';
  return `<h3 class="adh">Quick add</h3><div class="adqk" role="group" aria-label="Quick add">${L.map(x=>x.d?`<button class="adqb" type="button" data-adpd="${x.d.id}" aria-label="Add ${esc(x.d.n)}"><span class="em">${PH[x.d.id]?`<img src="${PH[x.d.id]}" alt="">`:dIcon(x.d)}</span><b>${esc(x.d.n)}</b></button>`
   :`<button class="adqb" type="button" data-adpf="${x.f.id}" aria-label="Add ${esc(x.f.n)}"><span class="em">${fIcon(x.f.id)}</span><b>${esc(x.f.n.split(',')[0])}</b></button>`).join('')}</div>`}
+/* tabs that stay under the search: For you, Scanned (your products, newest first), Recent meals, Favourites */
+const ADTABS=['prod','meals','fav'];
+function adTabs(){const m=AD.more||'';return `<div class="adtabs" role="tablist" aria-label="Show">${[['','For you'],['prod','Scanned'],['meals','Recent'],['fav','Favourites']].map(([k,l])=>`<button type="button" role="tab" data-admore="${k}" aria-selected="${m===k}">${l}</button>`).join('')}</div>`}
 function adMore(b,s,T,D0){const m=AD.more,ttl={meals:'Recent',pantry:'From my pantry',recent:'Recent foods',fav:'Favourites',mine:'Your dishes',prod:'Your products',dishes:'All dishes',foods:'All foods'}[m];let h=`<div class="admhead"><button class="chip" type="button" data-admore="">${BACKI}Back</button><h3>${ttl}</h3></div>`;
  if(m==='pantry'){const L=panDishes(s.t);h+=L.map(x=>{const add=x.d.it.reduce((a,it)=>addv(a,itemV(it)),z());return adRow({gt:wSeedTag(x.d.it),main:`data-add="${x.d.id}"`,plus:`data-adpd="${x.d.id}"`,ic:PH[x.d.id]?`<img src="${PH[x.d.id]}" alt="">`:dIcon(x.d),n:x.d.n,sub:`${x.ok===x.n?'Everything at home':x.ok+' of '+x.n+' at home · no '+x.miss.slice(0,2).join(', ')} · ${ENs(add[0])}${Math.round(add[1])} g protein`})}).join('')||'<p class="empty2">Nothing fits what is at home yet. Fill your pantry from Scan/Shop.</p>'}
  else if(m==='meals'){const L=recentMeals(AD.slot);AD.rc=L;h+=L.map((a,i)=>adRow({gt:a.est?'':wSeedTag(a.it),main:`data-adrc="${i}"`,plus:`data-adrc="${i}"`,ic:slotIcon({did:a.did,it:a.it},a.ty),n:a.n,lab:a.est?lab('Estimate','est'):'',sub:`${whenTxt(a.d)}, ${TY[a.ty].n.toLowerCase()} · ${ENs(a.v[0])}${Math.round(a.v[1])} g protein`})).join('')||'<p class="empty2">Meals you log show up here.</p>'}
  else if(m==='recent')h+=S.recentFoods.map(id=>FM[id]).filter(Boolean).map(f=>foodItem(f,T)).join('')||'<p class="empty2">Foods you add show up here.</p>';
  else if(m==='fav'){const dd=allDishes().filter(d=>d.fav).map(d=>dishFit(d)||d),ff=S.favFoods.map(id=>FM[id]).filter(Boolean);h+=dd.map(d=>dishItem(d,D0)).join('')+ff.map(f=>foodItem(f,T)).join('')||'<p class="empty2">Tap the star on a dish to keep it here.</p>'}
  else if(m==='mine')h+=adDishRows(allDishes().filter(d=>d.own).sort((a,b)=>(b.t===s.t)-(a.t===s.t)||(b.used||0)-(a.used||0)).map(d=>dishFit(d)||d),D0)||'<p class="empty2">Save a meal from its plate to keep it here.</p>';
- else if(m==='prod')h+=`<div class="btnrow2" style="margin:4px 0 8px"><button class="btn" type="button" id="ad-label">Enter from a label</button><button class="btn" type="button" id="ad-mix">New mix</button></div>`+(F.filter(f=>f.cat==='My foods'&&!f.hide&&!f.gb).map(f=>foodItem(f,T)).join('')||'<p class="empty2">Scan a product or enter one from its label.</p>');
+ else if(m==='prod')h+=`<div class="btnrow2" style="margin:4px 0 8px"><button class="btn" type="button" id="ad-label">Enter from a label</button><button class="btn" type="button" id="ad-mix">New mix</button></div>`+(F.filter(f=>f.cat==='My foods'&&!f.hide&&!f.gb).reverse().map(f=>foodItem(f,T)).join('')||'<p class="empty2">Scan a product or enter one from its label.</p>');
  else if(m==='dishes')h+=adDishRows(allDishes(s.t).map(dishFit).filter(Boolean).sort((a,b)=>(!!b.own-!!a.own)||((a.min||99)-(b.min||99))),D0);
  else{AD.cat=AD.cat||'All';h+=`<div class="chips" style="margin-bottom:6px">${['All',...CATS.filter(c=>c!=='My foods')].map(c=>`<button class="chip" type="button" data-adcat="${c}" aria-pressed="${AD.cat===c}">${c}</button>`).join('')}</div>`+
   F.filter(f=>!f.hide&&!f.gb&&(f.src!=='usda'||f.common)&&(AD.cat==='All'?f.cat!=='My foods':f.cat===AD.cat)).slice(0,120).map(f=>foodItem(f,T)).join('')+'<p class="empty2">Search to find over 1,100 more foods.</p>'}
@@ -5231,7 +5259,7 @@ function adJustPlate(b,s,sl){const it=sl.it,from=AD.from||0,cz=AD.jz||1;
  const head=`<p class="adq">How much did you eat?</p>`;
  if(AD.just===1){const i=AD.open;return head+'@ROW'+i+'@'}
  return head+`<div class="seg adsz" role="group" aria-label="Portion">${[[.5,'Half'],[.75,'Small'],[1,'Normal'],[1.4,'Large']].map(([x,l])=>`<button type="button" data-jz="${x}" aria-pressed="${cz===x}">${l}</button>`).join('')}</div>`+it.map((t,i)=>i>=from?'@ROW'+i+'@':'').join('')}
-function adPlate(b,s,sl,mine){const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.slot),val,3),ty=typeOf(S.plan,AD.slot),def=ty==='s'?'My snack':'My '+TY[ty].n.toLowerCase(),had=!mine&&sl.it.length>1?timesHad(AD.slot):0,d=sl.did?dish(sl.did):null;
+function adPlate(b,s,sl,mine){const val=slotVraw(AD.slot),g=gainTxt(dayMinus(AD.slot),val,3),ty=typeOf(S.plan,AD.slot),def=ty==='s'?'My extras':'My '+TY[ty].n.toLowerCase(),had=!mine&&sl.it.length>1?timesHad(AD.slot):0,d=sl.did?dish(sl.did):null;
  const row=([id,gr,st],i)=>{const f=FM[id],iv=itemV([id,gr,st]);if(AD.open!==i)return `<div class="prow"><button class="pmain" type="button" data-pop="${i}"><span class="ficon em">${fIcon(id)}</span><span class="nm">${esc(f.n.split(',')[0])}${sl.est?'':wItemTag(id,gr)}</span><span class="amt num">${amtTxt(id,gr)}</span></button><button class="rm" type="button" data-prm="${i}" aria-label="Remove ${esc(f.n)}">${XIC}</button></div>`;
   return `<div class="item popen"><div class="top"><span class="ficon em">${fIcon(id)}</span><button class="nmbtn" type="button" data-food="${id}" style="min-width:0;flex:1"><span class="nm">${esc(f.n)}</span><span class="sub num" style="display:block">${ENs(iv[0])}${fmt(iv[1])} g protein · <span style="color:var(--accent)">${f.parts?'edit mix':'details'}</span></span></button><button class="rm" type="button" data-prm="${i}" aria-label="Remove ${esc(f.n)}">${XIC}</button></div>
    ${COOK.has(id)||f.cook?`<div class="seg cookseg"><button type="button" data-ck="${i}:c" aria-pressed="${isCooked(id,st)}">Cooked</button><button type="button" data-ck="${i}:r" aria-pressed="${!isCooked(id,st)}">Raw</button></div>`:''}
@@ -5360,15 +5388,15 @@ $('lib-label').onclick=()=>openScan(null,'label');
 $('lib-mix').onclick=()=>newMix('d');
 function renderLib(T){
  document.querySelectorAll('#lib-seg [data-lb]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lb===S.lib));
- const ln=S.learn==='kitchen'?'kitchen':'guide';$('learn-seg').hidden=S.lib!=='learn';document.querySelectorAll('#learn-seg [data-ln]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.ln===ln));
- $('lib-foods').hidden=S.lib!=='foods';$('lib-dishes').hidden=S.lib!=='dishes';$('lib-rcp').hidden=S.lib!=='recipes';$('it-foods').hidden=!(S.lib==='learn'&&ln==='guide');$('it-kitchen').hidden=!(S.lib==='learn'&&ln==='kitchen');
- if(S.lib==='foods')renderProducts();else if(S.lib==='dishes')renderLibDishes();else if(S.lib==='recipes')renderLibRcp();else if(ln==='guide')renderFoods(T);else renderKitchen();
+ $('learn-seg').hidden=true;$('it-foods').hidden=true;$('lib-rcp').hidden=true;
+ $('lib-foods').hidden=S.lib!=='foods';$('lib-dishes').hidden=S.lib!=='dishes';$('lib-pan').hidden=S.lib!=='pantry';$('it-kitchen').hidden=S.lib!=='tips';
+ if(S.lib==='foods')renderProducts();else if(S.lib==='dishes')renderLibDishes();else if(S.lib==='pantry')renderPantry($('lib-pan'),'');else renderKitchen();
 }
 let LX=null,GX=new Set(),RCX=null;
 const byUsed=(a,b)=>((S.meta[b.id]||{}).used||0)-((S.meta[a.id]||{}).used||0);
 const verOf=k=>granVersions().filter(c=>(TPL[c.gb.tpl]?c.gb.tpl:'granola')===k);
 /* Library, Recipes: every dish with steps, your own first; Builders: the templates and the versions you saved */
-function renderLibRcp(){const m=S.rcp==='bld'?'bld':'rcp',el=$('rcp-list');document.querySelectorAll('#rcp-seg [data-rc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.rc===m));$('rcp-q').hidden=m!=='rcp';
+function renderLibRcp(){const inD=S.lib==='dishes',m=inD||S.rcp==='bld'?'bld':'rcp',el=inD?$('lib-bld'):$('rcp-list');document.querySelectorAll('#rcp-seg [data-rc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.rc===m));$('rcp-q').hidden=m!=='rcp';
  if(m==='rcp'){const q=fold($('rcp-q').value).trim(),L=allDishes().filter(d=>!d.gran&&hasRcp(d.id)).filter(d=>!q||fold(d.n).includes(q)||d.it.some(([id])=>FM[id]&&fmatch(FM[id],q))).sort((a,b)=>(!!b.own-!!a.own)||(a.own&&b.own?(b.used||0)-(a.used||0):0)||a.n.localeCompare(b.n));
   el.innerHTML=L.length?`<div class="card" style="padding-top:2px">${L.map(d=>{const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z());return `<div class="ldish"><button class="ldhead" type="button" data-rco="${d.id}"><span class="thumb em">${PH[d.id]?`<img src="${PH[d.id]}" alt="">`:dIcon(d)}</span><span class="sgt"><b>${esc(d.n)}${d.own?lab('Your dish','own'):''}</b><span class="cap num">${d.min?d.min+' min · ':''}${HK()?Math.round(v[1])+' g protein':EN(v[0])}</span></span>${CHEV}</button></div>`}).join('')}</div>`:'<p class="cap">No match.</p>';
   el.querySelectorAll('[data-rco]').forEach(b=>b.onclick=()=>openRecipe(b.dataset.rco));return}
@@ -5379,8 +5407,9 @@ function renderLibRcp(){const m=S.rcp==='bld'?'bld':'rcp',el=$('rcp-list');docum
  el.querySelectorAll('[data-rcv]').forEach(b=>b.onclick=()=>openGran(b.dataset.rcv))}
 function renderLibDishes(){
  const T=targets(),q=fold($('lib-q').value).trim(),lt=S.libt||'all';
- $('lib-t').innerHTML=[['all','All'],['fav','★ Favourites'],['b','Breakfast'],['m','Lunch and dinner'],['s','Snacks']].map(([k,l])=>`<button class="chip" type="button" data-lt="${k}" aria-pressed="${lt===k}">${l}</button>`).join('');
+ $('lib-t').innerHTML=[['all','All'],['fav','★ Favourites'],['bld','Builders'],['b','Breakfast'],['m','Lunch and dinner'],['s','Extras']].map(([k,l])=>`<button class="chip" type="button" data-lt="${k}" aria-pressed="${lt===k}">${l}</button>`).join('');
  $('lib-t').querySelectorAll('[data-lt]').forEach(b=>b.onclick=()=>{S.libt=b.dataset.lt;renderLibDishes()});
+ {const isB=lt==='bld';$('lib-bld').hidden=!isB;$('lib-all').hidden=isB;$('lib-mine').hidden=isB;$('lib-q').hidden=isB;if(isB){renderLibRcp();return}}
  const ds=allDishes(lt==='all'||lt==='fav'?null:lt).filter(d=>lt!=='fav'||d.fav).filter(d=>!q||fold(d.n).includes(q)||d.it.some(([id])=>FM[id]&&FM[id].n.toLowerCase().includes(q)));
  const mine=ds.filter(d=>(d.own||d.edited)&&!d.gran).sort((a,b)=>(b.used-a.used)||a.n.localeCompare(b.n)),rest=ds.filter(d=>!d.own&&!d.edited).sort((a,b)=>a.n.localeCompare(b.n));
  const row=d=>{const v=d.it.reduce((a,it)=>addv(a,itemV(it)),z()),open=LX===d.id,slots=d.t==='b'?['b']:d.t==='s'?['s']:['l','d'];
@@ -5415,8 +5444,8 @@ function bindSup(root){root.querySelectorAll('[data-sup]').forEach(cb=>cb.onchan
 function targetBoxes(T){return `${HK()?'':`<div><span>Energy</span><b>${ENR(T)}</b></div>`}<div><span>Protein</span><b>${Math.round(T.p)} g</b></div><div><span>Fiber</span><b>${Math.round(T.fib)} g</b></div>`}
 /* profile: a menu of sections; each opens on its own with a back button */
 let PS=null;
-const PSECS=[['you','About you','<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'],['targets','Targets','<circle cx="12" cy="12" r="8"/><circle cx="12" cy="12" r="4"/><circle cx="12" cy="12" r=".6"/>'],['sup','Supplements','<rect x="3.5" y="9" width="17" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M9.2 9.2l5.6 5.6"/>'],['dis','Foods I don\'t eat','<circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/>'],['track','Tracking','<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/>'],['upd','App version','<path d="M20 12a8 8 0 1 1-2.3-5.7"/><path d="M20 4v5h-5"/>'],['tour','Garden tour','<path d="M12 21s-6-5.3-6-10a6 6 0 0 1 12 0c0 4.7-6 10-6 10z"/><circle cx="12" cy="11" r="2.2"/>'],['voice','Voice and reminders','<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>'],['look','Look','<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'],['data','Backup and setup','<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>']];
-function psSum(k){if(k==='upd')return (WVER?'Version '+WVER+'. ':'')+'Tap to load the newest version';if(k==='tour')return 'The tortoise shows every building';if(k==='voice')return wVoiceSum();const P=S.prof,T=targets();
+const PSECS=[['you','About you and targets','<circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/>'],['sup','Supplements','<rect x="3.5" y="9" width="17" height="6" rx="3" transform="rotate(-45 12 12)"/><path d="M9.2 9.2l5.6 5.6"/>'],['dis','Foods I don\'t eat','<circle cx="12" cy="12" r="8"/><path d="M6.5 6.5l11 11"/>'],['track','Tracking','<path d="M12 3c3 4 6 7.5 6 11a6 6 0 0 1-12 0c0-3.5 3-7 6-11z"/>'],['voice','Voice and reminders','<path d="M4 5h16v11H9l-5 4z"/><path d="M8 9.5h8M8 12.5h5"/>'],['look','Look','<circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/>'],['data','Backup and setup','<path d="M12 4v11M7.5 10.5 12 15l4.5-4.5M5 19h14"/>'],['help','Help','<circle cx="12" cy="12" r="9"/><path d="M9.6 9.4a2.5 2.5 0 1 1 3.4 2.4c-.7.3-1 .9-1 1.6v.4M12 16.8v.2"/>']];
+function psSum(k){if(k==='help')return 'Garden tour'+(WVER?' · version '+WVER:'')+' · updates';if(k==='voice')return wVoiceSum();const P=S.prof,T=targets();
  if(k==='you')return `${P.sex==='f'?'Female':'Male'}, ${P.age} · ${P.ht} cm · ${P.wt} kg`;
  if(k==='targets')return `${{efsa:'EFSA',dge:'DGE',nih:'NIH'}[P.ref||'efsa']} reference values${HK()?'':' · '+EN(T.kcal)}`;
  if(k==='sup'){const L=(S.sups||[]).filter(x=>sCurrent(x)&&!(x.end&&x.end<=TODAY)).map(sName);return L.length?L.join(', '):'None yet'}
@@ -5425,6 +5454,7 @@ function psSum(k){if(k==='upd')return (WVER?'Version '+WVER+'. ':'')+'Tap to loa
  if(k==='look')return `${{auto:'Automatic',light:'Light',dark:'Dark'}[P.mode||'auto']} · ${(ACC.find(a=>a[0]===(P.acc||'green'))||ACC[0])[1]}`;
  return 'Save or restore your data, run setup again'}
 function renderProfileView(){
+ if(PS==='targets')PS='you';if(PS==='upd'||PS==='tour')PS='help';
  const sec=PSECS.find(x=>x[0]===PS);
  $('p-head').innerHTML=sec?`<div class="pback"><button class="adback" type="button" id="p-back" aria-label="Back to profile">${BACKI}</button><h1>${sec[1]}</h1></div>`:`<div><h1>Profile</h1><p class="cap">Your data stays on this phone</p></div>`;
  if($('p-back'))$('p-back').onclick=()=>{PS=null;render();scrollTo({top:0})};
@@ -5432,6 +5462,7 @@ function renderProfileView(){
  if(!sec){$('p-menu').innerHTML=PSECS.map(([k,t,ic])=>`<button class="prow2" type="button" data-psec="${k}"><span class="pico"><svg viewBox="0 0 24 24" aria-hidden="true">${ic}</svg></span><span class="ptx"><b>${t}</b><span class="cap">${esc(psSum(k))}</span></span>${CHEV}</button>`).join('');
   $('p-menu').querySelectorAll('[data-psec]').forEach(b=>b.onclick=()=>{if(b.dataset.psec==='tour'){PS=null;S.view='garden';render();setTimeout(wTour,350);return}if(b.dataset.psec==='upd'){wUpdNow();return}PS=b.dataset.psec;render();scrollTo({top:0})})}
  if($('logo-prof'))$('logo-prof').innerHTML=LOGO;
+ if($('p-htour'))$('p-htour').onclick=()=>{PS=null;S.view='garden';render();setTimeout(wTour,350)};if($('p-upd'))$('p-upd').onclick=()=>wUpdNow();if($('p-ver'))$('p-ver').textContent=WVER?'Version '+WVER:'';
  document.querySelectorAll('#p-anim [data-anim]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.anim||'auto')===b.dataset.anim);b.onclick=()=>{S.prof.anim=b.dataset.anim;applyTheme();render()}});
  document.querySelectorAll('#p-mode [data-mode]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.mode||'auto')===b.dataset.mode);b.onclick=()=>{S.prof.mode=b.dataset.mode;applyTheme();render()}});
  $('p-acc').innerHTML=ACC.map(([k,n,c])=>`<button type="button" class="swatch" data-acc="${k}" aria-pressed="${(S.prof.acc||'green')===k}" style="--sw:${c}"><i></i><span>${n}</span></button>`).join('');
@@ -5486,6 +5517,7 @@ function renderOnb(){
    ${on&&r.ob&&fr.length>1?`<div class="seg sm obfreq">${fr.map(q=>`<button type="button" data-obf="${k}:${q}" aria-pressed="${r.freq===q}">${q==='d'?'Daily':q==='w'?'Weekly':'Every 20 days'}</button>`).join('')}</div>
     ${r.freq!=='d'?`<label class="amtrow"><span>Last taken</span><input type="date" data-obt="${k}" value="${sLast(r,TODAY)||''}" max="${TODAY}"></label><p class="cap">${r.freq==='n'?'For a high dose capsule, usually 20 000 IU.':'A weekly dose is usually 1000 to 2000 µg.'}</p>`:''}`:''}
    ${on&&!r.ob?'<p class="cap">Already set up. Change it in Supplements on Today.</p>':''}</div>`}).join('')}</div>
+  <p class="cap" style="margin:0 0 8px">Take something only now and then? Log it on the day: tap Extras, then Supplement.</p>
   <p class="muted" style="font-size:12.5px;margin:0">Do not start supplements because of this app, apart from B12. A blood test shows what you need.</p>`;
  const disStep=()=>{const L=DL();return `<h2>Foods you don't eat</h2><p class="info">Left out of all ideas.</p>
   <div class="chips wrap">${OBDIS.filter(id=>FM[id]).map(id=>`<button class="chip${L.includes(id)?' on':''}" type="button" data-obd="${id}"><span class="ficon em" style="width:20px;height:20px;display:inline-block;vertical-align:middle;margin-right:6px">${fIcon(id)}</span>${esc(OBDN[id]||FM[id].n.split(',')[0])}</button>`).join('')}</div>
@@ -5766,10 +5798,10 @@ function slotIdeas0(slot,n,focus){const T=targets(),TN=needT(T),ty=typeOf(S.plan
 function lowList(T){const V=viewVec(dayV(),1);return SK.map(k=>({k,p:V[K.indexOf(k)]/T[k]*100})).filter(x=>x.p<100).sort((a,b)=>a.p-b.p)}
 function renderImprove(){
  SG=computeSugg();const T=targets(),TN=needT(T),D=dayV();
- $('snk-sub').textContent=logged(S.plan)?'Snacks and extras that close what is left today':'Nothing logged yet. Add your meals on Today; these fit your week so far.';
+ $('snk-sub').textContent=logged(S.plan)?'Small extras that close what is left today':'Nothing logged yet. Add your meals on Today; these fit your week so far.';
  $('sw-snk').innerHTML=SG.snacks.length?SG.snacks.map((x,i)=>{const nm=x.food?`${x.food.n.split(',')[0]}, ${x.food.pl?x.food.pl+', ':''}${x.food.por} g`:x.d.n;
-  return `<div class="sw"><div class="sw-top"><span class="ficon em" style="width:36px;height:36px">${x.food?fIcon(x.food.id):dIcon(x.d)}</span><span class="muted num" style="font-size:13px">${HK()?'':EN(x.add[0])+' · '}${fmt(x.add[1])} g protein</span>${x.has?'<span class="havetag">You have eaten this</span>':''}</div><div class="sw-title">${esc(nm)}</div>${impactFor(D,x.add,T,TN)}<div class="sw-foot"><span></span><button class="btn acc sm" type="button" data-sgs="${i}">Add to snacks</button></div></div>`}).join(''):'<p class="cap" style="margin:0 4px">Nothing small closes a gap right now.</p>';
- $('sw-snk').querySelectorAll('[data-sgs]').forEach(b=>b.onclick=()=>{const x=SG.snacks[+b.dataset.sgs],k=slotOfType('s');if(x.food){addFood(k,x.food.id,x.food.por);toast(`Added ${x.food.n.split(',')[0]} to snacks`)}else{useDish(k,x.d);toast(`Added ${x.d.n}`)}render()});
+  return `<div class="sw"><div class="sw-top"><span class="ficon em" style="width:36px;height:36px">${x.food?fIcon(x.food.id):dIcon(x.d)}</span><span class="muted num" style="font-size:13px">${HK()?'':EN(x.add[0])+' · '}${fmt(x.add[1])} g protein</span>${x.has?'<span class="havetag">You have eaten this</span>':''}</div><div class="sw-title">${esc(nm)}</div>${impactFor(D,x.add,T,TN)}<div class="sw-foot"><span></span><button class="btn acc sm" type="button" data-sgs="${i}">Add to extras</button></div></div>`}).join(''):'<p class="cap" style="margin:0 4px">Nothing small closes a gap right now.</p>';
+ $('sw-snk').querySelectorAll('[data-sgs]').forEach(b=>b.onclick=()=>{const x=SG.snacks[+b.dataset.sgs],k=slotOfType('s');if(x.food){addFood(k,x.food.id,x.food.por);toast(`Added ${x.food.n.split(',')[0]} to extras`)}else{useDish(k,x.d);toast(`Added ${x.d.n}`)}render()});
  document.querySelectorAll('#n-imp .swsec').forEach(el=>el.hidden=!logged(S.plan));
 }
 let SG=null;
@@ -5779,11 +5811,11 @@ function renderSugg(){
  let h='';
  if(SG.meals.length)h+=`<div class="card sugg"><h2>Meal ideas for ${S.date===TODAY?'today':'this day'}</h2><p class="cap" style="margin:4px 0 6px">Picked for what you still need this week.</p>
   ${SG.meals.map((m,mi)=>{const sl=SLOTS.find(x=>x.id===m.slot);return `<div class="sgslot"><span class="slotchip" style="--c:${sl.c}">${sl.n}</span>${m.opts.slice(0,3).map((o,oi)=>`<div class="sgrow"><span class="thumb em">${PH[o.d.id]?`<img src="${PH[o.d.id]}" alt="">`:dIcon(o.d)}</span><span class="sgt"><b>${esc(o.d.n)}</b><span class="cap num">${kc(o.add)}${Math.round(o.add[1])} g protein${o.d.min?' · '+o.d.min+' min':''}</span>${fl(o.fills)}</span><button class="btn sm" type="button" data-sgm="${mi}:${oi}">Add</button></div>`).join('')}</div>`}).join('')}</div>`;
- if(SG.snacks.length)h+=`<div class="card sugg"><h2>Snack ideas</h2><p class="cap" style="margin:4px 0 6px">${logged(S.plan)?'Small things that close what is left today':'Easy extras that fit your week so far'}</p>
+ if(SG.snacks.length)h+=`<div class="card sugg"><h2>Ideas for extras</h2><p class="cap" style="margin:4px 0 6px">${logged(S.plan)?'Small things that close what is left today':'Easy extras that fit your week so far'}</p>
   ${SG.snacks.map((x,i)=>{const nm=x.food?`${x.food.n.split(',')[0]}${x.food.pl?` (${x.food.pl}, ${x.food.por} g)`:` (${x.food.por} g)`}`:x.d.n;return `<div class="sgrow"><span class="thumb em">${x.food?fIcon(x.food.id):dIcon(x.d)}</span><span class="sgt"><b>${esc(nm)}</b><span class="cap num">${kc(x.add)}${fmt(x.add[1])} g protein</span>${fl(x.fills)}</span><button class="btn sm" type="button" data-sgs="${i}">Add</button></div>`}).join('')}</div>`;
  $('sw-sugg').innerHTML=h;
  $('sw-sugg').querySelectorAll('[data-sgm]').forEach(b=>b.onclick=()=>{const [mi,oi]=b.dataset.sgm.split(':').map(Number),m=SG.meals[mi];useDish(m.slot,m.opts[oi].d);toast(`Added ${m.opts[oi].d.n}`);render()});
- $('sw-sugg').querySelectorAll('[data-sgs]').forEach(b=>b.onclick=()=>{const x=SG.snacks[+b.dataset.sgs],k=slotOfType('s');if(x.food){addFood(k,x.food.id,x.food.por);toast(`Added ${x.food.n.split(',')[0]} to snacks`)}else{useDish(k,x.d);toast(`Added ${x.d.n}`)}render()});
+ $('sw-sugg').querySelectorAll('[data-sgs]').forEach(b=>b.onclick=()=>{const x=SG.snacks[+b.dataset.sgs],k=slotOfType('s');if(x.food){addFood(k,x.food.id,x.food.por);toast(`Added ${x.food.n.split(',')[0]} to extras`)}else{useDish(k,x.d);toast(`Added ${x.d.n}`)}render()});
  document.querySelectorAll('#it-ideas .swsec').forEach(el=>el.hidden=!logged(S.plan));
 }
 let SW=null;
@@ -5988,16 +6020,17 @@ async function addReminder(s,time){const txt=icsFor(s,time),fn=`vegful-${sName(s
 let SUPD={v:'list',id:null,f:null,sure:null};
 const sCurrent=s=>!s.end||s.end>TODAY||(s.freq!=='d'&&(s.takes||[]).some(x=>dayDiff(x,TODAY)<sDays(s)));
 function sForm(s){return s?{kind:s.kind,mode:Object.keys(s.amt||{}).length?'x':'n',amt:Object.assign({},s.amt||{}),du:'iu',freq:s.freq,every:s.every||14,taken:S.date<=TODAY?S.date:TODAY}:{kind:null,mode:'n',amt:{},du:'iu',freq:'d',every:14,taken:S.date<=TODAY?S.date:TODAY}}
-function renderSupD(){const T=targets(),body=$('supd-body');
+function renderSupD(){const T=targets(),body=$('supd-body');$('supd-t').textContent=SUPD.v==='took'?(S.date===TODAY?'Took something today':'Took something this day'):'Supplements';
+ if(SUPD.v==='took'){renderTook(body,T);return}
  if(SUPD.v==='list'){
   const cur=(S.sups||[]).filter(sCurrent),old=(S.sups||[]).filter(s=>!sCurrent(s)).sort((a,b)=>(b.end||sLast(b,TODAY)||'')<(a.end||sLast(a,TODAY)||'')?-1:1).slice(0,8);
   const row=s=>`<div class="dishrow"><span style="min-width:0;flex:1"><span style="font-weight:600">${esc(sName(s))}</span>${sInfoBtn(s.kind)}<br><span class="cap">${sSched(s)} · ${sDose(s)}${s.freq!=='d'&&sLast(s,TODAY)?' · '+agoTxt(dayDiff(sLast(s,TODAY),TODAY)):''}${s.end&&s.end<=TODAY?' · stopped '+kdate(s.end).toLocaleDateString('en-GB',{day:'numeric',month:'short'}):''}</span></span><button class="btn sm" type="button" data-sedit="${s.id}">Edit</button></div>`;
-  body.innerHTML=`<p class="cap" style="margin:0 0 10px">Daily ones count by themselves. For the others, tap Taken.</p>
+  body.innerHTML=`<button class="btn primary" type="button" id="s-took" style="width:100%;margin:0 0 14px">Took something ${S.date===TODAY?'today':'this day'}</button><p class="cap" style="margin:0 0 10px">Daily ones count by themselves. For the others, tap Taken.</p>
   ${cur.length?cur.map(row).join(''):'<p class="cap">Nothing added yet.</p>'}
-  <button class="btn primary" type="button" id="s-new" style="width:100%;margin-top:12px">Add a supplement</button>
+  <button class="btn" type="button" id="s-new" style="width:100%;margin-top:12px">Add one you take regularly</button>
   ${old.length?`<div class="lbl" style="margin:22px 0 4px">Earlier</div>${old.map(row).join('')}`:''}
   <p class="muted" style="font-size:12.5px;margin:18px 0 0">B12 is needed by every vegan. Vitamin D depends on how much sun you get. Do not start other supplements because of this app; a blood test shows what you need.</p>`;
-  $('s-new').onclick=()=>{SUPD={v:'form',id:null,f:sForm(null),sure:null};renderSupD()};body.querySelectorAll('[data-sinfo]').forEach(b=>b.onclick=()=>openSupInfo(b.dataset.sinfo));
+  $('s-new').onclick=()=>{SUPD={v:'form',id:null,f:sForm(null),sure:null};renderSupD()};$('s-took').onclick=()=>{SUPD={v:'took',id:null,f:null,sure:null,t:null};renderSupD()};body.querySelectorAll('[data-sinfo]').forEach(b=>b.onclick=()=>openSupInfo(b.dataset.sinfo));
   body.querySelectorAll('[data-sedit]').forEach(b=>b.onclick=()=>{const s=S.sups.find(x=>x.id===b.dataset.sedit);SUPD={v:'form',id:s.id,f:sForm(s),sure:null};renderSupD()});
   return}
  const f=SUPD.f,ed=SUPD.id?S.sups.find(x=>x.id===SUPD.id):null,u=f.kind?ONE[f.kind]:null;
@@ -6045,6 +6078,31 @@ function renderSupD(){const T=targets(),body=$('supd-body');
     else Object.assign(ed,{amt:draft.amt,freq:draft.freq,every:draft.every})}}
   SUPD={v:'list',id:null,f:null,sure:null};render();renderSupD()}}
 function openSupD(){const d=$('supd');SUPD={v:'list',id:null,f:null,sure:null};renderSupD();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}}
+/* took something: pick it, type the amount from the label, and it counts for that day (or every day, or weekly).
+   Things you took once before come back as one tap rows. Stored in S.sups like every other supplement */
+function openTook(){const d=$('supd');SUPD={v:'took',id:null,f:null,sure:null,t:null};renderSupD();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}$('supd-body').scrollTop=0}
+function tookAgain(){const seen=new Set(),out=[];(S.sups||[]).filter(s=>s.freq==='o'&&ONE[s.kind]&&(s.takes||[]).length).sort((a,b)=>(sLast(b,'9999-12-31')||'').localeCompare(sLast(a,'9999-12-31')||'')).forEach(s=>{const sg=s.kind+JSON.stringify(s.amt||{});if(seen.has(sg)||out.length>=4)return;seen.add(sg);out.push(s)});return out}
+function renderTook(body,T){const d=S.date,dl=d===TODAY?'today':'this day',f=SUPD.t||(SUPD.t={kind:null,amt:{},freq:'o'}),u=f.kind?ONE[f.kind]:null,ag=tookAgain(),nuts=u?kNuts(u):[];
+ const draft=u?{id:'_t',kind:f.kind,amt:Object.fromEntries(Object.entries(f.amt).filter(([k,v])=>v!==''&&+v>0).map(([k,v])=>[k,+v])),freq:f.freq,every:14}:null;
+ let note='',warn=[];if(draft){const k=u.cov[0]||nuts[0],t=sTake(draft,k,T),cut=t.days<(draft.freq==='o'?Math.floor((draft.amt[k]||0)/T[k]):sInt(draft))&&CAP[k];
+  note=draft.freq==='d'?`Counts ${NUT[k].n} ${draft.amt[k]?'as '+Math.round(t.per/T[k]*100)+' % of your need':'as covered'} every day from ${dl} on.`:`Counts ${NUT[k].n} ${draft.amt[k]?'as '+Math.round(t.per/T[k]*100)+' % of your need':'as covered'} for ${t.days===1?'1 day':t.days+' days'}${cut?', the most it can count, because '+CAPWHY[k]:''}.`;
+  warn=sWarn(draft,T,(S.sups||[]).filter(sCurrent))}
+ body.innerHTML=`${ag.length?`<div class="lbl" style="margin:0 0 6px">Again</div>${ag.map(s=>{const on=(s.takes||[]).includes(d);return `<div class="dishrow"><span style="flex:1;min-width:0"><span style="font-weight:700">${esc(sName(s))}${sDose(s)!=='normal dose'?', '+esc(sDose(s)):''}</span><br><span class="cap">Last time ${kdate(sLast(s,'9999-12-31')).toLocaleDateString('en-GB',{day:'numeric',month:'short'})}</span></span><button class="btn sm${on?'':' primary'}" type="button" data-tagain="${s.id}"${on?' disabled':''}>${on?'Added':'+ '+(d===TODAY?'Today':'This day')}</button></div>`}).join('')}`:''}
+ <div class="lbl" style="margin:${ag.length?18:0}px 0 6px">What</div><div class="chips wrap">${Object.entries(ONE).filter(([id])=>id!=='salt').map(([id,x])=>`<button class="chip${f.kind===id?' on':''}" type="button" data-tk="${id}" aria-pressed="${f.kind===id}">${esc(x.n)}</button>`).join('')}</div>
+ ${u?`<div class="lbl" style="margin:18px 0 6px">Amount from the label</div><div style="display:grid;gap:8px">${nuts.map(k=>`<label class="amtrow"><span>${NUT[k].n}</span><input type="number" inputmode="decimal" min="0" step="any" data-tamt="${k}" value="${f.amt[k]!=null&&f.amt[k]!==''?(k==='d'?Math.round(f.amt[k]*40):f.amt[k]):''}" placeholder="${k==='d'?'IU':NUT[k].u}"><span class="cap">${k==='d'?'IU':NUT[k].u}</span></label>`).join('')}</div><p class="cap" style="margin:6px 0 0">Leave it empty for a normal dose.</p>
+ <div class="lbl" style="margin:18px 0 6px">How often</div><div class="seg sm" id="t-freq">${[['o','Just '+dl],['d','Daily'],['w','Weekly']].map(([q,l])=>`<button type="button" data-tq="${q}" aria-pressed="${f.freq===q}">${l}</button>`).join('')}</div>
+ <div class="notice" style="margin-top:16px">${note}${warn.map(w=>`<br><b style="color:var(--low)">${w}</b>`).join('')}</div>
+ <button class="btn primary" type="button" id="t-add" style="width:100%;margin-top:14px">${f.freq==='o'?'Add to '+dl:'Add'}</button>`:`<p class="cap" style="margin:12px 0 0">Only what you took. It counts for that day.</p>`}
+ <button class="linkbtn" type="button" id="t-manage" style="margin-top:16px">Manage my supplements</button>`;
+ const done=n=>{save();const dd=$('supd');dd.close?dd.close():dd.removeAttribute('open');toast(`Added ${n}`);render()};
+ body.querySelectorAll('[data-tagain]').forEach(b=>b.onclick=()=>{const s=S.sups.find(x=>x.id===b.dataset.tagain);if(!s)return;s.takes=s.takes||[];if(!s.takes.includes(d))s.takes.push(d);done(sName(s))});
+ body.querySelectorAll('[data-tk]').forEach(b=>b.onclick=()=>{f.kind=f.kind===b.dataset.tk?null:b.dataset.tk;f.amt={};renderSupD()});
+ body.querySelectorAll('[data-tamt]').forEach(i=>i.onchange=()=>{const k=i.dataset.tamt,v=parseFloat(String(i.value).replace(',','.'));f.amt[k]=v>0?(k==='d'?v/40:v):'';renderSupD()});
+ body.querySelectorAll('[data-tq]').forEach(b=>b.onclick=()=>{f.freq=b.dataset.tq;renderSupD()});
+ $('t-manage').onclick=()=>{SUPD={v:'list',id:null,f:null,sure:null};renderSupD()};
+ if($('t-add'))$('t-add').onclick=()=>{S.sups=S.sups||[];const sg=JSON.stringify(draft.amt);let s=draft.freq==='o'&&S.sups.find(x=>x.freq==='o'&&x.kind===draft.kind&&JSON.stringify(x.amt||{})===sg);
+  if(s){s.takes=s.takes||[];if(!s.takes.includes(d))s.takes.push(d)}else{s={id:'s'+Math.random().toString(36).slice(2,8),kind:draft.kind,amt:draft.amt,freq:draft.freq,start:d,takes:draft.freq==='d'?[]:[d],skip:[]};S.sups.push(s)}
+  done(sName(s))}}
 function closeSupD(){const d=$('supd');d.close?d.close():d.removeAttribute('open');render()}
 $('supd-close').onclick=closeSupD;
 
@@ -6070,7 +6128,7 @@ const wOpen=k=>{const sl=S.plan&&S.plan[k];return !!sl&&!sl.it.length&&!sl.skip&
 function wNext(){if(S.date!==TODAY||!S.plan||wClosed())return null;const h=new Date().getHours();for(const t of 'bld'){if(h<WMEAL[t])break;const k=slotOfType(t);if(wOpen(k))return k}return null}
 function wSlotNow(){const h=new Date().getHours(),t=h<11?'b':h<16?'l':h<21?'d':'s';return slotOfType(t)}
 function wEnsure(k){if(!S.plan[k]){S.plan[k]={t:'',it:[]};rebuildSlots()}return k}
-const wMealN=k=>{const t=typeOf(S.plan,k);return t==='s'?'Snack':TY[t].n};
+const wMealN=k=>{const t=typeOf(S.plan,k);return t==='s'?'Extras':TY[t].n};
 let WOUT=0;function wSheet(v){if(v==='garden'||!WSHEETS.includes(v)){const cur=S.view,sec=$('v-'+cur);if(WSHEETS.includes(cur)&&sec&&!GSTILL()){if(WOUT)return;WOUT=1;[sec,$('wsheet-h'),$('wscrim')].forEach(e=>e&&e.classList.add('wout'));
   setTimeout(()=>{WOUT=0;[sec,$('wsheet-h'),$('wscrim')].forEach(e=>e&&e.classList.remove('wout'));S.view='garden';render()},170);return}S.view='garden';render();return}go(v)}
 const WSEED='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 21V11" stroke="var(--g-stem,#5B8A3A)" stroke-width="2.2" fill="none" stroke-linecap="round"/><path d="M12 12c-4 0-6-2-6-6 4 0 6 2 6 6zM12 10c0-4 2-6 6-6 0 4-2 6-6 6z" fill="#6FA84A"/></svg>';
@@ -6081,21 +6139,29 @@ function wTop(w){const el=$('wtop');if(!el)return;const isT=S.date===TODAY,t=isT
  <button class="wring" type="button" id="w-ring" aria-label="${wHasData()?w.sc+' percent covered, mixed. Open the board':'Nothing logged yet. Open the board'}">${WRING(wHasData()?w.sc:0,22)}${wHasData()?`<b class="num">${w.sc} %</b>`:`<span class="wrsp">${WSEED}</span>`}</button><button class="wme" type="button" id="w-me" aria-label="Profile"><svg viewBox="0 0 24 24"><circle cx="12" cy="8" r="4"/><path d="M4 21c1-4 4-6 8-6s7 2 8 6"/></svg></button>`;
  $('w-prev').onclick=()=>{setDate(shift(S.date,-1));render()};$('w-next').onclick=()=>{setDate(shift(S.date,1));render()};
  $('w-date').onclick=()=>{if(S.date!==TODAY){setDate(TODAY);render()}else{S.nsub='hist';S.hsel=S.date;go('nutr')}};
- $('w-ring').onclick=()=>go('today');$('w-me').onclick=()=>go('profile')}
-function wDock(){const el=$('wdock');if(!el||!S.plan)return;const nx=wNext();
- const plate=t=>{const k=slotOfType(t),keys=mealKeys(S.plan).filter(q=>typeOf(S.plan,q)===t),fk=keys.find(q=>S.plan[q].it.length),sl=S.plan[k],n=t==='s'?'Snack':TY[t].n,skip=!fk&&sl&&sl.skip;
-  return `<button class="wplate${fk?' full':skip?' skip':' open'}${nx===k?' next':''}" type="button" data-wp="${k}" aria-label="${n}${fk?'':skip?', none':', add'}"><span class="wpl em">${fk?slotIcon(S.plan[fk],t):skip?'<small>None</small>':PLUS}</span><span class="wpn">${n}</span></button>`};
- el.innerHTML=`<div class="in">${plate('b')}${plate('l')}<button class="wbask" type="button" id="w-add" aria-label="Scan and shop">${SHOPI}</button>${plate('d')}${plate('s')}</div>`;
- el.querySelectorAll('[data-wp]').forEach(b=>b.onclick=()=>{const k=wEnsure(b.dataset.wp),t=typeOf(S.plan,k),fk=mealKeys(S.plan).find(q=>typeOf(S.plan,q)===t&&S.plan[q].it.length);
-  if(fk){openMeal(fk);return}if(S.plan[k].skip){delete S.plan[k].skip;save()}startMeal(k)});
+ $('w-ring').onclick=()=>wBigBoard();$('w-me').onclick=()=>go('profile')}
+function wDock(){const el=$('wdock');if(!el||!S.plan)return;document.documentElement.classList.remove('wxopen');const nx=wNext();
+ const plate=t=>{const k=slotOfType(t),keys=mealKeys(S.plan).filter(q=>typeOf(S.plan,q)===t),fk=keys.find(q=>S.plan[q].it.length),sl=S.plan[k],n=t==='s'?'Extras':TY[t].n,skip=!fk&&sl&&sl.skip;
+  return `<button class="wplate${fk?' full':skip?' skip':' open'}${nx===k?' next':''}" type="button" data-wp="${k}" data-wt="${t}" aria-label="${n}${fk?'':skip?', none':', add'}"><span class="wpl em">${fk?slotIcon(S.plan[fk],t):skip?'<small>None</small>':PLUS}</span><span class="wpn">${n}</span></button>`};
+ el.innerHTML=`<div class="in">${plate('b')}${plate('l')}<button class="wbask" type="button" id="w-add" aria-label="Scan">${SCANI}</button>${plate('d')}${plate('s')}</div>`;
+ el.querySelectorAll('[data-wp]').forEach(b=>b.onclick=()=>{if(b.dataset.wt==='s'){wXPop();return}wPlateGo(b.dataset.wp)});
  $('w-add').onclick=()=>{S.shopSeg='scan';go('scan')}}
+function wPlateGo(k0){const k=wEnsure(k0),t=typeOf(S.plan,k),fk=mealKeys(S.plan).find(q=>typeOf(S.plan,q)===t&&S.plan[q].it.length);
+ if(fk){openMeal(fk);return}if(S.plan[k].skip){delete S.plan[k].skip;save()}startMeal(k)}
+/* Extras holds food and supplements: a small choice above the button */
+const wXClose=()=>{const p=$('wxpop');if(p)p.remove();document.documentElement.classList.remove('wxopen')};
+function wXPop(){const dk=$('wdock');let p=$('wxpop');if(p){wXClose();return}if(!dk)return;p=document.createElement('div');p.id='wxpop';p.className='wxpop';p.setAttribute('role','menu');p.setAttribute('aria-label','Add an extra');
+ p.innerHTML=`<button type="button" role="menuitem" data-xp="food"><span class="xpi xf">${PLUS}</span><span class="xpt"><b>Food or drink</b><small>Snacks, coffee, a smoothie</small></span></button><button type="button" role="menuitem" data-xp="sup"><span class="xpi xs">${QPILL}</span><span class="xpt"><b>Supplement</b><small>A tablet or drops you took</small></span></button>`;
+ dk.appendChild(p);document.documentElement.classList.add('wxopen');const out=e=>{if(!p.isConnected){document.removeEventListener('pointerdown',out,true);return}if(!p.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-wt="s"]'))){wXClose();document.removeEventListener('pointerdown',out,true)}};
+ setTimeout(()=>document.addEventListener('pointerdown',out,true),0);
+ p.querySelector('[data-xp="food"]').onclick=()=>{wXClose();wPlateGo(slotOfType('s'))};p.querySelector('[data-xp="sup"]').onclick=()=>{wXClose();openTook()}}
 /* the board's notes open what they show */
 function wBoard(){return;const el=$('wboard');if(!el||!G||G.ed)return;el.querySelectorAll('[data-wb]').forEach(b=>{b.onclick=e=>{e.stopPropagation();const a=b.dataset.wb;
  if(a==='gap')selectNut(b.dataset.k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(b.dataset.k));
  else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(b.dataset.k)&&gLand().sec[x]);if(bd){G.sb=bd;G.bmt=null;gView('bed')}else go('today')}else go('today')}})}
 function wBoardPos(){}
 function wHead(v){const el=$('wsheet-h');if(!el)return;const on=WSHEETS.includes(v);el.hidden=!on;$('wscrim').hidden=!on;if(!on)return;const board=v==='today'||v==='nutr';
- el.innerHTML=`<span class="whandle" aria-hidden="true"></span><div class="wshr">${board?`<div class="seg sm wseg">${[['today','Today'],['nutr','Nutrients']].map(([x,l])=>`<button type="button" data-wsv="${x}" aria-pressed="${v===x}">${l}</button>`).join('')}</div>`:`<span class="wtitle">${{lib:'Kitchen',scan:'Scan and shop',profile:'Profile'}[v]}</span>`}<button class="iconbtn wx" type="button" id="w-x" aria-label="Close">${XIC}</button></div>`;
+ el.innerHTML=`<span class="whandle" aria-hidden="true"></span><div class="wshr">${board?`<div class="seg sm wseg">${[['today','Today'],['nutr','Nutrients']].map(([x,l])=>`<button type="button" data-wsv="${x}" aria-pressed="${v===x}">${l}</button>`).join('')}</div>`:`<span class="wtitle">${{lib:'Kitchen',scan:S.shopSeg==='list'?'Workbench':'Scan',profile:'Profile'}[v]}</span>`}<button class="iconbtn wx" type="button" id="w-x" aria-label="Close">${XIC}</button></div>`;
  el.querySelectorAll('[data-wsv]').forEach(b=>b.onclick=()=>go(b.dataset.wsv));$('w-x').onclick=()=>wSheet('garden')}
 function wShopN(){try{return shopOpen()||0}catch(e){return 0}}
 function wShell(){const v=S.view,on=WSHEETS.includes(v);document.documentElement.classList.toggle('wsheet-on',on);
@@ -6151,7 +6217,7 @@ function wBedFoods(bd){const ok=id=>{const f=FM[id];if(!f||f.hide||String(id).st
 function wBedPanel(bd,el){const ty=G.bmt||typeOf(S.plan,wSlotNow());G.bmt=ty;const L=wBedFoods(bd);
  const np=S.garden.plants.filter(p=>p.b===bd).length,full=np>=gPlots(bd);
  el.innerHTML=`<div class="wbed">${wBedHealth(bd)}${wBedGrowing(bd)}<p class="cap num wbplots">${GBEDCAP[bd]||''} · ${np} of ${gPlots(bd)} plots growing</p>${full?wGrowBtn(bd):''}
- <div class="seg sm wbm" role="group" aria-label="Meal">${[...'blds'].map(t=>`<button type="button" data-bm="${t}" aria-pressed="${t===ty}">${t==='s'?'Snack':TY[t].n}</button>`).join('')}</div>
+ <div class="seg sm wbm" role="group" aria-label="Meal">${[...'blds'].map(t=>`<button type="button" data-bm="${t}" aria-pressed="${t===ty}">${t==='s'?'Extras':TY[t].n}</button>`).join('')}</div>
  ${L.length?`<div class="wtiles">${L.map(id=>{const f=FM[id],nm=f.n.split(',')[0],g=lastG(id);return `<button class="wtile" type="button" data-bf="${id}" aria-label="Add ${esc(nm)}, ${g} g"><span class="em">${fIcon(id)||''}</span><b>${esc(nm)}</b><small class="num">${g} g</small></button>`}).join('')}</div>`:'<p class="gempty">Search to find a food for this bed</p>'}
  <button class="btn wide wsrch" type="button" id="wb-search"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="11" cy="11" r="6.5"/><path d="M16 16l4 4"/></svg>Search all foods</button></div>`;
  el.querySelectorAll('[data-bm]').forEach(b=>b.onclick=()=>{G.bmt=b.dataset.bm;wBedPanel(bd,el)});
@@ -6478,7 +6544,7 @@ const WTOUR=[
  [null,'A quick tour.'],
  ['#wboard','The notice board. Tap it to open it.'],
  ['#gd-world [data-wsb]','One bed per food group. What you eat grows here. An empty bed means you have not eaten that group lately.'],
- ['#w-ring','How well your nutrients are covered. The weather follows it.'],
+ ['#w-ring','How well your nutrients are covered. The weather follows it. Tap it for the board.'],
  ['#w-add','Scan products, your shopping list and pantry. The plates beside it are your meals.'],
  ['#gd-world [data-bld="shed"]','Drag the sickle over ripe plants to harvest. The barn keeps one of each.'],
  ['#gd-world [data-bld="shop"]','Dishes, recipes, your foods and nutrient tips.'],
@@ -6530,7 +6596,7 @@ function wBigBoard(){wBigClose(true);if(!S.garden)return;if(S.date===TODAY&&S.ga
   :lowG[0]?[' go','fg',lowG[0],GFGN[lowG[0]],'This bed would like a visit']
   :['','ring','','All set','Everything is in for now'];
  const mt=t=>{const P=S.plan||{},keys=mealKeys(P).filter(q=>typeOf(P,q)===t),fk=keys.find(q=>P[q].it&&P[q].it.length),k=slotOfType(t),sl=P[k],skip=!fk&&sl&&sl.skip;
-  return `<span class="wbmeal${fk?' full':skip?' skip':''}"><i>${fk?WTICK:skip?'':PLUS}</i>${t==='s'?'Snack':TY[t].n}</span>`};
+  return `<span class="wbmeal${fk?' full':skip?' skip':''}"><i>${fk?WTICK:skip?'':PLUS}</i>${t==='s'?'Extras':TY[t].n}</span>`};
  const pin=c=>`<i class="wpin" style="background:${c}"></i>`,h=t=>`<small class="wbh">${t}</small>`;
  const el=document.createElement('div');el.id='wbig';el.className='wbig';
  el.innerHTML=`<div class="wbbd" role="dialog" aria-modal="true" aria-label="Notice board"><div class="wbtop"><span class="wbpl">Notice board</span><button class="wbx" type="button" id="wb-x" aria-label="Close">${XIC}</button></div><div class="wbg">
@@ -6743,7 +6809,7 @@ function render0(){
  if(S.view==='ideas'){S.view='nutr';S.nsub='imp'}
  if(!['today','nutr','scan','lib','garden','profile'].includes(S.view))S.view='garden';
  if(v0!=='scan'&&SCAN.tab){stopCamera();SCAN.tab=false;ST.drawn=''}
- if(!['over','imp','hist'].includes(S.nsub))S.nsub='over';if(WRV!==S.view){if(WRV!==null)S.range=0;WRV=S.view}if(S.lib==='meals')S.lib='dishes';if(S.lib==='guide'||S.lib==='kitchen'){S.learn=S.lib;S.lib='learn'}if(!['dishes','recipes','foods','learn'].includes(S.lib))S.lib='dishes';
+ if(!['over','imp','hist'].includes(S.nsub))S.nsub='over';if(WRV!==S.view){if(WRV!==null)S.range=0;WRV=S.view}if(S.lib==='meals')S.lib='dishes';if(S.lib==='recipes'){S.lib='dishes';if(S.rcp==='bld')S.libt='bld'}if(['learn','guide','kitchen'].includes(S.lib))S.lib='tips';if(!['dishes','foods','pantry','tips'].includes(S.lib))S.lib='dishes';if(S.view==='scan'&&S.shopSeg==='pantry'){S.view='lib';S.lib='pantry';S.shopSeg='scan'}
  save();
  const T=targets(),D=dayV(),v=S.view;
  ['today','nutr','scan','lib','garden','profile'].forEach(x=>{$('v-'+x).hidden=x!==v&&x!=='garden'});
