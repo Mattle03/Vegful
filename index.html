@@ -1707,7 +1707,8 @@ html.calm .gbld.refill .wbwater{animation:none}
 .wleg{display:grid;gap:14px;padding:4px 2px 10px}.wlegr{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:center}.wlegr svg{width:34px;height:34px}.wlegr b{display:block;font-size:15.5px}.wlegr .cap{display:block;margin:1px 0 0}
 .wsign.need .wsp{box-shadow:2px -1px 0 var(--se),0 0 0 7px color-mix(in srgb,var(--coral) 28%,transparent)}
 .wsign.rot.need .wsp{box-shadow:-2px -1px 0 var(--se),0 0 0 7px color-mix(in srgb,var(--coral) 28%,transparent)}
-.gedtop{display:flex;align-items:center;gap:8px}
+.gedtop{display:flex;align-items:center;gap:8px}.gedact{margin-left:auto;display:flex;gap:6px;flex:none}.gedq{flex:1 1 100%;margin:0}
+.gfull .gtray2,.gfull .gtray2 *{touch-action:pan-x}
 .gedtabs{margin:0!important;flex:1;min-width:0;flex-wrap:nowrap!important}
 .gedtabs button,.gedseg button{flex:1;border:0;border-radius:10px;min-height:40px;padding:0 12px;background:none;color:var(--ink);font:inherit;font-weight:700;font-size:14px;white-space:nowrap}
 .gedtabs button[aria-selected="true"],.gedseg button[aria-pressed="true"]{background:var(--surface);box-shadow:0 1px 4px rgba(0,0,0,.14)}
@@ -1715,7 +1716,7 @@ html.calm .gbld.refill .wbwater{animation:none}
 .gedhintrow{display:flex;align-items:center;gap:8px}.gedhintrow .gedhint{flex:1;min-width:0}.gedcoins{flex:none;display:flex;align-items:center;gap:3px;font-weight:800;font-size:14px;color:var(--ink)}.gedcoins svg{width:16px;height:16px}
 .gedctxrow{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
 .gedseg{margin:0!important;flex-wrap:nowrap!important}
-.gtbuy .gtpr{display:flex;align-items:center;justify-content:center;gap:2px;font-size:10.5px}.gtbuy .gtpr svg{width:12px;height:12px}
+.gtit .gtpr{display:flex;align-items:center;justify-content:center;gap:2px;font-size:10.5px}.gtit .gtpr svg{width:12px;height:12px}
 .gtbuy[aria-disabled="true"]{opacity:.55}
 .gtempty{margin:0;align-self:center;white-space:nowrap;padding:0 6px}
 .gfab{position:relative}.gfab .gbadge{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--coral);color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;line-height:1;box-sizing:border-box}
@@ -4517,7 +4518,7 @@ function gHoldBind(){const vp=$('gd-scene');if(!vp||G.ed)return;let lp=null;cons
   const X=e.clientX,Y=e.clientY,id=e.pointerId;lp={X,Y,tm:setTimeout(()=>{lp=null;G.ed='sec';G.es=null;G.sel=null;G.lp={t,x:X,y:Y,id};try{navigator.vibrate&&navigator.vibrate(18)}catch(_){}renderGarden()},450)}});
  vp.addEventListener('pointermove',e=>{if(lp&&Math.hypot(e.clientX-lp.X,e.clientY-lp.Y)>8)stop()});vp.addEventListener('pointerup',stop);vp.addEventListener('pointercancel',stop)}
 /* the main view: the world fills the screen, controls float on top */
-function gMain(g,nb){G.need=wNeedBeds();const R=g.plants.filter(gReady),wk=gWeekN(),nx=gNext(wk),mode=gMode(),wf=gWaterOn(TODAY),sel=G.sel&&g.plants.find(p=>p.k===G.sel&&!gReady(p)),bg=g.decor.bg||'meadow',L=g.orders&&g.orders.d===TODAY?g.orders.list:[];
+function gMain(g,nb){if(!G.ed){G.esnap=null;G.pst=null;G.edq=null}G.need=wNeedBeds();const R=g.plants.filter(gReady),wk=gWeekN(),nx=gNext(wk),mode=gMode(),wf=gWaterOn(TODAY),sel=G.sel&&g.plants.find(p=>p.k===G.sel&&!gReady(p)),bg=g.decor.bg||'meadow',L=g.orders&&g.orders.d===TODAY?g.orders.list:[];
  const drops=GSTILL()?'':Array.from({length:10},(_,i)=>`<i style="left:${6+i*9.4}%;animation-delay:${(i%4)*.07}s"></i>`).join('');
  const chests=GCFG.week.map(([t])=>{const got=g.wk&&g.wk.claimed.includes(t),can=wk>=t&&!got;return can?`<button class="gch on" type="button" data-gch="${t}" aria-label="Open the chest for ${t} plants">${CHESTC}<span class="num">${t}</span></button>`:`<span class="gch${got?' got':''}" aria-label="${got?'Opened':'Chest at '+t}">${got?CHESTO:CHESTC}<span class="num">${t}</span></span>`}).join('');
  const b=$('gd-body');isoGeom();G.vit=wBedVit()||{};const wx=wWeather();
@@ -4637,13 +4638,23 @@ const gInFarm=()=>false;
 function gEditLayer(){let h='';const occ=gOcc();for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++){const t=c+','+r;if(!gInMap(t))continue;const o=occ[t]||'';h+=`<polygon class="et${gInWorld(t)?'':' out'}${(G.es&&o==='s:'+G.es)||(G.eb&&o==='b:'+G.eb)||(G.ei&&t===G.ei)?' sel':''}" data-t="${t}" points="${isoDia(c,r,.98)}"/>`}
  return `<svg class="gedit" viewBox="0 0 ${ISO.w} ${ISO.h}" role="group" aria-label="Layout: press and drag to move things">${h}</svg>`}
 /* edit mode: Yours (the path brush and what waits to be placed) and Shop (buy, then place); a tap picks, a tap on the land places */
+/* the stone path is laid with the brush like the plain path, paid per stone; stones you already own are used first */
+const GSTONE=()=>(GDEC.find(x=>x[0]==='path')||[0,0,30])[2];
+const gStonesFree=()=>Math.max(0,gDecN('path')-gDecN('path',1));
+/* edit mode keeps a copy of how things were, so Discard can undo everything, coins included */
+const gEdState=()=>{const g=S.garden;return JSON.stringify({land:g.land,coins:g.coins,own:g.decor.own,up:g.up||{}})};
 const gUnplaced=()=>{const g=S.garden;if(!g||!g.decor)return 0;return [...new Set(g.decor.own)].reduce((a,id)=>a+Math.max(0,gDecN(id)-gDecN(id,1)),0)};
-function gEditBar(){const g=S.garden,tab=G.etab||'yours',L=gLand(),free=[...new Set(g.decor.own)].filter(id=>gDecN(id)>gDecN(id,1)),nw=gUnplaced(),sb=G.sbuy&&GDEC.find(x=>x[0]===G.sbuy);
- const hint=G.es?`${GSECN[G.es]}: drag it to move it`:G.eb&&GBLD[G.eb]?`${GBLD[G.eb].n}: drag it to move it`:G.ei&&L.dec[G.ei]?`${decName(L.dec[G.ei])}: drag it, or put it away`:G.pm?(G.pe?'Drag over paths to remove them':'Drag to draw a path'):G.place?`Tap a spot for the ${decName(G.place).toLowerCase()}`:sb?`${sb[1]}: ${sb[2]} coins`:tab==='shop'?'Pick something to buy':'Hold anything to move it. Swipe to look around.';
- const ctx=G.ei&&L.dec[G.ei]?'<button class="btn sm" type="button" id="ged-store">Put away</button>':G.pm?`<div class="seg sm gedseg" role="group" aria-label="Path"><button type="button" data-pe="0" aria-pressed="${!G.pe}">Draw</button><button type="button" data-pe="1" aria-pressed="${!!G.pe}">Erase</button></div>`:sb?`<button class="btn primary sm" type="button" id="ged-buy"${g.coins<sb[2]?' disabled':''}>Buy for ${sb[2]} coins</button>${g.coins<sb[2]?'<span class="cap">Not enough coins yet</span>':''}`:'';
- const yours=`<button class="gtit${G.pm?' on':''}" type="button" data-tool="path" aria-pressed="${!!G.pm}" aria-label="Path brush"><span class="gtii"><svg viewBox="0 0 48 48"><path d="M4 30L24 20l20 10-20 10z" fill="var(--g-path)"/><ellipse cx="17" cy="30" rx="7" ry="3.4" fill="var(--g-stone)"/><ellipse cx="31" cy="31" rx="6" ry="3" fill="var(--g-stone)"/></svg></span><span>Path</span></button>`+free.map(id=>{const n=gDecN(id)-gDecN(id,1);return `<button class="gtit${G.place===id?' on':''}" type="button" data-tray="${id}" aria-pressed="${G.place===id}"><span class="gtii">${gDec(id)}</span><span>${decName(id)}${n>1?` × ${n}`:''}</span></button>`}).join('')+(free.length?'':'<p class="cap gtempty">Nothing waiting. See Shop.</p>');
- const shop=GDEC.map(([id,n,pr])=>`<button class="gtit gtbuy${G.sbuy===id?' on':''}" type="button" data-gbuy="${id}" aria-pressed="${G.sbuy===id}"${g.coins<pr?' aria-disabled="true"':''}><span class="gtii">${gDec(id)}</span><span>${n}</span><span class="gtpr num">${COINI}${pr}</span></button>`).join('');
- return `<div class="gedbar"><div class="gedtop"><div class="seg sm gedtabs" role="tablist" aria-label="Edit"><button type="button" role="tab" data-etab="yours" aria-selected="${tab==='yours'}">Yours${nw?` <b class="num">${nw}</b>`:''}</button><button type="button" role="tab" data-etab="shop" aria-selected="${tab==='shop'}">Shop</button></div><button class="btn primary sm gdone" type="button" id="ged-done">Done</button></div>
+function gEditBar(){const g=S.garden,tab=G.etab||'yours',L=gLand(),free=[...new Set(g.decor.own)].filter(id=>id!=='path'&&gDecN(id)>gDecN(id,1)),nw=gUnplaced(),sb=G.sbuy&&GDEC.find(x=>x[0]===G.sbuy);
+ const hint=G.es?`${GSECN[G.es]}: drag it to move it`:G.eb&&GBLD[G.eb]?`${GBLD[G.eb].n}: drag it to move it`:G.ei&&L.dec[G.ei]?`${decName(L.dec[G.ei])}: drag it, or put it away`:G.edq||G.pst?'':G.pm==='stone'?'Start on grass to lay stones, on stones to take them up':G.pm?'Start on grass to lay a path, on a path to take it up':G.place?`Tap a spot for the ${decName(G.place).toLowerCase()}`:sb?`${sb[1]}: ${sb[2]} coins`:tab==='shop'?'Pick something to buy':'Hold anything to move it. Swipe to look around.';
+ const pst=G.pst,pr=GSTONE(),fs=gStonesFree();let ctx0='';
+ if(G.edq==='discard')ctx0='<p class="cap gedq">Undo everything since you opened edit mode? Coins spent here come back.</p><button class="btn primary sm" type="button" id="ged-dyes">Discard changes</button><button class="btn sm" type="button" id="ged-dno">Keep editing</button>';
+ else if(pst){const n=pst.ts.length,cost=pst.buy*pr,aff=Math.min(pst.buy,Math.floor(g.coins/pr)),own=n-pst.buy;
+  ctx0=cost<=g.coins?`<p class="cap gedq num">${own?`Lay ${n} stones? ${own} ${own===1?'is':'are'} yours, ${pst.buy} new for ${cost} coins.`:`Lay ${n} stone${n===1?'':'s'} for ${cost} coins?`}</p><button class="btn primary sm" type="button" id="ged-pyes">Lay for ${cost} coins</button><button class="btn sm" type="button" id="ged-pno">Cancel</button>`
+   :`<p class="cap gedq num">${n} stones need ${cost} coins. You have ${g.coins}.</p>${own+aff>0?`<button class="btn primary sm" type="button" id="ged-pyes">Lay ${own+aff}${aff?` for ${aff*pr} coins`:''}</button>`:''}<button class="btn sm" type="button" id="ged-pno">Cancel</button>`}
+ const ctx=ctx0||(G.ei&&L.dec[G.ei]?'<button class="btn sm" type="button" id="ged-store">Put away</button>':G.pm==='stone'?`<span class="cap num">${fs?`${fs} stone${fs===1?'':'s'} of yours, then `:''}${pr} coins each. You confirm before paying.</span>`:sb?`<button class="btn primary sm" type="button" id="ged-buy"${g.coins<sb[2]?' disabled':''}>Buy for ${sb[2]} coins</button>${g.coins<sb[2]?'<span class="cap">Not enough coins yet</span>':''}`:'');
+ const pm1=!!G.pm&&G.pm!=='stone',yours=`<button class="gtit${pm1?' on':''}" type="button" data-tool="path" aria-pressed="${pm1}" aria-label="Path brush"><span class="gtii"><svg viewBox="0 0 48 48"><path d="M4 30L24 20l20 10-20 10z" fill="var(--g-path)"/><ellipse cx="17" cy="30" rx="7" ry="3.4" fill="var(--g-stone)"/><ellipse cx="31" cy="31" rx="6" ry="3" fill="var(--g-stone)"/></svg></span><span>Path</span><span class="gtpr">Free</span></button><button class="gtit${G.pm==='stone'?' on':''}" type="button" data-tool="stone" aria-pressed="${G.pm==='stone'}" aria-label="Stone path brush"><span class="gtii">${gDec('path')}</span><span>Stone path</span><span class="gtpr num">${fs?fs+' yours':COINI+pr+' each'}</span></button>`+free.map(id=>{const n=gDecN(id)-gDecN(id,1);return `<button class="gtit${G.place===id?' on':''}" type="button" data-tray="${id}" aria-pressed="${G.place===id}"><span class="gtii">${gDec(id)}</span><span>${decName(id)}${n>1?` × ${n}`:''}</span></button>`}).join('')+(free.length?'':'<p class="cap gtempty">Nothing waiting. See Shop.</p>');
+ const shop=GDEC.filter(x=>x[0]!=='path').map(([id,n,pr])=>`<button class="gtit gtbuy${G.sbuy===id?' on':''}" type="button" data-gbuy="${id}" aria-pressed="${G.sbuy===id}"${g.coins<pr?' aria-disabled="true"':''}><span class="gtii">${gDec(id)}</span><span>${n}</span><span class="gtpr num">${COINI}${pr}</span></button>`).join('');
+ return `<div class="gedbar"><div class="gedtop"><div class="seg sm gedtabs" role="tablist" aria-label="Edit"><button type="button" role="tab" data-etab="yours" aria-selected="${tab==='yours'}">Yours${nw?` <b class="num">${nw}</b>`:''}</button><button type="button" role="tab" data-etab="shop" aria-selected="${tab==='shop'}">Shop</button></div><span class="gedact"><button class="btn sm" type="button" id="ged-discard">Discard</button><button class="btn primary sm gdone" type="button" id="ged-done">Save</button></span></div>
   <div class="gedhintrow"><p class="cap gedhint">${hint}</p>${tab==='shop'?`<span class="gedcoins num" aria-label="${g.coins} coins">${COINI}<b>${g.coins}</b></span>`:''}</div>${ctx?`<div class="gedctxrow">${ctx}</div>`:''}
   ${G.eb&&GBLD[G.eb]&&!G.es?'<button class="btn sm gedturn" type="button" id="ged-bturn">Turn</button>':''}${G.es?'<button class="btn sm gedturn" type="button" id="ged-turn">Turn</button>':''}
   <div class="gtray2" id="ged-tray">${tab==='shop'?shop:yours}</div></div>`}
@@ -4657,7 +4668,14 @@ function gTry(d,t){const L=gLand();if(!t)return {ok:0,tiles:[]};const [c,r]=tile
  if(d.k==='bld'){const tiles=bldTiles(d.b,[c-d.dc,r-d.dr]),occ=gOcc();return {ok:tiles.every(x=>gInMap(x)&&!gInFarm(x)&&(!occ[x]||occ[x]==='b:'+d.b)),tiles,p:[c-d.dc,r-d.dr]}}
  const o=gOcc()[t],w=gInMap(t);if(d.k==='dec')return {ok:w&&(!o||(d.from&&t===d.from)),tiles:[t]};if(d.k==='path')return {ok:w&&(!o||t===d.from),tiles:[t]};return {ok:0,tiles:[t]}}
 function gEditBind(b){if(!G.ed)return;const L=gLand(),g=S.garden,re=()=>{save();renderGarden()},no=()=>toast('No room there'),clr=()=>{G.es=null;G.eb=null;G.ei=null};
- if($('ged-done'))$('ged-done').onclick=()=>{G.ed=null;clr();G.pm=0;G.pe=0;G.place=null;G.sbuy=null;G.etab=null;G.drag=0;G.cancelDrag=null;gPrune();save();renderGarden();render()};
+ if(!G.esnap)G.esnap=gEdState();
+ const leave=()=>{G.ed=null;clr();G.pm=0;G.pe=0;G.place=null;G.sbuy=null;G.etab=null;G.drag=0;G.cancelDrag=null;G.esnap=null;G.edq=null;G.pst=null;gPrune();save();renderGarden();render()};
+ if($('ged-done'))$('ged-done').onclick=leave;
+ if($('ged-discard'))$('ged-discard').onclick=()=>{G.pst=null;if(gEdState()===G.esnap){leave();return}G.edq='discard';renderGarden()};
+ if($('ged-dno'))$('ged-dno').onclick=()=>{G.edq=null;renderGarden()};
+ if($('ged-dyes'))$('ged-dyes').onclick=()=>{const o=JSON.parse(G.esnap);g.land=o.land;g.coins=o.coins;g.decor.own=o.own;g.up=o.up;leave();toast('Changes discarded')};
+ if($('ged-pno'))$('ged-pno').onclick=()=>{G.pst=null;renderGarden()};
+ if($('ged-pyes'))$('ged-pyes').onclick=()=>{const P=G.pst;if(!P)return;const pr=GSTONE(),aff=Math.min(P.buy,Math.floor(g.coins/pr)),n=P.ts.length-P.buy+aff,c0=g.coins;g.coins-=aff*pr;for(let i=0;i<aff;i++)g.decor.own.push('path');const oc=gOcc();P.ts.slice(0,n).forEach(t=>{if(!oc[t]&&gInMap(t))L.dec[t]='path'});G.pst=null;re();if(aff)gCount(c0,g.coins)};
  if($('ged-turn'))$('ged-turn').onclick=()=>{if(!gTurnSec(G.es))no();re()};
  if($('ged-bturn'))$('ged-bturn').onclick=()=>{const q=gBld()[G.eb];if(!q)return;const f=q[2]?0:1;if(!wBldFree(G.eb,q,f)){no();return}q[2]=f;re()};
  if($('ged-big'))$('ged-big').onclick=()=>{const c0=S.garden.coins;if(gBuyUp('rows:'+G.es)){re();gCount(c0,S.garden.coins);toast('Bigger '+GSECN[G.es].toLowerCase())}else no()};
@@ -4666,7 +4684,7 @@ function gEditBind(b){if(!G.ed)return;const L=gLand(),g=S.garden,re=()=>{save();
  b.querySelectorAll('[data-pe]').forEach(x=>x.onclick=()=>{G.pe=+x.dataset.pe;renderGarden()});
  b.querySelectorAll('[data-gbuy]').forEach(x=>x.onclick=()=>{const id=x.dataset.gbuy;G.sbuy=G.sbuy===id?null:id;renderGarden()});
  if($('ged-buy'))$('ged-buy').onclick=()=>{const id=G.sbuy,c0=g.coins;if(id&&gBuy(id)){G.sbuy=null;G.etab='yours';G.place=id;G.pm=0;clr();save();renderGarden();gCount(c0,g.coins);toast('Tap a spot to place it')}else toast('Not enough coins yet')};
- b.querySelectorAll('[data-tool="path"]').forEach(x=>x.onclick=()=>{G.pm=G.pm?0:1;G.pe=0;G.place=null;clr();renderGarden()});
+ b.querySelectorAll('[data-tool]').forEach(x=>x.onclick=()=>{const k=x.dataset.tool,cur=G.pm==='stone'?'stone':G.pm?'path':0;G.pm=cur===k?0:k;G.pe=0;G.pst=null;G.place=null;clr();renderGarden()});
  let d=null,pend=null,stroke=null,tapq=null;const lay=b.querySelector('.gedit');
  G.cancelDrag=()=>{if(pend){clearTimeout(pend.tm);pend=null}stroke=null;tapq=null;if(d){const id=d.id;d=null;try{lay&&lay.releasePointerCapture(id)}catch(_){}}G.drag=0;gGhost(null);gFoot(null)};
  const move=e=>{if(!d||e.pointerId!==d.id)return;if(!d.mv&&Math.hypot(e.clientX-d.x,e.clientY-d.y)>6)d.mv=1;if(!d.mv)return;e.preventDefault();
@@ -4688,9 +4706,9 @@ function gEditBind(b){if(!G.ed)return;const L=gLand(),g=S.garden,re=()=>{save();
  /* the path brush: every tile the finger passes, with the gaps between fast moves filled in; Draw adds, Erase removes; nothing changes until the finger lifts */
  const lineT=(a,z)=>{const [c0,r0]=tileXY(a),[c1,r1]=tileXY(z),n=Math.max(Math.abs(c1-c0),Math.abs(r1-r0)),o=[];for(let i=0;i<=n;i++){const k=n?i/n:0;o.push(Math.round(c0+(c1-c0)*k)+','+Math.round(r0+(r1-r0)*k))}return o};
  const mark=(t,ok)=>{const p=document.querySelector(`#gd-body .gedit [data-t="${t}"]`);if(p)p.classList.add(ok?'ok':'bad')};
- const paint=ts=>ts.forEach(t=>{if(!stroke||stroke.set.has(t))return;const o=stroke.oc[t];if(stroke.er){if(o==='p'&&L.path.includes(t)){stroke.set.add(t);mark(t,0)}}else if(gInMap(t)&&!o){stroke.set.add(t);mark(t,1)}});
+ const paint=ts=>ts.forEach(t=>{if(!stroke||stroke.set.has(t))return;const o=stroke.oc[t];if(stroke.er){if((stroke.rk==='p'&&o==='p'&&L.path.includes(t))||(stroke.rk==='stone'&&o==='d'&&L.dec[t]==='path')){stroke.set.add(t);mark(t,0)}}else if(gInMap(t)&&!o){stroke.set.add(t);mark(t,1)}});
  if(lay)lay.addEventListener('pointerdown',e=>{if((G.np||1)>1)return;const p=e.target.closest('[data-t]');if(!p)return;const t=p.dataset.t,o=gOcc()[t]||'';
-  if(G.pm){e.preventDefault();G.drag=1;stroke={id:e.pointerId,er:!!G.pe,last:t,set:new Set(),oc:gOcc()};try{lay.setPointerCapture(e.pointerId)}catch(_){}paint([t]);return}
+  if(G.pm){if(G.pst||G.edq)return;const oc=gOcc(),o0=oc[t]||'',rk=o0==='p'?'p':o0==='d'&&L.dec[t]==='path'?'stone':o0?null:'';if(rk===null)return;e.preventDefault();G.drag=1;stroke={id:e.pointerId,er:!!rk,rk,kind:G.pm==='stone'?'stone':'path',last:t,set:new Set(),oc};try{lay.setPointerCapture(e.pointerId)}catch(_){}paint([t]);return}
   if(G.place&&!o){tapq={t,x:e.clientX,y:e.clientY,id:e.pointerId};return}
   if(!o)return;
   if((G.es&&o==='s:'+G.es)||(G.eb&&o==='b:'+G.eb)||(G.ei&&t===G.ei)){if(begin(t,e.clientX,e.clientY,e.pointerId)){e.preventDefault();G.drag=1}return}
@@ -4700,10 +4718,14 @@ function gEditBind(b){if(!G.ed)return;const L=gLand(),g=S.garden,re=()=>{save();
    if(stroke&&e.pointerId===stroke.id){e.preventDefault();const t=gTileAt(e.clientX,e.clientY);if(t&&t!==stroke.last){paint(lineT(stroke.last,t));stroke.last=t}}},true);
   lay.addEventListener('pointerup',e=>{if(pend&&e.pointerId===pend.id){clearTimeout(pend.tm);const q=pend;pend=null;if(begin(q.t,q.x,q.y,q.id))end(e);return}
    if(tapq&&e.pointerId===tapq.id){const q=tapq,id=G.place;tapq=null;if(G.panned||!id)return;if(gPut(q.t,id)){if(gDecN(id,1)>=gDecN(id))G.place=null;re()}else no();return}
-   if(stroke&&e.pointerId===stroke.id){const q=stroke;stroke=null;G.drag=0;gFoot(null);if(q.er)L.path=L.path.filter(t=>!q.set.has(t));else q.set.forEach(t=>{if(!L.path.includes(t))L.path.push(t)});if(q.set.size)re();return}
+   if(stroke&&e.pointerId===stroke.id){const q=stroke;stroke=null;G.drag=0;gFoot(null);if(!q.set.size)return;
+    if(q.er){if(q.rk==='p')L.path=L.path.filter(t=>!q.set.has(t));else q.set.forEach(t=>{if(L.dec[t]==='path')delete L.dec[t]});re();return}
+    if(q.kind==='path'){q.set.forEach(t=>{if(!L.path.includes(t))L.path.push(t)});re();return}
+    const ts=[...q.set],buy=Math.max(0,ts.length-gStonesFree());if(!buy){ts.forEach(t=>L.dec[t]='path');re();return}G.pst={ts,buy};renderGarden();return}
    if(!d&&!G.panned&&(G.es||G.eb||G.ei)){const p=e.target.closest&&e.target.closest('[data-t]');if(p&&!gOcc()[p.dataset.t]){clr();renderGarden()}}},true);
   lay.addEventListener('pointercancel',()=>{if(G.cancelDrag)G.cancelDrag()},true)}
  if(lay&&G.lp){const q=G.lp;G.lp=null;begin(q.t,q.x,q.y,q.id,1)}
+ if(G.pst)gFoot(G.pst.ts,1);
  if(lay){lay.addEventListener('pointermove',move);lay.addEventListener('pointerup',end);lay.addEventListener('pointercancel',end)}
  b.querySelectorAll('[data-tray]').forEach(x=>{x.addEventListener('pointerdown',e=>{e.preventDefault();const v=x.dataset.tray;try{x.setPointerCapture(e.pointerId)}catch(_){}d={k:'dec',from:null,gh:gDec(v),dec:v,x:e.clientX,y:e.clientY,mv:0,id:e.pointerId}});
   x.addEventListener('pointermove',move);
@@ -4776,12 +4798,12 @@ function gPanel(v,b){const g=S.garden;if(v==='bed')return wBedPanel(G.sb,b);if(v
   if($('gs-big'))$('gs-big').onclick=()=>{const c0=g.coins;if(gBuyUp('rows:'+bd)){save();renderGarden();gCount(c0,g.coins);toast('Bigger '+GSECN[bd].toLowerCase())}else toast('No room there')};
   $('gs-move').onclick=()=>{G.view='main';G.ed='sec';G.es=bd;renderGarden()};return}
  if(v==='sell'){const w=wWish(),nm=id=>FM[id].n.split(',')[0].toLowerCase(),wk=gPx().wk;
-  b.innerHTML=`<h3 class="rh">In demand now</h3>`+(w?`<div class="gdem"><span class="gdx">2×</span><span class="otx"><b>${esc(NUT[w.n].n)} is low lately</b><span class="cap">These grow golden, for double coins: ${w.foods.map(nm).join(', ')}.</span></span></div>`:`<p class="cap">Nothing is low right now.</p>`)+
+  b.innerHTML=`<h3 class="rh">In demand now</h3>`+(w?`<div class="gdem"><span class="gdx">2×</span><span class="otx"><b>${esc(NUT[w.n].n)} is low lately</b><span class="cap">Any food rich in ${esc(nlow(w.n))} grows golden, for double coins.${w.foods.length?` Like ${w.foods.map(nm).join(', ')}.`:''}</span></span></div>`:`<p class="cap">Nothing is low right now.</p>`)+
    `<p class="cap gmto">Harvests pay right away${wk>1?`, and your healthy week adds × ${wk}`:''}.</p>`;return}
  if(v==='shop'){const card=(id,n,pr,own,bg)=>{const cnt=bg?0:gDecN(id);return `<button class="gsh${bg&&own?' own':''}${G.buy===id?' on':''}" type="button" data-gs="${id}" aria-pressed="${bg?g.decor.bg===id:G.buy===id}"><span class="gshp${bg?' bgprev bg-'+id:''}">${bg?(GBGI[id]||''):gDec(id)}</span><b>${n}</b>${cnt?`<span class="gown num">You have ${cnt}</span>`:''}<span class="gprice num">${bg&&own?(g.decor.bg===id?'In use':'✓'):pr?COINI+pr:'Free'}</span></button>`};
   const it=G.buy&&(G.buy.startsWith('up:')?(()=>{const u=GUP.find(x=>'up:'+x[0]===G.buy);return u?[G.buy,u[1],gUpPrice(u[0])]:null})():(GDEC.find(x=>x[0]===G.buy)||GBG.find(x=>x[0]===G.buy)));
   const upcX=GUP.map(([id,n,ps])=>{const lv=gUp(id),pr=ps[lv],own=!pr;return `<button class="gsh${own?' own':''}${G.buy==='up:'+id?' on':''}" type="button" data-gs="up:${id}" aria-pressed="${G.buy==='up:'+id}"${own?' disabled':''}><span class="gshp">${gUpIc(id)}</span><b>${n}${ps.length>1&&lv?' '+(lv+1):''}</b><span class="gprice num">${own?'✓':COINI+pr}</span></button>`}).join('');
-  b.innerHTML=`<h3 class="rh">Decorations</h3><div class="gshop">${GDEC.map(([id,n,pr])=>card(id,n,pr,g.decor.own.includes(id),0)).join('')}</div>
+  b.innerHTML=`<h3 class="rh">Decorations</h3><div class="gshop">${GDEC.filter(x=>x[0]!=='path').map(([id,n,pr])=>card(id,n,pr,g.decor.own.includes(id),0)).join('')}</div>
    <h3 class="rh">Backdrops</h3><div class="gshop">${GBG.map(([id,n,pr])=>card(id,n,pr,g.decor.bgs.includes(id),1)).join('')}</div>
    ${it?`<div class="gbuy"><span class="otx"><b>${it[1]}</b><span class="cap num">${COINI} ${it[2]}</span></span><button class="btn primary" type="button" id="gd-buy"${g.coins<it[2]?' disabled':''}>Buy</button></div>`:''}`;
   b.querySelectorAll('[data-gs]').forEach(x=>x.onclick=()=>{const id=x.dataset.gs,bg=GBG.some(d=>d[0]===id);if(id.startsWith('up:')){G.buy=G.buy===id?null:id;renderGarden();if($('gd-buy'))$('gd-buy').scrollIntoView({block:'nearest'});return}if(bg&&g.decor.bgs.includes(id)){g.decor.bg=id;G.buy=null;save();renderGarden();return}
@@ -6460,10 +6482,10 @@ function wBedGrowing(bd){const g=S.garden,ps=g.plants.filter(p=>p.b===bd).sort((
 function wBedHealth(bd){const v=(G.vit||wBedVit()||{})[bd],st=v?v.st:'fine',say={lush:'Thriving',fine:'Doing fine',dry:'Would like a visit'}[st];
  return `<div class="wbedh ${st}"><span class="wbhdot" aria-hidden="true"></span><div><b>${say}</b> <span class="cap num">${v?`· eaten on ${v.n} of the last ${v.of} logged day${v.of===1?'':'s'}`:'· log a meal to see'}</span><p class="cap">${WBEDWHY[bd]||''}</p></div></div>`}
 const WISHX=['kcal','b12','d','iod'],GWISH=10;let WHOLDT=0;
-function wWishFoods(n){const i=K.indexOf(n),T=targets(),sc=f=>(f.v[i]||0)*(f.por||100)/100,ok=f=>f&&f.v&&!f.hide&&f.src!=='usda'&&f.cat!=='My foods'&&f.cat!=='Oils and other'&&plantKinds(f.id).length&&sc(f)>=T[n]*.15;
+function wWishFoods(n){const i=K.indexOf(n),T=targets(),sc=f=>(f.v[i]||0)*(f.por||100)/100,ok=f=>f&&f.v&&!f.hide&&!isDis(f.id)&&f.src!=='usda'&&f.cat!=='My foods'&&f.cat!=='Oils and other'&&plantKinds(f.id).length&&sc(f)>=T[n]*.15;
  let E=[];try{E=[...eaten()]}catch(e){}const mine=E.map(id=>FM[id]).filter(ok).sort((a,b)=>sc(b)-sc(a)),pool=F.filter(ok).sort((a,b)=>sc(b)-sc(a));
  return [...mine.slice(0,2),...pool].map(f=>f.id).filter((x,j,a)=>a.indexOf(x)===j).slice(0,3)}
-function wWish(){const g=S.garden;if(!g)return null;if(g.wish&&g.wish.d===TODAY)return g.wish.n?g.wish:null;let w=null;
+function wWish(){const g=S.garden;if(!g)return null;if(g.wish&&g.wish.d===TODAY){const w0=g.wish;if(w0.n&&Array.isArray(w0.foods)&&w0.foods.some(id=>isDis(id))){w0.foods=w0.foods.filter(id=>!isDis(id));if(!w0.foods.length)w0.foods=wWishFoods(w0.n)}return w0.n?w0:null}let w=null;
  if(wHasData())try{const o=PROJ;PROJ=false;try{const sd=S.date;S.date=TODAY;const s0=wScore();S.date=sd;const x=issues(s0.DS,s0.T).filter(q=>!q.s.over&&!WISHX.includes(q.k))[0];if(x){const foods=wWishFoods(x.k);if(foods.length)w={d:TODAY,n:x.k,p:Math.round(x.s.p),foods,done:0}}}finally{PROJ=o}}catch(e){}
  g.wish=w||{d:TODAY,n:null};return w}
 function wWishUndo(){const g=S.garden,w=g&&g.wish;if(!w||w.d!==TODAY||!w.done||!w.by)return false;const p=S.days[TODAY];if(p&&eatK(p).some(k=>(p[k].it||[]).some(it=>it[0]===w.by&&it[1]>0)))return false;w.done=0;delete w.by;save();return true}
@@ -6472,8 +6494,8 @@ function wWishCheck(){const w=wWish();if(!w||w.done)return false;const p=S.days[
  const g=S.garden,first=!w.paid;w.done=1;w.by=hit;if(first){w.paid=1;gEarn(GWISH)}WHOLDT=Date.now()+15000;g.wglow=g.wglow||{};plantKinds(hit).forEach(k=>g.wglow[k]=TODAY);save();const nm=(FM[hit]?FM[hit].n:hit).split(',')[0];
  const fshow=()=>{if(!w.done)return;if(document.querySelector('dialog[open]')){setTimeout(fshow,700);return}setTimeout(()=>{WFOCUSPL=''},50);if(S.view==='garden'&&$('wtort')){WHOLDT=Date.now()+15000;wAsk(`${nm} brings your ${nlow(w.n)} up.`,(first?`Focus covered, + ${GWISH} coins.`:'Focus covered.')+(seedKinds(hit).length?' It grows golden.':'')+(WFOCUSPL?' '+WFOCUSPL:''),[['Nice',()=>{WHOLDT=0}]],true);try{const m=document.querySelector('#wtort .tmas');if(m)m.className='tmas pleased'}catch(e){}}else toast(`Today's focus covered: ${nlow(w.n)}`+(first?`. ${GWISH} coins`:''))};setTimeout(fshow,600);return true}
 function wWishSay(){const w=wWish();if(!w||w.done)return;const nm=id=>FM[id].n.split(',')[0],sl=wEnsure(wNext()||wSlotNow());
- const fl=w.foods.map(id=>nm(id).toLowerCase()),fs=(fl.length>1?fl.slice(0,-1).join(', ')+' or '+fl[fl.length-1]:fl[0]).replace(/^./,c=>c.toUpperCase());
- wAsk(`Today's focus: ${nlow(w.n)}, ${w.p} %`,`${fs} help, and grow golden for double coins.`,
+ const fl=w.foods.map(id=>nm(id).toLowerCase()),fs=(fl.length>1?fl.slice(0,-1).join(', ')+' or '+fl[fl.length-1]:fl[0]||'').replace(/^./,c=>c.toUpperCase());
+ wAsk(`Today's focus: ${nlow(w.n)}, ${w.p} %`,fl.length?`Any food rich in it grows golden, for double coins. ${fs} for example.`:'Any food rich in it grows golden, for double coins.',
   w.foods.map(id=>[nm(id),()=>{WHOLDT=0;const s2=wEnsure(wNext()||wSlotNow());addFood(s2,id);save();render();toast(`Added ${nm(id)} to ${wMealN(s2).toLowerCase()}`)}]).concat([['Later',()=>{WHOLDT=0}]]),true)}
 function wReport(wn){const t=wn.old?`${wn.c} coins from earlier weeks are yours now.`:`Last week: ${wn.n} kinds of plants${wn.cov!=null?` and ${wn.cov} % covered`:''}.`;
  const d=wn.old?'':[wn.good&&wn.good.length?'Well covered: '+wn.good.map(nlow).join(', ')+'.':'',wn.look&&wn.look.length?'Worth a look: '+wn.look.map(nlow).join(', ')+'.':'',wn.c?`${wn.c} coins${wn.d?' and a '+wn.d.toLowerCase():''} for the variety.`:''].filter(Boolean).join(' ');
