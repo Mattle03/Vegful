@@ -1808,6 +1808,7 @@ html.calm .gbld.refill .wbwater{animation:none}
         <label>Weight kg<input id="p-wt" type="number" min="35" max="200" inputmode="decimal"></label>
         <label class="full">Usual activity<small class="cap" style="display:block;font-weight:400;margin:-2px 0 2px">Your normal day.</small><select id="p-act"><option value="1.4">Mostly sitting</option><option value="1.6">Some walking or cycling</option><option value="1.8">Active job or daily sport</option><option value="2.0">Very active, hard training</option></select></label>
         <div class="full" id="p-pgs"></div>
+        <div class="full" id="p-kcs" data-kc="1"></div>
       </div>
       <label class="suprow" for="p-hk" style="margin-top:14px"><span class="supname">Show calories</span><span class="switch"><input type="checkbox" id="p-hk"><i></i></span><small>Turn off to hide energy numbers.</small></label>
     </div>
@@ -1816,7 +1817,6 @@ html.calm .gbld.refill .wbwater{animation:none}
       <div id="prof-targets" class="targets" style="margin-top:0"></div>
       <div class="padv">
         <div class="form" style="margin-top:8px">
-          <label data-kc="1">Energy goal, kcal<input id="p-kcal" type="number" min="1000" max="6000" step="50" placeholder="auto" inputmode="numeric"></label>
           <label data-kc="1">Energy unit<select id="p-unit"><option value="kcal">kcal</option><option value="kj">kJ</option></select></label>
           <label class="full">Reference values<select id="p-ref"><option value="efsa">EFSA, European Union (default)</option><option value="dge">DGE, Germany, Austria, Switzerland</option><option value="nih">NIH, USA and Canada</option></select></label>
         </div>
@@ -2642,6 +2642,19 @@ const MEAS=[['Spoons and cups',[['1 teaspoon (tsp)','5 ml'],['1 tablespoon (tbsp
 function openMeasures(){let d=$('measd');if(!d){document.body.insertAdjacentHTML('beforeend',`<dialog id="measd"><div class="pk"><div class="pk-head"><div class="row"><h2>Measures</h2><button class="btn sm" id="meas-close" type="button">Close</button></div></div><div class="pk-list" id="meas-body" style="padding:14px 16px 22px"></div></div></dialog>`);d=$('measd');$('meas-close').onclick=()=>{d.close?d.close():d.removeAttribute('open');fitDialogs()}}
  $('meas-body').innerHTML=`<p class="cap" style="margin:0 0 6px">Typical weights to log without a scale. Many foods also have quick buttons like "1 tangerine" below the grams.</p>`+MEAS.map(([h,rows])=>`<div class="lbl" style="margin:16px 0 4px">${h}</div>${rows.map(([a,b])=>`<div class="measrow"><span>${a}</span><b>${b}</b></div>`).join('')}`).join('')+`<p class="cap" style="margin:16px 0 0">Source: USDA portion weights, rounded.</p>`;
  if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}}
+/* energy goal: a slider around the need calculated for your usual activity, 30 % either way in steps of 50 kcal; the Calculated mark goes back to it.
+   It is stored in S.prof.kcal like the number field it replaces (blank means calculated), so plain Vegful reads the same goal */
+const kcalBase=()=>withAct(+S.prof.act||1.6,()=>kcalNeed());
+const kcLab=(v,b)=>{const d=Math.round((v-b)/b*100);return `${EN(v)} a day${d?` · ${Math.abs(d)} % ${d>0?'above':'below'} calculated`:' · calculated'}`};
+function kcalSlider(){const b=kcalBase(),lo=Math.round(b*.7/50)*50,hi=Math.round(b*1.3/50)*50,v=Math.min(hi,Math.max(lo,+S.prof.kcal||b)),pos=x=>((x-lo)/(hi-lo)*100).toFixed(1);
+ return `<div class="pgbox kcbox"><div class="pghead"><span class="lbl">Energy goal</span><b class="kcv num">${kcLab(v,b)}</b></div>
+ <input type="range" class="pgr kcr" min="${lo}" max="${hi}" step="50" value="${v}" aria-label="Energy goal per day">
+ <div class="pgmarks"><button type="button" data-kcm="1" style="left:${pos(b)}%"><i></i>Calculated</button></div>
+ <p class="cap" style="margin:4px 0 0">Calculated from your age, height, weight and usual activity. Move it if you want a bit more or a bit less.</p></div>`}
+function bindKcal(root){if(!root)return;const r=root.querySelector('.kcr');if(!r)return;const b=kcalBase();
+ r.oninput=()=>{const el=root.querySelector('.kcv');if(el)el.textContent=kcLab(+r.value,b)};
+ r.onchange=()=>{S.prof.kcal=+r.value===b?'':String(+r.value);render()};
+ root.querySelectorAll('[data-kcm]').forEach(x=>x.onclick=()=>{S.prof.kcal='';render()})}
 /* protein goal as g per kg body weight, 0.8 to 2.0; marks for the vegan recommendation and for building muscle */
 const pgBase=()=>(+S.prof.age||30)>=65?1:.8,pgVegan=()=>Math.round(pgBase()*1.1*100)/100;
 const pgk=()=>{const P=S.prof;if(+P.pgk>0)return +P.pgk;return {base:pgBase(),vegan:pgVegan(),sport:1.6}[P.pg]||pgVegan()};
@@ -5359,7 +5372,7 @@ function renderLibDishes(){
   const id=b.dataset.ldel;delete S.dishes[id];if(!REC.find(r=>r.id===id)){delete S.meta[id];Object.values(S.days).forEach(p=>mealKeys(p).forEach(k=>{if(p[k].did===id)p[k].did=null}))}LX=null;render()});
 }
 /* ---------- profile + tabs ---------- */
-const PF={ref:'p-ref',sex:'p-sex',age:'p-age',ht:'p-ht',wt:'p-wt',act:'p-act',kcal:'p-kcal',unit:'p-unit'};
+const PF={ref:'p-ref',sex:'p-sex',age:'p-age',ht:'p-ht',wt:'p-wt',act:'p-act',unit:'p-unit'};
 Object.entries(PF).forEach(([k,id])=>{const el=$(id);el.onchange=()=>{S.prof[k]=el.value;if(k==='wt'&&WLON()&&+el.value>=30){S.weights=S.weights||{};S.weights[TODAY]=Math.round(+el.value*10)/10}render()}});
 function supRows(prefix){return SUP.map(u=>`<label class="suprow" for="${prefix}${u.id}"><span class="supname">${u.n}</span><span class="switch"><input type="checkbox" id="${prefix}${u.id}" data-sup="${u.id}" ${supOn(u)?'checked':''}><i></i></span><small>${u.h}</small></label>`).join('')}
 function bindSup(root){root.querySelectorAll('[data-sup]').forEach(cb=>cb.onchange=()=>{setQuick(cb.dataset.sup,cb.checked);render()})}
@@ -5387,7 +5400,7 @@ function renderProfileView(){
  document.querySelectorAll('#p-mode [data-mode]').forEach(b=>{b.setAttribute('aria-pressed',(S.prof.mode||'auto')===b.dataset.mode);b.onclick=()=>{S.prof.mode=b.dataset.mode;applyTheme();render()}});
  $('p-acc').innerHTML=ACC.map(([k,n,c])=>`<button type="button" class="swatch" data-acc="${k}" aria-pressed="${(S.prof.acc||'green')===k}" style="--sw:${c}"><i></i><span>${n}</span></button>`).join('');
  $('p-acc').querySelectorAll('[data-acc]').forEach(b=>b.onclick=()=>{S.prof.acc=b.dataset.acc;applyTheme();render()});
- if(document.activeElement===null||!document.activeElement.classList.contains('pgr')){$('p-pgs').innerHTML=protSlider();bindProt($('p-pgs'))}
+ if(document.activeElement===null||!document.activeElement.classList.contains('pgr')){$('p-pgs').innerHTML=protSlider();bindProt($('p-pgs'));$('p-kcs').innerHTML=kcalSlider();bindKcal($('p-kcs'))}
  {const L=(S.sups||[]).filter(x=>x.freq!=='o'&&sCurrent(x)&&!(x.end&&x.end<=TODAY));
   $('p-rem').innerHTML=L.length?`<div class="amtrow" style="grid-template-columns:auto 1fr;margin-bottom:6px"><span>Time</span><input type="time" id="p-remt" value="${S.prof.remt||'09:00'}"></div>`+L.map(x=>`<div class="dishrow"><span style="flex:1;min-width:0"><span style="font-weight:600">${esc(sName(x))}</span><br><span class="cap">${sSched(x)}${x.freq==='d'?'':' · next '+kdate(sNextDue(x)<TODAY?TODAY:sNextDue(x)).toLocaleDateString('en-GB',{weekday:'short',day:'numeric',month:'short'})}</span></span><button class="btn sm" type="button" data-prem="${x.id}">Add to calendar</button></div>`).join('')+`<p class="cap" style="margin:8px 0 0"></p>`
    :'<p class="cap">No supplements yet. Add one in Supplements on Today.</p>';
@@ -5463,7 +5476,7 @@ function renderOnb(){
   ()=>`<h2>Activity and goal</h2><div class="lbl">How active is a normal day?</div><div class="choices">
     ${ch('prof.act','1.4','Mostly sitting','Desk work, little walking')}${ch('prof.act','1.6','Some walking or cycling','Commute by bike or on foot')}${ch('prof.act','1.8','Active','Standing job or daily sport')}${ch('prof.act','2.0','Very active','Physical job or hard training')}</div>
     <p class="cap" style="margin:-6px 0 0">Your usual day.</p>
-    <div id="o-pgs">${protSlider()}</div>
+    <div id="o-pgs">${protSlider()}</div>${HK()?'':`<div id="o-kcs" style="margin-top:12px">${kcalSlider()}</div>`}
     <div class="lbl">Show calories?</div><div class="segrow">${ch('prof.hidekcal','0','Show')}${ch('prof.hidekcal','1','Hide')}</div><p class="cap" style="margin:-6px 0 0">Hide energy numbers.</p>`,
   supStep,disStep,extraStep,
   ()=>`<h2>All set</h2><p class="info">Your daily targets:</p><div class="targets">${targetBoxes(T)}</div>
@@ -5492,7 +5505,7 @@ function renderOnb(){
  const dq=$('o-dis');if(dq)dq.oninput=()=>{const q=fold(dq.value).trim(),L=DL();const res=q?F.filter(f=>!f.hide&&!L.includes(f.id)&&f.cat!=='My foods'&&fmatch(f,q)).sort((a,b)=>(a.src==='usda')-(b.src==='usda')||a.n.length-b.n.length).slice(0,6):[];
   $('o-dis-res').innerHTML=res.map(f=>`<button class="optmain disrow" type="button" data-obadd="${f.id}"><span class="thumb em">${fIcon(f.id)}</span><span>${esc(f.n)}</span><span class="muted" style="margin-left:auto">Add</span></button>`).join('');
   $('o-dis-res').querySelectorAll('[data-obadd]').forEach(b=>b.onclick=()=>keep(()=>{DL().push(b.dataset.obadd)}))};
- bindProt($('o-pgs'));
+ bindProt($('o-pgs'));bindKcal($('o-kcs'));
  const owl=$('o-wlog');if(owl)owl.onchange=()=>keep(()=>{S.prof.wlog=owl.checked?'1':'0';if(WLON()){S.weights=S.weights||{};if(!wDates().length)S.weights[TODAY]=Math.round((+S.prof.wt||70)*10)/10}});
  const ow=$('o-water');if(ow)ow.onchange=()=>keep(()=>{S.prof.water=ow.checked?'1':'0';if(!S.prof.btl)S.prof.btl=750});
  const ob=$('o-btl');if(ob)ob.onchange=()=>{const v=parseInt(ob.value);S.prof.btl=v>=100&&v<=3000?v:750;save()};
