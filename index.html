@@ -1773,6 +1773,18 @@ html.calm .gbld.refill .wbwater{animation:none}
 .gtempty{margin:0;align-self:center;white-space:nowrap;padding:0 6px}
 .gfab{position:relative}.gfab .gbadge{position:absolute;top:-5px;right:-5px;min-width:20px;height:20px;padding:0 5px;border-radius:10px;background:var(--coral);color:#fff;font-size:11.5px;font-weight:800;display:grid;place-items:center;line-height:1;box-sizing:border-box}
 .wbend{display:inline-block;margin-top:6px;padding:7px 16px;border-radius:999px;background:#2D5A3F;color:#fff;font-weight:800;font-size:14px}
+
+.wxpop .xpt{min-width:0;flex:1}.wxpop small{overflow:hidden;text-overflow:ellipsis;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical}
+.wxpop .xpg{background:var(--surface);border:2px solid var(--s4);box-sizing:border-box;overflow:hidden}.wxpop .xpi.xpg svg,.wxpop .xpi.xpg img{width:26px;height:26px;fill:initial;stroke:initial;stroke-width:initial}
+.wxpop .xpe{flex:none;width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--surface);color:var(--ink2)}.wxpop .xpe svg{width:15px;height:15px;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linejoin:round;stroke-linecap:round}
+
+.wplate{touch-action:none;-webkit-touch-callout:none}
+.wplate.drag .wpl{opacity:.35}
+html.wdragging .wplate.dok .wpl{border:2px dashed var(--s4);background:color-mix(in srgb,var(--s4) 18%,transparent)}
+html.wdragging .wplate.dhov .wpl{transform:scale(1.12);background:color-mix(in srgb,var(--s4) 45%,transparent);border-style:solid}
+html.wdragging .wplate.dno{opacity:.45}
+.wghost{position:fixed;z-index:60;width:56px;height:56px;margin:-84px 0 0 -28px;border-radius:50%;background:var(--surface2);border:2px solid var(--s4);display:grid;place-items:center;overflow:hidden;box-shadow:0 8px 20px rgba(0,0,0,.35);pointer-events:none;transform:scale(1.08)}
+.wghost>svg,.wghost>img{width:34px;height:34px}
 </style>
 </head>
 <body>
@@ -6147,14 +6159,37 @@ function wDock(){const el=$('wdock');if(!el||!S.plan)return;document.documentEle
  const plate=t=>{const k=slotOfType(t),keys=mealKeys(S.plan).filter(q=>typeOf(S.plan,q)===t),fk=keys.find(q=>S.plan[q].it.length),sl=S.plan[k],n=t==='s'?'Extras':TY[t].n,skip=!fk&&sl&&sl.skip;
   return `<button class="wplate${fk?' full':skip?' skip':' open'}${nx===k?' next':''}" type="button" data-wp="${k}" data-wt="${t}" aria-label="${t==='s'?'Extras: food, drink or a supplement':n+(fk?'':skip?', none':', add')}"><span class="wpl em">${fk?slotIcon(S.plan[fk],t):skip?'<small>None</small>':PLUS}</span>${t==='s'?`<i class="wpsup${(S.sups||[]).some(s=>(s.takes||[]).includes(S.date))?' on':''}" aria-hidden="true">${QPILL}</i>`:''}<span class="wpn">${n}</span></button>`};
  el.innerHTML=`<div class="in">${plate('b')}${plate('l')}<button class="wbask" type="button" id="w-add" aria-label="Scan">${SCANI}</button>${plate('d')}${plate('s')}</div>`;
- el.querySelectorAll('[data-wp]').forEach(b=>b.onclick=()=>{if(b.dataset.wt==='s'){wXPop();return}wPlateGo(b.dataset.wp)});
+ el.querySelectorAll('[data-wp]').forEach(b=>{b.onclick=()=>{if(WDRAG.eat){WDRAG.eat=false;return}if(b.dataset.wt==='s'){wXPop();return}wPlateGo(b.dataset.wp)};wDragBind(b)});
  $('w-add').onclick=()=>{S.shopSeg='scan';go('scan')}}
 function wPlateGo(k0){const k=wEnsure(k0),t=typeOf(S.plan,k),fk=mealKeys(S.plan).find(q=>typeOf(S.plan,q)===t&&S.plan[q].it.length);
  if(fk){openMeal(fk);return}if(S.plan[k].skip){delete S.plan[k].skip;save()}startMeal(k)}
-/* Extras holds food and supplements: a small choice above the button */
+/* Hold a full plate and drag it to an empty one to move the meal. It only lands on an empty slot, so nothing is ever replaced */
+const WDRAG={eat:false};
+const wFull=t=>mealKeys(S.plan).find(q=>typeOf(S.plan,q)===t&&S.plan[q].it.length);
+function wMove(fromT,toT){const p=S.plan,fk=wFull(fromT);if(!fk||fromT===toT||wFull(toT))return false;
+ const tk=wEnsure(slotOfType(toT)),src=p[fk],dst={};Object.keys(src).forEach(x=>{if(x!=='ty'&&x!=='skip')dst[x]=src[x]});if(p[tk].ty)dst.ty=p[tk].ty;
+ p[tk]=dst;p[fk]=src.ty?{ty:src.ty,t:'',it:[]}:{t:'',it:[]};rebuildSlots();save();return true}
+function wDragBind(b){let tm=0,on=false,x0=0,y0=0,gh=null,over=null;const t=b.dataset.wt,nm=x=>x==='s'?'Extras':TY[x].n;
+ const end=()=>{clearTimeout(tm);tm=0;if(gh)gh.remove();gh=null;document.documentElement.classList.remove('wdragging');document.querySelectorAll('#wdock .wplate').forEach(q=>q.classList.remove('drag','dok','dno','dhov'))};
+ const hit=(x,y)=>{const e=document.elementFromPoint(x,y);return e&&e.closest?e.closest('#wdock [data-wt]'):null};
+ b.addEventListener('contextmenu',e=>{if(wFull(t))e.preventDefault()});
+ b.addEventListener('pointerdown',e=>{WDRAG.eat=false;if(!wFull(t)||e.button>0)return;x0=e.clientX;y0=e.clientY;on=false;
+  tm=setTimeout(()=>{tm=0;on=true;wXClose();try{b.setPointerCapture(e.pointerId)}catch(_){}if(navigator.vibrate)try{navigator.vibrate(12)}catch(_){}
+   document.documentElement.classList.add('wdragging');b.classList.add('drag');
+   document.querySelectorAll('#wdock .wplate').forEach(q=>{if(q!==b)q.classList.add(wFull(q.dataset.wt)?'dno':'dok')});
+   gh=document.createElement('div');gh.className='wghost';gh.setAttribute('aria-hidden','true');gh.innerHTML=b.querySelector('.wpl').innerHTML;document.body.appendChild(gh);gh.style.left=x0+'px';gh.style.top=y0+'px'},380)});
+ b.addEventListener('pointermove',e=>{if(tm&&Math.hypot(e.clientX-x0,e.clientY-y0)>10){clearTimeout(tm);tm=0}if(!on||!gh)return;e.preventDefault();gh.style.left=e.clientX+'px';gh.style.top=e.clientY+'px';
+  const h=hit(e.clientX,e.clientY);if(h!==over){if(over)over.classList.remove('dhov');over=h&&h!==b&&h.classList.contains('dok')?h:null;if(over)over.classList.add('dhov')}});
+ b.addEventListener('pointerup',e=>{if(!on){end();return}on=false;WDRAG.eat=true;setTimeout(()=>{WDRAG.eat=false},400);const h=hit(e.clientX,e.clientY);end();over=null;
+  if(!h||h===b)return;const to=h.dataset.wt;if(wFull(to)){toast(nm(to)+' already has food, so nothing moved');return}
+  if(wMove(t,to)){toast('Moved to '+nm(to));render()}});
+ b.addEventListener('pointercancel',()=>{on=false;over=null;end()})}
+/* Extras holds food and supplements: a small choice above the button. Once something is logged its row shows it, with a pencil, so it reads as change as well as add */
+const PEN='<svg viewBox="0 0 24 24"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13.5 6.5l4 4"/></svg>';
 const wXClose=()=>{const p=$('wxpop');if(p)p.remove();document.documentElement.classList.remove('wxopen')};
-function wXPop(){const dk=$('wdock');let p=$('wxpop');if(p){wXClose();return}if(!dk)return;p=document.createElement('div');p.id='wxpop';p.className='wxpop';p.setAttribute('role','menu');p.setAttribute('aria-label','Add an extra');
- p.innerHTML=`<button type="button" role="menuitem" data-xp="food"><span class="xpi xf">${PLUS}</span><span class="xpt"><b>Food or drink</b><small>Snacks, coffee, a smoothie</small></span></button><button type="button" role="menuitem" data-xp="sup"><span class="xpi xs">${QPILL}</span><span class="xpt"><b>Supplement</b><small>A tablet or drops you took</small></span></button>`;
+function wXPop(){const dk=$('wdock');let p=$('wxpop');if(p){wXClose();return}if(!dk)return;p=document.createElement('div');p.id='wxpop';p.className='wxpop';p.setAttribute('role','menu');p.setAttribute('aria-label','Extras');
+ const fk=mealKeys(S.plan).find(q=>typeOf(S.plan,q)==='s'&&S.plan[q].it.length),tk=(S.sups||[]).filter(s=>(s.takes||[]).includes(S.date));
+ p.innerHTML=`<button type="button" role="menuitem" data-xp="food"${fk?' class="got"':''}><span class="xpi xf${fk?' xpg':''}">${fk?slotIcon(S.plan[fk],'s'):PLUS}</span><span class="xpt"><b>Food or drink</b><small>${fk?esc(mealName(S.plan[fk]))+'. Tap to change or add':'Snacks, coffee, a smoothie'}</small></span>${fk?`<span class="xpe" aria-hidden="true">${PEN}</span>`:''}</button><button type="button" role="menuitem" data-xp="sup"${tk.length?' class="got"':''}><span class="xpi xs">${QPILL}</span><span class="xpt"><b>Supplement</b><small>${tk.length?esc(tk.map(sName).join(', '))+' today. Tap to change or add':'A tablet or drops you took'}</small></span>${tk.length?`<span class="xpe" aria-hidden="true">${PEN}</span>`:''}</button>`;
  dk.appendChild(p);document.documentElement.classList.add('wxopen');const out=e=>{if(!p.isConnected){document.removeEventListener('pointerdown',out,true);return}if(!p.contains(e.target)&&!(e.target.closest&&e.target.closest('[data-wt="s"]'))){wXClose();document.removeEventListener('pointerdown',out,true)}};
  setTimeout(()=>document.addEventListener('pointerdown',out,true),0);
  p.querySelector('[data-xp="food"]').onclick=()=>{wXClose();wPlateGo(slotOfType('s'))};p.querySelector('[data-xp="sup"]').onclick=()=>{wXClose();openTook()}}
