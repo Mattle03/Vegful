@@ -1690,6 +1690,7 @@ html.wediting .hbot{bottom:calc(10px + env(safe-area-inset-bottom,0px))!importan
 .gplot::after{content:"";position:absolute;left:24%;right:24%;bottom:2%;height:12%;border-radius:50%;background:rgba(30,40,15,.2);z-index:-1}
 .wgrowing{margin:0 0 10px}.wgrowing .lbl{display:block;margin-bottom:6px}
 .wgl{display:flex;flex-wrap:wrap;gap:6px}
+.wgi.hi{border-color:var(--accent);box-shadow:0 0 0 2px color-mix(in srgb,var(--accent) 30%,transparent)}
 .wgi{display:flex;align-items:center;gap:6px;padding:5px 9px 5px 5px;border-radius:12px;background:var(--surface);border:1.5px solid var(--line);font-size:13px}
 .wgi .em{width:26px;height:26px;display:grid;place-items:center}.wgi .em svg,.wgi .em img{width:100%;height:100%}
 .wgi b{display:block;font-size:13px}.wgi small{display:block;font-size:11.5px;color:var(--muted)}
@@ -4684,9 +4685,9 @@ function gMain(g,nb){if(!G.ed){G.esnap=null;G.pst=null;G.edq=null}G.need=wNeedBe
   ${R.length&&!G.ed?`<button class="ghud gharv" type="button" id="gd-all" aria-label="Sickle: drag over ripe plants, or tap to cut them all"><svg viewBox="0 0 48 48" aria-hidden="true"><path d="M11.5 42.5l8.5-11" stroke="#7A4E2A" stroke-width="5.5" stroke-linecap="round"/><path d="M12 41.5l7.6-9.8" stroke="#A8743F" stroke-width="2.2" stroke-linecap="round"/><path d="M18.6 32.2l3.2 2.4" stroke="#5E6B74" stroke-width="3.4" stroke-linecap="round"/><path d="M21 31.5C8.5 23 12 5.5 29 4.6 37.5 4.2 43.5 8.5 45 14.5 40.5 10.2 34.5 8.6 28.8 10.2 20.5 12.6 17.6 21.8 23.4 29.2z" fill="#E4EAEE" stroke="#6F7D86" stroke-width="1.8" stroke-linejoin="round"/><path d="M23 28.3C19.5 22.5 21.4 14.6 28.9 11.8 34 10 39.5 11.2 43 13.4" fill="none" stroke="#9AA7B0" stroke-width="1.6" stroke-linecap="round"/></svg><span class="num">${R.length}</span></button>`:''}
   <div class="ghud hbot">${G.ed?gEditBar():gSeedBar()}</div></div>`;
  gCamGo();if(!G.cam)requestAnimationFrame(()=>{if(G)gCamGo()});
- gReapBind(b);gSeedBind(b);gCamBind();gHoldBind();
+ gReapBind(b);gSeedBind(b);gCamBind();gHoldBind();wBedTapBind();
  if($('wmkt'))$('wmkt').onclick=e=>{e.stopPropagation();wWishSay()};if($('wbathq'))$('wbathq').onclick=e=>{e.stopPropagation();wBathTap()};if($('wboardq'))$('wboardq').onclick=e=>{e.stopPropagation();wBigBoard()};
- b.querySelectorAll('[data-gv]').forEach(x=>x.onclick=()=>{if(G.ed)return;if(x.dataset.gv==='mail'){go('profile');PS='voice';render();return}if(x.dataset.gv==='album'){wBigBoard();return}if(x.dataset.gv==='plan'){openPlan();return}if(x.dataset.gv==='well'){wBathTap();return}if(x.dataset.gv==='centre'){G.buy=null;gView('shop');return}const sv=WBLDV[x.dataset.gv];if(sv==='scan'&&S.shopSeg!=='pantry')S.shopSeg='list';if(sv)go(sv);else gView(x.dataset.gv)});b.querySelectorAll('[data-ul]').forEach(x=>x.onclick=()=>{G.ul=x.dataset.ul;gView('unlock')});b.querySelectorAll('[data-sb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.sb;gView('sec')});b.querySelectorAll('[data-wsb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.wsb;G.bmt=null;gView('bed')});document.documentElement.classList.toggle('wediting',!!G.ed);b.querySelectorAll('[data-wturn]').forEach(x=>{x.addEventListener('pointerdown',e=>e.stopPropagation());x.onclick=e=>{e.stopPropagation();const t=G.es?$('ged-turn'):$('ged-bturn');if(t)t.click()}});b.querySelectorAll('[data-wgrow]').forEach(x=>{x.addEventListener('pointerdown',e=>e.stopPropagation());x.onclick=e=>{e.stopPropagation();const k=x.dataset.wgrow,r=wGrow(k);toast(wGrowSay(k,r));if(r===1){renderGarden();render()}}});
+ b.querySelectorAll('[data-gv]').forEach(x=>x.onclick=()=>{if(G.ed)return;if(x.dataset.gv==='mail'){go('profile');PS='voice';render();return}if(x.dataset.gv==='album'){wBigBoard();return}if(x.dataset.gv==='plan'){openPlan();return}if(x.dataset.gv==='well'){wBathTap();return}if(x.dataset.gv==='centre'){G.buy=null;gView('shop');return}const sv=WBLDV[x.dataset.gv];if(sv==='scan'&&S.shopSeg!=='pantry')S.shopSeg='list';if(sv)go(sv);else gView(x.dataset.gv)});b.querySelectorAll('[data-ul]').forEach(x=>x.onclick=()=>{G.ul=x.dataset.ul;gView('unlock')});b.querySelectorAll('[data-sb]').forEach(x=>x.onclick=()=>{if(G.ed)return;G.sb=x.dataset.sb;gView('sec')});b.querySelectorAll('[data-wsb]').forEach(x=>x.onclick=()=>{if(G.ed)return;wBedOpen(x.dataset.wsb)});document.documentElement.classList.toggle('wediting',!!G.ed);b.querySelectorAll('[data-wturn]').forEach(x=>{x.addEventListener('pointerdown',e=>e.stopPropagation());x.onclick=e=>{e.stopPropagation();const t=G.es?$('ged-turn'):$('ged-bturn');if(t)t.click()}});b.querySelectorAll('[data-wgrow]').forEach(x=>{x.addEventListener('pointerdown',e=>e.stopPropagation());x.onclick=e=>{e.stopPropagation();const k=x.dataset.wgrow,r=wGrow(k);toast(wGrowSay(k,r));if(r===1){renderGarden();render()}}});
  if($('gd-share'))$('gd-share').onclick=gShare;$('gd-zin').onclick=()=>gZoom(1.25);$('gd-zout').onclick=()=>gZoom(.8);
  b.querySelectorAll('[data-gch]').forEach(x=>x.onclick=()=>{const c0=g.coins,r=gClaim(+x.dataset.gch);if(!r)return;save();renderGarden();gCount(c0,g.coins);gDone(`+${r.c} coins${r.d?' and a '+r.d.toLowerCase():''}`)});
  if($('gd-gift'))$('gd-gift').onclick=()=>{const c0=g.coins,r=gGift();if(!r)return;save();renderGarden();gCount(c0,g.coins);toast(`+${r.c} coins${r.d?' and '+r.d.toLowerCase():''}`)};
@@ -4761,7 +4762,7 @@ async function gShare(){const url=URL.createObjectURL(new Blob([gShareSVG()],{ty
 
 
 /* ---------- daily quests: water, supplements and one food tip, right under the main card ---------- */
-const QDROP='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.5 4.5 6 7.6 6 10.6A6 6 0 0 1 6 13.6C6 10.6 8.5 7.5 12 3z"/></svg>',QPILL='<svg viewBox="0 0 24 24" aria-hidden="true"><g transform="rotate(-40 12 12)"><rect x="3.5" y="8.5" width="17" height="7" rx="3.5"/><path d="M12 8.5v7"/></g></svg>',QLEAF='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>',QTICK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
+const QDROP='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 3c3.5 4.5 6 7.6 6 10.6A6 6 0 0 1 6 13.6C6 10.6 8.5 7.5 12 3z"/></svg>',QPILL='<svg viewBox="0 0 24 24" aria-hidden="true"><g transform="rotate(-40 12 12)"><path d="M12 8.5H7.5a3.5 3.5 0 0 0 0 7H12z" fill="currentColor"/><rect x="3.5" y="8.5" width="17" height="7" rx="3.5"/></g></svg>',QLEAF='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 19c0-8 5-14 15-14 0 10-6 15-14 15"/><path d="M5 19c3-4 6-7 10-9"/></svg>',QTICK='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M6 12.5l4 4 8-9"/></svg>';
 function qSups(){const T=targets();return (S.sups||[]).map(s=>({s,st:sStatus(s,TODAY,T)})).filter(({s,st})=>st&&(s.freq==='d'||st.due||(s.takes||[]).includes(TODAY)||(s.skip||[]).includes(TODAY)))}
 const qSupSt=s=>(s.takes||[]).includes(TODAY)?'on':(s.skip||[]).includes(TODAY)?'off':'open';
 function qFood(){if(!S.qfg||S.qfg.d!==TODAY){const L=fgLow();S.qfg={d:TODAY,k:L[0]?L[0].k:null}}const k=S.qfg.k;if(!k||!FG[k])return null;
@@ -4920,7 +4921,7 @@ function gEmpties(){const g=S.garden,L=gLand();let h='';gBeds().forEach(([b])=>{
 function gSeedBar(){return '';const g=S.garden;if(!g.tray.length)return '';const seen={};g.tray.forEach(t=>{seen[t.k]=(seen[t.k]||0)+1});
  return `<div class="gseeds"><div class="gsrow">${Object.keys(seen).map(k=>{const I=kindInfo(k);return `<button class="gpack${G.seed===k?' on':''}" type="button" data-seed="${esc(k)}" aria-pressed="${G.seed===k}" aria-label="${esc(I.name)} seed, ${GSECN[gBedOf(k)]}"><span class="gpki">${I.icon}</span><span class="gpkn">${esc(I.name)}</span></button>`}).join('')}</div><span class="cap gwait">Waiting for a free plot</span></div>`}
 function gSeedBind(b){const g=S.garden;
- b.querySelectorAll('[data-eb]').forEach(x=>x.addEventListener('click',()=>{if(x.dataset.done)return;const bd=x.dataset.eb,pos=+x.dataset.ep,k=G.seed&&gBedOf(G.seed)===bd?G.seed:null;if(!k){G.pp={b:bd,pos};gView('plant');return}
+ b.querySelectorAll('[data-eb]').forEach(x=>x.addEventListener('click',()=>{if(x.dataset.done)return;const bd=x.dataset.eb,pos=+x.dataset.ep,k=G.seed&&gBedOf(G.seed)===bd?G.seed:null;if(!k&&!G.ed&&!g.tray.some(t=>gBedOf(t.k)===bd)){wBedOpen(bd);return}if(!k){G.pp={b:bd,pos};gView('plant');return}
   if(gPlant(k,pos)){if(G.seed===k&&!g.tray.some(t=>t.k===k))G.seed=null;gPop(x);save();renderGarden();render()}}));
  b.querySelectorAll('[data-seed]').forEach(x=>{let st=null;
   x.addEventListener('pointerdown',e=>{st={id:e.pointerId,x:e.clientX,y:e.clientY,mv:0,k:x.dataset.seed,n:0};try{x.setPointerCapture(e.pointerId)}catch(_){}});
@@ -4980,7 +4981,7 @@ function gPanel(v,b){const g=S.garden;if(v==='bed')return wBedPanel(G.sb,b);if(v
 let REAP=null,GREND=0;
 function gReapBind(b){const sc=$('gd-scene');if(!sc)return;
  sc.querySelectorAll('[data-gp]').forEach(x=>x.addEventListener('click',()=>{if(x.dataset.done)return;const k=x.dataset.gp,p=S.garden.plants.find(q=>q.k===k);if(!p)return;
-  if(gReady(p)){const s=$('gd-all');if(s){s.classList.remove('nudge');void s.offsetWidth;s.classList.add('nudge')}toast('Ripe. Drag the sickle over it.');return}G.sel=G.sel===k?null:k;renderGarden()}));
+  if(gReady(p)){const s=$('gd-all');if(s){s.classList.remove('nudge');void s.offsetWidth;s.classList.add('nudge')}toast('Ripe. Drag the sickle over it.');return}if(!G.ed&&p.b&&gLand().sec[p.b]){wBedOpen(p.b,k);return}G.sel=G.sel===k?null:k;renderGarden()}));
  const s=$('gd-all');if(!s)return;let st=null;
  s.addEventListener('pointerdown',e=>{e.preventDefault();st={id:e.pointerId,x:e.clientX,y:e.clientY,mv:0,n:0};try{s.setPointerCapture(e.pointerId)}catch(_){}});
  s.addEventListener('pointermove',e=>{if(!st||e.pointerId!==st.id)return;if(!st.mv&&Math.hypot(e.clientX-st.x,e.clientY-st.y)>8){st.mv=1;s.classList.add('out')}if(!st.mv)return;gSickle(e.clientX,e.clientY,1);
@@ -6216,7 +6217,7 @@ function wXPop(){const dk=$('wdock');let p=$('wxpop');if(p){wXClose();return}if(
 /* the board's notes open what they show */
 function wBoard(){return;const el=$('wboard');if(!el||!G||G.ed)return;el.querySelectorAll('[data-wb]').forEach(b=>{b.onclick=e=>{e.stopPropagation();const a=b.dataset.wb;
  if(a==='gap')selectNut(b.dataset.k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(b.dataset.k));
- else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(b.dataset.k)&&gLand().sec[x]);if(bd){G.sb=bd;G.bmt=null;gView('bed')}else go('today')}else go('today')}})}
+ else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(b.dataset.k)&&gLand().sec[x]);if(bd){wBedOpen(bd)}else go('today')}else go('today')}})}
 function wBoardPos(){}
 function wHead(v){const el=$('wsheet-h');if(!el)return;const on=WSHEETS.includes(v);el.hidden=!on;$('wscrim').hidden=!on;if(!on)return;const board=v==='board'||v==='today'||v==='nutr';
  el.innerHTML=`<span class="whandle" aria-hidden="true"></span><div class="wshr">${board?`<div class="seg sm wseg">${[['board','Board'],['today','Today'],['nutr','Nutrients']].map(([x,l])=>`<button type="button" data-wsv="${x}" aria-pressed="${v===x}">${l}</button>`).join('')}</div>`:`<span class="wtitle">${{lib:'Kitchen',scan:S.shopSeg==='list'?'Workbench':'Scan',profile:'Profile'}[v]}</span>`}<button class="iconbtn wx" type="button" id="w-x" aria-label="Close">${XIC}</button></div>`;
@@ -6265,6 +6266,10 @@ function wNeedBeds(){const M={};let L=[];try{L=fgLow(TODAY)}catch(e){}L.forEach(
 function wEmptyBeds(){const g=S.garden,L=gLand();return gBeds().map(([b])=>{if(g.plants.some(p=>p.b===b)||g.tray.some(t=>gBedOf(t.k)===b))return '';const s=L.sec[b],[w,hh]=secWH(s),[x,y]=s.rot?isoP(s.c+(w-1)*.15,s.r+(hh-1)/2):isoP(s.c+(w-1)/2,s.r+(hh-1)*.15);
  return `<button class="wempty" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}"><b>Empty</b><span>Eat ${WBEDFOOD[b]||'something from it'} to plant</span></button>`}).join('')}
 const WSIGNIC={f:'apple',n:'hazelnut',v:'carrot',k:'kale',c:'wheat',l:'pea',b:'strawberry',h:'basil'};
+/* a tap anywhere on a bed opens its window, not only on the sign */
+function wBedOpen(bd,pk){G.sb=bd;G.bmt=null;G.bp=pk||null;G.sel=null;gView('bed')}
+function wBedAt(x,y){const t=gTileAt(x,y);if(!t)return null;const L=gLand(),b=gBeds().map(z=>z[0]).find(b=>secTiles(L.sec[b]).includes(t));return b||null}
+function wBedTapBind(){const vp=$('gd-scene');if(!vp)return;vp.onclick=e=>{if(G.ed||e.defaultPrevented)return;const el=e.target;if(el.closest&&el.closest('button,a,input,[data-gp],[data-bld],.ghud,.wbub'))return;const b=wBedAt(e.clientX,e.clientY);if(b)wBedOpen(b)}}
 function wBedSigns(){const L=gLand(),N=G.need||{};return gBeds().map(([b])=>{const s=L.sec[b],[w,hh]=secWH(s),[x,y]=s.rot?isoP(s.c+w-.1,s.r+hh/2-.5):isoP(s.c+w/2-.5,s.r+hh-.1),nk=N[b],lab=GSECN[b],em=!S.garden.plants.some(p=>p.b===b)&&!S.garden.tray.some(t=>gBedOf(t.k)===b);
  return `<button class="wsign t-${b}${nk?' need':''}${em?' empty':''}${s.rot?' rot':''}" type="button" data-wsb="${b}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)};z-index:${Math.round((s.c+w/2+s.r+hh)*10)+8}" aria-label="${esc(lab)}${nk?', would like a visit':''}${em?`, empty: eat ${WBEDFOOD[b]||'some'} to plant`:''}"><span class="wsp"><span class="wsic" aria-hidden="true">${(kindMap()[WSIGNIC[b]]||{}).icon||''}</span><span class="wspt"><b>${esc(lab)}</b></span></span></button>`}).join('')}
 /* foods for a bed: what you eat most first, then good everyday picks; only whole plant foods, so every tile sows a seed here */
@@ -6607,7 +6612,7 @@ function wPushOffer(auto){const g=S.garden;if(g.vpush||wPushOn()||!(WPUSH.url&&W
 const WTOUR=[
  [null,'A quick tour.'],
  ['#wboard','The notice board. Tap it to open it.'],
- ['#gd-world [data-wsb]','One bed per food group. What you eat grows here. Tap the sign on a bed to see what you ate from it.'],
+ ['#gd-world [data-wsb]','One bed per food group. What you eat grows here. Tap a bed to see what you ate from it.'],
  ['#w-ring','How well your nutrients are covered. The weather follows it. Tap it for the board.'],
  ['#w-add','Scan a product here. That is all this button does.'],
  ['#wdock [data-wt="l"]','Your meals. Tap a plate to add food. Hold a full one and drag it to an empty plate to move it.'],
@@ -6686,7 +6691,7 @@ function renderBoard(){if(!S.garden)return;if(S.date===TODAY&&S.garden.bdseen!==
  el.querySelectorAll('[data-bb]').forEach(b=>b.onclick=e=>{e.stopPropagation();const a=b.dataset.bb,k=b.dataset.k;if(a==='water'){const sd=S.date;if(sd!==TODAY)setDate(TODAY);wAdd(250);save();if(sd!==TODAY)setDate(sd);toast('+ 250 ml');render();return}if(!['nutr','ring','imp','hist','today'].includes(a))wBigClose(true);if(a==='weight'){openWeight();return}
   if(a==='nutr'||a==='ring'){S.nsub='over';go('nutr')}else if(a==='imp'){S.nsub='imp';go('nutr')}else if(a==='hist'){S.nsub='hist';go('nutr')}
   else if(a==='legend')gView('legend');else if(a==='gap')selectNut(k);else if(a==='close')wCloseDay();else if(a==='meal')startMeal(wEnsure(k));else if(a==='today')go('today');
-  else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(k)&&gLand().sec[x]);if(bd){G.sb=bd;G.bmt=null;gView('bed')}else go('today')}});
+  else if(a==='fg'){const bd=GBEDS.find(x=>(GBEDFG[x]||[]).includes(k)&&gLand().sec[x]);if(bd){wBedOpen(bd)}else go('today')}});
 }
 /* ---------- the garden shows your health ----------
    A bed thrives when you ate from it on most of the last 7 logged days (flowers, a butterfly), and turns dry and pale after
@@ -6727,7 +6732,7 @@ function wBathArt(){const B=wBath(),f=B.fill,lv=44+(1-f)*7,rx=33*(.5+.5*f),ry=13
 /* Dusk moved from the places to the times of day; who had it keeps it, and a Dusk place becomes the Meadow at dusk */
 function wTodMig(g){const d=g&&g.decor;if(!d)return;if(!Array.isArray(d.tods))d.tods=['tday'];if(Array.isArray(d.bgs)&&d.bgs.includes('dusk')){d.bgs=d.bgs.filter(x=>x!=='dusk');if(!d.tods.includes('tdusk'))d.tods.push('tdusk')}if(d.bg==='dusk'){d.bg='meadow';d.tod='tdusk'}}
 function wMktBubble(){if(S.date!==TODAY)return '';const B=gBld(),w=wWish();if(!B.market||!w||w.done||!w.foods.length)return '';const bb=gBldBox('market'),fs=w.foods.slice(0,3),nm=id=>FM[id].n.split(',')[0];
- return `<button class="wbub wmk" type="button" id="wmkt" style="left:${pct(bb.x+bb.w*.5,ISO.w)};top:${pct(bb.y+bb.h*.1,ISO.h)}" aria-label="The market wants ${esc(nlow(w.n))} today, like ${esc(fs.map(nm).join(', '))}. Tap for ideas"><b>${esc(NUT[w.n].n)}, please</b><span class="wbr">${fs.map(id=>`<span>${fIcon(id)}</span>`).join('')}</span><span class="wb2 num">2×</span><i class="wtd1"></i><i class="wtd2"></i></button>`}
+ return `<button class="wbub wmk" type="button" id="wmkt" style="left:${pct(bb.x+bb.w*.5,ISO.w)};top:${pct(bb.y+bb.h*.1,ISO.h)}" aria-label="Today's focus: ${esc(nm(fs[0]).toLowerCase())}. It helps your ${esc(wNs(w))}. Tap for ideas"><b>${esc(nm(fs[0]))}, please</b><span class="wbr">${fs.map(id=>`<span>${fIcon(id)}</span>`).join('')}</span><span class="wb2 num">2×</span><i class="wtd1"></i><i class="wtd2"></i></button>`}
 /* the board's bubble: today's score and the one next thing, all day long; a tap opens the board */
 function wBoardInfo(){const any=wHasData(),w=wScore(),sc=Math.round(w.sc||0);if(wCanClose())return {t:'End your day?',s:`${sc} % today`,sc};
  if(!any)return {t:'Log a meal to start',s:'Your day shows here',sc:0};
@@ -6784,14 +6789,14 @@ function wWeather(){if(!wHasData())return 'fair';let sc=0;try{sc=wScore().sc}cat
 const WXSAY={sun:'Your garden is sunny: you are well covered.',fair:'Your garden is fair.',soft:'Your garden is cloudy: a few nutrients are low.'};
 const WBEDWHY={f:FG.fruit.why,b:FG.fruit.why,c:FG.whole.why,l:FG.leg.why,n:FG.nuts.why,k:FG.green.why,v:'Fiber, potassium, folate and vitamins A and C.',h:'Herbs and spices add flavour and a little of everything.'};
 function wBedGrowing(bd){const g=S.garden,ps=g.plants.filter(p=>p.b===bd).sort((a,c)=>a.pos-c.pos),wt=g.tray.filter(t=>gBedOf(t.k)===bd);if(!ps.length&&!wt.length)return '';
- return `<div class="wgrowing"><span class="lbl">Growing here</span><div class="wgl">${ps.map(p=>{const I=kindInfo(p.k),rp=gReady(p);return `<span class="wgi${rp?' ripe':''}${g.goldK&&g.goldK[p.k]?' gold':''}"><span class="em">${I.icon}</span><span><b>${esc(I.name)}${g.goldK&&g.goldK[p.k]?' <i class="wgx">golden</i>':''}</b><small>${rp?'Ripe':gEta(p)}</small></span></span>`}).join('')}</div>${wt.length?`<p class="cap">${GCUT.silo?`${wt.length} more seed${wt.length===1?'':'s'} waiting for a free plot: ${[...new Set(wt.map(t=>kindInfo(t.k).name.toLowerCase()))].join(', ')}`:`${wt.length} more waiting in the silo`}</p>`:''}</div>`}
+ return `<div class="wgrowing"><span class="lbl">Growing here</span><div class="wgl">${ps.map(p=>{const I=kindInfo(p.k),rp=gReady(p);return `<span class="wgi${rp?' ripe':''}${G.bp===p.k?' hi':''}${g.goldK&&g.goldK[p.k]?' gold':''}"><span class="em">${I.icon}</span><span><b>${esc(I.name)}${g.goldK&&g.goldK[p.k]?' <i class="wgx">golden</i>':''}</b><small>${rp?'Ripe':gEta(p)}</small></span></span>`}).join('')}</div>${wt.length?`<p class="cap">${GCUT.silo?`${wt.length} more seed${wt.length===1?'':'s'} waiting for a free plot: ${[...new Set(wt.map(t=>kindInfo(t.k).name.toLowerCase()))].join(', ')}`:`${wt.length} more waiting in the silo`}</p>`:''}</div>`}
 function wBedHealth(bd){const v=(G.vit||wBedVit()||{})[bd],st=v?v.st:'fine',say={lush:'Thriving',fine:'Doing fine',dry:'Would like a visit'}[st];
  return `<div class="wbedh ${st}"><span class="wbhdot" aria-hidden="true"></span><div><b>${say}</b> <span class="cap num">${v?`· eaten on ${v.n} of the last ${v.of} logged day${v.of===1?'':'s'}`:'· log a meal to see'}</span><p class="cap">${WBEDWHY[bd]||''}</p></div></div>`}
 const WISHX=['kcal','b12','d','iod'],GWISH=10;let WHOLDT=0;
 function wWishFoods(n){const i=K.indexOf(n),T=targets(),sc=f=>(f.v[i]||0)*(f.por||100)/100,ok=f=>f&&f.v&&!f.hide&&!isDis(f.id)&&f.src!=='usda'&&f.cat!=='My foods'&&f.cat!=='Oils and other'&&plantKinds(f.id).length&&sc(f)>=T[n]*.15;
  let E=[];try{E=[...eaten()]}catch(e){}const mine=E.map(id=>FM[id]).filter(ok).sort((a,b)=>sc(b)-sc(a)),pool=F.filter(ok).sort((a,b)=>sc(b)-sc(a));
  return [...mine.slice(0,2),...pool].map(f=>f.id).filter((x,j,a)=>a.indexOf(x)===j).slice(0,3)}
-function wWish(){const g=S.garden;if(!g)return null;if(g.wish&&g.wish.d===TODAY){const w0=g.wish;if(w0.n&&Array.isArray(w0.foods)&&w0.foods.some(id=>isDis(id))){w0.foods=w0.foods.filter(id=>!isDis(id));if(!w0.foods.length)w0.foods=wWishFoods(w0.n)}return w0.n?w0:null}let w=null;
+function wWish(){const g=S.garden;if(!g)return null;if(g.wish&&g.wish.d===TODAY&&!(g.wish.n&&!g.wish.ns&&!g.wish.done)){const w0=g.wish;if(w0.n&&Array.isArray(w0.foods)&&w0.foods.some(id=>isDis(id))){w0.foods=w0.foods.filter(id=>!isDis(id));if(!w0.foods.length)w0.foods=wWishFoods(w0.n)}return w0.n?w0:null}let w=null;
  if(wHasData())try{const o=PROJ;PROJ=false;try{const sd=S.date;S.date=TODAY;const s0=wScore();S.date=sd;w=wFocusPick(issues(s0.DS,s0.T))}finally{PROJ=o}}catch(e){}
  if(w){g.wishH=(g.wishH||[]).filter(h=>h.d!==TODAY&&dayDiff(h.d,TODAY)<7);g.wishH.push({d:TODAY,f:w.foods[0]})}
  g.wish=w||{d:TODAY,n:null};return w}
