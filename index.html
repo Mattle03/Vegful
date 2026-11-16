@@ -2150,6 +2150,8 @@ function usdaPor(n,cat,por){n=n.toLowerCase();let g=por;const cook=/\bcooked|boi
 USDA.forEach(([id,n,c,por,pl,ico,pk,v])=>{const p2=usdaPor(n,CATS[c],por);F.push({id,n,cat:CATS[c],por:p2,pl:p2<por?'':pl,ico,pk,v:v.concat(Array(Math.max(0,K.length-v.length)).fill(0)),src:'usda'})});
 const NONV=new Set(['u20093','u20094','u20095','u20096','u16147','u43130','u43131','u43132','u43135','u43137','u11672']);
 F.forEach(f=>{if(NONV.has(f.id))f.hide=1});
+/* a USDA food with the very same name as one of ours (Oats, Tempeh, Hummus...) would show twice in search; ours stays, the USDA one is hidden but still known, so days that logged it keep working */
+{const own=new Set(F.filter(f=>f.src!=='usda').map(f=>f.n.toLowerCase().trim()));F.forEach(f=>{if(f.src==='usda'&&own.has(f.n.toLowerCase().trim()))f.hide=1})}
 const FM=Object.fromEntries(F.map(f=>[f.id,f]));
 /* disliked foods */
 const DL=()=>S.dislike||(S.dislike=[]);
