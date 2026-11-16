@@ -6190,7 +6190,8 @@ applyTheme();
    top bar: the day and today's ring; dock: the meals as plates around the basket; the notice board in the world shows a live view */
 const WSHEETS=['board','today','nutr','lib','scan','profile'];
 const WBLDV={shop:'lib',album:'today'};
-const WMEAL={b:5,l:11,d:17};
+/* when the turtle starts asking about a meal: once it is usually eaten, not when it is about to be (no lunch question before 1 pm) */
+const WMEAL={b:8,l:13,d:19};
 let WLASTV=null;
 /* the same number as the ring on the board sheet: mixed, one day or a range, following the chosen range */
 function wScore(){const r0=S.range;S.range=0;try{const T=targets(),D=dayV(),MX=mixStats(S.date,mixMemo()),DS=MX?MX.avg:D;
