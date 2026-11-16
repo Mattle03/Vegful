@@ -1820,6 +1820,15 @@ html.still .wbub.wmk .wmcta{animation:none}@media (prefers-reduced-motion:reduce
 .wmkic{width:46px;height:46px;flex:none;display:grid;place-items:center;border-radius:12px;background:var(--surface2);overflow:hidden}.wmkic img,.wmkic svg{width:100%;height:100%;object-fit:cover}
 .wmkd .otx{display:flex;flex-direction:column;gap:1px;min-width:0}.wmkd b{font-size:15px;line-height:1.25}.wmkd .cap{margin:0}
 .wmkp{flex:none}
+
+/* v162 a meal that just got in: the plate pops and a soft ring opens around it */
+.wplate.pop .wpl{animation:wppop .7s cubic-bezier(.3,1.6,.5,1) both}
+.wplate.pop::after{content:"";position:absolute;left:50%;top:6px;width:48px;height:48px;margin-left:-24px;border-radius:50%;border:3px solid #E5A92A;pointer-events:none;animation:wpring .9s ease-out .1s both}
+.wplate.pop::before{content:"";position:absolute;left:50%;top:28px;width:6px;height:6px;margin:-3px 0 0 -3px;border-radius:50%;background:#F2C14E;pointer-events:none;z-index:2;box-shadow:0 -30px 0 #F2C14E,26px -15px 0 #8CC56B,26px 15px 0 #F2C14E,0 30px 0 #8CC56B,-26px 15px 0 #F2C14E,-26px -15px 0 #8CC56B;animation:wpspark .9s ease-out .12s both}
+@keyframes wpspark{0%{transform:scale(.3);opacity:1}70%{opacity:1}100%{transform:scale(1.25);opacity:0}}
+@keyframes wppop{0%{transform:scale(1)}35%{transform:scale(1.22)}100%{transform:scale(1)}}
+@keyframes wpring{0%{transform:scale(.8);opacity:.9}100%{transform:scale(1.8);opacity:0}}
+html.still .wplate.pop .wpl,html.still .wplate.pop::after,html.still .wplate.pop::before{animation:none}html.still .wplate.pop::after,html.still .wplate.pop::before{display:none}
 </style>
 </head>
 <body>
@@ -2565,7 +2574,7 @@ function openRecipe(id,slot){if(String(id).startsWith('g_'))return openGranRecip
  if(!dl.open){dl.showModal?dl.showModal():dl.setAttribute('open','')}$('sheet-body').scrollTop=0}
 function allDishes(t){const ids=[...REC.map(r=>r.id),...Object.keys(S.dishes).filter(id=>!REC.find(r=>r.id===id)),...(S.custom||[]).filter(c=>c.gb&&!c.hide).map(c=>c.id)];return ids.map(dish).filter(d=>d&&(!t||d.t===t))}
 function meta(id){return S.meta[id]||(S.meta[id]={})}
-function edited(slot){const sl=S.plan[slot];if(sl){sl.dirty=1;if(S.date<=TODAY)delete sl.pl}}
+function edited(slot){const sl=S.plan[slot];if(sl){sl.dirty=1;if(S.date<=TODAY)delete sl.pl;if(S.date===TODAY&&S.garden&&(sl.it.length||sl.skip))S.garden.lastlog=Date.now()}}
 /* older versions saved edits of built in dishes in place; turn those into your own meals */
 Object.keys(S.dishes).forEach(id=>{if(REC.find(r=>r.id===id)){const nid='u_'+id;if(!S.dishes[nid])S.dishes[nid]=Object.assign({},S.dishes[id]);if(S.meta[id])S.meta[nid]=Object.assign({},S.meta[id]);delete S.dishes[id]}});
 function saveMeal(slot,name){const sl=S.plan[slot],t=TY[typeOf(S.plan,slot)].t;let id=sl.did&&String(sl.did).startsWith('u_')?sl.did:'u_'+Date.now().toString(36);
@@ -6192,6 +6201,7 @@ const WSHEETS=['board','today','nutr','lib','scan','profile'];
 const WBLDV={shop:'lib',album:'today'};
 /* when the turtle starts asking about a meal: once it is usually eaten, not when it is about to be (no lunch question before 1 pm) */
 const WMEAL={b:8,l:13,d:19};
+let WFULLD=null,WPOPQ=[],WPOPGO=[],WJUST=[],WJUSTT=0;
 let WLASTV=null;
 /* the same number as the ring on the board sheet: mixed, one day or a range, following the chosen range */
 function wScore(){const r0=S.range;S.range=0;try{const T=targets(),D=dayV(),MX=mixStats(S.date,mixMemo()),DS=MX?MX.avg:D;
@@ -6199,6 +6209,10 @@ function wScore(){const r0=S.range;S.range=0;try{const T=targets(),D=dayV(),MX=m
 const wOpen=k=>{const sl=S.plan&&S.plan[k];return !!sl&&!sl.it.length&&!sl.skip&&!mealKeys(S.plan).some(q=>q!==k&&typeOf(S.plan,q)===typeOf(S.plan,k)&&S.plan[q].it.length)};
 /* the one next step: the first main meal whose time has come and that is still open; only today */
 function wNext(){if(S.date!==TODAY||!S.plan||wClosed())return null;const h=dayHr();for(const t of 'bld'){if(h<WMEAL[t])break;const k=slotOfType(t);if(wOpen(k))return k}return null}
+/* after you log something the tortoise lets you be: for three hours nothing asks for the next meal (the turtle, the glowing plate, the board).
+   wNext stays the plain next meal, for where Add goes and for ending the day */
+const WREST=3*3600e3,wRest=()=>{const t=S.garden&&+S.garden.lastlog;return !!t&&Date.now()-t>=0&&Date.now()-t<WREST};
+function wNextAsk(){return wRest()?null:wNext()}
 function wSlotNow(){const h=dayHr(),t=h<11?'b':h<16?'l':h<21?'d':'s';return slotOfType(t)}
 function wEnsure(k){if(!S.plan[k]){S.plan[k]={t:'',it:[]};rebuildSlots()}return k}
 const wMealN=k=>{const t=typeOf(S.plan,k);return t==='s'?'Extras':TY[t].n};
@@ -6213,12 +6227,12 @@ function wTop(w){const el=$('wtop');if(!el)return;const isT=S.date===TODAY,t=isT
  $('w-prev').onclick=()=>{setDate(shift(S.date,-1));render()};$('w-next').onclick=()=>{setDate(shift(S.date,1));render()};
  $('w-date').onclick=()=>{if(S.date!==TODAY){setDate(TODAY);render()}else{S.nsub='hist';S.hsel=S.date;go('nutr')}};
  $('w-ring').onclick=()=>wBigBoard();$('w-me').onclick=()=>go('profile')}
-function wDock(){const el=$('wdock');if(!el||!S.plan)return;document.documentElement.classList.remove('wxopen');const nx=wNext();
+function wDock(){const el=$('wdock');if(!el||!S.plan)return;document.documentElement.classList.remove('wxopen');const nx=wNextAsk();wPopNote();
  const plate=t=>{const k=slotOfType(t),keys=mealKeys(S.plan).filter(q=>typeOf(S.plan,q)===t),fk=keys.find(q=>S.plan[q].it.length),sl=S.plan[k],n=t==='s'?'Extras':TY[t].n,skip=!fk&&sl&&sl.skip;
-  return `<button class="wplate${fk?' full':skip?' skip':' open'}${nx===k?' next':''}" type="button" data-wp="${k}" data-wt="${t}" aria-label="${t==='s'?'Extras: food, drink or a supplement':n+(fk?'':skip?', none':', add')}"><span class="wpl em">${fk?slotIcon(S.plan[fk],t):skip?'<small>None</small>':PLUS}</span>${t==='s'?`<i class="wpsup${(S.sups||[]).some(s=>(s.takes||[]).includes(S.date))?' on':''}" aria-hidden="true">${QPILL}</i>`:''}<span class="wpn">${n}</span></button>`};
+  return `<button class="wplate${fk?' full':skip?' skip':' open'}${nx===k?' next':''}${WPOPGO.includes(t)?' pop':''}" type="button" data-wp="${k}" data-wt="${t}" aria-label="${t==='s'?'Extras: food, drink or a supplement':n+(fk?'':skip?', none':', add')}"><span class="wpl em">${fk?slotIcon(S.plan[fk],t):skip?'<small>None</small>':PLUS}</span>${t==='s'?`<i class="wpsup${(S.sups||[]).some(s=>(s.takes||[]).includes(S.date))?' on':''}" aria-hidden="true">${QPILL}</i>`:''}<span class="wpn">${n}</span></button>`};
  el.innerHTML=`<div class="in">${plate('b')}${plate('l')}<button class="wbask" type="button" id="w-add" aria-label="Scan">${SCANI}</button>${plate('d')}${plate('s')}</div>`;
  el.querySelectorAll('[data-wp]').forEach(b=>{b.onclick=()=>{if(WDRAG.eat){WDRAG.eat=false;return}if(b.dataset.wt==='s'){wXPop();return}wPlateGo(b.dataset.wp)};wDragBind(b)});
- $('w-add').onclick=()=>{S.shopSeg='scan';go('scan')}}
+ WPOPGO=[];$('w-add').onclick=()=>{S.shopSeg='scan';go('scan')}}
 function wPlateGo(k0){const k=wEnsure(k0),t=typeOf(S.plan,k),fk=mealKeys(S.plan).find(q=>typeOf(S.plan,q)===t&&S.plan[q].it.length);
  if(fk){openMeal(fk);return}if(S.plan[k].skip){delete S.plan[k].skip;save()}startMeal(k)}
 /* Hold a full plate and drag it to an empty one to move the meal. It only lands on an empty slot, so nothing is ever replaced */
@@ -6337,7 +6351,7 @@ function wUndo(t,fn){let el=$('wundo');if(!el){el=document.createElement('div');
 /* the notice board: three notes with a plain heading each. Covered (mixed), Low (the two lowest nutrients), Next (the one next step) */
 const WFGREP={whole:'oats',leg:'lentils',nuts:'walnuts',fruit:'apple',green:'spinach',cruc:'broccoli'};
 const wHasData=()=>Object.keys(S.days||{}).some(d=>d<=TODAY&&logged(S.days[d]));
-function wBoardNotes(ed){const w=wScore(),any=wHasData(),iss=any?issues(w.DS,w.T).filter(x=>!x.s.over).slice(0,2):[],nx=wNext(),isT=S.date===TODAY,B='span',ty='';
+function wBoardNotes(ed){const w=wScore(),any=wHasData(),iss=any?issues(w.DS,w.T).filter(x=>!x.s.over).slice(0,2):[],nx=wNextAsk(),isT=S.date===TODAY,B='span',ty='';
  let lowG=[];try{lowG=fgStatus(TODAY).filter(x=>x.low).map(x=>x.k)}catch(e){}
  const head=t=>`<small class="wnh">${t}</small>`;
  const ring=`<${B} class="wnote wn-ring"${ty} data-wb="ring" aria-label="${any?w.sc+' percent covered':'Nothing logged yet'}">${head('Covered')}<span class="wnr">${WRING(any?w.sc:0,17)}${any?`<b class="num">${w.sc} %</b>`:`<span class="wnsp">${WSEED}</span>`}</span></${B}>`;
@@ -6396,7 +6410,7 @@ function wCloseDay(){const g=S.garden;if(!g||S.date!==TODAY)return;g.done=g.done
  save();render();wSay(wPick('close'),'asleep');wUndo('Day closed',()=>{set.forEach(k=>{if(S.plan[k])delete S.plan[k].skip});delete g.done[TODAY];save();render()})}
 /* None on an open meal: nothing was eaten for it */
 function wNoneSync(){const nb=$('ad-none');if(!nb||!AD)return;const sl=S.plan[AD.slot];nb.hidden=!(sl&&!sl.it.length&&!sl.skip&&S.date<=TODAY&&'bld'.includes(typeOf(S.plan,AD.slot))&&AD.slot.length===1);
- nb.onclick=()=>{const k=AD.slot,n=wMealN(k);S.plan[k].skip=1;save();closeAdd();wSay(wPick('none',{meal:n.toLowerCase()}),'idle');wUndo(`No ${n.toLowerCase()}`,()=>{if(S.plan[k])delete S.plan[k].skip;save();render()})}}
+ nb.onclick=()=>{const k=AD.slot,n=wMealN(k);S.plan[k].skip=1;if(S.date===TODAY)S.garden.lastlog=Date.now();save();closeAdd();wSay(wPick('none',{meal:n.toLowerCase()}),'idle');wUndo(`No ${n.toLowerCase()}`,()=>{if(S.plan[k])delete S.plan[k].skip;save();render()})}}
 ['add','gsheet','meal','pk'].forEach(id=>{const d=$(id);if(d)d.addEventListener('close',()=>setTimeout(wFly,80))});
 /* ---------- voice: Kind (default), Guilt, Guilt 18+. Guilt mocks the logging and the garden, never the body, amounts or supplements ---------- */
 const WVL={
@@ -6481,9 +6495,9 @@ function wSay(t,mood){const el=$('wtort');if(!el||!t)return;const b=el.querySele
  const m=el.querySelector('.tmas');if(m)m.className='tmas '+(mood||'idle');clearTimeout(WTT);WTT=setTimeout(()=>{el.classList.remove('talk');if(m)m.className='tmas idle'},5200)}
 function wTort(){let el=$('wtort');if(!el){el=document.createElement('div');el.id='wtort';el.className='wtort';el.innerHTML=`<span class="wtb" role="status"></span><button class="wtbtn" type="button" aria-label="The tortoise"><span class="tmas idle">${TORTV()}</span></button>`;document.body.appendChild(el);
   el.querySelector('.wtbtn').onclick=()=>{if(!wGuide(false))wSay(wPick('tap'),'waving')}}
- el.hidden=S.view!=='garden'||!!(G&&G.ed);el.classList.toggle('has',!!(wNext()||wCheckNext()));const tb=el.querySelector('.wtbtn');if(tb)tb.setAttribute('aria-label',(wNext()||wCheckNext())?'The tortoise has a suggestion':'The tortoise')}
+ el.hidden=S.view!=='garden'||!!(G&&G.ed);el.classList.toggle('has',!!(wNextAsk()||wCheckNext()));const tb=el.querySelector('.wtbtn');if(tb)tb.setAttribute('aria-label',(wNextAsk()||wCheckNext())?'The tortoise has a suggestion':'The tortoise')}
 /* once a day, a hello; after days away, the away line */
-function wGreet(){const g=S.garden;if(!g||S.view!=='garden'||WTI>=0)return;const nx=wNext(),key=TODAY+':'+nx;
+function wGreet(){const g=S.garden;if(!g||S.view!=='garden'||WTI>=0)return;const nx=wNextAsk(),key=TODAY+':'+nx;
  if(!g.tour&&S.onb&&!(G&&G.ed)){g.tour=1;g.vnew138=1;g.vhi=TODAY;g.vlast=TODAY;g.vpo=TODAY;if(nx)g.vask=key;save();setTimeout(wTour,900);return}
  if(g.tour&&!g.vnew138&&!(G&&G.ed)&&Date.now()>=WHOLDT){g.vnew138=1;g.vhi=TODAY;g.vlast=TODAY;if(nx)g.vask=key;save();setTimeout(wNewSay,900);return}
  if(!g.vpush&&!wPushOn()&&g.vpo!==TODAY&&wHasData()&&(wPushOK()||wIOS())){g.vpo=TODAY;g.vlast=TODAY;g.vhi=TODAY;if(nx)g.vask=key;setTimeout(()=>{if(!wPushOffer(true))wGuide(true)},900);return}
@@ -6636,7 +6650,7 @@ function wCloseAsk(){const g=S.garden;WHOLDT=Date.now()+20000;wAsk('End your day
 let WCHKT=0;
 function wCheckAuto(){clearTimeout(WCHKT);WCHKT=setTimeout(()=>{try{if(!G||S.view!=='garden'||!wCheckNext())return;if(G.ed||document.querySelector('dialog[open]')||(typeof WTI!=='undefined'&&WTI>=0&&$('wtort')&&$('wtort').classList.contains('talk'))){WCHKT=setTimeout(wCheckAuto,4000);return}
  if(typeof WLINE!=='undefined'&&WLINE){wCheckAuto();return}const el=$('wtort');if(Date.now()<WHOLDT||(el&&el.classList.contains('ask'))){WCHKT=setTimeout(wCheckAuto,Math.max(1500,WHOLDT-Date.now()+800));return}wCheckIn(true)}catch(e){}},1600)}
-function wGuide(auto){const g=S.garden;if(!g||S.view!=='garden')return false;if(!auto&&wCheckIn(false))return true;const nx=wNext();
+function wGuide(auto){const g=S.garden;if(!g||S.view!=='garden')return false;if(!auto&&wCheckIn(false))return true;const nx=auto?wNextAsk():wNext();
  if(nx){const meal=wMealN(nx).toLowerCase();let ag=null;try{ag=againList(nx,3)[0]||null}catch(e){}
   if(ag){const w=whenTxt(ag.d);wAsk(wPick('again',{meal,when:w==='Yesterday'?'yesterday':w}),ag.n,[['Add',()=>{useAgain(nx,ag);save();render()}],['Something else',()=>startMeal(nx)]]);return true}
   wAsk(wPick('nag',{meal}),'',[['Add '+meal,()=>startMeal(nx)]]);return true}
@@ -6778,7 +6792,7 @@ function wMktBubble(){if(S.date!==TODAY)return '';const B=gBld(),w=wWish();if(!B
 /* the board's bubble: today's score and the one next thing, all day long; a tap opens the board */
 function wBoardInfo(){const any=wHasData(),w=wScore(),sc=Math.round(w.sc||0);if(wCanClose())return {t:'End your day?',s:`${sc} % today`,sc};
  if(!any)return {t:'Log a meal to start',s:'Your day shows here',sc:0};
- const iss=issues(w.DS,w.T).filter(x=>!x.s.over),lo=iss[0],nx=wNext(),ln=lo?`${NUT[lo.k].n} ${Math.round(lo.s.p)} %`:'';
+ const iss=issues(w.DS,w.T).filter(x=>!x.s.over),lo=iss[0],nx=wNextAsk(),ln=lo?`${NUT[lo.k].n} ${Math.round(lo.s.p)} %`:'';
  if(nx)return {t:`${wMealN(nx)} next`,s:ln||`${sc} % today`,sc};if(lo)return {t:ln,s:'Lowest now',sc};return {t:'All covered',s:`${sc} % today`,sc}}
 function wBoardBubble(){if(S.date!==TODAY)return '';const B=gBld().board;if(!B)return '';const fl=!!B[2],[bw,bh]=bwh('board',fl),[x,y]=isoP(B[0]+(bw-1)/2,B[1]+(bh-1)/2),BW=Math.max(bw,bh)*WIB.tile,f=wBoardInfo();
  return `<button class="wbub wbt wbb" type="button" id="wboardq" style="left:${pct(x,ISO.w)};top:${pct(y-WIB.ph-WIB.fh-BW*.25+4,ISO.h)}" aria-label="${esc(f.t)}. ${esc(f.s)}. Open the board"><span class="wbr0">${WRING(f.sc,9)}<b class="num">${f.sc}</b></span><span class="wbtx"><b>${esc(f.t)}</b><small class="num">${esc(f.s)}</small></span><i class="wtd1"></i><i class="wtd2"></i></button>`}
@@ -6913,7 +6927,7 @@ function wImpact(silent,wun){const p=S.days[TODAY];if(!p){WIMP=null;return}const
  const A=WACC;WACC=null;
  const g=S.garden,ws=g.wish,reopened=A.wun&&!(ws&&ws.d===TODAY&&ws.done),ps=(A.sig0||'').split(/[|,]/),ns=sig.split(/[|,]/),added=ns.filter(x=>x&&!ps.includes(x)),rm=ps.filter(x=>x&&!ns.includes(x));
  const lst=a=>a.length>1?a.slice(0,-1).join(', ')+' and '+a[a.length-1]:a[0],up=x=>x.replace(/^./,c=>c.toUpperCase()),kn=k=>kindInfo(k).name.toLowerCase();
- if(!added.length){if(!rm.length||(!A.gone.length&&!reopened))return;
+ if(!added.length){WJUST=[];if(!rm.length||(!A.gone.length&&!reopened))return;
   const t=[A.gone.length?`Taken off, so ${A.gone.length>1?'those seeds are':'the '+kn(A.gone[0])+' seed is'} gone too.`:'',reopened?"Today's focus is open again.":''].filter(Boolean).join(' ');
   wLine(t,'idle',300);return}
  const T=targets(),gs=ALLK.filter(k=>T[k]>0).map(k=>{const i=K.indexOf(k);return {k,a:(A.v0[i]||0)/T[k],b:(v[i]||0)/T[k]}}).filter(x=>x.a<1&&x.b-x.a>=.1).sort((x,y)=>(y.b-y.a)-(x.b-x.a));
@@ -6923,7 +6937,7 @@ function wImpact(silent,wun){const p=S.days[TODAY];if(!p){WIMP=null;return}const
  const done=gs.filter(x=>x.b>=1).slice(0,2),pc=x=>Math.round(x.b*100);
  const nu=!gs.length?'':done.length?`That covers your ${done.map(x=>nlow(x.k)).join(' and ')} for today.`:`That brought ${gs.slice(0,2).map(x=>nlow(x.k)+' to '+pc(x)+' %').join(' and ')} of today's need.`;
  if(A.focus){WFOCUSPL=pl;return}
- const t=[pl,nu].filter(Boolean).join(' ')||'Noted for today.';
+ const jl=wJustLine(),t=[jl,pl,nu].filter(Boolean).join(' ')||'Noted for today.';
  wLine(t,'pleased',500)}
 /* the garden grows with your variety: new patches open by themselves */
 /* no herb patch (herbs are not worth logging); new patches wait for the new map */
@@ -7012,6 +7026,18 @@ function wMarketPanel(b){const day=wMktDay(),tom=day!==TODAY,G0=wMktGaps(),gaps=
  b.querySelectorAll('[data-mkr]').forEach(x=>x.onclick=()=>openRecipe(x.dataset.mkr));
  b.querySelectorAll('[data-mkp]').forEach(x=>x.onclick=()=>{const d=dish(x.dataset.mkp);if(!d)return;const keep=S.date;setDate(day);const k=wEnsure(slotOfType(ty));const sl=S.plan[k];
   if(sl.it.length||sl.skip){setDate(keep);wMarketPanel(b);return}useDish(k,d);S.plan[k].pl=1;setDate(keep);save();toast(`Planned ${d.n} for ${when}`);render();if(G&&G.view==='market'&&b.isConnected)wMarketPanel(b)})}
+
+/* a meal that just got in (today, from empty to food or none): remembered while the sheet is open, then its plate pops and the tortoise starts warm */
+function wPopNote(){if(S.date!==TODAY||!S.plan){return}const now='blds'.split('').filter(t=>mealKeys(S.plan).some(q=>typeOf(S.plan,q)===t&&(S.plan[q].it.length||S.plan[q].skip)));
+ if(WFULLD&&WFULLD.d===TODAY)now.forEach(t=>{if(!WFULLD.s.includes(t)&&!WPOPQ.includes(t))WPOPQ.push(t)});
+ WPOPQ=WPOPQ.filter(t=>now.includes(t));WFULLD={d:TODAY,s:now};
+ if(WPOPQ.length&&S.view==='garden'&&!document.querySelector('dialog[open]')){WPOPGO=WPOPQ.slice();WJUST=WPOPQ.filter(t=>t!=='s');WJUSTT=Date.now();WPOPQ=[]}}
+function wJustLine(){const J=WJUST;WJUST=[];if(!J.length||!S.plan||Date.now()-WJUSTT>8000)return '';
+ const all='bld'.split('').every(t=>mealKeys(S.plan).some(q=>typeOf(S.plan,q)===t&&(S.plan[q].it.length||S.plan[q].skip)));
+ if(all)return 'All your meals are in for today. Time to sit back.';
+ const t=J[J.length-1],sk=mealKeys(S.plan).filter(q=>typeOf(S.plan,q)===t).every(q=>!S.plan[q].it.length);
+ if(sk)return 'Noted.';
+ return {b:['Breakfast is in. Nice start.','Breakfast is in. Lovely.'],l:['Lunch is in. Lovely.','Lunch is in. Nice one.'],d:['Dinner is in. Lovely.','Dinner is in. Nice one.']}[t][Math.floor(Math.random()*2)]}
 </script>
 
 <script>
