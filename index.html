@@ -3638,9 +3638,12 @@ function foodRow(f,T){const v=itemV([f.id,f.por]),it0=!PK.part&&!PK.pick&&S.plan
  return `<div class="opt${inSlot?' added':''}"><button class="optmain" type="button" data-f="${f.id}"><span class="thumb em">${fIcon(f.id)}</span><span class="otx"><span class="t">${esc(f.n)}${f.src==='usda'?'<span class="mine" style="background:var(--surface2);color:var(--muted)">USDA</span>':''}${f.parts?'<span class="mine">mix</span>':''}${inSlot?'<span class="mine addok">✓ added</span>':''}</span><span class="s num">${f.pl?esc(f.pl)+', ':''}${f.por} g · ${ENs(v[0])}${fmt(v[1])} g protein</span>${inSlot?'':`<span class="tags">${topTags(v,T).map(x=>`<span>${NUT[x.k].n} ${Math.round(x.p)}%</span>`).join('')}</span>`}</span></button>${inSlot?'':`<button class="iconbtn star" type="button" data-star="f:${f.id}" aria-pressed="${fav}" aria-label="Favourite ${esc(f.n)}">${STAR}</button>`}
  ${inSlot?`<div class="addctl"><label><input type="number" inputmode="decimal" min="1" step="any" value="${Math.round(it0[1])}" data-fg="${f.id}" aria-label="Amount of ${esc(f.n)} in grams"><span>g</span></label><button class="btn sm ghost" type="button" data-frm="${f.id}">Remove</button></div>`:''}</div>`}
 /* taps on a list while the keyboard is open: act on finger up, before the keyboard closes and the list jumps; ignore scroll gestures */
+/* a tap handled on pointerup redraws the sheet before the phone sends its click; that click would land on whatever now sits under the finger
+   (the Remove cross of the food just added), so the one click right after such a tap is swallowed */
+let TAPG=0;document.addEventListener('click',e=>{if(TAPG&&e.isTrusted&&Date.now()-TAPG<600){TAPG=0;e.preventDefault();e.stopPropagation()}},true);
 function tapBind(el,fn){let x0=0,y0=0,t0=0,done=false;
  /* the pointerup is caught on the document: when the search field loses focus the layout can shift under the finger, and the tap still counts */
- const up=e=>{if(done||!el.isConnected)return;if(Math.abs(e.clientX-x0)>10||Math.abs(e.clientY-y0)>10||Date.now()-t0>700)return;done=true;e.preventDefault();fn(e)};
+ const up=e=>{if(done||!el.isConnected)return;if(Math.abs(e.clientX-x0)>10||Math.abs(e.clientY-y0)>10||Date.now()-t0>700)return;done=true;e.preventDefault();TAPG=Date.now();fn(e)};
  el.addEventListener('pointerdown',e=>{x0=e.clientX;y0=e.clientY;t0=Date.now();done=false;document.addEventListener('pointerup',up,{once:true,capture:true})},{passive:true});
  el.addEventListener('click',e=>{if(done){done=false;e.preventDefault();return}fn(e)})}
 function renderPicker(){
