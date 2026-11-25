@@ -1114,6 +1114,7 @@ html.still .gplot.empty.can::after{animation:none}
 .gworld{position:absolute;left:0;top:0;transform-origin:0 0;will-change:transform}
 .gworld .gfarm{width:100%;height:100%;aspect-ratio:auto;margin:0;min-width:0;isolation:isolate}
 .gfull .gland{filter:saturate(calc(.72 + .28*var(--wet,1))) brightness(calc(1.12 - .14*var(--wet,1)));z-index:-9999}
+.gland.gback{z-index:-10000}
 .gfull .gedit{z-index:5000}
 .gedit .et.out{stroke:rgba(255,255,255,.3)}
 .ghud{position:absolute;z-index:50}
@@ -4476,7 +4477,7 @@ function gardenView(){if(!GON()){G=null;$('gd-head').innerHTML='<div class="vhea
 function openGarden(view){if(!GON())return;gStart(view);S.view='garden';render();scrollTo({top:0});}
 function closeGarden(){if($('gsheet').open)$('gsheet').close();G=null;if(S.view==='garden'){S.view='today'}render()}
 function gView(v){G.view=v;G.sel=null;G.spot=null;G.buy=null;G.nm=0;renderGarden()}
-function renderGarden(){if(!G||!S.garden)return;try{gTrialFix()}catch(e){}const o=PROJ;PROJ=false;try{renderGarden0()}finally{PROJ=o}try{wBfStart()}catch(e){}try{wLabSoon(90)}catch(e){}try{gPvBar()}catch(e){}}
+function renderGarden(){if(!G||!S.garden)return;try{gTrialFix()}catch(e){}const o=PROJ;PROJ=false;try{renderGarden0()}finally{PROJ=o}try{const gf=document.querySelector('#gd-world .gfarm');if(gf&&!gf.querySelector(':scope>.gback'))gf.prepend(wBackEl())}catch(e){}try{wBfStart()}catch(e){}try{wLabSoon(90)}catch(e){}try{gPvBar()}catch(e){}}
 function gEta(p){const left=p.need-gProgress(p);if(gMode()==='auto'){const n=Math.ceil(left-1e-6);if(n<=0)return 'Ready';return n<=1?'Ready tomorrow':`Ready in ${n} days`}
  const wf=gWaterOn(TODAY);if(left<=1-wf+1e-6)return 'Ready with more water today';if(wf<=0)return 'Needs water';const n=Math.ceil(left-(1-wf)-1e-6);return n<=1?'Ready tomorrow':`Ready in about ${n} days`}
 /* ---------- the land: a tile grid you lay out yourself; sections, stone paths and decorations snap to it ----------
@@ -4543,16 +4544,26 @@ function wTerrain(){const bg=wBgId(),dark=wDark()||wNight();if(bg==='roof')retur
   let dc=(z[1]+z[2]-z[0]-z[3])/2,dr=(z[2]+z[3]-z[0]-z[1])/2,lit=ter?(Math.round(zm/22)%2?1:.95):Math.max(.74,Math.min(1.12,1+(-dc*.9+dr*1.1)/150));
   const lv=ter?zm*.75:zm,steep=Math.hypot(dc,dr),nz=((gH(c*3+7,r*5+1)%100)/100-.5),wild=!ter&&bg!=='desert';
   let base=(lv>235||(wild&&lv>200&&nz>.1)?pal[0]:lv>150||(wild&&zm>80&&steep>52)?pal[1]:lv>70?pal[2]:pal[3])[dark?1:0];
-  if(wild&&lv>60&&lv<=150&&base===pal[2][dark?1:0]&&nz<-.2)base=dark?'#22402A':'#5E9256';
+  const d=Math.max(ISO.c0-.5-c,ISO.r0-.5-r),fm=wForest(c,r);
+  if(wild&&base!==pal[0][dark?1:0]&&base!==pal[1][dark?1:0]){if(lv>=150)base=dark?'#3A4A2E':'#A9B873';else if(lv>18&&fm&&steep<58)base=dark?'#1D3A24':'#5C9152';else if(lv>18)base=dark?'#2C4A30':'#8DBA74'}
   lit*=1+nz*.07;
   if(ter&&zm>0){const dl=zm-zq(c,r+1),dd=zm-zq(c+1,r);if(dl>0)h+=`<polygon points="${PTS([p[3],p[2],[p[2][0],p[2][1]+dl],[p[3][0],p[3][1]+dl]])}" fill="${wall}"/>`;if(dd>0)h+=`<polygon points="${PTS([p[1],p[2],[p[2][0],p[2][1]+dd],[p[1][0],p[1][1]+dd]])}" fill="${wall2}"/>`}
   h+=`<polygon points="${PTS(p)}" fill="${cl(base,lit)}" stroke="${cl(base,lit)}" stroke-width=".8"/>`;
   if(ter&&zm>0&&zm<130&&(c+r)%2===0){const m=[isoP(a+.2,b+.5),isoP(a+.8,b+.5)];h+=`<path d="M${m[0][0]} ${(m[0][1]-zm).toFixed(1)}L${m[1][0]} ${(m[1][1]-zm).toFixed(1)}" stroke="${dark?'#2E3A22':'#7E8E4A'}" stroke-width="3" stroke-linecap="round" opacity=".55"/>`}
   if(RV.t[c+','+r])return;const k=gH(c,r),[X,Y]=isoP(c,r);
-  if(zm>12&&zm<(ter?110:80)&&k<(ter?70:bg==='desert'?14:55))TR.push(wTree(bg,X,Y-zm,ter?.8:.78,dark,k));
-  else if(wild&&zm>=58&&zm<175&&steep<60&&k<150){const n=1+(k%3===0),o=[[0,0],[.3,-.25],[-.28,.22]];for(let i=0;i<n;i++){const [px,py]=isoP(c+o[i][0],r+o[i][1]);TR.push(wPine(px,py-zm,.78+(k%5)*.06,dark))}}
-  else if(wild&&zm>=120&&zm<200&&k>=244&&lv<=150)TR.push(wRock(X,Y-zm,.9+(k%4)*.15,dark))});
- return h+RV.h+TR.join('')}
+  if(!wild){if(zm>12&&zm<(ter?110:80)&&k<(ter?70:bg==='desert'?14:55))h+=wTree(bg,X,Y-zm,ter?.8:.78,dark,k);return}
+  h+=wVeg(c,r,zm,lv,steep,d,fm,k,hz,dark)});
+ return h+RV.h}
+/* the wild hills: trees shrink with distance from the farm so the mountains read as far and big; forests come in patches with clearings,
+   leafy trees low down, pines higher up, the tree line at about 150, then alpine meadow, rock and snow */
+function wForest(c,r){return Math.sin(c*.37+r*.21)+Math.cos(r*.29-c*.43)+Math.sin((c+r)*.11)*.6>-.35}
+function wVeg(c,r,zm,lv,steep,d,fm,k,hz,dark){let h='';const s=Math.max(.3,.74-d*.05);
+ const put=(n,pine)=>{for(let i=0;i<n;i++){const j=gH(c*7+i*13,r*11+i*5),oc=((j%100)/100-.5)*.8,or=(((j>>4)%100)/100-.5)*.8,cc=c+oc,rr=r+or,[px,py]=isoP(cc,rr),zz=hz(cc,rr),ss=s*(.85+(j%7)*.05);
+  h+=pine(j)?wPine(px,py-zz,ss,dark,1):wOak(px,py-zz,ss*.92,j)}};
+ if(lv<150&&steep<58){if(fm&&lv>4)put(d<2?2:d<5?3:4,j=>lv>55||(j%4===0));else if(k<40)put(1,j=>lv>70)}
+ else if(lv<175&&steep<58&&k<60)put(1,()=>1);
+ 
+ return h}
 /* the river leaves the farm and winds up the valley between the hills to a small lake below the mountain.
    It is drawn over the land and under the trees; trees keep off the tiles it runs through. */
 const WRUP=[[-10.5,21.5],[-11.6,21.1],[-12.6,20],[-13.1,18.4],[-12.5,16.6],[-12.9,14.6],[-13.8,13],[-13.4,11],[-12.6,9.4],[-12.9,7.4],[-13.8,5.6],[-13.4,3.6],[-12.7,1.8],[-13.2,-.2],[-14.2,-1.8],[-14.6,-3.8],[-14.2,-5.6]];
@@ -4568,7 +4579,7 @@ function wRiverUp(hz){const P=WRUP,S0=[],t={};const cr=(a,b,c,d,u)=>.5*(2*b+(-a+
  for(let k=0;k<20;k++)t[Math.round(ec-.55+Math.cos(k/20*6.28)*1.6)+','+Math.round(er-.7+Math.sin(k/20*6.28)*1.4)]=1;
  return {h,t}}
 /* a pine for the hillsides: three tiers, lit from the left */
-function wPine(x,y,s,dark){const d=dark?'#17301E':'#2C5A37',l=dark?'#22412A':'#457C4A',f=v=>v.toFixed(1);let h=`<ellipse cx="${f(x+7*s)}" cy="${f(y+3)}" rx="${f(13*s)}" ry="${f(5*s)}" fill="rgba(20,30,10,.2)"/><path d="M${f(x)} ${f(y+2)}v${f(-9*s)}" stroke="var(--g-trunk)" stroke-width="${f(3.6*s)}" stroke-linecap="round"/>`;
+function wPine(x,y,s,dark,lite){if(lite&&s<.6){const d=dark?'#17301E':'#2C5A37',l=dark?'#22412A':'#457C4A',f=v=>v.toFixed(1),w=13*s,y0=y-4*s,tp=y0-40*s;return `<ellipse cx="${f(x+5*s)}" cy="${f(y+1)}" rx="${f(10*s)}" ry="${f(3.4*s)}" fill="rgba(20,30,10,.2)"/><polygon points="${f(x-w)},${f(y0)} ${f(x)},${f(tp)} ${f(x+w)},${f(y0)}" fill="${d}"/><polygon points="${f(x-w)},${f(y0)} ${f(x)},${f(tp)} ${f(x)},${f(y0)}" fill="${l}"/><polygon points="${f(x-w*.78)},${f(y0-14*s)} ${f(x)},${f(tp)} ${f(x+w*.78)},${f(y0-14*s)}" fill="${d}" opacity=".55"/>`}const d=dark?'#17301E':'#2C5A37',l=dark?'#22412A':'#457C4A',f=v=>v.toFixed(1);let h=`<ellipse cx="${f(x+7*s)}" cy="${f(y+3)}" rx="${f(13*s)}" ry="${f(5*s)}" fill="rgba(20,30,10,.2)"/><path d="M${f(x)} ${f(y+2)}v${f(-9*s)}" stroke="var(--g-trunk)" stroke-width="${f(3.6*s)}" stroke-linecap="round"/>`;
  for(let i=0;i<3;i++){const w=(15-4*i)*s,y0=y-7*s-i*11*s,tp=y0-21*s;h+=`<polygon points="${f(x-w)},${f(y0)} ${f(x)},${f(tp)} ${f(x+w)},${f(y0)} ${f(x)},${f(y0+3*s)}" fill="${d}"/><polygon points="${f(x-w)},${f(y0)} ${f(x)},${f(tp)} ${f(x)},${f(y0+3*s)}" fill="${l}"/>`}return h}
 /* a few boulders on the high slopes */
 function wRock(x,y,s,dark){const a=dark?'#6E7378':'#B9BEC2',b=dark?'#55595E':'#8F969C',f=v=>v.toFixed(1);
@@ -4596,15 +4607,16 @@ function wBackdrop(){const T=isoP(ISO.c0-.5,ISO.r0-.5),Lv=isoP(ISO.c0-.5,ISO.r1-
  if(wTod()==='tday')[[.14,.06,1],[.5,.03,.8],[.82,.08,1.1],[.33,.13,.7]].forEach(([fx,fy,s])=>{const x=ISO.w*fx,y=ISO.h*fy;h+=`<g opacity=".75"><ellipse cx="${x}" cy="${y}" rx="${110*s}" ry="${34*s}" fill="var(--w-cloud)"/><ellipse cx="${x+50*s}" cy="${y-20*s}" rx="${70*s}" ry="${30*s}" fill="var(--w-cloud)"/></g>`});
  h+=`<polygon points="${PTS([Lv,T,Rv,[ISO.w,ISO.h],[0,ISO.h]])}" fill="url(#wgrd)"/>`+wTerrain()+wFront();
  const tree=(x,y,s)=>`<ellipse cx="${(x+10*s).toFixed(1)}" cy="${(y+4).toFixed(1)}" rx="${(22*s).toFixed(1)}" ry="${(8*s).toFixed(1)}" fill="rgba(20,30,10,.18)"/><path d="M${x.toFixed(1)} ${(y+2).toFixed(1)}v${(-18*s).toFixed(1)}" stroke="var(--g-trunk)" stroke-width="${(6*s).toFixed(1)}" stroke-linecap="round"/><circle cx="${x.toFixed(1)}" cy="${(y-30*s).toFixed(1)}" r="${(22*s).toFixed(1)}" fill="url(#gfrv)"/><circle cx="${(x-8*s).toFixed(1)}" cy="${(y-37*s).toFixed(1)}" r="${(9*s).toFixed(1)}" fill="var(--g-leaf2)" opacity=".35"/>`;
- if(bg!=='roof')for(let i=0;i<14;i++){const t=.08+i/16,[x,y]=lerp(Rv,Bv,t);h+=wTree(bg,x+40+(i%3)*22,y+18+(i%2)*26,1.05,dark);h+=wTree(bg,x+90+(i%2)*20,y+60,.95,dark)}
+ if(bg!=='roof'&&bg!=='meadow')for(let i=0;i<14;i++){const t=.08+i/16,[x,y]=lerp(Rv,Bv,t);h+=wTree(bg,x+40+(i%3)*22,y+18+(i%2)*26,1.05,dark);h+=wTree(bg,x+90+(i%2)*20,y+60,.95,dark)}
  return h}
 /* the open land in front of the farm: scattered trees and bushes, none on the river */
-function wFront(){const T=[];for(let r=ISO.r0;r<ISO.r1+40;r++)for(let c=ISO.c0;c<ISO.c1+40;c++){if(c<ISO.c1&&r<ISO.r1)continue;if(r>=19&&r<=23)continue;const [x,y]=isoP(c,r);if(x<-40||x>ISO.w+40||y>ISO.h+60)continue;const k=gH(c+101,r+57);if(k<90)T.push([c,r,x,y,k])}
+function wFront(){const T=[];for(let r=ISO.r0;r<ISO.r1+40;r++)for(let c=ISO.c0;c<ISO.c1+40;c++){if(c<ISO.c1&&r<ISO.r1)continue;if(r>=19&&r<=23)continue;const [x,y]=isoP(c,r);if(x<-40||x>ISO.w+40||y>ISO.h+60)continue;const k=gH(c+101,r+57);if(k<90||wForest(c+40,r+40))T.push([c,r,x,y,k])}
  T.sort((a,b)=>(a[0]+a[1])-(b[0]+b[1]));const bg=wBgId(),dark=wDark()||wNight();
  if(bg==='roof')return T.map(([c,r,x,y,k])=>k<60?wBox(c,r,1,22+k%3*12,k,dark):'').join('');
  if(bg==='desert')return T.map(([c,r,x,y,k])=>k<30?wTree(bg,x,y,1,dark):k<60?`<g><circle cx="${x-6}" cy="${y-4}" r="8" fill="${dark?'#4A4630':'#B5A36A'}"/><circle cx="${x+5}" cy="${y-5}" r="7" fill="${dark?'#555036':'#C2B27A'}"/></g>`:'').join('');
  if(bg==='terrace')return T.map(([c,r,x,y,k])=>k<45?wTree(bg,x,y,1,dark):`<g><circle cx="${x-7}" cy="${y-5}" r="10" fill="${dark?'#3E4A36':'#9AA77A'}"/><circle cx="${x+6}" cy="${y-7}" r="11" fill="${dark?'#46523D':'#A9B585'}"/></g>`).join('');
- return T.map(([c,r,x,y,k])=>k<14?wPine(x,y,1.35,dark):k<45?wOak(x,y,1.22,k):`<g><circle cx="${x-8}" cy="${y-4}" r="11" fill="url(#gcrv)"/><circle cx="${x+7}" cy="${y-6}" r="12" fill="url(#gcrv)"/><circle cx="${x}" cy="${y-12}" r="9" fill="url(#gcrv)"/></g>`).join('')}
+ return T.map(([c,r,x,y,k])=>{const d=Math.max(c-ISO.c1,r-ISO.r1,0),sc=Math.max(.55,1.05-d*.03);if(wForest(c+40,r+40)){if(k>=150)return '';let o='';const n=k<60?3:2;for(let i=0;i<n;i++){const j=gH(c*5+i*9,r*3+i*7),[px,py]=isoP(c+((j%100)/100-.5)*.8,r+(((j>>4)%100)/100-.5)*.8);o+=j%5===0?wPine(px,py,sc*1.05,dark):wOak(px,py,sc*.95,j)}return o}
+  return k<12?wOak(x,y,sc,k):k<30?`<g><circle cx="${x-8}" cy="${y-4}" r="11" fill="url(#gcrv)"/><circle cx="${x+7}" cy="${y-6}" r="12" fill="url(#gcrv)"/><circle cx="${x}" cy="${y-12}" r="9" fill="url(#gcrv)"/></g>`:''}).join('')}
 function wRiver(){const c0=ISO.c0-.5,c1=ISO.c1+34,q=[isoP(c0,20.5),isoP(c1,20.5),isoP(c1,22.5),isoP(c0,22.5)],ext=d=>[[q[0][0]-d,q[0][1]+d/2],[q[3][0]-d,q[3][1]+d/2]];let h='';
  h+=`<polygon points="${PTS(q)}" fill="var(--w-water)"/><polygon points="${PTS([isoP(c0,20.5),isoP(c1,20.5),isoP(c1,20.8),isoP(c0,20.8)])}" fill="var(--w-bank)"/>`;
  for(let i=0;i<19;i++){const c=ISO.c0+2+i*3.6,[x1,y1]=isoP(c,21.3+(i%3)*.4),[x2,y2]=isoP(c+1.2,21.3+(i%3)*.4);h+=`<path d="M${x1.toFixed(1)} ${y1.toFixed(1)}L${x2.toFixed(1)} ${y2.toFixed(1)}" stroke="rgba(255,255,255,.45)" stroke-width="3" stroke-linecap="round"/>`}
@@ -4667,7 +4679,12 @@ function gPaths(occ){const isP=t=>occ[t]==='p'||occ[t]==='b:board',T=Object.keys
    st+=`<ellipse cx="${(x+dx).toFixed(1)}" cy="${(y+dy+1.4).toFixed(1)}" rx="${rx}" ry="${ry.toFixed(1)}" fill="var(--g-stoned)"/><ellipse cx="${(x+dx).toFixed(1)}" cy="${(y+dy).toFixed(1)}" rx="${rx}" ry="${ry.toFixed(1)}" fill="var(--g-stone)"/>`}
   for(let i=0;i<4;i++){const h3=gH(c*3+i,r*5-i);st+=`<circle cx="${(x+(h3%40)-20).toFixed(1)}" cy="${(y+((h3>>4)%18)-9).toFixed(1)}" r="1.2" fill="var(--g-pathd)"/>`}});
  return e+f+st}
-function isoLand(){isoGeom();const L=gLand(),occ=gOcc();
+/* the land around the farm (sky, hills, forests, mountains) is heavy and changes only with the place, the time of day or the theme:
+   it is built once into its own layer and moved back into the scene on every redraw instead of being rebuilt */
+let WBK={k:'',el:null};
+const wBackKey=()=>[wBgId(),wTod(),wDark()?1:0,wNight()?1:0,ISO.w,ISO.h,document.documentElement.dataset.theme||''].join('|');
+function wBackEl(){const k=wBackKey();if(WBK.k!==k||!WBK.el){const t=document.createElement('div');t.innerHTML=`<svg class="gland gback" viewBox="0 0 ${ISO.w} ${ISO.h}" aria-hidden="true">${wBackdrop()}</svg>`;WBK.el=t.firstChild;WBK.k=k}return WBK.el}
+function isoLand(full){isoGeom();const L=gLand(),occ=gOcc();
  let h='';
  h+=gPaths(occ)+wStones(occ);
  Object.keys(L.sec).forEach(b=>{const s=L.sec[b],[w,hh]=secWH(s),k=.47,D=8,q=[isoP(s.c-k,s.r-k),isoP(s.c+w-1+k,s.r-k),isoP(s.c+w-1+k,s.r+hh-1+k),isoP(s.c-k,s.r+hh-1+k)],dn=p=>[p[0],p[1]+D];
@@ -4678,7 +4695,7 @@ function isoLand(){isoGeom();const L=gLand(),occ=gOcc();
     h+=`<polygon points="${PTS([Lf,B,d3(B),d3(Lf)])}" fill="var(--g-soild)"/><polygon points="${PTS([B,R,d3(R),d3(B)])}" fill="var(--g-soild)" opacity=".8"/><polygon points="${PTS([T,R,B,Lf])}" fill="var(--g-${b}in)"/>`;
     [-.26,0,.26].forEach(t=>{const [a1,b1]=isoP(c+t,r-.36),[a2,b2]=isoP(c+t,r+.36);h+=`<path d="M${a1.toFixed(1)} ${(b1-1).toFixed(1)}L${a2.toFixed(1)} ${(b2-1).toFixed(1)}" stroke="rgba(255,255,255,.16)" stroke-width="3.2" stroke-linecap="round"/><path d="M${(a1+2).toFixed(1)} ${(b1-2).toFixed(1)}L${(a2+2).toFixed(1)} ${(b2-2).toFixed(1)}" stroke="var(--g-furrow)" stroke-width="2.2" stroke-linecap="round"/>`})}}h+=wPlaceDeco(b,q)+wBedDeco(b,q)});
  gParcels().forEach(p=>{const q=[isoP(p.c-.5,p.r-.5),isoP(p.c+p.w-.5,p.r-.5),isoP(p.c+p.w-.5,p.r+p.h-.5),isoP(p.c-.5,p.r+p.h-.5)];h+=`<polygon points="${PTS(q)}" fill="var(--g-lock)" stroke="var(--g-lockline)" stroke-width="2.5" stroke-dasharray="8 6" stroke-linejoin="round"/>`});
- h=wBackdrop()+gMeadow()+wRiver()+h+wKitchenFence()+gNature()+wClouds();
+ h=(full?wBackdrop():'')+gMeadow()+wRiver()+h+wKitchenFence()+gNature()+wClouds();
  return `<svg class="gland" viewBox="0 0 ${ISO.w} ${ISO.h}" aria-hidden="true"><defs><radialGradient id="gshr"><stop offset="0" stop-color="#1E2A14" stop-opacity=".34"/><stop offset=".55" stop-color="#1E2A14" stop-opacity=".18"/><stop offset="1" stop-color="#1E2A14" stop-opacity="0"/></radialGradient><filter id="gblur" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="5"/></filter></defs>${h}</svg>`}
 function gSigns(ed){const L=gLand();return (ed?Object.keys(L.sec):[]).map(b=>{const s=L.sec[b],[w,hh]=secWH(s),[x,y]=isoP(s.c-.55,s.r+hh/2-.5);return `<button class="gsign" type="button" data-sb="${b}" style="left:${pct(x-18,ISO.w)};top:${pct(y-6,ISO.h)}"><b>${GSECN[b]}</b></button>`}).join('')+gParcels().map(p=>{const [x,y]=isoP(p.c+(p.id==='land'?.5:p.w/2-.5),p.r+(p.id==='sec:b'?p.h-1.2:p.id==='land'?p.h/2-.5:.3)),pr=gUpPrice(p.id);return `<button class="glock" type="button" data-ul="${p.id}" style="left:${pct(x,ISO.w)};top:${pct(y,ISO.h)}" aria-label="Unlock ${p.n} for ${pr} coins">${GLOCKI}<span class="num">${COINI}${pr}</span></button>`}).join('')}
 /* decorations are drawn by kind: small things small, a bench or a pond about a tile, a greenhouse a bit more; the shadow stays on the tile centre */
@@ -4823,7 +4840,7 @@ function gMeadow(){let h='';const B=gBld();
   const g=w===3?.7:.45,m=w===3?.12:.2,f=[isoP(c-.5+m,r-.5+m),isoP(c+w-.5-m,r-.5+m),isoP(c+w-.5-m,r+w-.5-m),isoP(c-.5+m,r+w-.5-m)],sx=34*w*g,sy=10*w*g,sh=p=>[p[0]+sx,p[1]+sy];h+=`<polygon points="${PTS([f[3],f[0],sh(f[0]),sh(f[1]),sh(f[2]),f[2]])}" fill="rgba(20,30,10,.3)" filter="url(#gblur)"/>`});return h}
 function gNature(){const occ=gOcc(),B=gBld(),busy=new Set(Object.keys(occ).filter(t=>/^(s|b):/.test(occ[t])));gParcels().forEach(p=>{for(let y=p.r;y<p.r+p.h;y++)for(let x=p.c;x<p.c+p.w;x++)busy.add(x+','+y)});const near=(c,r,R)=>{for(let y=-R;y<=R;y++)for(let x=-R;x<=R;x++)if(busy.has((c+x)+','+(r+y)))return 1;return 0};let h='';
  for(let r=ISO.r0;r<ISO.r1;r++)for(let c=ISO.c0;c<ISO.c1;c++){const t=c+','+r;if(occ[t]||near(c,r,1))continue;const k=gH(c,r),[x,y]=isoP(c,r);if(k<70&&near(c,r,2))continue;
-  if(k<70)h+=`<g><ellipse cx="${x+16}" cy="${y+6}" rx="30" ry="11" fill="url(#gshr)"/><path d="M${x} ${y+4}v-22" stroke="var(--g-trunk)" stroke-width="7" stroke-linecap="round"/><circle cx="${x}" cy="${y-34}" r="26" fill="url(#gcrv)"/><circle cx="${x-9}" cy="${y-42}" r="11" fill="var(--g-leaf2)" opacity=".45"/><circle cx="${x+12}" cy="${y-24}" r="9" fill="var(--g-leaf2)" opacity=".35"/></g>`;
+  if(k<70)h+=(k%3===0?wPine(x,y+4,.9,wDark()):wOak(x,y+4,.85,k));
   else if(k<130)h+=`<g><ellipse cx="${x+8}" cy="${y+4}" rx="22" ry="8" fill="url(#gshr)"/><circle cx="${x-8}" cy="${y-4}" r="11" fill="url(#gcrv)"/><circle cx="${x+7}" cy="${y-6}" r="12" fill="url(#gcrv)"/><circle cx="${x}" cy="${y-12}" r="9" fill="url(#gcrv)"/></g>`;
   else if(k<200)h+=[[-14,-2,'#F28AA8'],[-2,4,'#FFFFFF'],[10,-4,'#F6CB5A'],[3,-9,'#B9A0E6']].map(([dx,dy,col])=>`<path d="M${x+dx} ${y+dy+6}v-7" stroke="var(--g-stem)" stroke-width="1.6"/><circle cx="${x+dx}" cy="${y+dy-2}" r="3.2" fill="${col}"/>`).join('');
   else if(k<225)h+=`<ellipse cx="${x+4}" cy="${y}" rx="13" ry="8" fill="#A9A293"/><ellipse cx="${x+1}" cy="${y-3}" rx="9" ry="5" fill="#C3BCAE"/>`;
@@ -4933,7 +4950,7 @@ function gShareBoard(){const B=gBld().board;if(!B)return null;const fl=!!B[2],[b
  return {z:B[0]+B[1]+(bw-1)/2+(bh-1)/2,h}}
 function gShareSVG(){const g=S.garden,sc=$('gd-scene')||document.documentElement,cs=getComputedStyle(sc),rv=t=>t.replace(/var\((--[a-z0-9-]+)\)/g,(m,n)=>cs.getPropertyValue(n).trim()||'#888');
  isoGeom();const {W,H}=GSH,nest=(str,x,y,w,h)=>{const m=String(str).match(/<svg[^>]*viewBox="([^"]+)"[^>]*>([\s\S]*)<\/svg>/);if(m){if(h==null){const v=m[1].trim().split(/[\s,]+/).map(Number);h=w*v[3]/v[2]}return `<svg x="${x.toFixed(1)}" y="${y.toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" viewBox="${m[1]}">${m[2]}</svg>`}const im=String(str).match(/src="([^"]+)"/);return im?`<image href="${im[1]}" x="${x}" y="${y}" width="${w}" height="${h||w}"/>`:''};
- const land=isoLand().match(/<svg[^>]*>([\s\S]*)<\/svg>/)[1],Z=[];
+ const land=isoLand(1).match(/<svg[^>]*>([\s\S]*)<\/svg>/)[1],Z=[];
  g.plants.forEach(p=>{const st=gStage(p),{x,y,c,r}=isoC(p.b,p.pos),by=y+7-70,I=kindInfo(p.k),orch=p.b==='f';let s='';
   if(st===0)s=nest(GMOUND,x-18,by+70-17,36,14);else if(st===1)s=nest(GSPROUT,x-17.5,by+70-35,35,35);
   else{if(st===3)s+=`<ellipse cx="${x}" cy="${y+6}" rx="27" ry="9" fill="#FFD65A" opacity=".3"/>`;s+=nest(orch?GTREE:GSTEM,x-22.5,by+70-53,45,53);
