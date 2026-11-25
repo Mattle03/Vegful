@@ -1,5 +1,5 @@
 // Bump VERSION after every change so phones pick up the new files.
-const VERSION = 'vgarden-v163';
+const VERSION = 'vgarden-v164';
 const SHELL = ['./', 'index.html', 'manifest.webmanifest', 'icons/icon-192.png', 'icons/icon-512.png', 'icons/apple-touch-icon.png', 'icons/badge-96.png', 'vendor/zxing.min.js'];
 
 self.addEventListener('install', e => {
@@ -48,11 +48,14 @@ async function ring() {
   // the garden's day runs until 3 at night, like the app
   const now = new Date(), h = now.getHours(), hd = h < 3 ? h + 24 : h, slot = hd < 11 ? 'b' : hd < 16 ? 'l' : hd < 20 ? 'd' : 'e', today = ymd(new Date(now.getTime() - 3 * 3600e3));
   // a weekly or every few days supplement that is due today: said once that day, on the first reminder
-  const sd = ((m && m.sup) || []).filter(x => x && x.n && x.due && x.due <= today).map(x => x.n);
+  const sdu = ((m && m.sup) || []).filter(x => x && x.n && x.due && x.due <= today), sd = sdu.map(x => x.n);
   if (sd.length && rec.sup !== today) {
     rec.sup = today; try { await idb('readwrite', s => s.put(rec, 'r')); } catch (_) {}
     const names = sd.length > 1 ? sd.slice(0, -1).join(', ') + ' and ' + sd[sd.length - 1] : sd[0];
-    return self.registration.showNotification('Vegful Garden', { body: names + (sd.length > 1 ? ' are' : ' is') + ' due today.', icon: 'icons/icon-192.png', badge: 'icons/badge-96.png', tag: 'vgarden', data: { url: self.registration.scope } });
+    // Taken and Later right on the reminder; tapping the reminder opens the app on the supplement question
+    return self.registration.showNotification('Vegful Garden', { body: names + (sd.length > 1 ? ' are' : ' is') + ' due today.', icon: 'icons/icon-192.png', badge: 'icons/badge-96.png', tag: 'vgarden-sup',
+      actions: [{ action: 'took', title: sd.length > 1 ? 'Took them' : 'Taken' }, { action: 'later', title: 'Later' }],
+      data: { url: self.registration.scope + '?sup=1', sup: sdu.map(x => x.id).filter(Boolean), d: today } });
   }
   const c = { meal: { b: 'breakfast', l: 'lunch', d: 'dinner', e: 'dinner' }[slot], slot, time: p2(h) + ':' + p2(now.getMinutes()), low: [], days: 0, kinds: 0 };
   let body = 'Your garden is waiting.';
@@ -61,12 +64,14 @@ async function ring() {
     const away = m.lastOpen ? dayDiff(m.lastOpen, today) : 0, fresh = m.today === today, open = fresh ? (m.open || []) : ['b', 'l', 'd'];
     c.days = away;
     let cat;
-    if (away >= 2) cat = 'away';
+    if (m.vac) cat = 'vac';
+    else if (away >= 2) cat = 'away';
     else if (slot === 'e' && now.getDay() === 0 && m.recap) cat = 'recap';
     else if (m.ripe && Math.random() < 0.25) cat = 'ripe';
     else if (slot === 'e') cat = fresh && (m.closed || !open.length) ? 'done' : 'nagE';
     else cat = open.includes(slot) ? 'nag' : 'done';
-    let P = (m.pools[cat] || []);
+    // on vacation one gentle line a day, nothing about meals still open
+    let P = cat === 'vac' ? [{ id: 'v1', t: 'Ate out today? The closest dish and a size is enough.' }, { id: 'v2', t: 'Enjoy your trip. Log a meal if you like.' }, { id: 'v3', t: 'New food today? Log what you can.' }] : (m.pools[cat] || []);
     if (!P.length && cat === 'nagE') P = m.pools.nag || [];
     P = P.filter(x => (!x.g || c.low.includes(x.g)) && (!x.s || x.s === slot || (x.s === 'd' && slot === 'e')));
     if (P.length) {
@@ -84,9 +89,24 @@ async function ring() {
 }
 self.addEventListener('push', e => e.waitUntil(ring()));
 self.addEventListener('notificationclick', e => {
-  e.notification.close();
+  const n = e.notification, d = n.data || {};
+  n.close();
+  if (e.action === 'later') return;
+  // Taken: remember it for the app, which applies it the next time it is opened or shown
+  if (e.action === 'took' && d.sup && d.sup.length) {
+    e.waitUntil((async () => {
+      let L = [];
+      try { L = (await idb('readonly', s => s.get('took'))) || []; } catch (_) {}
+      L.push({ ids: d.sup, d: d.d });
+      try { await idb('readwrite', s => s.put(L, 'took')); } catch (_) {}
+      const W = await clients.matchAll({ type: 'window', includeUncontrolled: true });
+      W.forEach(c => c.postMessage({ took: 1 }));
+    })());
+    return;
+  }
   e.waitUntil(clients.matchAll({ type: 'window', includeUncontrolled: true }).then(L => {
     const w = L.find(c => c.url.startsWith(self.registration.scope));
-    return w ? w.focus() : clients.openWindow(self.registration.scope);
+    if (w) { if (d.sup) w.postMessage({ sup: 1 }); return w.focus(); }
+    return clients.openWindow(d.url || self.registration.scope);
   }));
 });
