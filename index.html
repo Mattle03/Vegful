@@ -3565,6 +3565,7 @@ function closeScan(){stopCamera();const d=$('scan');d.close?d.close():d.removeAt
 /* a checked product is easy to lose with Close: the first tap asks, the second discards */
 $('sc-close').onclick=()=>{if(SC&&SC.stage==='review'&&SC.prod&&!SC.conf){SC.conf=1;const b=$('sc-close');b.textContent='Discard?';b.classList.add('warn');setTimeout(()=>{if(SC&&SC.conf){SC.conf=0;b.textContent='Close';b.classList.remove('warn')}},3500);return}$('sc-close').classList.remove('warn');closeScan()};
 $('scan').addEventListener('close',stopCamera);
+$('scan').addEventListener('cancel',e=>{if(SC&&SC.stage==='review'&&SC.prod&&!SC.conf){e.preventDefault();$('sc-close').click()}});
 /* a photo of the barcode, for iPhone and iPad: the phone's own camera opens, iOS asks no permission. The photo is made smaller, then read. */
 const wApple=()=>/iPad|iPhone|iPod/.test(navigator.userAgent)||(navigator.platform==='MacIntel'&&navigator.maxTouchPoints>1);
 const CAMI2='<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-2.5h6L17 8h3v11H4z"/><circle cx="12" cy="13" r="3.6"/></svg>',GALI='<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="5" width="16" height="14" rx="2"/><circle cx="9" cy="10" r="1.6"/><path d="M5 17l5-5 4 4 2-2 3 3"/></svg>';
@@ -4843,7 +4844,7 @@ const gCamGo=()=>{const k=S.garden&&S.garden.cam;if(!G.cam&&k&&isFinite(k.s)&&is
 /* the smallest zoom still fills the screen with land and sky, and the camera never shows past the edge of the world */
 function gCamMin(){const vp=$('gd-scene');if(!vp)return .3;const R=vp.getBoundingClientRect();return Math.max(.3,R.width/ISO.w,R.height/ISO.h)}
 function gCamClamp(){const vp=$('gd-scene'),c=G.cam;if(!vp||!c)return;const R=vp.getBoundingClientRect();c.s=Math.max(gCamMin(),Math.min(1.8,c.s));const W=ISO.w*c.s,H=ISO.h*c.s;c.x=W<=R.width?(R.width-W)/2:Math.min(0,Math.max(R.width-W,c.x));c.y=H<=R.height?(R.height-H)/2:Math.min(0,Math.max(R.height-H,c.y))}
-let GCAMT=0;function gCamApply(){const w=$('gd-world');if(!w||!G.cam)return;gCamClamp();clearTimeout(GCAMT);GCAMT=setTimeout(()=>{if(S.garden&&G&&G.cam){S.garden.cam={s:+G.cam.s.toFixed(3),x:Math.round(G.cam.x),y:Math.round(G.cam.y)};save()}},700);w.style.transform=`translate(${G.cam.x.toFixed(1)}px,${G.cam.y.toFixed(1)}px) scale(${G.cam.s.toFixed(3)})`;wMoving(w);try{wLabSoon(260)}catch(e){}}
+let GCAMT=0;function gCamApply(){const w=$('gd-world');if(!w||!G.cam)return;gCamClamp();clearTimeout(GCAMT);GCAMT=setTimeout(()=>{if(S.garden&&G&&G.cam&&!G.pv){S.garden.cam={s:+G.cam.s.toFixed(3),x:Math.round(G.cam.x),y:Math.round(G.cam.y)};save()}},700);w.style.transform=`translate(${G.cam.x.toFixed(1)}px,${G.cam.y.toFixed(1)}px) scale(${G.cam.s.toFixed(3)})`;wMoving(w);try{wLabSoon(260)}catch(e){}}
 /* while the view moves the world rides on the graphics card and the sparkles pause; once it rests, it is drawn sharp again */
 let WMV=0,WHOLD=0,WAN=[];function wMoving(w){if(!w)return;const sc=$('gd-scene');if(!WMV&&sc&&!WAN.length){WAN=sc.getAnimations?sc.getAnimations({subtree:true}).filter(a=>a.playState==='running'):[];WAN.forEach(a=>a.pause())}
  clearTimeout(WMV);const rel=()=>{if(WHOLD){WMV=setTimeout(rel,220);return}WMV=0;WAN.forEach(a=>{try{a.play()}catch(_){}});WAN=[];wSharp()};WMV=setTimeout(rel,220)}
@@ -6786,7 +6787,7 @@ async function wPushSub(){const perm=await Notification.requestPermission();if(p
  let sub=await reg.pushManager.getSubscription();if(!sub)sub=await reg.pushManager.subscribe({userVisibleOnly:true,applicationServerKey:wB64(WPUSH.key)});
  const p=wPushCfg();p.on=1;p.ep=sub.endpoint;save();wMirror();await wPushSend(sub)}
 async function wPushSend(sub){const p=wPushCfg();if(!p.on)return;try{if(!sub){const reg=await navigator.serviceWorker.ready;sub=await reg.pushManager.getSubscription()}if(!sub)return;
- const times=VAC()?[p.t.e&&p.t.e.at||'21:30']:WPT.filter(([k])=>p.t[k].on).map(([k])=>p.t[k].at);S.garden.pushTz=wTZ();const r=await fetch(WPUSH.url+'/sub',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sub:sub.toJSON(),tz:wTZ(),times})});if(!r.ok)throw new Error('sub '+r.status)}catch(e){const s=$('p-pushst');if(s)s.textContent='The reminder server did not answer. Try again later.'}}
+ const times=VAC()?[p.t.e&&p.t.e.at||'21:30']:WPT.filter(([k])=>p.t[k].on).map(([k])=>p.t[k].at);const r=await fetch(WPUSH.url+'/sub',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({sub:sub.toJSON(),tz:wTZ(),times})});if(!r.ok)throw new Error('sub '+r.status);S.garden.pushTz=wTZ();save()}catch(e){const s=$('p-pushst');if(s)s.textContent='The reminder server did not answer. Try again later.'}}
 async function wPushUnsub(){const p=wPushCfg();p.on=0;save();try{const reg=await navigator.serviceWorker.ready,sub=await reg.pushManager.getSubscription();if(sub){await fetch(WPUSH.url+'/unsub',{method:'POST',headers:{'content-type':'application/json'},body:JSON.stringify({endpoint:sub.endpoint})}).catch(()=>{});await sub.unsubscribe()}}catch(e){}}
 /* building footprints: w along c, h along r; a turned building swaps them */
 const bwh=(k,fl)=>{const g=GBLD[k]||{w:1},w=g.w,h=g.h||g.w;return fl?[h,w]:[w,h]};
@@ -7062,7 +7063,7 @@ function wBathAsk(n){const B=wBath();WHOLDT=Date.now()+20000;clearTimeout(WBATHT
 function wBathFill(ml,n){const g=S.garden,sd=S.date;if(sd!==TODAY)setDate(TODAY);wAdd(ml);save();if(sd!==TODAY)setDate(sd);
  const el=document.querySelector('#gd-world .gbld[data-bld="well"]');if(el){el.classList.remove('splash','refill');void el.offsetWidth;el.classList.add('splash','refill');setTimeout(()=>el.classList.remove('splash','refill'),1300)}
  try{navigator.vibrate&&navigator.vibrate(12)}catch(e){}wBathAsk((n||0)+ml);return 'keep'}
-function wBathDone(){const g=S.garden;if(!g)return;const B=wBath(),first=!g.vbath;if(first){g.vbath=TODAY;save()}WHOLDT=0;
+function wBathDone(){const g=S.garden;if(!g)return;const tw=$('wtort');if(!tw||!tw.classList.contains('ask'))return;const B=wBath(),first=!g.vbath;if(first){g.vbath=TODAY;save()}WHOLDT=0;
  wTalkClose();wSay((B.birds>=3?'The bath is full.':B.birds===2?'The birds are happy.':B.birds===1?'A bird is back.':'A little more and the birds come back.')+(first?' It drains through the day as you should drink; what you drank today always leaves a little water in it.':''),'pleased')}
 /* bird baths bought as decorations could never fill, so they are refunded once */
 function wNoBath(){const g=S.garden;if(!g||g.vnobath)return;g.vnobath=1;const L=gLand(),own=(g.decor&&g.decor.own)||[],n=own.filter(x=>x==='bath').length;
