@@ -2726,7 +2726,11 @@ const FREQ={d:'Daily',w:'Weekly',n:'Every few days',o:'Once'};
 const dayDiff=(a,b)=>Math.round((kdate(b)-kdate(a))/864e5);
 const sKind=s=>ONE[s.kind]||{n:'Supplement',cov:[]};
 const kNuts=u=>[...(u.cov||[]),...Object.keys(u.add||{})];
-const sNuts=s=>kNuts(sKind(s));
+/* products: one tap sets up a daily supplement with the amounts from its label. The entry keeps its kind (plain Vegful counts it by that)
+   and carries two optional fields, n (the product name) and pre; with pre, every nutrient on the label counts, not only the kind's own */
+const SPRE=[{id:'ncall',n:'Nature Craft Vegan All in one',kind:'multi',amt:{b12:500,d:25,iod:150,zn:10,se:55,fe:14,fol:400},h:'1 capsule a day. B12, vitamin D, iodine, zinc, selenium, iron and folate count from the label.'},
+ {id:'snom3',n:'Sunday Natural Algae Omega 3',kind:'epa',amt:{epa:265},h:'1 capsule a day: 175 mg DHA and 90 mg EPA.'}];
+const sNuts=s=>{const L=kNuts(sKind(s));if(s.pre&&s.amt)Object.keys(s.amt).forEach(k=>{if(!L.includes(k)&&NUT[k])L.push(k)});return L};
 const sInt=s=>s.freq==='w'?7:s.freq==='n'?Math.max(2,+s.every||2):s.freq==='o'?Infinity:1;
 function sTake(s,k,T){const u=sKind(s),need=T[k]||1,cap=CAP[k]||1;
  const a=s.amt&&s.amt[k]!=null&&s.amt[k]!==''?+s.amt[k]:(u.add&&u.add[k]!=null?u.add[k]:null);
@@ -2760,8 +2764,8 @@ function supMigrate(){if(Array.isArray(S.sups))return;S.sups=[];const T=targets(
   if(e[2]===1){const u=ONE[e[0]];if(!u)return;const k=u.cov[0];const amt={};if(+e[1]>1&&k)amt[k]=Math.round(T[k]*e[1]*10)/10;S.sups.push({id:nid(),kind:e[0],amt,freq:'o',start:d,takes:[d],skip:[]})}
   else if(ONE[e[0]]){S.sups.push({id:nid(),kind:e[0],amt:{[e[0]]:+e[1]},freq:'o',start:d,takes:[d],skip:[]})}});delete p.ox});
  S.sup={};delete S.sup0;delete S.suplog}
-const sName=s=>sKind(s).n;
-function sDose(s){const a=s.amt||{},ks=Object.keys(a).filter(k=>a[k]!==''&&a[k]!=null);if(!ks.length)return 'normal dose';
+const sName=s=>s.n||sKind(s).n;
+function sDose(s){const a=s.amt||{},ks=Object.keys(a).filter(k=>a[k]!==''&&a[k]!=null);if(!ks.length)return 'normal dose';if(s.pre)return 'amounts from the label';
  return ks.map(k=>k==='d'?fmt(+a[k])+' µg ('+Math.round(a[k]*40).toLocaleString('en')+' IU)':fmt(+a[k])+' '+NUT[k].u+(ks.length>1?' '+NUT[k].n.toLowerCase():'')).join(', ')}
 function sSched(s){return s.freq==='d'?'Daily':s.freq==='w'?'Weekly':s.freq==='n'?'Every '+sInt(s)+' days':'Once'}
 const agoTxt=n=>n===0?'taken today':n===1?'taken yesterday':'taken '+n+' days ago';
@@ -6346,9 +6350,11 @@ function renderSupD(){const T=targets(),body=$('supd-body');$('supd-t').textCont
   body.innerHTML=`<button class="btn primary" type="button" id="s-took" style="width:100%;margin:0 0 14px">Took something ${S.date===TODAY?'today':'this day'}</button><p class="cap" style="margin:0 0 10px">Daily ones count by themselves. For the others, tap Taken.</p>
   ${cur.length?cur.map(row).join(''):'<p class="cap">Nothing added yet.</p>'}
   <button class="btn" type="button" id="s-new" style="width:100%;margin-top:12px">Add one you take regularly</button>
+  <div class="lbl" style="margin:18px 0 6px">Products</div>${SPRE.map(x=>{const on=cur.some(s=>s.pre===x.id&&s.freq==='d');return `<div class="dishrow"><span style="flex:1;min-width:0"><span style="font-weight:600">${esc(x.n)}</span><br><span class="cap">${esc(x.h)}</span></span><button class="btn sm${on?'':' primary'}" type="button" data-spre="${x.id}"${on?' disabled':''}>${on?'Added':'Add, daily'}</button></div>`}).join('')}
   ${old.length?`<div class="lbl" style="margin:22px 0 4px">Earlier</div>${old.map(row).join('')}`:''}
   <p class="muted" style="font-size:12.5px;margin:18px 0 0">B12 is needed by every vegan. Vitamin D depends on how much sun you get. Do not start other supplements because of this app; a blood test shows what you need.</p>`;
-  $('s-new').onclick=()=>{SUPD={v:'form',id:null,f:sForm(null),sure:null};renderSupD()};$('s-took').onclick=()=>{SUPD={v:'took',id:null,f:null,sure:null,t:null};renderSupD()};body.querySelectorAll('[data-sinfo]').forEach(b=>b.onclick=()=>openSupInfo(b.dataset.sinfo));
+  $('s-new').onclick=()=>{SUPD={v:'form',id:null,f:sForm(null),sure:null};renderSupD()};
+  body.querySelectorAll('[data-spre]').forEach(b=>b.onclick=()=>{const x=SPRE.find(y=>y.id===b.dataset.spre);if(x){sPreAdd(x);toast(`${x.n} added. It counts by itself every day.`);render();renderSupD()}});$('s-took').onclick=()=>{SUPD={v:'took',id:null,f:null,sure:null,t:null};renderSupD()};body.querySelectorAll('[data-sinfo]').forEach(b=>b.onclick=()=>openSupInfo(b.dataset.sinfo));
   body.querySelectorAll('[data-sedit]').forEach(b=>b.onclick=()=>{const s=S.sups.find(x=>x.id===b.dataset.sedit);SUPD={v:'form',id:s.id,f:sForm(s),sure:null};renderSupD()});
   return}
  const f=SUPD.f,ed=SUPD.id?S.sups.find(x=>x.id===SUPD.id):null,u=f.kind?ONE[f.kind]:null;
@@ -6360,7 +6366,7 @@ function renderSupD(){const T=targets(),body=$('supd-body');$('supd-t').textCont
    :`Each dose covers ${NUT[k].n} for ${t.days===1?'1 day':t.days+' days'}${t.days<(draft.freq==='o'?Math.floor((draft.amt[k]||0)/T[k]):sInt(draft))&&CAP[k]?', the most it can count, because '+CAPWHY[k]:''}.`;
   warn=sWarn(draft,T,others)}
  const nuts=u?kNuts(u).filter(k=>!(u.add&&u.add[k]!=null&&f.kind==='salt')):[];
- body.innerHTML=`${ed?`<h3 style="margin:0 0 4px">${esc(u.n)}</h3>`:`<div class="lbl" style="margin-bottom:6px">What</div><div class="chips wrap">${Object.entries(ONE).map(([id,x])=>`<button class="chip${f.kind===id?' on':''}" type="button" data-skind="${id}">${x.n}</button>`).join('')}</div>`}
+ body.innerHTML=`${ed?`<h3 style="margin:0 0 4px">${esc(sName(ed))}</h3>`:`<div class="lbl" style="margin-bottom:6px">What</div><div class="chips wrap">${Object.entries(ONE).map(([id,x])=>`<button class="chip${f.kind===id?' on':''}" type="button" data-skind="${id}">${x.n}</button>`).join('')}</div>`}
  ${u?`<p class="cap" style="margin:10px 0 0">${u.h}${sInfoBtn(f.kind)}</p>
  ${f.kind==='salt'?'':`<div class="lbl" style="margin:18px 0 6px">Dose</div><div class="seg sm" id="s-mode"><button type="button" data-m="n" aria-pressed="${f.mode==='n'}">Normal dose</button><button type="button" data-m="x" aria-pressed="${f.mode==='x'}">Amount from label</button></div>
  ${f.mode==='x'?`<div style="display:grid;gap:8px">${nuts.map(k=>`<label class="amtrow"><span>${NUT[k].n}</span><input type="number" inputmode="decimal" min="0" step="any" data-samt="${k}" value="${f.amt[k]!=null&&f.amt[k]!==''?(k==='d'&&f.du==='iu'?Math.round(f.amt[k]*40):f.amt[k]):''}" placeholder="${k==='d'&&f.du==='iu'?'IU':NUT[k].u}">${k==='d'?`<select id="s-du" aria-label="Unit"><option value="iu"${f.du==='iu'?' selected':''}>IU</option><option value="ug"${f.du==='ug'?' selected':''}>µg</option></select>`:`<span class="cap">${NUT[k].u}</span>`}</label>`).join('')}</div>`:''}
@@ -6387,7 +6393,7 @@ function renderSupD(){const T=targets(),body=$('supd-body');$('supd-t').textCont
  q('#s-back').onclick=()=>{SUPD={v:'list',id:null,f:null,sure:null};renderSupD()};
  if(q('#s-stop'))q('#s-stop').onclick=()=>{if(ed.start>=TODAY&&!(ed.takes||[]).some(x=>x<TODAY))S.sups=S.sups.filter(x=>x!==ed);else ed.end=TODAY;SUPD={v:'list',id:null,f:null,sure:null};render();renderSupD()};
  if(q('#s-del'))q('#s-del').onclick=()=>{if(SUPD.sure!=='del'){SUPD.sure='del';renderSupD();return}S.sups=S.sups.filter(x=>x!==ed);SUPD={v:'list',id:null,f:null,sure:null};render();renderSupD()};
- if(q('#s-save'))q('#s-save').onclick=()=>{const nid='s'+Math.random().toString(36).slice(2,8);
+ if(q('#s-save'))q('#s-save').onclick=()=>{const nid='s'+Math.random().toString(36).slice(2,8);if(ed&&ed.pre&&f.mode==='x')draft.amt=Object.assign({},ed.amt,draft.amt);
   if(!ed){const s={id:nid,kind:draft.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:draft.freq==='d'?(S.date<TODAY?S.date:TODAY):f.taken,takes:draft.freq==='d'?[]:[f.taken],skip:[]};if(draft.freq==='o')s.end=f.taken;S.sups=S.sups||[];S.sups.push(s);if(s.freq!=='o')toast('Saved. Calendar reminders: Profile, Reminders.');}
   else{const same=JSON.stringify([ed.amt,ed.freq,ed.every||0])===JSON.stringify([draft.amt,draft.freq,draft.freq==='n'?draft.every:(ed.every||0)]);
    if(!same){if(ed.start<TODAY){const n={id:nid,kind:ed.kind,amt:draft.amt,freq:draft.freq,every:draft.every,start:TODAY,takes:(ed.takes||[]).filter(x=>x>=TODAY),skip:(ed.skip||[]).filter(x=>x>=TODAY)};
@@ -6395,6 +6401,9 @@ function renderSupD(){const T=targets(),body=$('supd-body');$('supd-t').textCont
      if(n.freq!=='d'&&!n.takes.length){const l=sLast(ed,TODAY);if(l){n.takes=[l];ed.takes=ed.takes.filter(x=>x!==l)}}S.sups.push(n)}
     else Object.assign(ed,{amt:draft.amt,freq:draft.freq,every:draft.every})}}
   SUPD={v:'list',id:null,f:null,sure:null};render();renderSupD()}}
+/* a product added daily from today; a plain daily one of the same kind stops today, so nothing counts twice (past days keep what was true) */
+function sPreAdd(x){S.sups=S.sups||[];const d=S.date<TODAY?S.date:TODAY;S.sups.forEach(s=>{if(s.kind===x.kind&&s.freq==='d'&&sActive(s,d)&&!s.pre){if(s.start>=d)s.gone=1;else s.end=d}});S.sups=S.sups.filter(s=>!s.gone);
+ if(S.sups.some(s=>s.pre===x.id&&s.freq==='d'&&sActive(s,d)))return;S.sups.push({id:'s'+Math.random().toString(36).slice(2,8),kind:x.kind,n:x.n,pre:x.id,amt:Object.assign({},x.amt),freq:'d',start:d,takes:[],skip:[]});save()}
 function openSupD(){const d=$('supd');SUPD={v:'list',id:null,f:null,sure:null};renderSupD();if(!d.open){d.showModal?d.showModal():d.setAttribute('open','')}}
 /* took something: pick it, type the amount from the label, and it counts for that day (or every day, or weekly).
    Things you took once before come back as one tap rows. Stored in S.sups like every other supplement */
